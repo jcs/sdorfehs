@@ -13,7 +13,7 @@
 @ifinfo
 This is the ratpoison user manual.
 
-Copyright @copyright{} 2000 Shawn Betts
+Copyright @copyright{} 2000, 2001 Shawn Betts
 
 Permission is granted to make and distribute verbatim
 copies of this manual provided the copyright notice and
@@ -50,7 +50,7 @@ translation approved by the Free Software Foundation.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000 Shawn Betts
+Copyright @copyright{} 2000, 2001 Shawn Betts
 
 Permission is granted to make and distribute verbatim
 copies of this manual provided the copyright notice and
@@ -72,16 +72,17 @@ except that this permission notice may be stated in a
 translation approved by the Free Software Foundation.
 @end titlepage
 
+@node Top, About, (dir), (dir)
+
 @ifinfo
 This document explains how to use ratpoison.
 @end ifinfo
 
-@node Top, About, (dir), (dir)
-
 @menu
 * About::                       What is ratpoison?
 * Contacting::                  How do I contact the ratpoison developers?
-* Using ratpoison::             Key commands and functionality
+* Keystrokes::                  Key commands and functionality
+* Commands::                    Ratpoison commands
 @end menu
 
 @node About, Contacting, Top, Top
@@ -101,7 +102,7 @@ configure. If you want to configure ratpoison, edit the source.
 
 ratpoison was written by Shawn Betts (@email{sabetts@@users.sourceforge.net}).
 
-@node Contacting, Using ratpoison, About, Top
+@node Contacting, Keystrokes, About, Top
 @chapter Contacting
 ratpoison is hosted on @url{sourceforge.net}. To see the latest
 developments in ratpoison go to
@@ -112,66 +113,114 @@ There is also a ratpoison mailing list:
 @email{ratpoison-devel@@lists.sourceforge.net}. For details on subscribing
 and for the list archives go to the ratpoison sourceforge.net project.
 
-@node Using ratpoison,  , Contacting, Top
-@chapter Using ratpoison
+@node Keystrokes, Commands, Contacting, Top
+@chapter Keystrokes
 
 ratpoison is a very simple window manager. Each window is maximized and
-has no border decorations. Here is a list of commands and what they do:
+has no border decorations. The default keystrokes are listed in the next
+chapter, however, there are some which are bound to complex commands.
+These are listed below:
 
 @table @kbd
 
-@item C-t C-c
+@item C-t c
 This opens a new XTerm.
 
-@item C-t C-e
+@item C-t e
 This opens a new EMACS session. You will probably only need to do this
 once.
-
-@item C-t C-w
-This displays the Program Bar which displays the windows you currently
-have running. The number before each window name is used to jump to that
-window. You can to this by typing @kbd{C-t C-<n>} where @kbd{<n>} is the
-number of the window. Note that only windows with numbers from 0 to 9
-can be referenced.
-
-After 5 seconds the Program Bar disappears.
-
-@item C-t C-p
-This jumps you to the previous window in the window list.
-
-@item C-t C-n
-This jumps you to the next window in the window list.
-
-@item C-t C-<n>
-This jumps you to window <n> where <n> is the window number as shown in
-the Program Bar.
-
-@item C-t C-t
-This toggles between the current window and the last window.
 
 @item C-t t
 Sometimes you need to send a C-t to the current window. This keystroke
 does just that.
 
-@item C-t k
-This deletes the current window.
+@item C-t :
+Enter a command line.
+@end table
 
-@item C-t K
-This destroys the current window. Normally you should only need to use
-@kbd{C-t k}, but just incase you need to rip the heart out of a
-misbehaving window this command should do the trick.
+@node Commands, , Keystrokes, Top
+@chapter Ratpoison commands
 
-@item C-t C-a
+Ratpoison can be controlled with commands (so called colon-commands).
+The summary of available commands is listed below:
+
+@table @command
+
+@item abort
+This is a pretty useless command. By default, it is bound to
+@kbd{C-t g}, and its purpose is to abort other commands.
+
+@item center
+If you want to center a window, this is the command to use. This
+is not bound to any key by default.
+
+@item clock
 Show current time. Disappears after 5 seconds, like all other info bars.
+In the default setup, the @kbd{C-t a} keystroke is bound to this command.
 
-@item C-t C-A
+@item delete
+This deletes the current window. You can access it with the @kbd{C-t k}
+keystroke.
+
+@item exec @var{command}
+Execute a shell command. By default, @kbd{C-t !} does this.
+
+@item kill
+This destroys the current window. Normally you should only need to
+use @command{delete}, but just incase you need to rip the heart out of a
+misbehaving window this command should do the trick. Also available as
+@kbd{C-t K}.
+
+@item maximize
+Maximize the current window, just like @kbd{C-t m} would do.
+
+@item next
+This jumps you to the next window in the window list. This one is
+bound to three keystrokes, namely @kbd{C-t n}, @kbd{C-t space},
+and @kbd{C-t enter}.
+
+@item newwm @var{window-manager}
+This is a bad-bad command. It kills ratpoison and revives that
+ugly rodden! Yuck! Avoid!
+
+@item number @var{n}
+This jumps you to window @var{n} where @var{n} is the window number as
+shown in the Program Bar. You can do the same trick with
+@command{C-@var{n}} too.
+
+@item other
+This toggles between the current window and the last window. By
+default, this is bound to @kbd{C-t C-t}.
+
+@item prev
+This jumps you to the previous window in the window list. By default,
+this is bound to @kbd{C-t p}.
+
+@item resize @var{horizontal} x @var{vertical}
+Resizes the current window to the given size.
+
+@item select @var{window-name}
+Go to a window by name. A shourcut is @var{C-t '}.
+
+@item title @var{title}
 Rename the currently active window. This name will remain for the
-duration of the window's life.
+duration of the window's life, unless you change it again. By default,
+the @kbd{C-t A} keystroke is bound to this command.
 
-@item C-t C-'
-Go to a window by name.
+@item version
+Print ratpoison version. @kbd{C-t v}! @kbd{C-t v}!
+
+@item windows
+This displays the Program Bar which displays the windows you currently
+have running. The number before each window name is used to jump to that
+window. You can do this by typing @kbd{C-t C-@var{n}} where @var{n} is the
+number of the window. Note that only windows with numbers from 0 to 9
+can be referenced.
+
+After 5 seconds the Program Bar disappears.
+
+This command is bound to @kbd{C-t w}.
 
 @end table
 
 @bye
-
