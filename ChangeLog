@@ -1,5 +1,7 @@
 2001-03-02  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* configure.in: adds -g to CFLAGS when debugging is turned on.
+
 	* doc/Makefile.am (EXTRA_DIST): man page comes with the distro.
 
 	* Makefile.am (SUBDIRS): removed man/
