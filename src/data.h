@@ -81,6 +81,11 @@ extern Atom wm_delete;
 extern Atom wm_take_focus;
 extern Atom wm_colormaps;
 
+/* mouse properties */
+extern int rat_x;
+extern int rat_y;
+extern int rat_visible;
+
 /* When unmapping or deleting windows, it is sometimes helpful to
    ignore a bad window when attempting to clean the window up. This
    does just that when set to 1 */

@@ -42,8 +42,10 @@ extern Atom wm_state;
 static void
 grab_prefix_key (Window w)
 {
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREFIX ), MODIFIER_PREFIX, w, True, 
+  XGrabKey(dpy, AnyKey, AnyModifier, w, True, 
 	   GrabModeAsync, GrabModeAsync);
+/*    XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREFIX ), MODIFIER_PREFIX, w, True,  */
+/*  	   GrabModeAsync, GrabModeAsync); */
 }
 
 char *
@@ -121,7 +123,7 @@ manage (rp_window *win, screen_info *s)
 		     PADDING_TOP, 
 		     s->root_attr.width - PADDING_LEFT - PADDING_RIGHT, 
 		     s->root_attr.height - PADDING_TOP - PADDING_BOTTOM);
-  XSelectInput (dpy, win->w, PropertyChangeMask);
+  XSelectInput (dpy, win->w, PropertyChangeMask | PointerMotionMask);
   XAddToSaveSet(dpy, win->w);
   grab_prefix_key (win->w);
 

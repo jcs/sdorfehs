@@ -32,6 +32,10 @@
 
 static void init_screen (screen_info *s, int screen_num);
 
+int rat_x;
+int rat_y;
+int rat_visible = 1;		/* rat is visible by default */
+
 Atom wm_state;
 Atom wm_change_state;
 Atom wm_protocols;

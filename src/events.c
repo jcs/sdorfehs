@@ -302,9 +302,26 @@ key_press (XEvent *ev)
 
   s = find_screen (ev->xkey.root);
 
-  if (s && ks == KEY_PREFIX && (modifier & MODIFIER_PREFIX))
+  if (rat_visible)
+    {
+      XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width, s->root_attr.height);
+/*        rat_visible = 0;  */
+    }
+
+  if (!s) return;
+
+  if (ks == KEY_PREFIX && (modifier & MODIFIER_PREFIX))
     {
       handle_key (s);
+    }
+  else
+    {
+      if (rp_current_window)
+	{
+	  ev->xkey.window = rp_current_window->w;
+	  XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, ev);
+	  XSync (dpy, False);
+	}
     }
 }
 
@@ -328,6 +345,19 @@ property_notify (XEvent *ev)
 	    }
 	}
     }
+}
+
+void
+rat_motion (XMotionEvent *ev)
+{
+  if (!rat_visible)
+    {
+      XWarpPointer (dpy, None, ev->root, 0, 0, 0, 0, rat_x, rat_y);
+      /*  rat_visible = 1; */
+    }
+
+  rat_x = ev->x_root;
+  rat_y = ev->y_root;
 }
 
 /* Given an event, call the correct function to handle it. */
@@ -398,7 +428,9 @@ delegate_event (XEvent *ev)
 
     case MotionNotify:
       PRINT_DEBUG ("MotionNotify\n");
+      rat_motion (&ev->xmotion);
       break;
+
     case Expose:
       PRINT_DEBUG ("Expose\n");
       break;
