@@ -44,17 +44,15 @@ the Makefile.
 Customization
 -------------
 
-By default, ratpoison is compiled using the rxvt terminal instead of
-the default xterm.  Reasons?  For me (roam@orbitel.bg), xterm did not
-want to start under FreeBSD's XFree86 4.0 port; besides, rxvt is WAY
-better in many respects.
+By default, ratpoison is compiled using xterm. This is because more
+users use xterm as opposed to alternative terms such as rxvt. 
 
 If you do want to use a different terminal program, edit conf.h and
 edit the line:
 
-#define TERM_PROG       "rxvt"	/* command to boot an xterm */
+#define TERM_PROG       "xterm"	/* command to boot an x term */
 
-to run you're favorite xterm.
+to run you're favorite X term.
 
 
 Using

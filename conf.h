@@ -28,8 +28,9 @@
 #define KEY_TOGGLEBAR   'w'	/* key to toggle the display of the program bar */
 #define KEY_DELETE      'k'	/* delete a window SHIFT+key will Destroy the window */
 #define KEY_WINBYNAME   '\''	/* key to jump to a window by name */
+#define KEY_RENAME      'a'	/* key to rename a window. */
 
-#define TERM_PROG       "rxvt"	/* command to boot an xterm */
+#define TERM_PROG       "xterm"	/* command to boot an x term */
 #define EMACS_PROG      "emacs"	/* command to boot emacs */
 
 #define BAR_FG_COLOR    "Gray60"
