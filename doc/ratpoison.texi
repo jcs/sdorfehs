@@ -844,10 +844,24 @@ There is also a top level key map, @samp{top}. Any keystroke in this key
 map can be accessed simply by pressing the key. This is where the prefix
 key resides.
 
+The following example adds a @kbd{C-x b} keybinding to switch windows,
+much like @kbd{C-x b} in Emacs. See the functions below for full
+descriptions.
+
+@example
+# Create the key map
+newkmap ctrl-x
+# Bind b to 'select' on our new key map
+definekey ctrl-x b select
+# Attach our keymap to the top level key map via C-x.
+definekey top C-x readkey ctrl-x
+@end example
+
 The following functions control creating, editing, and deleting key maps.
 
 @deffn Command newkmap @var{kmap}
-Create a new keymap named @var{kmap}.
+Create a new keymap named @var{kmap}. 
+
 @end deffn
 
 @deffn Command delkmap @var{kmap}
