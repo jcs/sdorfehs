@@ -1,3 +1,51 @@
+2003-07-16  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/window.c (set_active_window): run the switch window hook.
+
+	* src/split.c (set_active_frame): run the switch frame hook.
+
+	* src/ratpoison.h: include hook.h
+
+	* src/group.h (set_current_group): new prototype
+
+	* src/group.c (set_current_group): new function
+
+	* src/globals.h (rp_prefix_hook): new extern
+	(rp_switch_win_hook): likewise
+	(rp_switch_frame_hook): likewise
+	(rp_switch_group_hook): likewise
+	(rp_hook_db): likewise
+
+	* src/globals.c (rp_prefix_hook): new hook
+	(rp_switch_win_hook): likewise
+	(rp_switch_frame_hook): likewise
+	(rp_switch_group_hook): likewise
+	(rp_hook_db): new global
+
+	* src/events.c (handle_key): call the prefix hook.
+
+	* src/data.h (struct rp_hook_db_entry): new struct
+
+	* src/actions.h (cmd_addhook): new prototype
+	(cmd_remhook): likewise
+
+	* src/actions.c (user_commands): add commands addhook and remhook.
+	(cmd_windows): show the window bar no matter what if the bar
+	timeout is > 0.
+	(cmd_gnext): call set_current_group
+	(cmd_gprev): likewise
+	(cmd_gnew): likewise
+	(cmd_gselect): likewise
+	(cmd_addhook): new function
+	(cmd_remhook): likewise
+
+	* src/Makefile.am (ratpoison_SOURCES): add hook.c and hook.h
+
+2003-06-29  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/editor.c (editor_enter): return EDIT_ABORT when a history
+	expansion fails.
+
 2003-06-25  Shawn Betts  <sabetts@sfu.ca>
 
 	* contrib/rpws: only set RATPOISON if it's not already set.
