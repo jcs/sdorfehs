@@ -2,6 +2,7 @@
 
 	* src/main.c (init_screen): print the display string for
 	debugging.
+	(ratpoison_opts): fix -c option by adding a : after it.
 
 	* src/manage.c (current_screen): search for the current screen
 	using rp_current_screen.
