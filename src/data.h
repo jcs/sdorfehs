@@ -106,8 +106,9 @@ struct screen_info
 
   char *display_string;
 
-  /* A tree of frame splits. */
-  rp_split_tree *split_tree;
+  /* A list of frames that may or may not contain windows. There should
+     always be one in the list. */
+  struct list_head rp_window_frames;
 
   /* Keep track of which numbers have been given to frames. */
   struct numset *frames_numset;
@@ -116,21 +117,6 @@ struct screen_info
      when you switch screens the focus doesn't get frobbed. */
   rp_window_frame *rp_current_frame;
 };
-
-rp_split_tree
-{
-  /* The width and height of this node. */
-  int width, height;
-
-  /* The frame occupying this split. If this is a leaf node, then
-     frame will not be a pointer to an actual frame, otherwise it'll
-     be NULL. */
-  rp_window_frame *frame;
-
-  /* A list of rp_split_tree children. By convention this list is
-     always has 0 or 2 elements in it. */
-  struct list_head children;
-}
 
 struct rp_action
 {

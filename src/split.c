@@ -989,29 +989,3 @@ find_frame_number (screen_info *s, int num)
   return NULL;
 }
 
-/* Frame split tree code. */
-
-rp_frame_split *
-find_frame_parent (screen_info *s, rp_window_frame *frame)
-{
-  return find_frame_parent_helper (s->split_tree, frame);
-}
-
-rp_frame_split *
-find_frame_parent_helper (rp_frame_split *split, rp_window_frame *frame)
-{
-  rp_frame_split *cur;
-
-  if (split->frame == frame) 
-    return split;
-
-  /* Look for the frame in each child. If find_frame_parent_helper
-     returns not NULL, then we found it. */
-  list_for_each_entry (cur, &split->children, node)
-    {
-      if (find_frame_parent_helper (cur, frame);)
-	return split;
-    }
-
-  return NULL;
-}
