@@ -46,7 +46,7 @@
 				   and bottom of the message bar  */
 #define BAR_X_PADDING   0       /* The amount of padding on the left
 				   and right of the message bar  */
-#define BAR_LOCATION    0	/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
+#define BAR_LOCATION    3	/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
 #define BAR_TIMEOUT     5	/* Number of seconds before the progam bar autohides 0=don't autohide */
 
 #define PADDING_LEFT 	0	/* space not to be taken up around managed windows */
