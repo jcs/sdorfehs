@@ -1,14 +1,10 @@
-ratpoison NEWS --- history of user-visible changes.  -*- text -*-
-Copyright (C) 2000 Shawn Betts
-Permission is granted to anyone to make or distribute verbatim copies
-of this document as received, in any medium, provided that the
-copyright notice and this permission notice are preserved,
-thus giving the recipient permission to redistribute in turn.
+ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
-Permission is granted to distribute modified versions
-of this document, or of portions of it,
-under the above conditions, provided also that they
-carry prominent notices stating who last changed them.
+* Changes Since 0.0.3
+** Added --enable-debug
+This turns on debugging messages
+
+** Added --version and --help command line options
 
 
 * Changes Since 0.0.2
@@ -32,9 +28,3 @@ hit C-t C-a and a box will pop up asking you to rename the current
 window. Once it has been renamed, it will stay renamed.
 
 ** Bugs and Bug fixes
-
-
-Local variables:
-mode: outline
-paragraph-separate: "[  ^L]*$"
-end:
