@@ -161,6 +161,12 @@ update_input_window (screen_info *s, char *prompt, char *input, int input_len)
 char *
 get_input (char *prompt)
 {
+  return get_more_input (prompt, "");
+}
+
+char *
+get_more_input (char *prompt, char *preinput)
+{
   screen_info *s = current_screen ();
   int cur_len = 0;		/* Current length of the string. */
   int allocated_len=100; /* The amount of memory we allocated for str */
@@ -177,6 +183,10 @@ get_input (char *prompt)
       PRINT_ERROR ("Out of memory\n");
       exit (EXIT_FAILURE);
     }
+
+  /* load in the preinput */
+  strcpy (str, preinput);
+  cur_len = strlen (preinput);
 
   /* We don't want to draw overtop of the program bar. */
   hide_bar (s);

@@ -25,6 +25,7 @@
 char *keysym_to_string (KeySym keysym, unsigned int modifier);
 void cook_keycode (KeyCode keycode, KeySym *keysym, unsigned int *mod);
 char *get_input (char *prompt);
+char *get_more_input (char *prompt, char *preinput);
 void read_key (KeySym *keysym, unsigned int *mode);
 
 #endif /* ! _RATPOISON_INPUT_H */
