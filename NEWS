@@ -50,7 +50,7 @@ Shows the version of ratpoison
 ratpoison now outputs user error messages.
 
 ** Stability
-Some fixed length buffer sizes in window names that resulted in
+All fixed length buffer sizes in window names that resulted in
 curious segfaults have been fixed.
 
 
