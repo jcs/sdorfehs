@@ -66,9 +66,9 @@ cleanup_frame (rp_window_frame *frame)
   win = find_window_other ();
   if (win)
     {
-      if (frame->win->transient
-	  && find_window (win->transient_for) == frame->win)
+      if (is_transient_ancestor (frame->win, win))
 	{
+	  hide_transient_for_between (frame->win, win);
 	}
       else
 	{

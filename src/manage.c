@@ -523,9 +523,13 @@ void
 unhide_below_window (rp_window *win)
 {
   if (win == NULL) return;
+
+  /* Always lower the window, but if its not iconic we don't need to
+     map it since it already is mapped. */
+  XLowerWindow (dpy, win->w);
+
   if (win->state != IconicState) return;
 
-  XLowerWindow (dpy, win->w);
   XMapWindow (dpy, win->w);
   set_state (win, NormalState);
 }

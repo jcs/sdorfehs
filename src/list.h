@@ -37,6 +37,8 @@ void goto_window (rp_window *win);
 void set_current_window (rp_window *win);
 void unhide_transient_for (rp_window *win);
 void hide_transient_for (rp_window *win);
+void hide_transient_for_between (rp_window *win, rp_window *last);
+int is_transient_ancestor (rp_window *win, rp_window *transient_for);
 /* int goto_window_name (char *name); */
 rp_window *find_window_other ();
 rp_window *find_window_by_number (int n);

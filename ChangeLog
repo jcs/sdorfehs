@@ -1,3 +1,24 @@
+2001-08-18  Shawn  <sabetts@hotdog>
+
+	* src/split.c (split_frame): unhide transient_for windows as well
+	as the active window.
+	(remove_all_splits): hide transient_for windows as well as the
+	frame's active window.
+
+	* src/manage.c (unhide_below_window): always lower the window
+
+	* src/list.h (hide_transient_for_between): new prototype
+	(is_transient_ancestor): likewise
+
+	* src/list.c (hide_transient_for_between): new function
+	(hide_transient_for): calls hide_transient_for_between
+	(is_transient_ancestor): new function
+	(set_active_window): don't temporarily hide windows that the newly
+	active window is a transient for (removes unnecessary flicker).
+
+	* src/events.c (cleanup_frame): don't temporarily hide windows that the new
+	window is a transient for (removes unnecessary flicker).
+
 2001-08-07  Ryan Yeske  <rcyeske@vcn.bc.ca>
 
 	* doc/ratpoison.texi: Fix spelling and grammar.
