@@ -73,7 +73,9 @@ extern XGCValues gv;
 #include "screen.h"
 #include "group.h"
 #include "editor.h"
+#ifdef HAVE_READLINE_HISTORY_H
 #include "history.h"
+#endif /* HAVE_READLINE_HISTORY_H */
 #include "completions.h"
 #include "hook.h"
 

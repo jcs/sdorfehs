@@ -1,3 +1,30 @@
+2003-11-02  Thien-Thi Nguyen  <ttn@glug.org>
+	
+	* AUTHORS: Add self.
+ 
+ 	* configure.in: Add "--disable-history" handling.
+ 	Conditionalize libhistory checks accordingly.
+ 
+ 	* README: Mention "--disable history".
+ 
+ 	* src/history.c: Surround most of the code with
+ 	"#ifdef HAVE_READLINE_HISTORY_H".
+ 
+ 	* src/ratpoison.h: Only #include history.h when
+ 	"#ifdef HAVE_READLINE_HISTORY_H".
+ 
+ 	* src/main.c (main, clean_up): Only load and save history,
+ 	respectively, when "#ifdef HAVE_READLINE_HISTORY_H".
+ 
+ 	* src/editor.c (editor_history_previous, editor_history_next):
+ 	Return EDIT_NO_OP when not "#ifdef HAVE_READLINE_HISTORY_H".
+ 	(editor_enter): Do not do line expansion or history add
+ 	when not "#ifdef HAVE_READLINE_HISTORY_H".
+ 
+ 	* doc/ratpoison.texi: Mention that history cycling and
+ 	processing is not available when ratpoison is configured
+ 	with the "--disable-history" option.
+ 
 2003-11-01  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/input.c (cook_keycode): null terminate the string.

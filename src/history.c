@@ -3,6 +3,9 @@
 #include <string.h>
 
 #include "ratpoison.h"
+
+#ifdef HAVE_READLINE_HISTORY_H
+
 #include "readline/history.h"
 
 static char *
@@ -125,3 +128,5 @@ int history_expand_line (char *string, char **output)
 {
   return history_expand (string, output);
 }
+
+#endif /* HAVE_READLINE_HISTORY_H */

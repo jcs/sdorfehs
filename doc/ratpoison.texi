@@ -1177,11 +1177,15 @@ Yank the text from the X11 cut buffer.
 
 @item C-p
 @itemx up arrow
-Cycle backwards through the history.
+Cycle backwards through the history (This command does nothing if
+ratpoison was configured with the @code{--disable-history} configure
+option).
 
 @item C-n
 @itemx down arrow
-Cycle forwards through the history.
+Cycle forwards through the history (This command does nothing if
+ratpoison was configured with the @code{--disable-history} configure
+option).
 
 @item return
 submit the line of text.
@@ -1202,7 +1206,8 @@ backwards through the completions.
 All input is stored in the same history list. By default ratpoison has
 a history length of 100 entries. This history is saved to the file
 @file{~/.ratpoison_history} and is loaded when you start
-ratpoison. This means your history sticks between sessions.
+ratpoison. This means your history sticks between sessions. This
+assumes history has not been disabled on compilation.
 
 @node Command Line Arguments, Startup file, Input, Top
 @chapter Command Line Arguments

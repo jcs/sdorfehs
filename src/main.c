@@ -618,7 +618,9 @@ main (int argc, char *argv[])
   init_frame_lists ();
   update_modifier_map ();
   initialize_default_keybindings ();
+#ifdef HAVE_READLINE_HISTORY_H
   history_load ();
+#endif /* HAVE_READLINE_HISTORY_H */
 
   /* Scan for windows */
   if (screen_arg)
@@ -771,7 +773,9 @@ clean_up ()
 {
   int i;
 
+#ifdef HAVE_READLINE_HISTORY_H
   history_save ();
+#endif /* HAVE_READLINE_HISTORY_H */
 
   free_keymaps ();
   free_aliases ();
