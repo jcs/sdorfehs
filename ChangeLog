@@ -1,3 +1,19 @@
+2002-10-18  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/split.c (VERTICALLY): new define
+	(VERTICALLY): likewise
+	(split_frame): new argument 'pixels'. The current frame is split
+	and resized to 'pixels' pixels.
+	(v_split_frame): new argument 'pixels'. prototype updated.
+	(h_split_frame): likewise
+
+	* src/actions.c (user_commands): hsplit, vsplit, and split take a
+	string argument.
+	(read_split): new function
+	(cmd_h_split): takes a ratio or number to determine how big the
+	frame split will be.
+	(cmd_v_split): likewise
+
 2002-08-31  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_bind): malloc the correct amount of memory for keydesc 

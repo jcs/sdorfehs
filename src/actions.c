@@ -52,7 +52,7 @@ static user_command user_commands[] =
     {"meta",		cmd_meta,	arg_STRING},
     {"license",		cmd_license,	arg_VOID},
     {"help",		cmd_help,	arg_VOID},
-    {"hsplit",		cmd_h_split,	arg_VOID},
+    {"hsplit",		cmd_h_split,	arg_STRING},
     {"kill", 		cmd_kill, 	arg_VOID},
     {"redisplay", 	cmd_redisplay,	arg_VOID},
     {"newwm",		cmd_newwm,	arg_STRING},
@@ -67,11 +67,11 @@ static user_command user_commands[] =
     {"rudeness",	cmd_rudeness,	arg_STRING},
     {"select", 		cmd_select,	arg_STRING},
     {"source",		cmd_source,	arg_STRING},
-    {"split",		cmd_h_split,	arg_VOID},
+    {"split",		cmd_h_split,	arg_STRING},
     {"title", 		cmd_rename, 	arg_STRING},
     {"unbind",		cmd_unbind,	arg_STRING},
     {"version",		cmd_version,	arg_VOID},
-    {"vsplit",		cmd_v_split,	arg_VOID},
+    {"vsplit",		cmd_v_split,	arg_STRING},
     {"windows", 	cmd_windows, 	arg_VOID},
     {"setenv",		cmd_setenv,	arg_STRING},
     {"getenv",		cmd_getenv,	arg_STRING},
@@ -1263,17 +1263,62 @@ cmd_echo (int interactive, void *data)
   return NULL;
 }
 
+static int
+read_split (const char *str, int max)
+{
+  int a, b, p;
+
+  if (sscanf(str, "%d/%d", &a, &b) == 2)
+    {
+      p = (int)(max * (float)(a) / (float)(b));
+    }
+  else if (sscanf(str, "%d", &p) == 1)
+    {   
+    }
+  else
+    {
+      /* Failed to read input. */
+      p = -1;
+    }
+
+  /* Input out of range. */
+  if (p <= 0 || p >= max)
+    return -1;
+
+  return p;
+}
+
 char *
 cmd_h_split (int interactive, void *data)
 {
-  h_split_frame (current_screen()->rp_current_frame);
+  int pixels;
+
+  /* Default to dividing the frame in half. */
+  if (data == NULL)
+    pixels = current_screen()->rp_current_frame->height / 2;
+  else
+    pixels = read_split (data, current_screen()->rp_current_frame->height);
+
+  if (pixels > 0)
+    h_split_frame (current_screen()->rp_current_frame, pixels);
+
   return NULL;
 }
 
 char *
 cmd_v_split (int interactive, void *data)
 {
-  v_split_frame (current_screen()->rp_current_frame);
+  int pixels;
+
+  /* Default to dividing the frame in half. */
+  if (data == NULL)
+    pixels = current_screen()->rp_current_frame->width / 2;
+  else
+    pixels = read_split (data, current_screen()->rp_current_frame->width);
+
+  if (pixels > 0)
+    v_split_frame (current_screen()->rp_current_frame, pixels);
+
   return NULL;
 }
 

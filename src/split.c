@@ -26,6 +26,9 @@
 
 #include "ratpoison.h"
 
+#define VERTICALLY 0
+#define HORIZONTALLY 1
+
 static void
 update_last_access (rp_window_frame *frame)
 {
@@ -272,7 +275,7 @@ find_window_for_frame (rp_window_frame *frame)
 /* Splits the frame in 2. if way is 0 then split vertically otherwise
    split it horizontally. */
 static void
-split_frame (rp_window_frame *frame, int way)
+split_frame (rp_window_frame *frame, int way, int pixels)
 {
   screen_info *s;
   rp_window *win;
@@ -294,23 +297,23 @@ split_frame (rp_window_frame *frame, int way)
 
   set_frames_window (new_frame, NULL);
 
-  if (way)
+  if (way == HORIZONTALLY)
     {
       new_frame->x = frame->x;
-      new_frame->y = frame->y + frame->height / 2;
+      new_frame->y = frame->y + pixels;
       new_frame->width = frame->width;
-      new_frame->height = frame->height / 2 + frame->height % 2;
+      new_frame->height = frame->height - pixels;
 
-      frame->height /= 2;
+      frame->height = pixels;
     }
   else
     {
-      new_frame->x = frame->x + frame->width / 2;
+      new_frame->x = frame->x + pixels;
       new_frame->y = frame->y;
-      new_frame->width = frame->width / 2 + frame->width % 2;
+      new_frame->width = frame->width - pixels;
       new_frame->height = frame->height;
 
-      frame->width /= 2;
+      frame->width = pixels;
     }
 
   win = find_window_for_frame (new_frame);
@@ -341,18 +344,20 @@ split_frame (rp_window_frame *frame, int way)
   show_frame_indicator();
 }
 
-/* Splits the window vertically in 2. */
+/* Splits the window vertically leaving the original with 'pixels'
+   pixels . */
 void
-v_split_frame (rp_window_frame *frame)
+v_split_frame (rp_window_frame *frame, int pixels)
 {
-  split_frame (frame, 0);
+  split_frame (frame, VERTICALLY, pixels);
 }
 
-/* Splits the window horizontally in 2. */
+/* Splits the frame horizontally leaving the original with 'pixels'
+   pixels . */
 void
-h_split_frame (rp_window_frame *frame)
+h_split_frame (rp_window_frame *frame, int pixels)
 {
-  split_frame (frame, 1);
+  split_frame (frame, HORIZONTALLY, pixels);
 }
 
 void

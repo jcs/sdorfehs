@@ -24,8 +24,8 @@
 
 rp_window *set_frames_window (rp_window_frame *frame, rp_window *win);
 void maximize_all_windows_in_frame (rp_window_frame *frame);
-void h_split_frame (rp_window_frame *frame);
-void v_split_frame (rp_window_frame *frame);
+void h_split_frame (rp_window_frame *frame, int pixels);
+void v_split_frame (rp_window_frame *frame, int pixels);
 void remove_all_splits ();
 void remove_frame (rp_window_frame *frame);
 rp_window *find_window_for_frame (rp_window_frame *frame);
