@@ -1,5 +1,8 @@
 2002-02-02  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/events.c (handle_signals): only hide the bar if it times
+	out.
+
 	* src/bar.c (marked_message): Fix text marking bug.
 
 2002-02-01  Shawn Betts  <sabetts@vcn.bc.ca>

@@ -810,10 +810,11 @@ handle_signals ()
 
       PRINT_DEBUG ("Alarm recieved.\n");
 
-      for (i=0; i<num_screens; i++)
-	{
+      /* Only hide the bar if it times out. */
+      if (defaults.bar_timeout > 0)
+	for (i=0; i<num_screens; i++)
 	  hide_bar (&screens[i]);
-	}
+
       hide_frame_indicator();
       alarm_signalled = 0;
     }
