@@ -35,6 +35,8 @@
 #include <config.h>
 #endif
 
+#include <strings.h>
+
 #ifndef HAVE_GETOPT_LONG
 
 #if !defined (__STDC__) || !__STDC__

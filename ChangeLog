@@ -1,3 +1,12 @@
+2002-04-25  Gergely Nagy  <algernon@debian.org>
+
+	* src/actions.c: include <strings.h>
+	include setenv implementation if HAVE_SETENV is not set,
+	OR setenv is not defined (removes a compiler warning on
+	AIX)
+	* src/events.c: include <strings.h>
+	* src/getopt.c: include <strings.h>
+
 2002-03-13  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_nextscreen): An error message is displayed
