@@ -338,9 +338,15 @@ configure_request (XConfigureRequestEvent *e)
 
       if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
 	{
+	  /* Ignore the configure notify event caused by the geometry
+	     change if the window is not mapped. */
+	  if (win->state != NormalState)
+	    XSelectInput (dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
 	  XConfigureWindow (dpy, win->w, 
 			    e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
 			    &changes);
+	  if (win->state != NormalState)
+	    XSelectInput (dpy, win->w, WIN_EVENTS);
 	}
     }
   else
