@@ -11,6 +11,10 @@ Rather than error out, now, ratpoison will just be built without history.
 
 ** new commands ratwarp, ratrelwarp, and ratclick
 
+** more new commands
+inext, iprev, iother, cnext, cprev, cother, prompt, dedicate,
+describekey, focusprev, sdump, sfdump.
+
 * Changes since 1.3.0-rc2-beta2
 ** new format option %f
 This options displays the frame number the window is in or a space if
