@@ -3204,6 +3204,10 @@ cmd_gselect (int interactive, char *data)
   else
     str = xstrdup (data);
 
+  /* User aborted. */
+  if (str == NULL)
+    return NULL;
+
   g = find_group (str);
 
   if (g)

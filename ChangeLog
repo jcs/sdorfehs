@@ -2,6 +2,7 @@
 
 	* src/actions.c (cmd_gmerge): show a message if the group
 	specified by the user could not be found.
+	(cmd_gselect): if the user didn't type anything then return.
 
 	* src/window.c: do not include ctype.h
 
