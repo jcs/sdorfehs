@@ -516,7 +516,7 @@ resize_frame_horizontally (rp_window_frame *frame, int diff)
     {
       resize_frame_right (frame, NULL, diff);
     }
-  else
+  else if (frame_left (frame) > defaults.padding_left)
     {
       resize_frame_left (frame, NULL, diff);
     }
@@ -536,7 +536,7 @@ resize_frame_vertically (rp_window_frame *frame, int diff)
     {
       resize_frame_bottom (frame, NULL, diff);
     }
-  else
+  else if (frame_left (frame) > defaults.padding_top)
     {
       resize_frame_top (frame, NULL, diff);
     }
