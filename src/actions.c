@@ -2372,6 +2372,7 @@ cmd_exec (int interactive, struct cmdarg **args)
 int
 spawn(char *cmd)
 {
+  char *tmp;
   rp_child_info *child;
   int pid;
 
@@ -2389,7 +2390,9 @@ spawn(char *cmd)
 #elif defined (HAVE_SETPGRP)
       setpgrp (0, 0);
 #endif
-      execl("/bin/sh", "sh", "-c", cmd, 0);
+      /* Prepend with exec to avoid excess /bin/sh's. */
+      tmp = xsprintf ("exec %s", cmd);
+      execl("/bin/sh", "sh", "-c", tmp, 0);
       _exit(EXIT_FAILURE);
     }
 
