@@ -1,6 +1,12 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.1.1
+** new comand 'defwrapwinlist'
+when turned on, the window list is displayed in a column, not a row.
+
+** new command 'verbexec'
+prints a message when executing a shell command
+
 ** new commands 'fdump' and 'frestore'
 These commands are for saving and restoring frame sets.
 
