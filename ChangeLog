@@ -1,3 +1,8 @@
+2005-01-04  Ryan Yeske  <rcyeske@gmail.com>
+
+	* src/actions.c (cmd_rudeness): Print rudeness to bar when called
+	interactively.
+
 2005-01-03  Ryan Yeske  <rcyeske@gmail.com>
 
 	* src/main.c (print_help): Update mailing list.

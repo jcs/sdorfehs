@@ -2321,17 +2321,19 @@ cmd_rudeness (int interactive, char *data)
 {
   int num;
 
-  if (data == NULL && !interactive)
-    return xsprintf ("%d", 
-		     rp_honour_transient_raise
-		     | (rp_honour_normal_raise << 1)
-		     | (rp_honour_transient_map << 2)
-		     | (rp_honour_normal_map << 3));
-		     
   if (data == NULL)
     {
-      message ("rudeness: one argument required");
-      return NULL;
+      num = rp_honour_transient_raise
+        | (rp_honour_normal_raise << 1)
+        | (rp_honour_transient_map << 2)
+        | (rp_honour_normal_map << 3);
+      if (interactive)
+        {
+          marked_message_printf (0, 0, "%d", num);
+          return NULL;
+        }
+      else
+        return xsprintf ("%d", num);
     }
 
   if (sscanf (data, "%d", &num) < 1 || num < 0 || num > 15)
