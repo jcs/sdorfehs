@@ -136,7 +136,7 @@ get_input (screen_info *s, char *prompt, char *str, int len)
   int revert;
   Window fwin;
   int prompt_width = XTextWidth (s->font, prompt, strlen (prompt));
-  int width = 100 + prompt_width;
+  int width = 200 + prompt_width;
 
   /* We don't want to draw overtop of the program bar. */
   hide_bar (s);
@@ -149,7 +149,7 @@ get_input (screen_info *s, char *prompt, char *str, int len)
   XRaiseWindow (dpy, s->input_window);
 
   /* draw the window prompt. */
-  XDrawString (dpy, s->input_window, s->bold_gc, BAR_X_PADDING, 
+  XDrawString (dpy, s->input_window, s->normal_gc, BAR_X_PADDING, 
 	       BAR_Y_PADDING + s->font->max_bounds.ascent, prompt, 
 	       strlen (prompt));
 
@@ -167,10 +167,10 @@ get_input (screen_info *s, char *prompt, char *str, int len)
 	{
 	  if (cur_len > 0) cur_len--;
 	  XClearWindow (dpy, s->input_window);
-	  XDrawString (dpy, s->input_window, s->bold_gc, BAR_X_PADDING, 
+	  XDrawString (dpy, s->input_window, s->normal_gc, BAR_X_PADDING, 
 		       BAR_Y_PADDING + s->font->max_bounds.ascent, prompt, 
 		       strlen (prompt));
-	  XDrawString (dpy, s->input_window, s->bold_gc, 
+	  XDrawString (dpy, s->input_window, s->normal_gc, 
 		       BAR_X_PADDING + prompt_width,
 		       BAR_Y_PADDING + s->font->max_bounds.ascent, str, 
 		       cur_len);
@@ -180,7 +180,7 @@ get_input (screen_info *s, char *prompt, char *str, int len)
 	  str[cur_len] = ch;
 	  if (cur_len < len - 1) cur_len++;
 
-	  XDrawString (dpy, s->input_window, s->bold_gc, 
+	  XDrawString (dpy, s->input_window, s->normal_gc, 
 		       BAR_X_PADDING + prompt_width,
 		       BAR_Y_PADDING + s->font->max_bounds.ascent, str, cur_len);
 	}

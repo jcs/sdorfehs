@@ -57,6 +57,8 @@ static XFontStruct *font;
 
 char **myargv;
 
+XGCValues gv;
+
 /* Command line options */
 static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
 					      {"version", no_argument, 0, 'v'},
@@ -285,8 +287,7 @@ main (int argc, char *argv[])
 static void
 init_screen (screen_info *s, int screen_num)
 {
-  XColor fg_color, bg_color, bold_color, junk;
-  XGCValues gv;
+  XColor fg_color, bg_color,/*  bold_color, */ junk;
 
   s->screen_num = screen_num;
   s->root = RootWindow (dpy, screen_num);
@@ -305,10 +306,10 @@ init_screen (screen_info *s, int screen_num)
       fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_BG_COLOR);
     }
 
-  if (!XAllocNamedColor (dpy, s->def_cmap, BAR_BOLD_COLOR, &bold_color, &junk))
-    {
-      fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_BOLD_COLOR);
-    }
+/*   if (!XAllocNamedColor (dpy, s->def_cmap, BAR_BOLD_COLOR, &bold_color, &junk)) */
+/*     { */
+/*       fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_BOLD_COLOR); */
+/*     } */
 
   /* Setup the GC for drawing the font. */
   gv.foreground = fg_color.pixel;
@@ -321,11 +322,11 @@ init_screen (screen_info *s, int screen_num)
 			   GCForeground | GCBackground | GCFunction 
 			   | GCLineWidth | GCSubwindowMode | GCFont, 
 			   &gv);
-  gv.foreground = bold_color.pixel;
-  s->bold_gc = XCreateGC(dpy, s->root, 
-			 GCForeground | GCBackground | GCFunction 
-			 | GCLineWidth | GCSubwindowMode | GCFont, 
-			 &gv);
+/*   gv.foreground = bold_color.pixel; */
+/*   s->bold_gc = XCreateGC(dpy, s->root,  */
+/* 			 GCForeground | GCBackground | GCFunction  */
+/* 			 | GCLineWidth | GCSubwindowMode | GCFont,  */
+/* 			 &gv); */
 
   XSelectInput(dpy, s->root,
                PropertyChangeMask | ColormapChangeMask
