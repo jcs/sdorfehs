@@ -102,8 +102,6 @@ ws_bindings ()
     rp_call bind M-7 exec $0 7
 }
 
-echo boom >/tmp/boom
-
 if [ -z $@ ]; then
     echo "Usage:"
     echo "$0 -i      -- initialize the workspaces"

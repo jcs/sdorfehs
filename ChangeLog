@@ -1,3 +1,7 @@
+2004-10-29  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* contrib/rpws: remove the echo /tmp/boom line.
+
 2004-10-28  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/actions.c (set_padding): fix the padding order in xsprintf.
