@@ -70,6 +70,8 @@ extern  rp_window *rp_current_window;
 extern screen_info *screens;
 extern int num_screens;
 
+extern XEvent *rp_current_event;
+
 extern Display *dpy;
 extern Atom rp_restart;
 extern Atom rp_kill;

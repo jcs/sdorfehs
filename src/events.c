@@ -27,7 +27,9 @@
 
 #include "ratpoison.h"
 
-extern Display *dpy;
+/* The event currently being processed. Mostly used in functions from
+   action.c which need to forward events to other windows. */
+XEvent *rp_current_event;
 
 void
 new_window (XCreateWindowEvent *e)
@@ -241,7 +243,7 @@ handle_key (screen_info *s)
   int revert;
   Window fwin;
   XEvent ev;
-  int keysym;
+  int keysym, mod;
 
   PRINT_DEBUG ("handling key.\n");
 
@@ -255,42 +257,38 @@ handle_key (screen_info *s)
     {  
       XMaskEvent (dpy, KeyPressMask, &ev);
       keysym = XLookupKeysym((XKeyEvent *) &ev, 0);
-    } while (keysym == XK_Shift_L      
-	     || keysym == XK_Shift_R      
-	     || keysym == XK_Control_L    
-	     || keysym == XK_Control_R    
-	     || keysym == XK_Caps_Lock    
-	     || keysym == XK_Shift_Lock   
-	     || keysym == XK_Meta_L       
-	     || keysym == XK_Meta_R       
-	     || keysym == XK_Alt_L        
-	     || keysym == XK_Alt_R        
-	     || keysym == XK_Super_L      
-	     || keysym == XK_Super_R      
-	     || keysym == XK_Hyper_L      
-	     || keysym == XK_Hyper_R); /* ignore modifier keypresses. */
+      mod = ev.xkey.state;
+
+      for (i = key_actions; i->key != 0; i++)
+	{
+	  if (keysym == i->key)
+	    if (i->state == -1 || mod == i->state)
+	      {
+		(*i->func)(i->data);
+		goto handled_key;
+	      }
+	}
+    }
+  while (1);
+
+ handled_key:
+
+/*     } while (keysym == XK_Shift_L */
+/* 	     || keysym == XK_Shift_R */
+/* 	     || keysym == XK_Control_L */
+/* 	     || keysym == XK_Control_R */
+/* 	     || keysym == XK_Caps_Lock */
+/* 	     || keysym == XK_Shift_Lock */
+/* 	     || keysym == XK_Meta_L */
+/* 	     || keysym == XK_Meta_R */
+/* 	     || keysym == XK_Alt_L */
+/* 	     || keysym == XK_Alt_R */
+/* 	     || keysym == XK_Super_L */
+/* 	     || keysym == XK_Super_R */
+/* 	     || keysym == XK_Hyper_L */
+/* 	     || keysym == XK_Hyper_R); /\* ignore modifier keypresses. *\/ */
 
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
-
-  if (keysym == KEY_PREFIX && !ev.xkey.state)
-    {
-      /* Generate the prefix keystroke for the app */
-      ev.xkey.window = fwin;
-      ev.xkey.state = MODIFIER_PREFIX;
-      XSendEvent (dpy, fwin, False, KeyPressMask, &ev);
-      XSync (dpy, False);
-      return;
-    }
-
-  for (i = key_actions; i->key != 0; i++)
-    {
-      if (keysym == i->key)
-	if (i->state == -1 || ev.xkey.state == i->state)
-	  {
-	    (*i->func)(i->data);
-	    break;
-	  }
-    }
 }
 
 void
@@ -443,6 +441,7 @@ handle_events ()
   for (;;) 
     {
       XNextEvent (dpy, &ev);
+      rp_current_event = &ev;
       delegate_event (&ev);
     }
 }

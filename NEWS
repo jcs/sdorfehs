@@ -5,6 +5,10 @@ ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 These command line options allow the restarting and killing of a
 running ratpoison process.
 
+** Mouse jumps to the bottom of the screen on keypresses
+This is pretty annoying if you're using anything other than keyboard
+apps. It is disabled by default.
+
 * Changes Since 0.0.3
 ** Added --enable-debug
 This turns on debugging messages

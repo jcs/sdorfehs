@@ -7,7 +7,8 @@
 #include "ratpoison.h"
 
 /* Initialization of the key structure */
-rp_action key_actions[] = { {'c', -1, "xterm", spawn},
+rp_action key_actions[] = { {KEY_PREFIX, 0, 0, generate_prefix},
+                            {'c', -1, "xterm", spawn},
 			    {'e', -1, "emacs", spawn},
 			    {'p', -1, 0, prev_window},
 			    {'n', -1, 0, next_window},
@@ -18,6 +19,7 @@ rp_action key_actions[] = { {'c', -1, "xterm", spawn},
 			    {'k', 0, 0, delete_window},
 			    {'\'', -1, 0, goto_win_by_name},
 			    {'a', -1, 0, rename_current_window},
+			    {'g', ControlMask, 0, abort_keypress},
 			    {'0', -1, 0, goto_window_0},
 			    {'1', -1, 0, goto_window_1},
 			    {'2', -1, 0, goto_window_2},
@@ -255,4 +257,23 @@ toggle_bar (void *data)
       s = rp_current_window->scr;
       if (!hide_bar (s)) show_bar (s);
     }
+}
+
+
+void
+abort_keypress (void *data)
+{
+}  
+
+/* Send the current window the prefix key event */
+void
+generate_prefix (void *data)
+{
+  XEvent ev;
+  ev = *rp_current_event;
+
+  ev.xkey.window = rp_current_window->w;
+  ev.xkey.state = MODIFIER_PREFIX;
+  XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev);
+  XSync (dpy, False);
 }

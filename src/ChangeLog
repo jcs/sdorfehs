@@ -1,3 +1,14 @@
+2000-11-27  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* events.c (handle_key): Code to generate the prefix event has
+	been moved to generate_prefix().
+
+	* actions.h (toggle_bar): added prefixes for generate_prefix, and
+	abort_keypress.
+
+	* actions.c (generate_prefix): added.
+	(abort_keypress): added.
+
 2000-11-04  Ryan Yeske  <rcyeske@vcn.bc.ca>
 
 	* Makefile.am (ratpoison_SOURCES): added getopt.c, getopt1.c and

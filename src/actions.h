@@ -1,6 +1,8 @@
 /* actions.h -- prototypes of all actions that can be performed with
    keystrokes */
 
+void generate_prefix (void *data);
+void abort_keypress (void *data);
 void goto_window_9 (void *data);
 void goto_window_8 (void *data);
 void goto_window_7 (void *data);
