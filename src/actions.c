@@ -817,20 +817,18 @@ cmd_echo (void *data)
 void
 cmd_h_split (void *data)
 {
-  h_split_frame (find_windows_frame (current_window()));
+  h_split_frame (rp_current_frame);
 }
 
 void
 cmd_v_split (void *data)
 {
-  v_split_frame (find_windows_frame (current_window()));
+  v_split_frame (rp_current_frame);
 }
 
 void
 cmd_only (void *data)
 {
-  if (!current_window()) return;
-
   remove_all_splits();
   maximize (current_window());
 }

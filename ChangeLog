@@ -1,5 +1,16 @@
 2001-04-06  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/split.c (remove_all_splits): only maximize the current
+	window if there is one.
+	(maximize_frame): remove unused code to retrieve the current
+	screen_info.
+
+	* src/actions.c (cmd_h_split): calls h_split_frame on the current
+	frame.
+	(cmd_v_split): likewise
+	(cmd_only): even if the current frame is empty, call
+	remove_all_splits.
+
 	* src/split.c (maximize_frame): new function
 	(create_initial_frame): calls maximize_frame to fill in the
 	initial frame's fields.

@@ -37,9 +37,6 @@ delete_frame_from_list (rp_window_frame *frame)
 static void
 maximize_frame (rp_window_frame *frame)
 {
-  screen_info *s;
-  s = current_screen();
-
   frame->x = PADDING_LEFT;
   frame->y = PADDING_TOP;
 
@@ -280,8 +277,11 @@ remove_all_splits ()
   create_initial_frame ();
   rp_current_frame->win = cur_window;
 
-  maximize (cur_window);
-  XRaiseWindow (dpy, cur_window->w);
+  if (cur_window)
+    {
+      maximize (cur_window);
+      XRaiseWindow (dpy, cur_window->w);
+    }
 }
 
 static int
