@@ -1,3 +1,13 @@
+2001-08-26  Shawn  <sabetts@hotdog>
+
+	* src/split.c (num_frames): uncomment.
+	(set_active_frame): only show the frame indicator if, in addition,
+	there are more than 1 frames.
+	(set_active_frame): give the root window focus if there is no
+	current window.
+	(blank_frame): only show the frame indicator if, in addition,
+	there are more than 1 frames.
+
 2001-08-24  Shawn  <sabetts@hotdog>
 
 	* src/input.c (get_more_input): detect and handle a user abort key

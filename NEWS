@@ -2,6 +2,10 @@ ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 0.1.1
 
+** The frame indicator
+The frame indicator only appears when the current frame is blank and
+there is more than one frame (ie when there are splits).
+
 ** Transient window handling has changed
 Transient windows now map ontop of the current window.
 

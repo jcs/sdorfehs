@@ -376,21 +376,21 @@ total_frame_area ()
   return area;
 }
 
-/* static int */
-/* num_frames () */
-/* { */
-/*   int count = 0; */
-/*   rp_window_frame *cur; */
+static int
+num_frames ()
+{
+ int count = 0;
+ rp_window_frame *cur;
 
-/*   for (cur = rp_window_frame_sentinel->next;  */
-/*        cur != rp_window_frame_sentinel;  */
-/*        cur = cur->next) */
-/*     { */
-/*       count++; */
-/*     } */
+ for (cur = rp_window_frame_sentinel->next; 
+      cur != rp_window_frame_sentinel; 
+      cur = cur->next)
+   {
+     count++;
+   }
 
-/*   return count; */
-/* } */
+ return count;
+}
 
 /* Return 1 if frames f1 and f2 overlap */
 static int
@@ -526,18 +526,18 @@ set_active_frame (rp_window_frame *frame)
   give_window_focus (frame->win, rp_current_frame->win);
   rp_current_frame = frame;
 
-  if (!frame->win || old != rp_current_frame) 
+  if ((!frame->win || old != rp_current_frame)
+      && num_frames() > 1) 
     {
       show_frame_indicator();
     }
 
-  /* If the frame has no window to give focus to, give the frame
-     indicator focus. */
+  /* If the frame has no window to give focus to, give the root window
+     focus. */
   if( !frame->win )
     {
-      XSetInputFocus (dpy, current_screen()->frame_window, 
-		  RevertToPointerRoot, CurrentTime);
-    }
+      XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+    }  
 }
 
 void
@@ -549,7 +549,7 @@ blank_frame (rp_window_frame *frame)
   hide_window (frame->win);
   set_frames_window (frame, NULL);
 
-  if (frame == rp_current_frame)
+  if (frame == rp_current_frame && num_frames() > 1)
     {
       show_frame_indicator();  
       XSetInputFocus (dpy, current_screen()->frame_window, 
@@ -561,7 +561,7 @@ void
 hide_frame_indicator ()
 {
   /* Only hide the frame indicator if a window occupies the frame */
-  if (rp_current_frame->win)
+  if (num_frames() <= 1 || rp_current_frame->win)
     {
       XUnmapWindow (dpy, current_screen()->frame_window);
     }
