@@ -1315,11 +1315,11 @@ cmd_number (int interactive, char *data)
 	}
       else
 	{
-	  numset_release (rp_window_numset, win->number);
+	  numset_release (rp_current_group->numset, win->number);
 	}
 
       win->number = new_number;
-      numset_add_num (rp_window_numset, new_number);
+      numset_add_num (rp_current_group->numset, new_number);
 
       /* resort the the window in the list */
       group_resort_window (rp_current_group, win);
