@@ -8,6 +8,7 @@
 # * Emacs Lisp  (ratpoison-cmd.el)   Ryan Yeske <rcyeske@sfu.ca>
 # * Ruby        (ratpoison.rb)       Doug Kearns <djkea2@mugc.its.monash.edu.au>
 # * Common Lisp (ratpoison.lisp)     Shawn Betts <sabetts@vcn.bc.ca>
+# * Python      (ratpoison.py)       Mike O'Connor <stew@vireo.org>
 # add more languages!
 #
 # Bindings are just very thin wrappers, no argument checking is done.
@@ -30,6 +31,10 @@
 # ;;; Common Lisp
 # (load "ratpoison.lisp")
 # (ratpoison:rp-echo "hello world")
+#
+# #!python
+# import ratpoison
+# ratpoison.echo( "hello world" )
 
 $\="\n";
 
@@ -45,10 +50,12 @@ $PERL_FILE="./Ratpoison.pm";
 $ELISP_FILE="./ratpoison-cmd.el";
 $RUBY_FILE="./ratpoison.rb";
 $COMMONLISP_FILE="./ratpoison.lisp";
+$PYTHON_FILE="./ratpoison.py";
 open PERL, ">$PERL_FILE" or die "Can't create $PERL_FILE";
 open ELISP, ">$ELISP_FILE" or die "Can't create $ELISP_FILE";
 open RUBY, ">$RUBY_FILE" or die "Can't create $RUBY_FILE";
 open COMMONLISP, ">$COMMONLISP_FILE" or die "Can't create $COMMONLISP_FILE";
+open PYTHON, ">$PYTHON_FILE" or die "Can't create $PYTHON_FILE";
 
 # PERL preamble
 print PERL 'package Ratpoison;';
@@ -130,6 +137,19 @@ print COMMONLISP <<PREAMBLE;
 	((null line) accum)))))
 PREAMBLE
 
+# python preamble
+
+print PYTHON <<PREAMBLE;
+import os
+ratpoison="ratpoison -c "
+def rp_command( *args ):
+    p = os.popen( ratpoison + '"' + (' '.join(  args  ) ) + '"', 'r' )
+    r = p.readlines();
+    p.close();
+    return r 
+
+PREAMBLE
+
 # bindings
 while (<ACTIONS_C>) {
     if (m!/\*\@begin !) {
@@ -154,6 +174,7 @@ while (<ACTIONS_C>) {
 	      print RUBY "    return command (\"$name\", args)";
 	      print RUBY "  end";
 	      print RUBY "  module_function :$name\n";
+	      print PYTHON "def rp_$name( *args ): return rp_command ( '$name ' +  ' '.join( args ) )";
 	    }
 	}
     }
@@ -169,6 +190,9 @@ print ELISP '(provide \'ratpoison-cmd)';
 # RUBY postamble
 print RUBY "end";
 
+# PYTHON postamble
+# nothing
+
 close PERL;
 print "Created $PERL_FILE";
 close ELISP;
@@ -177,3 +201,5 @@ close RUBY;
 print "Created $RUBY_FILE";
 close COMMONLISP;
 print "Created $COMMONLISP_FILE";
+close PYTHON;
+print "Created $PYTHON_FILE";
