@@ -1,5 +1,7 @@
 2003-05-27  Shawn Betts  <sabetts@sfu.ca>
 
+	* configure.in: add a check for libhistory.
+
 	* src/editor.c (saved_command): new local global
 	(edit_binding): new typedef
 	(edit_binding): new struct
