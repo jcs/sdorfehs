@@ -196,7 +196,7 @@ manage (rp_window *win, screen_info *s)
   win->state = STATE_MAPPED;
   win->number = get_unique_window_number ();
 
-  sort_window_list_by_number();
+/*   sort_window_list_by_number(); */
 
   PRINT_DEBUG ("window '%s' managed.\n", win->name);
 }
