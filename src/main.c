@@ -390,21 +390,21 @@ main (int argc, char *argv[])
     {
       send_kill ();
       XSync (dpy, False);
-      clean_up ();
+      XCloseDisplay (dpy);
       return EXIT_SUCCESS;
     }
   if (do_restart)
     {
       send_restart ();
       XSync (dpy, False);
-      clean_up ();
+      XCloseDisplay (dpy);
       return EXIT_SUCCESS;
     }
   if (do_command)
     {
       send_command (command);
       free (command);
-      clean_up();
+      XCloseDisplay (dpy);
       return EXIT_SUCCESS;
     }
 
