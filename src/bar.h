@@ -25,11 +25,12 @@
 void update_window_names (screen_info *s);
 int show_bar (screen_info *s);
 int hide_bar (screen_info *s);
-int bar_y (screen_info *s);
+int bar_y (screen_info *s, int height);
 int bar_x (screen_info *s, int width);
 
-#define message(msg) marked_message (msg, 0, 0)
+#define message(msg) marked_message ((msg), 0, 0)
 void marked_message (char *msg, int hl_start, int hl_end);
+void marked_wrapped_message (char *msg, int hl_start, int hl_end);
 void marked_message_printf (int mark_start, int mark_end, char *fmt, ...);
 void show_last_message ();
 void free_bar ();

@@ -95,7 +95,7 @@ static user_command user_commands[] =
     {"fselect",		cmd_fselect,	arg_VOID},
     {"fdump",		cmd_fdump,	arg_STRING},
     {"frestore",	cmd_frestore,	arg_STRING},
-    /*@end (tag required for genrpbindings) */
+    {"verbexec", 	cmd_verbexec, 	arg_STRING},
 
     /* Commands to set default behavior. */
     {"defbargravity",		cmd_defbargravity,	arg_STRING},
@@ -115,6 +115,8 @@ static user_command user_commands[] =
     {"defbgcolor",		cmd_defbgcolor,		arg_STRING},
     {"defbarpadding", 		cmd_defbarpadding, 	arg_STRING},
     {"defresizeunit", 		cmd_defresizeunit, 	arg_STRING},
+    {"defwrapwinlist",		cmd_defwrapwinlist,	arg_STRING},
+    /*@end (tag required for genrpbindings) */
 
     /* Commands to help debug ratpoison. */
 #ifdef DEBUG
@@ -3104,4 +3106,29 @@ cmd_frestore (int interactively, void *data)
 
   PRINT_DEBUG (("Done.\n"));
   return NULL;
+}
+
+char *
+cmd_verbexec (int interactive, void *data)
+{
+  char msg[100]="Running ";
+  strncat(msg, data, 100-strlen(msg));
+  
+  if(data) cmd_echo(interactive, msg);
+  return cmd_exec(interactive, data);
+}
+
+char *
+cmd_defwrapwinlist (int interactive, void *data)
+{
+  if (data == NULL && !interactive)
+    return xsprintf ("%d", defaults.wrap_window_list);
+
+  if (data == NULL
+      || sscanf (data, "%d", &defaults.wrap_window_list) < 1)
+    {
+      message (" defwrapwinlist: One argument required ");
+     }
+ 
+   return NULL;    
 }

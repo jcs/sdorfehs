@@ -665,8 +665,13 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
       if (delim && w->node.next != &rp_mapped_window)
 	sbuf_concat (buffer, delim);
 
-      if (w == current_window())
-	*mark_end = strlen (sbuf_get (buffer));
+      if (w == current_window()) {
+	if(!defaults.wrap_window_list){
+	  *mark_end = strlen (sbuf_get (buffer));
+	} else {
+	  *mark_end = strlen (sbuf_get(buffer)) - *mark_start;
+	}
+      }
     }
 
   if (!strcmp (sbuf_get (buffer), ""))

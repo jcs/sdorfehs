@@ -482,6 +482,7 @@ init_defaults ()
   defaults.win_name = 0;
   defaults.startup_message = 1;
   defaults.warp = 1;
+  defaults.wrap_window_list = 0;
 }
 
 int

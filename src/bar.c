@@ -107,7 +107,7 @@ bar_x (screen_info *s, int width)
 }
 
 int
-bar_y (screen_info *s)
+bar_y (screen_info *s, int height)
 {
   int y = 0;
 
@@ -121,13 +121,13 @@ bar_y (screen_info *s)
     case EastGravity:
     case CenterGravity:
     case WestGravity:
-      y = (s->root_attr.height - (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2) 
+      y = (s->root_attr.height - height 
 	   - defaults.bar_border_width * 2) / 2;
       break;
     case SouthEastGravity:
     case SouthGravity:
     case SouthWestGravity:
-      y = (s->root_attr.height - (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2)
+      y = (s->root_attr.height - height 
 	   - defaults.bar_border_width * 2);
       break;
     }
@@ -146,9 +146,19 @@ update_window_names (screen_info *s)
 
   bar_buffer = sbuf_new (0);
 
-  get_window_list (defaults.window_fmt, NULL, bar_buffer, &mark_start, &mark_end);
+  if(!defaults.wrap_window_list)
+    {
+      get_window_list (defaults.window_fmt, NULL, bar_buffer, &mark_start, &mark_end);
+      marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
+    }
+  else
+    {
+      get_window_list (defaults.window_fmt, "\n", bar_buffer, &mark_start, &mark_end);
+      marked_wrapped_message (sbuf_get (bar_buffer), mark_start, mark_end);
+    }
 
-  marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
+
+/*   marked_message (sbuf_get (bar_buffer), mark_start, mark_end); */
   sbuf_free (bar_buffer);
 }
 
@@ -165,6 +175,230 @@ marked_message_printf (int mark_start, int mark_end, char *fmt, ...)
   marked_message (buffer, mark_start, mark_end);
   free (buffer);
 }
+
+int
+count_lines (char* msg, int len)
+{
+  int ret=1;
+  int i=0;
+  for(; i<len; ++i) {
+    if(msg[i]=='\n') ret++;
+  }
+  PRINT_DEBUG(("count_lines: %d\n", ret));
+  return ret;
+}
+
+
+int
+max_line_length (char* msg)
+{
+  int ret=0;
+  int i=0;
+  int j=0;
+  int len=strlen(msg);
+  int current_width=0;
+  char tmp_buf[100];
+  
+  for(; i<=len; ++j, ++i) {
+    if(msg[i]=='\n' || msg[i]=='\0') {
+      tmp_buf[j]='\0';
+      current_width = XTextWidth (defaults.font, tmp_buf, strlen (tmp_buf));
+      if(current_width>ret) ret=current_width;
+      j=0;
+    }
+    else tmp_buf[j]=msg[i];
+  }
+  PRINT_DEBUG(("max_line_length: %d\n", ret));
+  return ret;
+}
+
+int
+pos_in_line (char* msg, int pos)
+{
+  int i=pos - 1;
+  int ret=0;
+  if(i>=0) {
+    for(; i<=pos && i>=0; ++ret, --i) if(msg[i]=='\n') break;
+  }
+  PRINT_DEBUG (("pos_in_line(\"%s\", %d) = %d\n", msg, pos, ret));
+  return ret;
+}
+
+int
+line_beginning (char* msg, int pos)
+{
+  int ret=0;
+  int i=pos-1;
+  if(i) {
+    for(; i>=0; --i) {
+      /*      PRINT_DEBUG("pos = %d, i = %d, msg[i] = '%c'\n", pos, i, msg[i]); */
+      if (msg[i]=='\n') {
+	ret=i+1;
+	break;
+      }
+    }
+  }
+  PRINT_DEBUG (("line_beginning(\"%s\", %d) = %d\n", msg, pos, ret));
+  return ret;
+
+}
+
+void
+marked_wrapped_message (char *msg, int mark_start, int mark_end)
+{
+  XGCValues lgv;
+  GC lgc;
+  unsigned long mask;
+  screen_info *s = current_screen ();
+  int i=0;
+  int j=0;
+  int num_lines;
+  int line_no=0;
+  char tmp_buf[100];
+
+
+
+  int width = defaults.bar_x_padding * 2 + max_line_length(msg);
+    /* XTextWidth (defaults.font, msg, strlen (msg)); */
+  int line_height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
+  int height;
+
+  PRINT_DEBUG (("msg = %s\n", msg));
+  PRINT_DEBUG (("mark_start = %d, mark_end = %d\n", mark_start, mark_end));
+
+
+  num_lines = count_lines(msg, strlen(msg));
+  height = line_height * num_lines;
+
+  /* Map the bar if needed */
+  if (!s->bar_is_raised)
+    {
+      s->bar_is_raised = BAR_IS_MESSAGE;
+      XMapRaised (dpy, s->bar_window);
+    }
+
+  /* Reset the alarm to auto-hide the bar in BAR_TIMEOUT seconds. */
+  alarm (defaults.bar_timeout);
+  alarm_signalled = 0;
+
+  XMoveResizeWindow (dpy, s->bar_window, 
+		     bar_x (s, width), bar_y (s, height),
+		     width,
+		     height);
+
+  XRaiseWindow (dpy, s->bar_window);
+  XClearWindow (dpy, s->bar_window);
+  XSync (dpy, False);
+
+  /*  if(!defaults.wrap_window_list){
+    XDrawString (dpy, s->bar_window, s->normal_gc, 
+		 defaults.bar_x_padding, 
+		 defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+		 msg, strlen (msg));
+		 } else { */
+  for(i=0; i<=strlen(msg); ++i) {
+    if (msg[i]!='\0' && msg[i]!='\n') {
+      tmp_buf[j]=msg[i];
+      j++;
+    }
+    else {
+      tmp_buf[j]='\0';
+      XDrawString (dpy, s->bar_window, s->normal_gc,
+		   defaults.bar_x_padding,
+		   defaults.bar_y_padding + defaults.font->max_bounds.ascent
+		   +  line_no * line_height,
+		   tmp_buf, strlen(tmp_buf));
+      j=0;
+      line_no++; 
+    }
+  }
+ 
+
+
+  XSync (dpy, False);
+  
+  /* Crop to boundary conditions. */
+  if (mark_start < 0)
+    mark_start = 0;
+
+  if (mark_end < 0)
+    mark_end = 0;
+
+  if (mark_start > strlen (msg))
+    mark_start = strlen (msg);
+
+  if (mark_end > strlen (msg))
+    mark_end = strlen (msg);
+
+  if (mark_start > mark_end+mark_start)
+    {
+      int tmp;
+      tmp = mark_start;
+      mark_start = mark_end;
+      mark_end = tmp;
+    }
+
+  /* xor the string representing the current window */
+  if (mark_end)
+    {
+      int start;
+      int end;
+      int width;
+      int start_line, 		end_line;
+      int start_pos_in_line, 	end_pos_in_line;
+      int start_line_beginning,	end_line_beginning;
+
+      start_line=count_lines(msg, mark_start);
+      end_line=count_lines(msg, mark_end+mark_start-1);
+
+      start_pos_in_line = pos_in_line(msg, mark_start);
+      end_pos_in_line = pos_in_line(msg, mark_end+mark_start-1);
+
+      start_line_beginning = line_beginning(msg, mark_start);
+      end_line_beginning = line_beginning(msg, mark_end+mark_start-1);
+
+      PRINT_DEBUG (("start_line = %d, end_line = %d\n", start_line, end_line));
+
+      if (mark_start == 0 || start_pos_in_line == 0)
+	start = 0;
+      else
+	start = XTextWidth (defaults.font, 
+			    &msg[start_line_beginning], 
+			    start_pos_in_line) + defaults.bar_x_padding;
+
+
+      end = XTextWidth (defaults.font, &msg[end_line_beginning], 
+			end_pos_in_line + (msg[end_line_beginning+end_pos_in_line+1] == '\0'?1:0)  ) 
+	+ defaults.bar_x_padding * 2;
+      
+      if (mark_end != strlen (msg))   	end -= defaults.bar_x_padding;
+
+      width = end - start;
+
+      PRINT_DEBUG (("start = %d, end = %d, width = %d\n", start, end, width));
+
+      lgv.foreground = current_screen()->fg_color;
+      lgv.function = GXxor;
+      mask = GCForeground | GCFunction;
+      lgc = XCreateGC(dpy, s->root, mask, &lgv);
+
+      XFillRectangle (dpy, s->bar_window, lgc, start, (start_line-1)*line_height, width, (end_line-start_line+1)*line_height);
+
+      lgv.foreground = s->bg_color;
+      lgc = XCreateGC(dpy, s->root, mask, &lgv);
+
+      XFillRectangle (dpy, s->bar_window, lgc, start, (start_line-1)*line_height, width, (end_line-start_line+1)*line_height);
+    }
+
+  /* Keep a record of the message. */
+  if (last_msg)
+    free (last_msg);
+  last_msg = xstrdup (msg);
+  last_mark_start = mark_start;
+  last_mark_end = mark_end;
+}
+
+
 
 void
 marked_message (char *msg, int mark_start, int mark_end)
@@ -191,7 +425,7 @@ marked_message (char *msg, int mark_start, int mark_end)
   alarm_signalled = 0;
 
   XMoveResizeWindow (dpy, s->bar_window, 
-		     bar_x (s, width), bar_y (s),
+		     bar_x (s, width), bar_y (s, width),
 		     width,
 		     height);
 

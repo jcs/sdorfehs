@@ -175,6 +175,9 @@ struct rp_defaults
 
   int startup_message;
 
+  /* A toggle for wrapping the window list. */
+  int wrap_window_list;
+
   /* Pointer warping toggle. */
   int warp;
 };

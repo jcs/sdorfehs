@@ -293,9 +293,10 @@ update_input_window (screen_info *s, char *prompt, char *input, int input_len)
 {
   int 	prompt_width = XTextWidth (defaults.font, prompt, strlen (prompt));
   int 	input_width  = XTextWidth (defaults.font, input, input_len);
-  int 	width;
+  int 	width, height;
 
   width = defaults.bar_x_padding * 2 + prompt_width + input_width;
+  height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
   if (width < defaults.input_window_size + prompt_width)
     {
@@ -303,8 +304,7 @@ update_input_window (screen_info *s, char *prompt, char *input, int input_len)
     }
 
   XMoveResizeWindow (dpy, s->input_window, 
-		     bar_x (s, width), bar_y (s), width,
-		     (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2));
+		     bar_x (s, width), bar_y (s, height), width, height);
 
   XClearWindow (dpy, s->input_window);
   XSync (dpy, False);
