@@ -5,6 +5,8 @@
 	(cmd_defborder): likewise
 	(cmd_defwinname): gobble leading whitespace. Use strings as
 	arguments, not numbers.
+	(cmd_windows): Use the argument as a window format string in
+	non-interactive mode.
 
 2001-09-08  shawn  <sabetts@diggin.lamenet.tmp>
 
