@@ -1,5 +1,12 @@
 2002-01-26  shawn  <sabetts@vcn.bc.ca>
 
+	* configure.in: check for the vsnprintf function and stdarg.h
+	header.
+
+	* src/main.c (xvsprintf): Cleaned up to call vsnprintf only in one
+	place. wrap the vsnprintf call with va_copy (or __va_copy) and
+	va_end.
+
 	* src/list.c (format_window_name): If res_class or res_name are
 	NULL use "None" instead.
 

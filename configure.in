@@ -17,7 +17,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.24 2002/01/08 19:13:06 algernon Exp $
+dnl $Id: configure.in,v 1.25 2002/01/27 00:57:19 sabetts Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 1.0.1-cvs)
@@ -69,12 +69,13 @@ AC_CHECK_LIB(X11, XOpenDisplay,,
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(unistd.h)
+AC_CHECK_HEADERS(unistd.h stdarg.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(getopt getopt_long setsid setpgid setpgrp setenv unsetenv)
+AC_CHECK_FUNCS(getopt getopt_long setsid setpgid setpgrp setenv unsetenv vsnprintf )
+
 AC_TYPE_SIGNAL
 
 AC_OUTPUT(Makefile doc/Makefile src/Makefile contrib/Makefile)

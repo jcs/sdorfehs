@@ -130,32 +130,43 @@ xvsprintf (char *fmt, va_list ap)
 {
   int size, nchars;
   char *buffer;
+  va_list ap_copy;
 
   /* A resonable starting value. */
   size = strlen (fmt) + 1;
   buffer = (char *)xmalloc (size);
 
-  nchars = vsnprintf (buffer, size, fmt, ap);
-
-  /* From the GNU Libc manual: In versions of the GNU C library prior
-     to 2.1 the return value is the number of characters stored, not
-     including the terminating null; unless there was not enough space
-     in S to store the result in which case `-1' is returned. */
-  if (nchars == -1)
+  while (1)
     {
-      do
-	{
-	  size *= 2;
-	  buffer = (char *)xrealloc (buffer, size);
-	} while (vsnprintf (buffer, size, fmt, ap) == -1);
-    }
-  else if (nchars >= size)
-    {
-      buffer = (char *)xrealloc (buffer, nchars + 1);
-      vsnprintf (buffer, nchars + 1, fmt, ap);
+#if defined(va_copy)
+      va_copy (ap_copy, ap);
+#elif defined(__va_copy)
+      __va_copy (ap_copy, ap);
+#else
+      /* If there is no copy macro then this MAY work. On some systems
+	 this could fail because va_list is a pointer so assigning one
+	 to the other as below wouldn't make a copy of the data, but
+	 just the pointer to the data. */
+      ap_copy = ap;
+#endif
+      nchars = vsnprintf (buffer, size, fmt, ap_copy);
+#if defined(va_copy) || defined(__va_copy)
+      va_end (ap_copy);
+#endif
+
+      if (nchars > -1 && nchars < size)
+	return buffer;
+      else if (nchars > -1)
+	size = nchars + 1;
+      else
+	size *= 2;
+
+      /* Resize the buffer and try again. */
+      buffer = (char *)xrealloc (buffer, size);
     }
 
-  return buffer;
+  /* Never gets here. */
+  return NULL;
 }
 
 /* Return a new string based on fmt. */
