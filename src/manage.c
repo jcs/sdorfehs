@@ -515,6 +515,20 @@ unhide_window (rp_window *win)
   set_state (win, NormalState);
 }
 
+/* same as unhide_window except that it make sure the window is mapped
+   on the bottom of the window stack. */
+void
+unhide_below_window (rp_window *win)
+{
+  if (win == NULL) return;
+  if (win->state != IconicState) return;
+
+  XLowerWindow (dpy, win->w);
+  XMapWindow (dpy, win->w);
+  set_state (win, NormalState);
+}
+
+
 void
 withdraw_window (rp_window *win)
 {

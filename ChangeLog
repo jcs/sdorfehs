@@ -1,3 +1,8 @@
+2001-06-01  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/events.c (cleanup_frame): hide the frame's window's
+	transient_for windows.
+
 2001-05-24  Shawn Betts  <sabetts@van.gobasis.com>
 
 	* src/events.c (colormap_notify): ignore badwindows when

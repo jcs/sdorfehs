@@ -489,6 +489,7 @@ blank_frame (rp_window_frame *frame)
 {
   if (frame->win == NULL) return;
 
+  hide_transient_for (frame->win);
   hide_window (frame->win);
   frame->win = NULL;
 

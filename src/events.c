@@ -58,11 +58,30 @@ new_window (XCreateWindowEvent *e)
 static void
 cleanup_frame (rp_window_frame *frame)
 {
-  frame->win = find_window_other ();
-  if (frame->win)
+  rp_window *win;
+
+  win = find_window_other ();
+  if (win)
     {
+      if (frame->win->transient
+	  && find_window (win->transient_for) == frame->win)
+	{
+	}
+      else
+	{
+	  hide_transient_for (frame->win);
+	}
+
+      frame->win = win;
+
       maximize (frame->win);
+      unhide_transient_for (frame->win);
       unhide_window (frame->win);
+    }
+  else
+    {
+      hide_transient_for (frame->win);
+      frame->win = NULL;
     }
 }
 

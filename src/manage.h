@@ -45,6 +45,7 @@ void ungrab_prefix_key (Window w);
 
 void hide_window (rp_window *win);
 void unhide_window (rp_window *win);
+void unhide_below_window (rp_window *win);
 void withdraw_window (rp_window *win);
 
 #endif /* ! _RATPOISION_MANAGE_H */
