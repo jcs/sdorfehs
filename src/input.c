@@ -455,3 +455,12 @@ get_more_input (char *prompt, char *preinput)
   XUnmapWindow (dpy, s->input_window);
   return str;
 }  
+
+void
+free_history ()
+{
+  int i;
+
+  for (i=0; i<input_num_history_entries; i++)
+    free (input_history[i]);
+}

@@ -119,3 +119,9 @@ init_numbers ()
 
   numbers_taken = xmalloc (max_taken * sizeof (int));
 }
+
+void
+free_numbers ()
+{
+  free (numbers_taken);
+}

@@ -31,5 +31,6 @@ unsigned int x11_mask_to_rp_mask (unsigned int mask);
 unsigned int rp_mask_to_x11_mask (unsigned int mask);
 void update_modifier_map ();
 void grab_key (int keycode, unsigned int modifiers, Window grab_window);
+void free_history ();
 
 #endif /* ! _RATPOISON_INPUT_H */

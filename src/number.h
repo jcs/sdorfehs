@@ -26,5 +26,6 @@ int get_unique_window_number ();
 void return_window_number (int n);
 int add_window_number (int n);
 void init_numbers ();
+void free_numbers ();
 
 #endif /* ! _RATPOISON_NUMBER_H */

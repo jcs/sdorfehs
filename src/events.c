@@ -441,6 +441,7 @@ key_press (XEvent *ev)
 static char *
 execute_remote_command (Window w)
 {
+  int status;
   char *result = NULL;
   Atom type_ret;
   int format_ret;
@@ -448,27 +449,35 @@ execute_remote_command (Window w)
   unsigned long bytes_after;
   unsigned char *req;
 
-  if (XGetWindowProperty (dpy, w, rp_command,
-			  0, 0, False, XA_STRING,
-			  &type_ret, &format_ret, &nitems, &bytes_after,
-			  &req) == Success
-      &&
-      XGetWindowProperty (dpy, w, rp_command,
-			  0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-			  True, XA_STRING, &type_ret, &format_ret, &nitems, 
-			  &bytes_after, &req) == Success)
-    {
-      if (req)
-	{
-	  PRINT_DEBUG (("command: %s\n", req));
-	  result = command (0, req);
-	}
-      XFree (req);
-    }
-  else
+  status = XGetWindowProperty (dpy, w, rp_command,
+			       0, 0, False, XA_STRING,
+			       &type_ret, &format_ret, &nitems, &bytes_after,
+			       &req);
+
+  if (status != Success || req == NULL)
     {
       PRINT_DEBUG (("Couldn't get RP_COMMAND Property\n"));
+      return NULL;
     }
+
+  /* XGetWindowProperty always allocates one extra byte even if
+     the property is zero length. */  
+  XFree (req);
+
+  status = XGetWindowProperty (dpy, w, rp_command,
+			       0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+			       True, XA_STRING, &type_ret, &format_ret, &nitems, 
+			       &bytes_after, &req);
+
+  if (status != Success || req == NULL)
+    {
+      PRINT_DEBUG (("Couldn't get RP_COMMAND Property\n"));
+      return NULL;
+    }
+
+  PRINT_DEBUG (("command: %s\n", req));
+  result = command (0, req);
+  XFree (req);
 
   return result;
 }

@@ -138,19 +138,18 @@ bar_y (screen_info *s)
 void
 update_window_names (screen_info *s)
 {
-  static struct sbuf *bar_buffer = NULL;
-
+  struct sbuf *bar_buffer;
   int mark_start = 0;
   int mark_end = 0;
 
   if (s->bar_is_raised != BAR_IS_WINDOW_LIST) return;
 
-  if (bar_buffer == NULL)
-    bar_buffer = sbuf_new (0);
+  bar_buffer = sbuf_new (0);
 
   get_window_list (defaults.window_fmt, NULL, bar_buffer, &mark_start, &mark_end);
 
   marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
+  sbuf_free (bar_buffer);
 }
 
 void
@@ -253,11 +252,13 @@ marked_message (char *msg, int mark_start, int mark_end)
       lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
       XFillRectangle (dpy, s->bar_window, lgc, start, 0, width, height);
+      XFreeGC (dpy, lgc);
 
       lgv.foreground = s->bg_color;
       lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
       XFillRectangle (dpy, s->bar_window, lgc, start, 0, width, height);
+      XFreeGC (dpy, lgc);
     }
 
   /* Keep a record of the message. */
@@ -282,4 +283,12 @@ show_last_message ()
   msg = xstrdup (last_msg);
   marked_message (msg, last_mark_start, last_mark_end);
   free (msg);
+}
+
+/* Free any memory associated with the bar. */
+void
+free_bar ()
+{
+  if (last_msg)
+    free (last_msg);
 }

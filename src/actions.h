@@ -118,6 +118,8 @@ char *cmd_warp(int interactive, void *data);
 char *cmd_tmpwm (int interactive, void *data);
 
 void initialize_default_keybindings (void);
+void free_keybindings ();
+void free_aliases ();
 rp_action* find_keybinding (KeySym keysym, int state);
 rp_action* find_keybinding_by_action (char *action);
 

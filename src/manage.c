@@ -92,37 +92,30 @@ update_normal_hints (rp_window *win)
 static char *
 get_wmname (Window w)
 {
-  char *name;
-  XTextProperty text;
-  char **name_list;
-  int list_len;
+  Atom actual_type;
+  int actual_format;
+  int status;
+  unsigned long n;
+  unsigned long bytes_after;
+  unsigned char *name = NULL;
+  char *ret;
 
-  if (!XGetWMName (dpy, w, &text))
+  status = XGetWindowProperty (dpy, w, wm_name, 0L, 100L, False, 
+			       XA_STRING, &actual_type, &actual_format, 
+			       &n, &bytes_after, &name);
+
+  if (status != Success || name == NULL)
     {
       PRINT_DEBUG (("I can't get the WMName.\n"));
       return NULL;
     }
 
-  if (!XTextPropertyToStringList (&text, &name_list, &list_len))
-    {
-      PRINT_DEBUG (("Error retrieving TextList.\n"));
-      return NULL;
-    }
+  /* duplicate the string into out own buffer, and free the one given
+     to us by X. */
+  ret = xstrdup (name);
+  XFree (name);
 
-  if (list_len > 0)
-    {
-      name = xmalloc (strlen (name_list[0]) + 1);
-      strcpy (name, name_list[0]);
-    }
-  else
-    {
-      name = NULL;
-    }
-
-  /* Its our responsibility to free this. */ 
-  XFreeStringList (name_list);
-
-  return name;
+  return ret;
 }
 
 static XClassHint *
@@ -276,7 +269,7 @@ unmanage (rp_window *w)
 {
   return_window_number (w->number);
   list_del (&w->node);
-  free_window (w);
+  free_window (w);  
 
 #ifdef AUTO_CLOSE
   if (rp_mapped_window_sentinel->next == rp_mapped_window_sentinel
@@ -353,6 +346,8 @@ unmanaged_window (Window w)
 	  free (wname);
 	  return 1;
 	}
+
+      free (wname);
     }
 
   return 0;

@@ -34,29 +34,50 @@
 static void
 recieve_command_result (Window w)
 {
+  int status;
   Atom type_ret;
   int format_ret;
   unsigned long nitems;
   unsigned long bytes_after;
-  unsigned char *result;
+  unsigned char *result = NULL;
 
+  /* First, find out how big the property is. */
+  status = XGetWindowProperty (dpy, w, rp_command_result,
+			       0, 0, False, XA_STRING,
+			       &type_ret, &format_ret, &nitems, &bytes_after,
+			       &result);
 
-  if (XGetWindowProperty (dpy, w, rp_command_result,
-			  0, 0, False, XA_STRING,
-			  &type_ret, &format_ret, &nitems, &bytes_after,
-			  &result) == Success
-      &&
-      XGetWindowProperty (dpy, w, rp_command_result,
-			  0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-			  True, XA_STRING, &type_ret, &format_ret, &nitems, 
-			  &bytes_after, &result) == Success)
+  /* Failed to retrieve property. */
+  if (status != Success || result == NULL)
     {
-      if (result && strlen (result))
-	{
-	  printf ("%s\n", result);
-	}
-      XFree (result);
+      PRINT_DEBUG (("failed to get command result length\n"));
+      return;
     }
+
+  /* XGetWindowProperty always allocates one extra byte even if
+     the property is zero length. */
+  XFree (result);
+
+  /* Now that we have the length of the message, we can get the
+     whole message. */
+  status = XGetWindowProperty (dpy, w, rp_command_result,
+			       0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+			       True, XA_STRING, &type_ret, &format_ret, &nitems, 
+			       &bytes_after, &result);
+
+  /* Failed to retrieve property. */
+  if (status != Success || result == NULL)
+    {
+      PRINT_DEBUG (("failed to get command result\n"));
+      return;
+    }
+
+  /* If result is not the empty string, print it. */
+  if (strlen (result))
+    printf ("%s\n", result);
+
+  /* Free the result. */
+  XFree (result);
 }
 
 int

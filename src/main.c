@@ -47,6 +47,7 @@ int rat_x;
 int rat_y;
 int rat_visible = 1;		/* rat is visible by default */
 
+Atom wm_name;
 Atom wm_state;
 Atom wm_change_state;
 Atom wm_protocols;
@@ -555,6 +556,7 @@ main (int argc, char *argv[])
     }
 
   /* Set our Atoms */
+  wm_name =  XInternAtom(dpy, "WM_NAME", False);
   wm_state = XInternAtom(dpy, "WM_STATE", False);
   wm_change_state = XInternAtom(dpy, "WM_CHANGE_STATE", False);
   wm_protocols = XInternAtom(dpy, "WM_PROTOCOLS", False);
@@ -696,25 +698,49 @@ init_screen (screen_info *s, int screen_num)
   XSync (dpy, 0);
 }
 
+static void
+free_screen (screen_info *s)
+{
+  rp_window_frame *frame;
+  struct list_head *iter, *tmp;
+
+  list_for_each_safe_entry (frame, iter, tmp, &s->rp_window_frames, node)
+    {
+      free (frame);
+    }
+ 
+  XDestroyWindow (dpy, s->bar_window);
+  XDestroyWindow (dpy, s->key_window);
+  XDestroyWindow (dpy, s->input_window);
+  XDestroyWindow (dpy, s->frame_window);
+  XDestroyWindow (dpy, s->help_window);
+
+  XFreeCursor (dpy, s->rat);
+  XFreeColormap (dpy, s->def_cmap);
+  XFreeGC (dpy, s->normal_gc);
+
+  free (s->display_string);
+}
+
 void
 clean_up ()
 {
   int i;
 
+  free_keybindings ();
+  free_aliases ();
+  free_bar ();
+  free_numbers ();
+  free_history ();
+  
   for (i=0; i<num_screens; i++)
     {
-      XDestroyWindow (dpy, screens[i].bar_window);
-      XDestroyWindow (dpy, screens[i].key_window);
-      XDestroyWindow (dpy, screens[i].input_window);
-      XDestroyWindow (dpy, screens[i].frame_window);
-      XDestroyWindow (dpy, screens[i].help_window);
-
-      XFreeCursor (dpy, screens[i].rat);
-      XFreeColormap (dpy, screens[i].def_cmap);
-      XFreeGC (dpy, screens[i].normal_gc);
+      free_screen (&screens[i]);
     }
+  free (screens);
 
   XFreeFont (dpy, defaults.font);
+  free (defaults.window_fmt);
 
   XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
   XCloseDisplay (dpy);

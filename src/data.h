@@ -213,6 +213,7 @@ extern Atom rp_command;
 extern Atom rp_command_request;
 extern Atom rp_command_result;
 
+extern Atom wm_name;
 extern Atom wm_state;
 extern Atom wm_change_state;
 extern Atom wm_protocols;

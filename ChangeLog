@@ -1,3 +1,54 @@
+2003-02-27  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/main.c (free_screen): new function
+	(clean_up): call free_screen on each screen. free the screen
+	array. free defaults.window_fmt.
+
+	* src/number.h (free_numbers): new prototype
+
+	* src/number.c (free_numbers): new function
+
+	* src/manage.c (get_wmname): use XGetWindowProperty to get the
+	window name.
+	(unmanaged_window): free wname after using it.
+
+	* src/main.c (wm_name): new global
+	(main): internalize WM_NAME atom.
+	(clean_up): free data structures for keybindings, aliases, the
+	bar, window numbers, and input history.
+
+	* src/input.h (free_history): new prototype
+
+	* src/input.c (free_history): new function
+
+	* src/events.c (execute_remote_command): free properties returned
+	by XGetWindowProperty().
+
+	* src/data.h (wm_name): new extern
+
+	* src/communications.c (recieve_command_result): free properties
+	returned by XGetWindowProperty().
+
+	* src/bar.h (free_bar): new prototype
+
+	* src/bar.c (update_window_names): bar_buffer is not static.
+	(update_window_names): free bar_buffer after using it.
+	(marked_message): free the GC after using it.
+	(free_bar): new function.
+
+	* src/actions.h (free_keybindings): new prototype
+	(free_aliases): likewise
+
+	* src/actions.c (free_keybindings): new function
+	(free_aliases): likewise
+	(cmd_tmpwm): unmap the key window before calling the new wm, and
+	remap it afterwards.
+
+2003-02-24  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_tmpwm): unmap the key window before spawning
+	the wm and map it afterwards.
+
 2003-02-23  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/split.c (remove_all_splits): fix bug hiding windows not in

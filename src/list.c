@@ -51,7 +51,7 @@ free_window (rp_window *w)
   free (w->wm_name);
 
   XFree (w->hints);
-  
+
   free (w);
 }
 

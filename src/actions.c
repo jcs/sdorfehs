@@ -344,6 +344,37 @@ initialize_default_keybindings (void)
   add_keybinding (XK_question, 0, "help");
 }
 
+void
+free_keybindings ()
+{
+  int i;
+
+  /* Free the data in the actions. */
+  for (i=0; i<key_actions_last; i++)
+    {
+      free (key_actions[i].data);
+    }
+
+  /* Free the actions list. */
+  free (key_actions);
+}
+
+void
+free_aliases ()
+{
+  int i;
+
+  /* Free the alias data. */
+  for (i=0; i<alias_list_last; i++)
+    {
+      free (alias_list[i].name);
+      free (alias_list[i].alias);
+    }
+
+  /* Free the alias list. */
+  free (alias_list);
+}
+
 /* return a KeySym from a string that contains either a hex value or
    an X keysym description */
 static int string_to_keysym (char *str) 
@@ -2732,7 +2763,11 @@ cmd_tmpwm (int interactive, void *data)
   /* Release event selection on the root windows, so the new WM can
      have it. */
   for (i=0; i<num_screens; i++)
-    XSelectInput(dpy, RootWindow (dpy, i), 0);
+    {
+      XSelectInput(dpy, RootWindow (dpy, i), 0);
+      /* Unmap its key window */
+      XUnmapWindow (dpy, screens[i].key_window);
+    }
 
   /* Don't listen for any events from any window. */
   list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
@@ -2773,6 +2808,8 @@ cmd_tmpwm (int interactive, void *data)
       XSelectInput(dpy, RootWindow (dpy, i),
 		   PropertyChangeMask | ColormapChangeMask
 		   | SubstructureRedirectMask | SubstructureNotifyMask);
+      /* Map its key window */
+      XMapWindow (dpy, screens[i].key_window);
     }
   XSync (dpy, False);
 
