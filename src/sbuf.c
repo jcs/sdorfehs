@@ -53,6 +53,21 @@ sbuf_free (struct sbuf *b)
     }
 }
 
+/* Free the structure but return the string. */
+char *
+sbuf_free_struct (struct sbuf *b)
+{
+  if (b != NULL)
+    {
+      char *tmp;
+      tmp = b->data;
+      free (b);
+      return tmp;
+    }
+
+  return NULL;
+}
+
 char *
 sbuf_concat (struct sbuf *b, const char *str)
 {

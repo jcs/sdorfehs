@@ -1,5 +1,8 @@
 2004-10-05  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/actions.c (cmd_unsetenv): add an '=' to the string passed to
+	putenv.
+
 	* src/main.c (print_version): update copyright date.
 
 	* src/conf.h (DEFAULT_FONT): new define

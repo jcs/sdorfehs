@@ -2753,14 +2753,22 @@ cmd_chdir (int interactive, char *data)
 char *
 cmd_unsetenv (int interactive, char *data)
 {
+  struct sbuf *s;
+  char *str;
+
   if (data == NULL)
     {
       message (" unsetenv: one argument is required ");
       return NULL;
     }
 
-  /* Remove all instances of the env. var. */
-  putenv (data);
+  /* Remove all instances of the env. var. We must add an '=' for it
+     to work on OpenBSD. */
+  s = sbuf_new(0);
+  sbuf_copy (s, data);
+  sbuf_concat (s, "=");
+  str = sbuf_free_struct (s);
+  putenv (str);
 
   return NULL;
 }

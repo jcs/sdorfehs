@@ -37,6 +37,7 @@ sbuf
 
 struct sbuf *sbuf_new (size_t initsz);
 void sbuf_free (struct sbuf *b);
+char *sbuf_free_struct (struct sbuf *b);
 char *sbuf_concat (struct sbuf *b, const char *str);
 char *sbuf_copy (struct sbuf *b, const char *str);
 char *sbuf_clear (struct sbuf *b);
