@@ -29,6 +29,8 @@
 
 #include "ratpoison.h"
 
+#include "assert.h"
+
 /* Possible values for bar_is_raised status. */
 #define BAR_IS_WINDOW_LIST 1
 #define BAR_IS_MESSAGE     2
@@ -88,7 +90,9 @@ update_window_names (screen_info *s)
   static struct sbuf *bar_buffer = NULL;
   rp_window *w;
   char dbuf[10];
-  int first = 1;
+
+  int mark_start = 0;
+  int mark_end = 0;
 
   if (!s->bar_is_raised) return;
 
@@ -103,9 +107,10 @@ update_window_names (screen_info *s)
 
       if (w->state == STATE_UNMAPPED) continue;
 
-      if (!first)
-	sbuf_concat (bar_buffer, "  ");
-      first = 0;
+      if (w == rp_current_window)
+	mark_start = strlen (sbuf_get (bar_buffer));
+
+      sbuf_concat (bar_buffer, " ");
 
       sprintf (dbuf, "%d", w->number);
       sbuf_concat (bar_buffer, dbuf);
@@ -116,6 +121,11 @@ update_window_names (screen_info *s)
 	sbuf_concat (bar_buffer, "-");
 
       sbuf_concat (bar_buffer, w->name);
+
+      sbuf_concat (bar_buffer, " ");
+
+      if (w == rp_current_window)
+	mark_end = strlen (sbuf_get (bar_buffer));
     }
 
   if (!strcmp (sbuf_get (bar_buffer), ""))
@@ -123,13 +133,18 @@ update_window_names (screen_info *s)
       sbuf_copy (bar_buffer, MESSAGE_NO_MANAGED_WINDOWS);
     }
 
-  display_msg_in_bar (s, sbuf_get (bar_buffer));
+  display_msg_in_bar (s, sbuf_get (bar_buffer), mark_start, mark_end);
 }
 
 void
-display_msg_in_bar (screen_info *s, char *msg)
+display_msg_in_bar (screen_info *s, char *msg, int mark_start, int mark_end)
 {
+  XGCValues lgv;
+  GC lgc;
+  unsigned long mask;
+
   int width = BAR_X_PADDING * 2 + XTextWidth (s->font, msg, strlen (msg));
+  int height = (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2);
 
   PRINT_DEBUG ("%s\n", msg);
 
@@ -146,11 +161,42 @@ display_msg_in_bar (screen_info *s, char *msg)
   XMoveResizeWindow (dpy, s->bar_window, 
 		     bar_x (s, width), bar_y (s),
 		     width,
-		     (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2));
+		     height);
+
   XClearWindow (dpy, s->bar_window);
   XRaiseWindow (dpy, s->bar_window);
 
-  XDrawString (dpy, s->bar_window, s->bold_gc, BAR_X_PADDING, 
-	       BAR_Y_PADDING + s->font->max_bounds.ascent, msg, 
-	       strlen (msg));
+  XDrawString (dpy, s->bar_window, s->normal_gc, 
+	       BAR_X_PADDING, 
+	       BAR_Y_PADDING + s->font->max_bounds.ascent,
+	       msg, strlen (msg));
+
+  /* xor the string representing the current window */
+  if (mark_start != mark_end)
+    {
+      int start;
+      int end;
+
+      assert (mark_start <= mark_end); /* FIXME: remove these assertions,
+				      make it work in all cases */
+      assert (mark_start <= strlen(msg) + 1);
+      assert (mark_end <= strlen(msg) + 1);
+      
+      start = XTextWidth (s->font, msg, mark_start);
+      end = XTextWidth (s->font, msg + mark_start, mark_end - mark_start);
+
+      fprintf (stderr, "%d %d strlen(%d)==> %d %d\n", mark_start, mark_end, strlen(msg), start, end);
+
+      lgv.foreground = gv.foreground;
+      lgv.function = GXxor;
+      mask = GCForeground | GCFunction;
+      lgc = XCreateGC(dpy, s->root, mask, &lgv);
+
+      XFillRectangle (dpy, s->bar_window, lgc, start, 0, end, height);
+
+      lgv.foreground = gv.background;
+      lgc = XCreateGC(dpy, s->root, mask, &lgv);
+
+      XFillRectangle (dpy, s->bar_window, lgc, start, 0, end, height);
+    }
 }
