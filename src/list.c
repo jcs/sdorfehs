@@ -411,6 +411,12 @@ unhide_transient_for (rp_window *win)
   frame = find_windows_frame (win);
 
   transient_for = find_window (win->transient_for);
+  if (transient_for == NULL) 
+    {
+      PRINT_DEBUG ("Can't find transient_for for '%s'", win->name );
+      return;
+    }
+
   if (find_windows_frame (transient_for) == NULL)
     {
       frame->win = transient_for;
@@ -442,6 +448,12 @@ hide_transient_for (rp_window *win)
   if (!win->transient) return;
 
   transient_for = find_window (win->transient_for);
+  if (transient_for == NULL) 
+    {
+      PRINT_DEBUG ("Can't find transient_for for '%s'", win->name );
+      return;
+    }
+
   if (find_windows_frame (transient_for) == NULL)
     {
       PRINT_DEBUG ("hide transient window: %s\n", transient_for->name);

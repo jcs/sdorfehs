@@ -1,3 +1,14 @@
+2001-06-06  Shawn Betts  <sabetts@van.gobasis.com>
+
+	* src/list.c (unhide_transient_for): abort if the transient_for
+	window can't be found.
+	(hide_transient_for): likewise
+
+2001-06-01  Shawn Betts  <sabetts@van.gobasis.com>
+
+	* src/events.c (map_request): If the window is iconified call
+	set_active_window on it.
+
 2001-06-05  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/list.c (set_active_window): calls give_window_focus which
