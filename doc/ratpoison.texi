@@ -627,7 +627,7 @@ returned.
 
 @deffn Command defwinfmt @var{fmt}
 Set the default window format for the @command{windows} command. By
-default it is @samp{N-W}. The following is a list of valid format
+default it is @samp{%n%s%t}. The following is a list of valid format
 characters:
 
 @table @samp
