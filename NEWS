@@ -1,5 +1,9 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes since 1.3.0
+** configure script warns about missing history lib
+Rather than error out, now, ratpoison will just be built without history.
+
 * Changes since 1.3.0-rc2-beta2
 ** new format option %f
 This options displays the frame number the window is in or a space if

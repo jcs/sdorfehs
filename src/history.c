@@ -4,7 +4,7 @@
 
 #include "ratpoison.h"
 
-#ifdef HAVE_READLINE_HISTORY_H
+#ifdef HAVE_HISTORY
 
 #include "readline/history.h"
 
@@ -129,4 +129,4 @@ int history_expand_line (char *string, char **output)
   return history_expand (string, output);
 }
 
-#endif /* HAVE_READLINE_HISTORY_H */
+#endif /* HAVE_HISTORY */

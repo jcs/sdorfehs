@@ -309,7 +309,7 @@ editor_backward_kill_line (rp_input_line *line)
 static edit_status
 editor_history_previous (rp_input_line *line)
 {
-#ifdef HAVE_READLINE_HISTORY_H
+#ifdef HAVE_HISTORY
   char *entry = history_previous ();
 
   if (entry)
@@ -336,17 +336,17 @@ editor_history_previous (rp_input_line *line)
 
   return EDIT_INSERT;
 
-#else  /* HAVE_READLINE_HISTORY_H */
+#else  /* HAVE_HISTORY */
 
   return EDIT_NO_OP;
 
-#endif /* HAVE_READLINE_HISTORY_H */
+#endif /* HAVE_HISTORY */
 }
 
 static edit_status
 editor_history_next (rp_input_line *line)
 {
-#ifdef HAVE_READLINE_HISTORY_H
+#ifdef HAVE_HISTORY
   char *entry = history_next ();
 
   if (entry)
@@ -374,9 +374,9 @@ editor_history_next (rp_input_line *line)
 
   return EDIT_INSERT;
 
-#else  /* HAVE_READLINE_HISTORY_H */
+#else  /* HAVE_HISTORY */
   return EDIT_NO_OP;
-#endif /* HAVE_READLINE_HISTORY_H */
+#endif /* HAVE_HISTORY */
 }
 
 static edit_status
@@ -426,7 +426,7 @@ editor_enter (rp_input_line *line)
   char *expansion;
 
   line->buffer[line->length] = '\0';
-#ifdef HAVE_READLINE_HISTORY_H
+#ifdef HAVE_HISTORY
   result = history_expand_line (line->buffer, &expansion);
 
   PRINT_DEBUG (("History Expansion - result: %d\n", result));
@@ -443,7 +443,7 @@ editor_enter (rp_input_line *line)
       history_add (expansion);
       line->buffer = expansion;
     }
-#endif /* HAVE_READLINE_HISTORY_H */
+#endif /* HAVE_HISTORY */
 
   return EDIT_DONE;
 }

@@ -490,7 +490,7 @@ receive_command ()
   int format_ret;
   unsigned long nitems;
   unsigned long bytes_after;
-  void *prop_return;
+  unsigned char *prop_return;
   int offset;
 
   /* Init offset to 0. In the case where there is more than one window
@@ -510,7 +510,7 @@ receive_command ()
 				offset, length, 
 				True, XA_WINDOW, &type_ret, &format_ret,
 				&nitems,
-				&bytes_after, (unsigned char **)&prop_return);
+				&bytes_after, &prop_return);
 
       /* Update the offset to point to the next window (if there is
 	 another one). */

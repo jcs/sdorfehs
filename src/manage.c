@@ -526,7 +526,7 @@ get_state (rp_window *win)
   int format;
   unsigned long nitems;
   unsigned long bytes_left;
-  long *data;
+  unsigned char *data;
 
   if (win == NULL) 
     return state;
@@ -534,9 +534,9 @@ get_state (rp_window *win)
   if (XGetWindowProperty (dpy, win->w, wm_state, 0L, 2L, 
 			  False, wm_state, &type, &format, 
 			  &nitems, &bytes_left, 
-			  (unsigned char **)&data) == Success && nitems > 0)
+			  &data) == Success && nitems > 0)
     {
-      state = *data;
+      state = *(long *)data;
       XFree (data);
     }
 

@@ -1,3 +1,24 @@
+2004-09-29  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* configure.in: Warn when the history header or library is not
+	found and compile without history support.
+
+	* src/ratpoison.h: change ifdef to check for HAVE_HISTORY.
+
+	* src/manage.c (get_state): change data to an unsigned char and
+	cast data to a long* when it's used.
+
+	* src/main.c (main): change ifdef to check for HAVE_HISTORY.
+	(clean_up): likewise
+
+	* src/history.c: change ifdef to check for HAVE_HISTORY.
+
+	* src/events.c (receive_command): make prop_return an unsigned char.
+
+	* src/editor.c (editor_history_previous): change ifdef to check for HAVE_HISTORY.
+	(editor_history_next): likewise
+	(editor_enter): likewise
+
 2004-09-27  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* contrib/ratpoison.el (ratpoison-command): use call-process.
