@@ -351,8 +351,10 @@ property_notify (XEvent *ev)
       if (ev->xproperty.atom == XA_WM_NAME) 
 	{
 	  printf ("updating window name\n");
-	  update_window_name (win);
-	  update_window_names (win->scr);
+	  if (update_window_name (win))
+	    {
+	      update_window_names (win->scr);
+	    }
 	}
     }
 }
