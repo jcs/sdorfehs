@@ -110,7 +110,7 @@ get_wmname (Window w)
       return NULL;
     }
 
-  PRINT_DEBUG (("WM_NAME: '%s'", name));
+  PRINT_DEBUG (("WM_NAME: '%s'\n", name));
 
   /* duplicate the string into our own buffer, and free the one given
      to us by X. */
