@@ -21,7 +21,23 @@ or if you use emacs, type:
 
 C-h i m ratpoison RET
 
-** The Gimp is impossible to use under ratpoison!
+** How do I use the gimp (or similar apps) under ratpoison?
+Some programs fit more into the ratpoison paradigm than others.
+Unfortunatly, the gimp can be difficult to use under ratpoison.  There
+are however, several options if you must use it.
+
+1) manually split and adjust frames to accomodate the various gimp
+   windows.
+
+2) use some scripts to automate the kinds of things you will have to
+   do in (1) (some users have published these on the mailing list,
+   search the archives).
+
+3) use the (still experimental) tmpwm command to temporarily switch to
+   another window manager.  Be sure to exit that window manager when
+   you are finished with the gimp to return to ratpoison.
+
+4) fix the gimp to work better with ratpoison.
 
 ** How do I bind a command to a single keystroke?
 Pressing C-t is too much work for you, eh? There are plenty of 3rd
