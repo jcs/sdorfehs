@@ -1,5 +1,9 @@
 2004-11-17  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (user_commands): add rathold
+
+2004-11-17  Shawn Betts  <sabetts@vcn.bc.ca>
+
 	* src/actions.c (cmd_rathold): new function
 
 2004-11-17  Bernhard R. Link <brlink@debian.org>

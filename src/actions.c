@@ -92,6 +92,7 @@ static user_command user_commands[] =
     {"ratwarp",         cmd_ratwarp,            arg_VOID},
     {"ratrelwarp",      cmd_ratrelwarp,         arg_VOID},
     {"ratclick",        cmd_ratclick,           arg_VOID},
+    {"rathold",         cmd_rathold,           arg_VOID},
     {"readkey",         cmd_readkey,            arg_STRING},
     {"redisplay", 	cmd_redisplay,		arg_VOID},
     {"remhook",         cmd_remhook,            arg_STRING},

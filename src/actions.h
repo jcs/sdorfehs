@@ -127,7 +127,8 @@ char *cmd_set (int interactive, char *data);
 char *cmd_sselect(int interactive, char *data);
 char *cmd_ratwarp (int interactive, char *data);
 char *cmd_ratclick (int interactive, char *data);
-char * cmd_ratrelwarp (int interactive, char *data);
+char *cmd_ratrelwarp (int interactive, char *data);
+char *cmd_rathold (int interactive, char *data);
 
 rp_keymap *find_keymap (char *name);
 void initialize_default_keybindings (void);
