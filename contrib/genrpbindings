@@ -74,7 +74,7 @@ while (<ACTIONS_C>) {
 	    last if (m!/\*\@end !);
 	    if (/{\"(.+)\".+},/) {
 	      $nbindings++;
-	      print PERL "sub abort { return rp_cmd (\"$1\"); }";
+	      print PERL "sub $1 { return rp_cmd (\"$1\", \@_); }";
 	      print ELISP "(defun-ratpoison $1)";
 	    }
 	}
