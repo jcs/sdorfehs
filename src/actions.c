@@ -3875,11 +3875,21 @@ cmd_frestore (int interactively, char *data)
 char *
 cmd_verbexec (int interactive, char *data)
 {
-  char msg[100]="Running ";
-  strncat(msg, data, 100-strlen(msg));
-  
-  if(data) cmd_echo(interactive, msg);
-  return cmd_exec(interactive, data);
+  char *cmd;
+
+  if (data == NULL)
+    cmd = get_input (MESSAGE_PROMPT_SHELL_COMMAND, exec_completions);
+  else
+    cmd = xstrdup (data);
+
+  /* User aborted. */
+  if (cmd == NULL)
+    return NULL;
+
+  marked_message_printf(0, 0, " Running %s ", cmd);
+  spawn (cmd);
+  free (cmd);
+  return NULL;
 }
 
 static char *

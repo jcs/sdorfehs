@@ -1,9 +1,13 @@
-2004-11-20  Shawn Betts  <katia_dilkina@verizon.net>
+2004-11-22  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (cmd_verbexec): rewritten to fix crash bug.
+
+2004-11-20  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_rathold): change argument order. echo parse
 	errors.
 
-2004-11-19  Shawn Betts  <katia_dilkina@verizon.net>
+2004-11-19  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_sfdump): properly declare i at the top of the
 	function.
