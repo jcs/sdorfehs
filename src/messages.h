@@ -1,3 +1,5 @@
+#include "config.h"
+
 #ifndef _MESSAGES_H
 #define _MESSAGES_H
 
@@ -10,5 +12,5 @@
 #define MESSAGE_PROMPT_SHELL_COMMAND "/bin/sh -c "
 #define MESSAGE_PROMPT_COMMAND ":"
 #define MESSAGE_PROMPT_SWITCH_WM " Switch to wm: "
-
+#define MESSAGE_PROMPT_XTERM_COMMAND MESSAGE_PROMPT_SHELL_COMMAND TERM_PROG " -e "
 #endif
