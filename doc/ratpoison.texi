@@ -79,27 +79,44 @@ This document explains how to use ratpoison.
 @end ifinfo
 
 @menu
-* About::                       What is ratpoison?
-* Contacting::                  How do I contact the ratpoison developers?
-* Concepts::                    Window manipulation concepts
-* Groups::                      Grouping windows together
-* General Use::                 How does this thing work??
-* Splitting Frames::            When you want to see more than one window
-* Multiple Monitors::           What to do with all your computer junk
-* Keystrokes::                  Key commands and functionality
-* Commands::                    ratpoison commands
-* Input::                       Typing text into ratpoison
-* Command Line Arguments::      ratpoison command-line actions
-* Startup file::                They threatened me...with violence!
+* About::                       What Is Ratpoison?
+* Contacting::                  How Do I Contact The Ratpoison Developers?
+* Concepts::                    Window Manipulation Concepts
+* General Use::                 How Does This Thing Work??
+* Windows::                     Navigating The Windows
+* Groups::                      Grouping Windows Together
+* Frames::                      Dividing The Screen
+* Multiple Monitors::           What To Do With All Your Computer Junk
+* Keystrokes::                  Key Commands And Functionality
+* Hooks::                       Attaching Scripts To Ratpoison Events
+* The Status Bar::              Ratpoison's Input/Output Area
+* Using Other Window Managers::  Return To Evil
+* Other Commands::              Miscellaneous Commands
+* Input::                       Typing Text Into Ratpoison
+* Command Line Arguments::      ratpoison Command-Line Actions
+* Startup file::                They Threatened Me...With Violence!
 * Command Index::               Index
 
 @detailmenu
  --- The Detailed Node Listing ---
 
-Splitting Frames
+Windows
 
+* Manipulating Windows::        
+* Unmanaged Windows::           
+* Rudeness::                    
+
+Frames
+
+* Splitting Frames::            
 * Resizing Frames::             
+* Frame Navigation Commands::   
 * Saving and Restoring Frame Sets::  
+
+Keystrokes
+
+* Key Maps::                    
+* Default Key Bindings::        
 
 @end detailmenu
 @end menu
@@ -131,7 +148,7 @@ and for the list archives go to the ratpoison sourceforge.net project.
 
 There is a #ratpoison irc channel on irc.openprojects.net.
 
-@node Concepts, Groups, Contacting, Top
+@node Concepts, General Use, Contacting, Top
 @chapter Concepts
 
 ratpoison uses the concept of @dfn{panes} to place and size
@@ -172,26 +189,7 @@ creates a window it will be added to the current group. Groups are
 generally used to organize windows into different classes such as work
 and wasting-time-at-work.
 
-@node Groups, General Use, Concepts, Top
-@chapter Groups
-ratpoison provides functionality to group windows together. This
-coupled with saving and restoring frames configurations is what most
-people would call @dfn{virtual desktops} or @dfn{workspaces}. 
-
-While ratpoison doesn't explicity provide support for such things, it
-does allow you to write scripts to this end. Such a script exists in
-@file{contrib/} called @file{rpws}. Consult that file for details on
-seting up workspaces inside ratpoison.
-
-Groups are more general purpose than workspaces. windows from one
-group can be visible along with windows from another group. If you
-switch to a different group nothing changes except the list of windows
-you can cycle through. ratpoison allows the user to move a window from
-one group to another, merge two groups, create new groups, and delete
-existing ones. @xref{Commands}, for information on the commands for
-manipulating groups.
-
-@node General Use, Splitting Frames, Groups, Top
+@node General Use, Windows, Concepts, Top
 @chapter General Use
 
 When ratpoison starts you should see an empty X server. To open an x
@@ -215,11 +213,347 @@ how we didn't have to drag a single window, or click a single maximize
 button? Beautiful wasn't it? Felt fast? Cool? It's modern computing at
 its best.
 
-@node  Splitting Frames, Multiple Monitors, General Use, Top
-@chapter Splitting Frames
+@node Windows, Groups, General Use, Top
+@chapter Windows
+
+Windows are what ratpoison manages.
+
+@menu
+* Manipulating Windows::        
+* Unmanaged Windows::           
+* Rudeness::                    
+@end menu
+
+@node Manipulating Windows, Unmanaged Windows, Windows, Windows
+@section Manipulating Windows
+
+The following are commands used to manipulate windows.
+
+@deffn Command select @var{n}
+This jumps you to window @var{n} where @var{n} is the window number as
+shown in the Program Bar. You can do the same trick with
+@command{C-@var{n}} too. To select no window, blanking the current
+frame, type @samp{select -}.
+@end deffn
+
+@deffn Command select @var{window-name}
+Go to a window by name. A shortcut is @kbd{C-t '}.
+@end deffn
+
+@deffn Command windows @var{fmt}
+This displays the Program Bar which displays the windows you currently
+have running. The number before each window name is used to jump to
+that window. You can do this by typing @kbd{C-t @var{n}} where @var{n}
+is the number of the window. Note that only windows with numbers from
+0 to 9 can be referenced using this keystroke.  To reach windows with
+numbers greater than 9, use @kbd{C-t '} and type the number at the
+prompt.
+
+After 5 seconds the Program Bar disappears.
+
+This command is bound to @kbd{C-t w} by default.
+
+When invoked from the command-line like this,
+
+@example
+$ ratpoison -c windows
+@end example
+
+Instead of a message bar, you will get a list of the windows printed
+to stdout. This allows you to write more advanced scripts than simple
+keyboard macros. This is where @var{fmt} comes into play. If
+@command{windows} is given an arg it treats it as the format string as
+described in @command{defwinfmt}.
+@end deffn
+
+@deffn Command title @var{title}
+Rename the currently active window. This name will remain for the
+duration of the window's life, unless you change it again. By default,
+the @kbd{C-t A} keystroke is bound to this command.
+@end deffn
+
+@deffn Command other
+This toggles between the current window and the last window. By
+default, this is bound to @kbd{C-t C-t}.
+@end deffn
+
+@deffn Command prev
+This jumps you to the previous window in the window list. By default,
+this is bound to @kbd{C-t p}.
+@end deffn
+
+@deffn Command next
+This jumps you to the next window in the window list. This one is
+bound to three keystrokes, namely @kbd{C-t n}, @kbd{C-t space},
+and @kbd{C-t enter}.
+@end deffn
+
+@deffn Command kill
+This destroys the current window. Normally you should only need to
+use @command{delete}, but just in case you need to rip the heart out of a
+misbehaving window this command should do the trick. Also available as
+@kbd{C-t K}.
+@end deffn
+
+
+@deffn Command info
+Display information about the current window.
+@end deffn
+
+@deffn Command gravity @var{g}
+Change the gravity of the current window. A normal window will default
+to the top-left corner of the screen, but it can also be placed at the
+bottom-right corner of the screen. Valid values for @var{g} are the 8
+directions @samp{northwest}, @samp{north}, @samp{northeast},
+@samp{east}, @samp{southeast}, @samp{south}, @samp{southwest} and
+@samp{west}, clockwise from the top left corner. @samp{center} will
+center the window in the frame. @var{g} and can be abbreviated to the
+standard compass 1 and 2 letter abbreviations (i.e. @samp{nw},
+@samp{s}, etc).
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command delete
+This deletes the current window. You can access it with the @kbd{C-t k}
+keystroke.
+@end deffn
+
+@deffn Command defwinname @var{name}
+There are three resources ratpoison can get a window's name from: the
+WMNAME hint, the res_name from the WMCLASS hint, or the res_class from
+the WMCLASS hint. @var{name} can be @samp{title} which is what most
+window managers put in the title bar, @samp{name} which is the
+res_name, or @samp{class} which is the res_class.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command defwingravity @var{g}
+Set the default gravity for normal windows. See the
+@command{gravity} command.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command defwinliststyle @var{setting}
+The window list can be displayed in a row or a column. @var{setting}
+can be @samp{row} or @samp{column}.
+@end deffn
+
+@deffn Command defwinfmt @var{fmt}
+Set the default window format for the @command{windows} command. By
+default it is @samp{%n%s%t}. The following is a list of valid format
+characters:
+
+@table @samp
+@item %n
+The window number
+@item %s
+Window status (current window, last window, etc)
+@item %t
+Window Name
+@item %a
+Application Name
+@item %c
+Resource Class
+@item %i
+X11 Window ID
+@item %l
+A unique number based on when the window was last accessed. The higher
+the number, the more recently it was accessed.
+@end table
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command number @var{n} @var{target}
+Set a window's number to @var{n}. If another window occupies the
+requested number already, then the windows' numbers are swapped.
+
+The second argument, @var{target}, is optional. It should be the
+number of the window whose number will be changed. If @var{target} is
+omitted ratpoison defaults to the current window.
+@end deffn
+
+@deffn Command deftransgravity @var{g}
+Set the default alignment for transient windows. See the
+@command{gravity} command.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command defmaxsizegravity @var{g}
+Set the default alignment for windows with maxsize hints. See the
+@command{gravity} command.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command defborder @var{n}
+Set the border width for all windows.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@node Unmanaged Windows, Rudeness, Manipulating Windows, Windows
+@section Unmanaged Windows
+
+ratpoison can intentionally not manage windows. ratpoison keeps a list
+of strings and if any new window's name matches a string in the list,
+then it will not be picked up and managed by ratpoison.
+
+The following are commands to manipulate this list
+
+
+@deffn Command clrunmanaged
+Clear the unmanaged window list.
+@end deffn
+
+@deffn Command unmanage @var{text}
+Add @var{text} to the unmanaged window list. Any window whose name
+matches any of the strings in the unmanaged window list will not be
+handled in any way by ratpoison. This only applies to new windows (not
+windows already managed by ratpoison).
+
+When called non-interactively with no arguments, the list is returned.
+@end deffn
+
+@node Rudeness,  , Unmanaged Windows, Windows
+@section Rudeness
+
+Some programs will attempt to steal the focus without the users
+permission. Not only is this a sign of a lame programmers attempt to fix
+a window manager problem in the wrong place, it's just plain rude. By
+default ratpoison will honour these rudeness requests, but it doesn't
+have to. Use the @command{rudeness} command to deal with such programs.
+
+@deffn Command rudeness @var{n}
+The rudeness command lets you decide what windows pop-up automatically
+and when. This is often useful for those deep hack sessions when you
+absolutely can't be disturbed.
+
+There are two kinds of windows: normal windows (like an xterm) and
+transient windows (generally pop-up dialog boxes). When a client
+program wants to display a new window it makes a requests to
+ratpoison. ratpoison then decides whether to grant the request and
+display the window or ignore it. A client program can also request
+that one of its windows be raised. You can customize ratpoison to
+either honour these requests (the default operation) or ignore them.
+
+@var{n} is a number from 0 to 15. Each of the four bits determine
+which requests ratpoison grants.
+
+@table @asis
+@item Bit 0
+Tells ratpoison to grant raise requests on transient windows
+
+@item Bit 1
+Tells ratpoison to grant raise requests on normal windows
+
+@item Bit 2
+Tells ratpoison to grant display requests on new transient windows
+
+@item Bit 3 
+Tells ratpoison to grant display requests on new normal windows
+@end table
+
+For example, if you wanted only wanted to grant transient windows
+raise requests and display requests you would type @samp{rudeness
+5}. If a request is not granted ratpoison will tell you about the
+request with a message like @samp{Raise request from window 1
+(emacs)}.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@node Groups, Frames, Windows, Top
+@chapter Groups
+ratpoison provides functionality to group windows together. This
+coupled with saving and restoring frames configurations is what most
+people would call @dfn{virtual desktops} or @dfn{workspaces}. 
+
+While ratpoison doesn't explicity provide support for such things, it
+does allow you to write scripts to this end. Such a script exists in
+@file{contrib/} called @file{rpws}. Consult that file for details on
+seting up workspaces inside ratpoison.
+
+Groups are more general purpose than workspaces. windows from one
+group can be visible along with windows from another group. If you
+switch to a different group nothing changes except the list of windows
+you can cycle through. ratpoison allows the user to move a window from
+one group to another, merge two groups, create new groups, and delete
+existing ones.
+
+The following is a list of of commands used for manipulating groups.
+
+@deffn Command gnew @var{name}
+Create a new group with the name @var{name}. @var{name} is
+optional. This new group becomes the new group.
+@end deffn
+
+@deffn Command gnewbg @var{name}
+This is the same as @command{gnew} except that the current group does
+not change.
+@end deffn
+
+@deffn Command groups
+Display a list of groups with a similar format to @command{windows}.
+@end deffn
+
+@deffn Command gmove @var{group}
+Move the current window to @var{group}.
+@end deffn
+
+@deffn Command gnext
+Go to the next group in the list.
+@end deffn
+
+@deffn Command gprev
+Go to the previous group in the list.
+@end deffn
+
+@deffn Command gselect @var{group}
+Select a particular group by name or number. If @var{group} is not
+provided, ratpoison will interactively prompt for the group.
+@end deffn
+
+@deffn Command gmerge @var{group}
+Merge @var{group} with the current group. All windows in @var{group}
+will be moved to the current group. @var{group} is not deleted.
+@end deffn
+
+@deffn Command gdelete @var{group}
+Delete a group. @var{group} is optional. If it is not specified
+ratpoison will attempt to delete the current group. Only empty groups
+can be deleted. To empty a group see @command{gmerge}.
+@end deffn
+
+@node Frames, Multiple Monitors, Groups, Top
+@chapter Frames
 Sometimes you may want to see two or more windows at the same
 time. ratpoison allows you to split the display into frames (see
-@ref{Concepts}). Each frame can then contain 1 window. To split the
+@ref{Concepts}). Each frame can then contain 1 window.
+
+@menu
+* Splitting Frames::            
+* Resizing Frames::             
+* Frame Navigation Commands::   
+* Saving and Restoring Frame Sets::  
+@end menu
+
+@node Splitting Frames, Resizing Frames, Frames, Frames
+@section Splitting Frames
+
+To split the
 current frame horizontally use @kbd{C-t s}. To split the current frame
 vertically use @kbd{C-t S}. If you have enough windows, you'll notice
 that the new frame will find a window for itself. You can now use the
@@ -237,12 +571,48 @@ Finally, when you've had enough of the splitting and you just want
 good ol' full screen ratpoison press @kbd{C-t Q} to remove all splits
 and leave you with the current window full screen.
 
-@menu
-* Resizing Frames::             
-* Saving and Restoring Frame Sets::  
-@end menu
+@deffn Command remove
+Kill the current frame. This is a no-op if there is only one frame.
+@end deffn
 
-@node Resizing Frames, Saving and Restoring Frame Sets, Splitting Frames, Splitting Frames
+@deffn Command only
+Kill all frames but the current one.
+@end deffn
+
+@deffn Command split @var{n}
+@deffnx Command vsplit @var{n}
+Split the current frame vertically in two. The last accessed window
+not occupying a frame will be the second window.
+
+@var{n} is either a fraction of the form @code{x/y} or a number. If it
+is a fraction then the current frame is resized to that fraction of
+its original size and the new frame takes up the remaining space. For
+instance, @code{split 1/4} will split the current frame to a quarter
+of its original size and the new frame will then be 3/4 of the size of
+the original frame.
+
+If it is a pixel, the original frame is resized to that many
+pixels. If @var{n} has a minus sign before it, then the new frame will
+shrink by that many pixels.
+@end deffn
+
+@deffn Command hsplit @var{n}
+Split the current frame horizontally in two. The last accessed window
+not occupying a frame will be the second window.
+
+@var{n} is either a fraction of the form @code{x/y} or a number. If it
+is a fraction then the current frame is resized to that fraction of
+its original size and the new frame takes up the remaining space. For
+instance, @code{split 1/4} will split the current frame to a quarter
+of its original size and the new frame will then be 3/4 of the size of
+the original frame.
+
+If it is a pixel, the original frame is resized to that many
+pixels. If @var{n} has a minus sign before it, then the new frame will
+shrink by that many pixels.
+@end deffn
+
+@node Resizing Frames, Frame Navigation Commands, Splitting Frames, Frames
 @section Resizing Frames
 ratpoison provides a command, @command{resize}, that resizes the
 current frame. It is bound to the key @kbd{C-t r} by
@@ -276,7 +646,71 @@ Abort and restore the frame to its original size.
 The increment size used to resize the frame interactively is
 customized with the command @command{defresizeunit}.
 
-@node Saving and Restoring Frame Sets,  , Resizing Frames, Splitting Frames
+@deffn Command defresizeunit @var{pixels}
+Set the number of pixels a frame will grow or shrink by when being
+dynamically resized.
+@end deffn
+
+@deffn Command resize @var{horizontal} @var{vertical}
+Resize the current frame by @var{horizontal} pixels horizontally, and
+@var{vertical} pixels vertically. If no arguments are given and the
+command is called interactively, ratpoison will let the user
+dynamically resize the frame using @kbd{C-p} to shrink vertically,
+@kbd{C-n} to grow vertically, @kbd{C-b} to shrink horizontally,
+@kbd{C-f} to grow horizontally, and @kbd{s} to shrink the frame to the
+size of the window (See the @command{shrink} command). When you have
+resized the frame to your liking, press @kbd{Return} to finish.
+@end deffn
+
+@deffn Command shrink
+If a window has resize increment hints, such as xterms, the window may
+not be able to take up the whole frame. In this case, use this command
+to suck the frame up to the to window, reclaiming any wasted space.
+@end deffn
+
+@node Frame Navigation Commands, Saving and Restoring Frame Sets, Resizing Frames, Frames
+@section Frame Navigation Commands
+
+Here are the commands for Navigating frames.
+
+@deffn Command fselect @var{n}
+Select a frame by number. If an argument is passed to it then attempt
+to select the frame whose number is @var{n}. If not, ratpoison will
+print a number at the top left corner of each frame and wait for the
+user to type the number they wish to select. Currently there is no way
+to select a frame whose number is greater than 9 unless the number is
+passed as an argument.
+@end deffn
+
+@deffn Command curframe
+Indicate which frame is the current frame.
+@end deffn
+
+@deffn Command focus
+cycle through ratpoison's frames.
+@end deffn
+
+@deffn Command focusdown
+Move to the frame below the current frame.
+@end deffn
+
+@deffn Command focuslast
+Switch to the last focused frame.
+@end deffn
+
+@deffn Command focusleft
+Move to the frame left of the current frame.
+@end deffn
+
+@deffn Command focusright
+Move to the frame right of the current frame.
+@end deffn
+
+@deffn Command focusup
+Move to the frame above the current frame.
+@end deffn
+
+@node Saving and Restoring Frame Sets,  , Frame Navigation Commands, Frames
 @section Saving and Restoring Frame Sets
 ratpoison provides two commands, @command{fdump} and
 @command{frestore}, that allow the user to save and restore frame
@@ -298,7 +732,19 @@ the layout by hand each time is a bit cumbersome. There are some
 simple bindings in @file{doc/sample.ratpoisonrc} that allow you to
 save and restore frame layouts with the press of a key.
 
-@node Multiple Monitors, Keystrokes, Splitting Frames, Top
+@deffn Command fdump
+dump the current frame layout as text. When used non-interactively
+(from the command-line), ratpoison will print the frame layout. When
+used interactively, nothing happens.
+@end deffn
+
+@deffn Command frestore @var{frames}
+Restore the frame layout based on the list of frames
+@var{frames}. @var{frames} should be the text that was printed after
+calling @code{fdump}.
+@end deffn
+
+@node Multiple Monitors, Keystrokes, Frames, Top
 @chapter Multiple Monitors
 When you've finally accumulated enough computer junk, you'll find
 youself attaching a second monitor to your computer. ratpoison has
@@ -319,8 +765,90 @@ current screen. If you want to switch to the other xterm you can
 switch to it by name (use @command{select} or @kbd{C-t '}), by number,
 or you can use @command{nextscreen} and @command{prevscreen}.
 
-@node Keystrokes, Commands, Multiple Monitors, Top
+@deffn Command nextscreen
+This jumps you to the next X11 screen. @command{nextscreen} is
+used for dual-head displays and multiple monitor setups.
+@end deffn
+
+@deffn Command prevscreen
+This jumps you to the previous X11 screen. @command{prevscreen} is
+used for dual-head displays and multiple monitor setups.
+@end deffn
+
+
+@node Keystrokes, Hooks, Multiple Monitors, Top
 @chapter Keystrokes
+
+Interactive control of ratpoison is done entirely through
+keystrokes. This chapter explains how keystrokes are stored and
+manipulated.
+
+@menu
+* Key Maps::                    
+* Default Key Bindings::        
+@end menu
+
+@node Key Maps, Default Key Bindings, Keystrokes, Keystrokes
+@section Key Maps
+
+All keystrokes exist inside a keymap. When you press the prefix key you
+are accessing the @samp{root} keymap. By default all commands reside in
+the @samp{root} key map and are accessed by pressing @kbd{C-t}.
+
+There is also a top level key map, @samp{top}. Any keystroke in this key
+map can be accessed simply by pressing the key. This is where the prefix
+key resides.
+
+The following functions control creating, editing, and deleting key maps.
+
+@deffn Command newkmap @var{kmap}
+Create a new keymap named @var{kmap}.
+@end deffn
+
+@deffn Command delkmap @var{kmap}
+Delete the keymap, @var{kmap}.
+@end deffn
+
+@deffn Command bind @var{Key} @var{command}
+Bind a key to a ratpoison command. This command takes two arguments: the
+key to bind and the command to run. For example, to bind @kbd{C-t R} to
+restart ratpoison:
+
+@example
+: bind R restart
+@end example
+
+If no command is specified then bind works exactly like @command{unbind},
+unbinding the key.
+@end deffn
+
+@deffn Command unbind @var{key}
+Unbind a keystroke.
+@end deffn
+
+@deffn Command definekey @var{kmap} @var{key} @var{command}
+@command{definekey} works exactly like @command{bind} and
+@command{unbind} except that it can bind keys on any key map (not just
+@samp{root}).
+@end deffn
+
+@deffn Command undefinekey @var{kmap} @var{key}
+Like @command{unbind} except that you pass it a key map in @var{kmap}.
+@end deffn
+
+@deffn Command readkey @var{kmap}
+Read a key from the keyboard and execute the command associated with
+it in the keymap, @var{kmap}.
+@end deffn
+
+@deffn Command link @var{key}
+Call the command that @var{key} is bound to. For instance
+@command{link C-t} would call the command @command{other} and switch
+to the last window.
+@end deffn
+
+@node Default Key Bindings,  , Key Maps, Keystrokes
+@section Default Key Bindings
 
 ratpoison is a very simple window manager. Each window is maximized and
 has no border decorations. The default keystrokes are listed in this
@@ -459,16 +987,23 @@ Indicate which frame is the current frame.
 
 @end table
 
-@node Commands, Input, Keystrokes, Top
-@chapter Commands
+@node Hooks, The Status Bar, Keystrokes, Top
+@chapter Hooks
 
-ratpoison can be controlled with commands (so called colon-commands).
-The summary of available commands is listed below:
+One of the goals of ratpoison is to allow users to create exciting
+customization to fit their specific needs. Hooks allow a user to latch
+scripts onto certain events.
 
-@deffn Command abort
-This is a pretty useless command. By default, it is bound to
-@kbd{C-t g}, and its purpose is to abort other commands.
-@end deffn
+Each hook contains a list of commands to be executed when the
+appropriate event occurs in ratpoison. For example, if you want to warp
+the rat to corner of the screen everytime you press a top level bound
+key, you could add this to you .ratpoisonrc file:
+
+@example
+addhook key banish
+@end example
+
+That should keep the rat out of your way.
 
 @deffn Command addhook @var{hook} @var{command}
 Add a @var{command} to @var{hook}. When the hook is run, @var{command}
@@ -495,8 +1030,130 @@ Run when ratpoison restarts.
 
 @end deffn
 
+@deffn Command remhook @var{hook} @var{command}
+Remove @var{command} from the hook. See @command{addhook} for a list
+of available hooks.
+@end deffn
+
+
+@node The Status Bar, Using Other Window Managers, Hooks, Top
+@chapter The Status Bar
+
+ratpoison presents status and output through the status bar. By default
+it is located in the top right corner of the screen. 
+
+This chapter presents commands for manipulating the status bar.
+
+Since it is the only visible evidence that ratpoison is running (as
+opposed to the invisible evidence including the lack of title bars and
+your favorite desktop background) there are also copious visual
+customizations available for those rainy days.
+
+@deffn Command msgwait @var{n}
+Set the bar's timeout in seconds.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command lastmsg
+Display the last message.
+@end deffn
+
+@deffn Command echo @var{text}
+Display @var{text} as a message.
+@end deffn
+
+@deffn Command definputwidth @var{n}
+Set the width of the input window.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command deffont @var{font}
+Set the font. @var{font} is a font string like @samp{9x15bold}.
+@end deffn
+
+@deffn Command deffgcolor @var{color}
+Set the foreground color for all text ratpoison displays. @var{color}
+is any valid X11 color.
+@end deffn
+
+@deffn Command defbgcolor @var{color}
+Set the background color for all text ratpoison displays. @var{color}
+is any valid X11 color.
+@end deffn
+
+@deffn Command defbarpadding @var{x} @var{y}
+Set the horizontal and vertical padding inside the bar.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+@deffn Command defbargravity @var{g}
+Set the default alignment for the message bar. See the @command{gravity} command.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+@end deffn
+
+
+@deffn Command defbarborder @var{n}
+Set the border width for the bar window.
+@end deffn
+
+
+@node Using Other Window Managers, Other Commands, The Status Bar, Top
+@chapter Using Other Window Managers
+
+There are times when a program has been so badly written that it is
+virtually impossible to use under ratpoison. Some authors have tailored
+their programs to certain window management paradigms so aggressively
+that very little can be done. Ratpoison has two commands to help you
+through these difficult times: @command{tmpwm} and @command{newwm}.
+
+These commands should be used sparingly. They were created to allow
+users to understand how a poorly designed program is intended to
+function so they can build a replacement or patch an existing
+alternative's missing functionality.
+
+According to independant studies, @command{tmpwm} has been used almost
+exclusively to verify it's correct operation -- like a vintage sports
+care: always kept in prime condition and never used. 
+
+@command{tmpwm} and @command{newwm} are provided for boasting and
+completeness.
+
+@deffn Command tmpwm @var{WM}
+Gives control over to another window manager and regains control once
+it has terminated. @var{WM} is the path to the new window
+manager. This command is useful when you want to temporarily take a
+look at another window manager, or program under a different window
+manager, but you want to come back to ratpoison when you've finished
+your investigation.
+@end deffn
+
+@deffn Command newwm @var{window-manager}
+This is a bad-bad command. It kills ratpoison and revives that
+ugly rodent! Yuck! Avoid!
+@end deffn
+
+@node Other Commands, Input, Using Other Window Managers, Top
+@chapter Other Commands
+
+The following is a list of commands that don't fit in any existing
+chapters.
+
+@deffn Command abort
+This is a pretty useless command. By default, it is bound to @kbd{C-t
+g} and its purpose is to abort the current chain of keystrokes (just
+like @kbd{C-g} in @samp{Emacs}).
+@end deffn
+
 @deffn Command alias @var{name} @var{command}
-An allows you to name a ratpoison command something else. For
+Allows you to name a ratpoison command something else. For
 instance, if you frequently open emacs you may want to make an alias
 called @samp{emacs} that loads emacs. You would do it like this:
 
@@ -513,105 +1170,16 @@ non-interactively with @command{ratpoison -c}.
 Banish the mouse to the lower right corner of the screen.
 @end deffn
 
-@deffn Command bind @var{Key} @var{command}
-Bind a key to a ratpoison command. This command takes two arguments: the
-key to bind and the command to run. For example, to bind @kbd{C-t R} to
-restart ratpoison:
-
-@example
-: bind R restart
-@end example
-
-If no command is specified then bind works exactly like @command{unbind},
-unbinding the key.
-@end deffn
-
 @deffn Command chdir
 Change the current directory for ratpoison.
-@end deffn
-
-@deffn Command clrunmanaged
-Clear the unmanaged window list. See @command{unmanage} for an
-explanation of the unmanaged window list.
 @end deffn
 
 @deffn Command colon @var{command}
 Run a ratpoison command.
 @end deffn
 
-@deffn Command curframe
-Indicate which frame is the current frame.
-@end deffn
-
-@deffn Command defbarborder @var{n}
-Set the border width for the bar window.
-@end deffn
-
-@deffn Command defbargravity @var{g}
-Set the default alignment for the message bar. See the @command{gravity} command.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command defbarpadding @var{x} @var{y}
-Set the horizontal and vertical padding inside the bar.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command defbgcolor @var{color}
-Set the background color for all text ratpoison displays. @var{color}
-is any valid X11 color.
-@end deffn
-
-@deffn Command defborder @var{n}
-Set the border width for all windows.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command deffgcolor @var{color}
-Set the foreground color for all text ratpoison displays. @var{color}
-is any valid X11 color.
-@end deffn
-
-@deffn Command deffont @var{font}
-Set the font. @var{font} is a font string like @samp{9x15bold}.
-@end deffn
-
-@deffn Command definputwidth @var{n}
-Set the width of the input window.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command defmaxsizegravity @var{g}
-Set the default alignment for windows with maxsize hints. See the
-@command{gravity} command.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
 @deffn Command defpadding @var{left} @var{top} @var{right} @var{bottom}
 Set the padding around the edge of the screen.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command defresizeunit @var{pixels}
-Set the number of pixels a frame will grow or shrink by when being
-dynamically resized.
-@end deffn
-
-@deffn Command deftransgravity @var{g}
-Set the default alignment for transient windows. See the
-@command{gravity} command.
 
 When called non-interactively with no arguments, the current setting is
 returned.
@@ -626,71 +1194,6 @@ When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command defwinfmt @var{fmt}
-Set the default window format for the @command{windows} command. By
-default it is @samp{%n%s%t}. The following is a list of valid format
-characters:
-
-@table @samp
-@item %n
-The window number
-@item %s
-Window status (current window, last window, etc)
-@item %t
-Window Name
-@item %a
-Application Name
-@item %c
-Resource Class
-@item %i
-X11 Window ID
-@item %l
-A unique number based on when the window was last accessed. The higher
-the number, the more recently it was accessed.
-@end table
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command defwingravity @var{g}
-Set the default gravity for normal windows. See the
-@command{gravity} command.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command defwinliststyle @var{setting}
-The window list can be displayed in a row or a column. @var{setting}
-can be @samp{row} or @samp{column}.
-@end deffn
-
-@deffn Command defwinname @var{name}
-There are three resources ratpoison can get a window's name from: the
-WMNAME hint, the res_name from the WMCLASS hint, or the res_class from
-the WMCLASS hint. @var{name} can be @samp{title} which is what most
-window managers put in the title bar, @samp{name} which is the
-res_name, or @samp{class} which is the res_class.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command delete
-This deletes the current window. You can access it with the @kbd{C-t k}
-keystroke.
-@end deffn
-
-@deffn Command newkmap @var{kmap}
-Delete the keymap, @var{kmap}.
-
-@end deffn
-
-@deffn Command echo @var{text}
-Display @var{text} as a message.
-@end deffn
-
 @deffn Command escape @var{key}
 Set the prefix to @var{key}. For example @samp{escape C-b} sets the
 prefix key to @key{C-b}.
@@ -700,319 +1203,41 @@ prefix key to @key{C-b}.
 Execute a shell command. By default, @kbd{C-t !} does this.
 @end deffn
 
-@deffn Command fdump
-dump the current frame layout as text. When used non-interactively
-(from the command-line), ratpoison will print the frame layout. When
-used interactively, nothing happens.
-@end deffn
-
-@deffn Command focus
-cycle through ratpoison's frames.
-@end deffn
-
-@deffn Command focusdown
-Move to the frame below the current frame.
-@end deffn
-
-@deffn Command focuslast
-Switch to the last focused frame.
-@end deffn
-
-@deffn Command focusleft
-Move to the frame left of the current frame.
-@end deffn
-
-@deffn Command focusright
-Move to the frame right of the current frame.
-@end deffn
-
-@deffn Command focusup
-Move to the frame above the current frame.
-@end deffn
-
-@deffn Command frestore @var{frames}
-Restore the frame layout based on the list of frames
-@var{frames}. @var{frames} should be the text that was printed after
-calling @code{fdump}.
-@end deffn
-
-@deffn Command fselect @var{n}
-Select a frame by number. If an argument is passed to it then attempt
-to select the frame whose number is @var{n}. If not, ratpoison will
-print a number at the top left corner of each frame and wait for the
-user to type the number they wish to select. Currently there is no way
-to select a frame whose number is greater than 9 unless the number is
-passed as an argument.
-@end deffn
-
-@deffn Command gdelete @var{group}
-Delete a group. @var{group} is optional. If it is not specified
-ratpoison will attempt to delete the current group. Only empty groups
-can be deleted. To empty a group see @command{gmerge}.
-@end deffn
-
 @deffn Command getenv @var{env}
 Display the value of the environment variable, @var{env}.
-@end deffn
-
-@deffn Command gmerge @var{group}
-Merge @var{group} with the current group. All windows in @var{group}
-will be moved to the current group. @var{group} is not deleted.
-@end deffn
-
-@deffn Command gmove @var{group}
-Move the current window to @var{group}.
-@end deffn
-
-@deffn Command gnew @var{name}
-Create a new group with the name @var{name}. @var{name} is
-optional. This new group becomes the new group.
-@end deffn
-
-@deffn Command gnewbg @var{name}
-This is the same as @command{gnew} except that the current group does
-not change.
-@end deffn
-
-@deffn Command gnext
-Go to the next group in the list.
-@end deffn
-
-@deffn Command gprev
-Go to the previous group in the list.
-@end deffn
-
-@deffn Command gravity @var{g}
-Change the gravity of the current window. A normal window will default
-to the top-left corner of the screen, but it can also be placed at the
-bottom-right corner of the screen. Valid values for @var{g} are the 8
-directions @samp{northwest}, @samp{north}, @samp{northeast},
-@samp{east}, @samp{southeast}, @samp{south}, @samp{southwest} and
-@samp{west}, clockwise from the top left corner. @samp{center} will
-center the window in the frame. @var{g} and can be abbreviated to the
-standard compass 1 and 2 letter abbreviations (i.e. @samp{nw},
-@samp{s}, etc).
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command groups
-Display a list of groups with a similar format to @command{windows}.
-@end deffn
-
-@deffn Command gselect @var{group}
-Select a particular group by name or number. If @var{group} is not
-provided, ratpoison will interactively prompt for the group.
 @end deffn
 
 @deffn Command help
 Display a help screen that lists all bound keystrokes.
 @end deffn
 
-@deffn Command info
-Display information about the current window.
-@end deffn
-
-@deffn Command kill
-This destroys the current window. Normally you should only need to
-use @command{delete}, but just in case you need to rip the heart out of a
-misbehaving window this command should do the trick. Also available as
-@kbd{C-t K}.
-@end deffn
-
-@deffn Command lastmsg
-Display the last message.
-@end deffn
-
 @deffn Command license
 Display ratpoison's license. By default, this is bound to @kbd{C-t V}.
-@end deffn
-
-@deffn Command link @var{key}
-Call the command that @var{key} is bound to. For instance
-@command{link C-t} would call the command @command{other} and switch
-to the last window.
 @end deffn
 
 @deffn Command meta
 Send a @kbd{C-t} to the current window.
 @end deffn
 
-@deffn Command msgwait @var{n}
-Set the bar's timeout in seconds.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command newkmap @var{kmap}
-Create a new keymap named @var{kmap}.
-
-@end deffn
-
-@deffn Command newwm @var{window-manager}
-This is a bad-bad command. It kills ratpoison and revives that
-ugly rodent! Yuck! Avoid!
-@end deffn
-
-@deffn Command next
-This jumps you to the next window in the window list. This one is
-bound to three keystrokes, namely @kbd{C-t n}, @kbd{C-t space},
-and @kbd{C-t enter}.
-@end deffn
-
-@deffn Command nextscreen
-This jumps you to the next X11 screen. @command{nextscreen} is
-used for dual-head displays and multiple monitor setups.
-@end deffn
-
-@deffn Command number @var{n} @var{target}
-Set a window's number to @var{n}. If another window occupies the
-requested number already, then the windows' numbers are swapped.
-
-The second argument, @var{target}, is optional. It should be the
-number of the window whose number will be changed. If @var{target} is
-omitted ratpoison defaults to the current window.
-@end deffn
-
-@deffn Command only
-Kill all frames but the current one.
-@end deffn
-
-@deffn Command other
-This toggles between the current window and the last window. By
-default, this is bound to @kbd{C-t C-t}.
-@end deffn
-
-@deffn Command prev
-This jumps you to the previous window in the window list. By default,
-this is bound to @kbd{C-t p}.
-@end deffn
-
-@deffn Command prevscreen
-This jumps you to the previous X11 screen. @command{prevscreen} is
-used for dual-head displays and multiple monitor setups.
-@end deffn
-
 @deffn Command quit
 Quit ratpoison.
 @end deffn
 
-@deffn Command readkey @var{kmap}
-Read a key from the keyboard and execute the command associated with
-it in the keymap, @var{kmap}.
-
-@end deffn
-
 @deffn Command redisplay
-Redisplay the current window, just like @kbd{C-t l} would do.
-@end deffn
-
-@deffn Command remhook @var{hook} @var{command}
-Remove @var{command} from the hook. See @command{addhook} for a list
-of available hooks.
-@end deffn
-
-@deffn Command remove
-Kill the current frame. This is a no-op if there is only one frame.
-@end deffn
-
-@deffn Command resize @var{horizontal} @var{vertical}
-Resize the current frame by @var{horizontal} pixels horizontally, and
-@var{vertical} pixels vertically. If no arguments are given and the
-command is called interactively, ratpoison will let the user
-dynamically resize the frame using @kbd{C-p} to shrink vertically,
-@kbd{C-n} to grow vertically, @kbd{C-b} to shrink horizontally,
-@kbd{C-f} to grow horizontally, and @kbd{s} to shrink the frame to the
-size of the window (See the @command{shrink} command). When you have
-resized the frame to your liking, press @kbd{Return} to finish.
+Redisplay the current window. This is often used to fix xterms that
+didn't catch ratpoison's initial maximize event.
 @end deffn
 
 @deffn Command restart
 Restart ratpoison.
 @end deffn
 
-@deffn Command rudeness @var{n}
-The rudeness command lets you decide what windows pop-up automatically
-and when. This is often useful for those deep hack sessions when you
-absolutely can't be disturbed.
-
-There are two kinds of windows: normal windows (like an xterm) and
-transient windows (generally pop-up dialog boxes). When a client
-program wants to display a new window it makes a requests to
-ratpoison. ratpoison then decides whether to grant the request and
-display the window or ignore it. A client program can also request
-that one of its windows be raised. You can customize ratpoison to
-either honour these requests (the default operation) or ignore them.
-
-@var{n} is a number from 0 to 15. Each of the four bits determine
-which requests ratpoison grants.
-
-@table @asis
-@item Bit 0
-Tells ratpoison to grant raise requests on transient windows
-
-@item Bit 1
-Tells ratpoison to grant raise requests on normal windows
-
-@item Bit 2
-Tells ratpoison to grant display requests on new transient windows
-
-@item Bit 3 
-Tells ratpoison to grant display requests on new normal windows
-@end table
-
-For example, if you wanted only wanted to grant transient windows
-raise requests and display requests you would type @samp{rudeness
-5}. If a request is not granted ratpoison will tell you about the
-request with a message like @samp{Raise request from window 1
-(emacs)}.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-@end deffn
-
-@deffn Command select @var{n}
-This jumps you to window @var{n} where @var{n} is the window number as
-shown in the Program Bar. You can do the same trick with
-@command{C-@var{n}} too. To select no window, blanking the current
-frame, type @samp{select -}.
-@end deffn
-
-@deffn Command select @var{window-name}
-Go to a window by name. A shortcut is @kbd{C-t '}.
-@end deffn
-
 @deffn Command setenv @var{env} @var{value}
 Set the environment variable @var{env} to @var{value}
 @end deffn
 
-@deffn Command shrink
-If a window has resize increment hints, such as xterms, the window may
-not be able to take up the whole frame. In this case, use this command
-to suck the frame up to the to window, reclaiming any wasted space.
-@end deffn
-
 @deffn Command source @var{file}
 Read a text file containing ratpoison commands.
-@end deffn
-
-@deffn Command split @var{n}
-@deffnx Command vsplit @var{n}
-Split the current frame vertically in two. The last accessed window
-not occupying a frame will be the second window.
-
-@var{n} is either a fraction of the form @code{x/y} or a number. If it
-is a fraction then the current frame is resized to that fraction of
-its original size and the new frame takes up the remaining space. For
-instance, @code{split 1/4} will split the current frame to a quarter
-of its original size and the new frame will then be 3/4 of the size of
-the original frame.
-
-If it is a pixel, the original frame is resized to that many
-pixels. If @var{n} has a minus sign before it, then the new frame will
-shrink by that many pixels.
 @end deffn
 
 @deffn Command startup_message @var{state}
@@ -1023,41 +1248,12 @@ When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command tmpwm @var{WM}
-Gives control over to another window manager and regains control once
-it has terminated. @var{WM} is the path to the new window
-manager. This command is useful when you want to temporarily take a
-look at another window manager, or program under a different window
-manager, but you want to come back to ratpoison when you've finished
-your investigation.
-@end deffn
-
 @deffn Command time
-Show current time. Disappears after 5 seconds, like all other info bars.
-In the default setup, the @kbd{C-t a} keystroke is bound to this command.
-@end deffn
-
-@deffn Command title @var{title}
-Rename the currently active window. This name will remain for the
-duration of the window's life, unless you change it again. By default,
-the @kbd{C-t A} keystroke is bound to this command.
+Show current time in the status bar.
 @end deffn
 
 @deffn Command unalias @var{name}
 Remove @var{name} from the list of defined aliases.
-@end deffn
-
-@deffn Command unbind @var{key}
-Unbind a keystroke.
-@end deffn
-
-@deffn Command unmanage @var{text}
-Add @var{text} to the unmanaged window list. Any window whose name
-matches any of the strings in the unmanaged window list will not be
-handled in any way by ratpoison. This only applies to new windows (not
-windows already managed by ratpoison).
-
-When called non-interactively with no arguments, the list is returned.
 @end deffn
 
 @deffn Command unsetenv @var{env}
@@ -1073,22 +1269,6 @@ message saying command was executed.
 Print ratpoison version.  By default, this is bound to @kbd{C-t v}.
 @end deffn
 
-@deffn Command hsplit @var{n}
-Split the current frame horizontally in two. The last accessed window
-not occupying a frame will be the second window.
-
-@var{n} is either a fraction of the form @code{x/y} or a number. If it
-is a fraction then the current frame is resized to that fraction of
-its original size and the new frame takes up the remaining space. For
-instance, @code{split 1/4} will split the current frame to a quarter
-of its original size and the new frame will then be 3/4 of the size of
-the original frame.
-
-If it is a pixel, the original frame is resized to that many
-pixels. If @var{n} has a minus sign before it, then the new frame will
-shrink by that many pixels.
-@end deffn
-
 @deffn Command warp @var{state}
 Toggle rat warping. By default ratpoison saves the position of the
 rat when leaving a window and when the user returns to the window the
@@ -1096,33 +1276,7 @@ rat's position is restored. This can be counter-intuitive, so you can
 toggle it with this command. @var{state} can be @code{on} or @code{off}.
 @end deffn
 
-@deffn Command windows @var{fmt}
-This displays the Program Bar which displays the windows you currently
-have running. The number before each window name is used to jump to
-that window. You can do this by typing @kbd{C-t @var{n}} where @var{n}
-is the number of the window. Note that only windows with numbers from
-0 to 9 can be referenced using this keystroke.  To reach windows with
-numbers greater than 9, use @kbd{C-t '} and type the number at the
-prompt.
-
-After 5 seconds the Program Bar disappears.
-
-This command is bound to @kbd{C-t w} by default.
-
-When invoked from the command-line like this,
-
-@example
-$ ratpoison -c windows
-@end example
-
-Instead of a message bar, you will get a list of the windows printed
-to stdout. This allows you to write more advanced scripts than simple
-keyboard macros. This is where @var{fmt} comes into play. If
-@command{windows} is given an arg it treats it as the format string as
-described in @command{defwinfmt}.
-@end deffn
-
-@node Input, Command Line Arguments, Commands, Top
+@node Input, Command Line Arguments, Other Commands, Top
 @chapter Input
 At various times ratpoison will prompt you for input. Ratpoison sports
 a fully featured line editor. The following table lists the keystrokes
