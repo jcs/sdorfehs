@@ -46,7 +46,6 @@ update_window_name (rp_window *win)
   XTextProperty text;
   char **name_list;
   int list_len;
-  int i;
 
   /* Don't overwrite the window name if the user specified one. */
   if (win->named) return 0;
@@ -63,11 +62,16 @@ update_window_name (rp_window *win)
       return 0;
     }
 
+  /* Sorta sick... */
 #ifdef DEBUG
-  for (i=0; i<list_len; i++)
-    {
-      PRINT_DEBUG ("WMName: %s\n", name_list[i]);
-    }
+  {
+    int i;
+
+    for (i=0; i<list_len; i++)
+      {
+	PRINT_DEBUG ("WMName: %s\n", name_list[i]);
+      }
+  }
 #endif /* DEBUG */
 
   /* Set the window's name to the first in the name_list */
