@@ -135,7 +135,7 @@ init_window_list ()
 }
 
 rp_window *
-find_window_by_number (int n)
+find_window_number (int n)
 {
   rp_window *cur;
 
@@ -161,37 +161,59 @@ str_comp (char *s1, char *s2, int len)
   return 1;
 }
 
-static rp_window *
-find_window_by_name (char *name)
+/* return a window by name */
+rp_window *
+find_window_name (char *name)
 {
-  rp_window *cur;
+  rp_window *w;
 
-  for (cur=rp_window_head; cur; cur=cur->next)
+  for (w = rp_window_head; w; w = w->next)
     {
-      if (cur->state == STATE_UNMAPPED) continue;
+      if (w->state == STATE_UNMAPPED) 
+	continue;
 
-      if (str_comp (name, cur->name, strlen (name))) return cur;
+      if (str_comp (name, w->name, strlen (name))) 
+	return w;
     }
 
+  /* didn't find it */
   return NULL;
 }
 
-int
-goto_window_name (char *name)
+/* return the previous window in the list */
+rp_window*
+find_window_prev (rp_window *w)
 {
-  rp_window *win;
+  if (!(w || (w = rp_current_window)))
+    return NULL;
 
-  if ((win = find_window_by_name (name)) == NULL)
-    {
-      return 0;
-    }
+  w = w->prev;
+  if (w == NULL) 
+    w = rp_window_tail;
+  if (w->state == STATE_UNMAPPED) 
+    return find_window_prev (w);
+  else
+    return w;
+}
 
-  set_active_window (win);
-  return 1;
+/* return the next window in the list */
+rp_window*
+find_window_next (rp_window *w)
+{
+  if (!(w || (w = rp_current_window)))
+    return NULL;
+
+  w = w->next;
+  if (w == NULL) 
+    w = rp_window_head;
+  if (w->state == STATE_UNMAPPED) 
+    return find_window_next (w);
+  else
+    return w;
 }
 
 rp_window *
-find_last_accessed_window ()
+find_window_other ()
 {
   int last_access = 0;
   rp_window *cur, *most_recent;

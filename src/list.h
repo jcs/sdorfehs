@@ -25,16 +25,20 @@
 rp_window *add_to_window_list (screen_info *s, Window w);
 void init_window_list ();
 void remove_from_window_list (rp_window *w);
-void next_window ();
-void prev_window ();
+/* void next_window (); */
+/* void prev_window (); */
 void last_window ();
 rp_window *find_window (Window w);
 void maximize_current_window ();
 void set_active_window (rp_window *rp_w);
 void set_current_window (rp_window *win);
-int goto_window_name (char *name);
-rp_window *find_last_accessed_window ();
+/* int goto_window_name (char *name); */
+rp_window *find_window_other ();
 rp_window *find_window_by_number (int n);
+rp_window* find_window_name (char *name);
+rp_window* find_window_prev (rp_window *w);
+rp_window* find_window_next (rp_window *w);
+rp_window* find_window_number (int n);
 void sort_window_list_by_number ();
 
 #endif /* ! _RATPOISON_LIST_H */
