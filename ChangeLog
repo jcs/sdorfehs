@@ -1,10 +1,12 @@
 2003-06-25  Shawn Betts  <sabetts@sfu.ca>
 
+	* contrib/rpws: only set RATPOISON if it's not already set.
+
 	* src/actions.c (cmd_gmove): prompt the user if no group is passed
 	as an argument.
 
 	* contrib/rpws: call /bin/bash
-	(rp_call): remove extraneous () in function declaration.
+	(rp_call): remove extraneous 'function' keyword in function declaration.
 	(ws_init_ws): likewise
 	(ws_init): likewise
 	(ws_save): likewise
