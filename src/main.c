@@ -202,7 +202,7 @@ handler (Display *d, XErrorEvent *e)
 
   if (ignore_badwindow && e->error_code == BadWindow) return 0;
 
-  XGetErrorText (d, e->error_code, error_msg + 7, sizeof (error_msg) - 7);
+  XGetErrorText (d, e->error_code, error_msg, sizeof (error_msg));
   fprintf (stderr, "ratpoison: ERROR: %s!\n", error_msg);
 
   /* If there is already an error to report, replace it with this new

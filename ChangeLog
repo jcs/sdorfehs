@@ -1,3 +1,8 @@
+2002-01-11  shawn  <sabetts@vcn.bc.ca>
+
+	* src/main.c (handler): store the error text at the beginning of
+	the string instead of 7 bytes in.
+
 2002-01-10  shawn  <sabetts@vcn.bc.ca>
 
 	* src/events.c (delegate_event): ignore the CirculateRequest event.
