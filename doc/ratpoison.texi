@@ -677,6 +677,11 @@ This deletes the current window. You can access it with the @kbd{C-t k}
 keystroke.
 @end deffn
 
+@deffn Command newkmap @var{kmap}
+Delete the keymap, @var{kmap}.
+
+@end deffn
+
 @deffn Command echo @var{text}
 Display @var{text} as a message.
 @end deffn
@@ -836,6 +841,11 @@ When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
+@deffn Command newkmap @var{kmap}
+Create a new keymap named @var{kmap}.
+
+@end deffn
+
 @deffn Command newwm @var{window-manager}
 This is a bad-bad command. It kills ratpoison and revives that
 ugly rodent! Yuck! Avoid!
@@ -882,6 +892,12 @@ used for dual-head displays and multiple monitor setups.
 
 @deffn Command quit
 Quit ratpoison.
+@end deffn
+
+@deffn Command readkey @var{kmap}
+Read a key from the keyboard and execute the command associated with
+it in the keymap, @var{kmap}.
+
 @end deffn
 
 @deffn Command redisplay

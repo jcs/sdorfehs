@@ -367,16 +367,16 @@ correct_mark (int msg_len, int *mark_start, int *mark_end)
 static void
 prepare_bar (rp_screen *s, int width, int height)
 {
+  XMoveResizeWindow (dpy, s->bar_window, 
+		     bar_x (s, width), bar_y (s, height),
+		     width, height);
+
   /* Map the bar if needed */
   if (!s->bar_is_raised)
     {
       s->bar_is_raised = BAR_IS_MESSAGE;
       XMapRaised (dpy, s->bar_window);
     }
-
-  XMoveResizeWindow (dpy, s->bar_window, 
-		     bar_x (s, width), bar_y (s, height),
-		     width, height);
 
   XRaiseWindow (dpy, s->bar_window);
   XClearWindow (dpy, s->bar_window);

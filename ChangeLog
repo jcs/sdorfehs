@@ -1,3 +1,7 @@
+2003-09-21  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/bar.c (prepare_bar): move and resize the window before mapping it.
+
 2003-09-04  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (initialize_default_keybindings): use ROOT_KEYMAP
