@@ -358,17 +358,17 @@ default it is @samp{N-W}. The following is a list of valid format
 characters:
 
 @table @samp
-@item N
+@item %n
 The window number
-@item -
+@item %s
 Window status (current window, last window, etc)
-@item W
+@item %t
 Window Name
-@item w
-Window res name
-@item c
-Window res class
-@item n
+@item %a
+Application Name
+@item %c
+Resource Class
+@item %i
 X11 Window ID
 @end table
 
