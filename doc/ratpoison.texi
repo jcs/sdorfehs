@@ -1299,8 +1299,7 @@ Run a ratpoison command.
 @deffnx Command defpadding @var{left} @var{top} @var{right} @var{bottom}
 Set the padding around the edge of the screen.
 
-When called non-interactively with no arguments, the current setting is
-returned.
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @deffn Command {set waitcursor} @var{n}
@@ -1309,8 +1308,7 @@ Set whether the rat cursor should change into a square when waiting
 for a key. A non-zero number means change the cursor. Zero means don't
 change the cursor.
 
-When called non-interactively with no arguments, the current setting is
-returned.
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @deffn Command escape @var{key}
@@ -1342,6 +1340,12 @@ Display ratpoison's license. By default, this is bound to @kbd{C-t V}.
 Send a @kbd{C-t} to the current window.
 @end deffn
 
+@deffn Command prompt @var{prompt}
+This command is only useful when called
+non-interactively. @cmd{prompt} prompts the user for input using
+@var{prompt} and returns the input.
+@end deffn
+       
 @deffn Command putsel @var{text}
 Make text the X11 selection.
 @end deffn
