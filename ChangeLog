@@ -1,3 +1,8 @@
+2001-09-06  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* configure.in: Use AC_CHECK_FUNCS to check for getopt and
+	getopt_long.
+
 2001-09-06  Gergely Nagy  <algernon@debian.org>
 
 	* doc/ratpoison-mode.el: major mode for editing .ratpoisonrc files

@@ -17,10 +17,10 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.20 2001/09/06 06:38:53 sabetts Exp $
+dnl $Id: configure.in,v 1.21 2001/09/07 05:22:01 sabetts Exp $
 
 AC_INIT(src/main.c)
-AM_INIT_AUTOMAKE(ratpoison, 0.2.0-cvs)
+AM_INIT_AUTOMAKE(ratpoison, 1.0.1-cvs)
 
 AM_CONFIG_HEADER(src/config.h)
 
@@ -44,7 +44,7 @@ term_prog=$withval, term_prog="xterm")
 AC_DEFINE_UNQUOTED(TERM_PROG,"$term_prog")
 
 dnl Checks for programs.
-CFLAGS="$CFLAGS -Wall"
+CFLAGS="$CFLAGS -Wall -O2"
 AC_CHECK_TOOL(CC, gcc)
 AC_PROG_CC
 
@@ -74,8 +74,7 @@ AC_CHECK_HEADERS(unistd.h)
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
+AC_CHECK_FUNCS(getopt getopt_long)
 AC_TYPE_SIGNAL
-AC_CHECK_FUNC(getopt)
-AC_CHECK_FUNC(getopt_long)
 
 AC_OUTPUT(Makefile doc/Makefile src/Makefile)
