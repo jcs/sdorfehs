@@ -492,7 +492,7 @@ is_transient_ancestor (rp_window *win, rp_window *transient_for)
       tmp = find_window (tmp->transient_for);
       if (tmp == transient_for)
 	return 1;
-    } while (tmp->transient);
+    } while (tmp && tmp->transient);
   
   return 0;
 }
