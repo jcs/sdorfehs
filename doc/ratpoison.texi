@@ -393,10 +393,6 @@ unbinding the key.
 @item chdir
 Change the current directory for ratpoison.
 
-@item clock
-Show current time. Disappears after 5 seconds, like all other info bars.
-In the default setup, the @kbd{C-t a} keystroke is bound to this command.
-
 @item colon @var{command}
 Run a ratpoison command.
 
@@ -697,6 +693,10 @@ pixels.
 @item startup_message @var{state}
 Turn on or off the startup_message. This is most useful in your
 .ratpoisonrc file. @var{state} can be @code{on} or @code{off}.
+
+@item time
+Show current time. Disappears after 5 seconds, like all other info bars.
+In the default setup, the @kbd{C-t a} keystroke is bound to this command.
 
 @item title @var{title}
 Rename the currently active window. This name will remain for the
