@@ -1,3 +1,14 @@
+2002-01-02  shawn  <sabetts@vcn.bc.ca>
+
+	* src/manage.h (get_state): new prototype
+
+	* src/manage.c (update_normal_hints): print only the hints that
+	are set as debugging output.
+	(scanwins): collect mapped and iconized windows.
+	(get_state): new function
+
+	* src/main.c (clean_up): don't map iconized windows.
+
 2001-12-21  shawn  <sabetts@vcn.bc.ca>
 
 	* src/actions.h (cmd_alias): new prototype

@@ -649,21 +649,7 @@ init_screen (screen_info *s, int screen_num)
 void
 clean_up ()
 {
-  rp_window *cur;
   int i;
-
-  /* Map any iconized windows. */
-  for (cur = rp_mapped_window_sentinel->next;
-       cur != rp_mapped_window_sentinel;
-       cur = cur->next)
-    {
-      if (cur->state == IconicState)
-	{
-	  unhide_window (cur);
-	}
-    }
-  
-  XSync (dpy, False);
 
   for (i=0; i<num_screens; i++)
     {

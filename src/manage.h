@@ -33,6 +33,7 @@ void update_normal_hints (rp_window *win);
 void rename_current_window ();
 void send_configure (rp_window *win);
 void set_state (rp_window *win, int state);
+long get_state (rp_window *win);
 
 void update_window_information (rp_window *win);
 void map_window (rp_window *win);

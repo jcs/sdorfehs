@@ -74,10 +74,18 @@ update_normal_hints (rp_window *win)
 
   XGetWMNormalHints (dpy, win->w, win->hints, &supplied);
 
-  PRINT_DEBUG ("hints: minx: %d miny: %d maxx: %d maxy: %d incx: %d incy: %d\n", 
-	       win->hints->min_width, win->hints->min_height,
-	       win->hints->max_width, win->hints->max_height,
-	       win->hints->width_inc, win->hints->height_inc);
+  /* Print debugging output for window hints. */
+#ifdef DEBUG
+  PRINT_DEBUG ("hints: ");
+  if (win->hints->flags & PMinSize)
+    PRINT_DEBUG ("minx: %d miny: %d ", win->hints->min_width, win->hints->min_height);
+
+  if (win->hints->flags & PMaxSize)
+    PRINT_DEBUG ("maxx: %d maxy: %d ", win->hints->max_width, win->hints->max_height);
+
+  if (win->hints->flags & PResizeInc)
+    PRINT_DEBUG ("incx: %d incy: %d\n", win->hints->width_inc, win->hints->height_inc);
+#endif
 }
 		     
 
@@ -314,11 +322,12 @@ scanwins(screen_info *s)
       win = add_to_window_list (s, wins[i]);
 
       PRINT_DEBUG ("map_state: %d\n", attr.map_state);
-      if (attr.map_state == IsViewable) 
-	{
-	  win->state = NormalState;
-	  map_window (win);
-	}
+      
+      /* Collect mapped and iconized windows. */
+      if (attr.map_state == IsViewable
+	  || (attr.map_state == IsUnmapped 
+	      && get_state (win) == IconicState))
+	map_window (win);
     }
 
   XFree(wins);
@@ -358,6 +367,32 @@ set_state (rp_window *win, int state)
 
   XChangeProperty (dpy, win->w, wm_state, wm_state, 32,
 		   PropModeReplace, (unsigned char *)data, 2);
+}
+
+/* Get the WM state of the window. */
+long
+get_state (rp_window *win)
+{
+  long state = WithdrawnState;
+  Atom type;
+  int format;
+  unsigned long nitems;
+  unsigned long bytes_left;
+  long *data;
+
+  if (win == NULL) 
+    return state;
+
+  if (XGetWindowProperty (dpy, win->w, wm_state, 0L, 2L, 
+			  False, wm_state, &type, &format, 
+			  &nitems, &bytes_left, 
+			  (unsigned char **)&data) == Success && nitems > 0)
+    {
+      state = *data;
+      XFree (data);
+    }
+
+  return state;
 }
 
 static void
