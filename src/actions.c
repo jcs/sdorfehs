@@ -487,7 +487,7 @@ parse_keydesc (char *s)
 }
 
 char *
-cmd_bind (int interactive, void *data)
+cmd_bind (int interactive, char *data)
 {
   char *keydesc;
   char *cmd;
@@ -500,7 +500,7 @@ cmd_bind (int interactive, void *data)
 
   keydesc = (char*) xmalloc (strlen (data) + 1);
   sscanf (data, "%s", keydesc);
-  cmd = ((char *)data) + strlen (keydesc);
+  cmd = data + strlen (keydesc);
 
   /* Gobble remaining whitespace before command starts */
   while (*cmd == ' ')
@@ -541,7 +541,7 @@ cmd_bind (int interactive, void *data)
 }
 
 char *
-cmd_unbind (int interactive, void *data)
+cmd_unbind (int interactive, char *data)
 {
   struct rp_key *key;
   char *keydesc;
@@ -571,7 +571,7 @@ cmd_unbind (int interactive, void *data)
 }
 
 char *
-cmd_unimplemented (int interactive, void *data)
+cmd_unimplemented (int interactive, char *data)
 {
   marked_message (" FIXME:  unimplemented command ",0,8);
 
@@ -579,12 +579,12 @@ cmd_unimplemented (int interactive, void *data)
 }
 
 char *
-cmd_source (int interactive, void *data)
+cmd_source (int interactive, char *data)
 {
   FILE *fileptr;
 
-  if ((fileptr = fopen ((char*) data, "r")) == NULL)
-    marked_message_printf (0, 0, " source: %s : %s ", (char *)data, strerror(errno));
+  if ((fileptr = fopen (data, "r")) == NULL)
+    marked_message_printf (0, 0, " source: %s : %s ", data, strerror(errno));
   else
     {
       read_rc_file (fileptr);
@@ -595,44 +595,16 @@ cmd_source (int interactive, void *data)
 }
 
 char *
-cmd_meta (int interactive, void *data)
+cmd_meta (int interactive, char *data)
 {
   XEvent ev1, ev;
   ev = rp_current_event;
 
   if (current_window() == NULL) return NULL;
 
-  PRINT_DEBUG (("type==%d\n", ev.xkey.type));
-  PRINT_DEBUG (("serial==%ld\n", ev.xkey.serial));
-  PRINT_DEBUG (("send_event==%d\n", ev.xkey.send_event));
-  PRINT_DEBUG (("display=%p\n", ev.xkey.display));
-  /*   PRINT_DEBUG ("root==%x  ???\n", ev.xkey.root); */
-  /*   PRINT_DEBUG ("window==%x  ???\n", ev.xkey.window); */
-  /*   PRINT_DEBUG ("subwindow==%x  ???\n", ev.xkey.subwindow); */
-  PRINT_DEBUG (("time==%ld\n", ev.xkey.time));
-  PRINT_DEBUG (("x==%d  y==%d\n", ev.xkey.x, ev.xkey.y));
-  PRINT_DEBUG (("x_root==%d  y_root==%d\n", ev.xkey.x_root, ev.xkey.y_root));
-  PRINT_DEBUG (("state==%d\n", ev.xkey.state));
-  PRINT_DEBUG (("keycode==%d\n", ev.xkey.keycode));
-  PRINT_DEBUG (("same_screen=%d\n", ev.xkey.same_screen));
-
-  /* I am not sure which of the following fields I have to fill in or
-     what to fill them in with (rcy) I wouldnt be suprised if this
-     breaks in some cases.  */
-
   ev1.xkey.type = KeyPress;
-  /*   ev1.xkey.serial =  */
-  /*   ev1.xkey.send_event = */
   ev1.xkey.display = dpy;
-  /*   ev1.xkey.root =  */
   ev1.xkey.window = current_window()->w;
-  /*   ev1.xkey.subwindow =  */
-  /*   ev1.xkey.time = ev.xkey.time; */
-  /*   ev1.xkey.x == */
-  /*   ev1.xkey.y == */
-  /*   ev1.xkey.x_root == */
-  /*   ev1.xkey.y_root == */
-
   ev1.xkey.state = rp_mask_to_x11_mask (prefix_key.state);
   ev1.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
 
@@ -646,7 +618,7 @@ cmd_meta (int interactive, void *data)
 }
 
 char *
-cmd_prev (int interactive, void *data)
+cmd_prev (int interactive, char *data)
 {
   rp_window *w;
 
@@ -674,7 +646,7 @@ cmd_prev (int interactive, void *data)
 }
 
 char *
-cmd_prev_frame (int interactive, void *data)
+cmd_prev_frame (int interactive, char *data)
 {
   rp_window_frame *frame;
 
@@ -688,7 +660,7 @@ cmd_prev_frame (int interactive, void *data)
 }
 
 char *
-cmd_next (int interactive, void *data)
+cmd_next (int interactive, char *data)
 {
   rp_window *w;
 
@@ -716,7 +688,7 @@ cmd_next (int interactive, void *data)
 }
 
 char *
-cmd_next_frame (int interactive, void *data)
+cmd_next_frame (int interactive, char *data)
 {
   rp_window_frame *frame;
 
@@ -730,7 +702,7 @@ cmd_next_frame (int interactive, void *data)
 }
 
 char *
-cmd_other (int interactive, void *data)
+cmd_other (int interactive, char *data)
 {
   rp_window *w;
 
@@ -762,7 +734,7 @@ string_to_window_number (char *str)
 
 /* switch to window number or name */
 char *
-cmd_select (int interactive, void *data)
+cmd_select (int interactive, char *data)
 {
   char *str;
   int n;
@@ -771,7 +743,7 @@ cmd_select (int interactive, void *data)
   if (data == NULL)
     str = get_input (MESSAGE_PROMPT_SWITCH_TO_WINDOW);
   else
-    str = xstrdup ((char *) data);
+    str = xstrdup (data);
 
   /* User aborted. */
   if (str == NULL)
@@ -813,7 +785,7 @@ cmd_select (int interactive, void *data)
 }
 
 char *
-cmd_rename (int interactive, void *data)
+cmd_rename (int interactive, char *data)
 {
   char *winname;
   
@@ -822,7 +794,7 @@ cmd_rename (int interactive, void *data)
   if (data == NULL)
     winname = get_input (MESSAGE_PROMPT_NEW_WINDOW_NAME);
   else
-    winname = xstrdup ((char *) data);
+    winname = xstrdup (data);
 
   /* User aborted. */
   if (winname == NULL)
@@ -848,7 +820,7 @@ cmd_rename (int interactive, void *data)
 
 
 char *
-cmd_delete (int interactive, void *data)
+cmd_delete (int interactive, char *data)
 {
   XEvent ev;
   int status;
@@ -870,7 +842,7 @@ cmd_delete (int interactive, void *data)
 }
 
 char *
-cmd_kill (int interactive, void *data)
+cmd_kill (int interactive, char *data)
 {
   if (current_window() == NULL) return NULL;
 
@@ -880,7 +852,7 @@ cmd_kill (int interactive, void *data)
 }
 
 char *
-cmd_version (int interactive, void *data)
+cmd_version (int interactive, char *data)
 {
   message (" " PACKAGE " " VERSION " ");
   return NULL;
@@ -901,7 +873,7 @@ command (int interactive, char *data)
     return NULL;
 
   /* get a writable copy for strtok() */
-  input = xstrdup ((char *) data);
+  input = xstrdup (data);
 
   cmd = strtok (input, " ");
 
@@ -913,14 +885,14 @@ command (int interactive, char *data)
   /* Gobble whitespace */
   if (rest)
     {
-      while (*rest == ' ') 
+      while (*rest == ' ')
 	rest++;
       /* If rest is empty, then we have no argument. */
       if (*rest == '\0')
 	rest = NULL;
     }
 
-  PRINT_DEBUG (("cmd==%s rest==%s\n", cmd, (char*)rest));
+  PRINT_DEBUG (("cmd==%s rest==%s\n", cmd, rest));
 
   /* Look for it in the aliases, first. */
   for (i=0; i<alias_list_last; i++)
@@ -966,7 +938,7 @@ command (int interactive, char *data)
 }
 
 char *
-cmd_colon (int interactive, void *data)
+cmd_colon (int interactive, char *data)
 {
   char *result;
   char *input;
@@ -992,14 +964,14 @@ cmd_colon (int interactive, void *data)
 }
 
 char *
-cmd_exec (int interactive, void *data)
+cmd_exec (int interactive, char *data)
 {
   char *cmd;
 
   if (data == NULL)
     cmd = get_input (MESSAGE_PROMPT_SHELL_COMMAND);
   else
-    cmd = xstrdup ((char *) data);
+    cmd = xstrdup (data);
 
   /* User aborted. */
   if (cmd == NULL)
@@ -1014,9 +986,8 @@ cmd_exec (int interactive, void *data)
 
 
 int
-spawn(void *data)
+spawn(char *cmd)
 {
-  char *cmd = data;
   int pid;
 
   pid = fork();
@@ -1049,14 +1020,14 @@ spawn(void *data)
 /* Switch to a different Window Manager. Thanks to 
 "Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
 char *
-cmd_newwm(int interactive, void *data)
+cmd_newwm(int interactive, char *data)
 {
   char *prog;
 
   if (data == NULL)
     prog = get_input (MESSAGE_PROMPT_SWITCH_WM);
   else
-    prog = xstrdup ((char *) data);
+    prog = xstrdup (data);
 
   /* User aborted. */
   if (prog == NULL)
@@ -1076,7 +1047,7 @@ cmd_newwm(int interactive, void *data)
 }
 
 char *
-cmd_quit(int interactive, void *data)
+cmd_quit(int interactive, char *data)
 {
   kill_signalled = 1;
   return NULL;
@@ -1086,7 +1057,7 @@ cmd_quit(int interactive, void *data)
    <cosis@lysator.liu.se> for the patch. Thanks to Jonathan Walther
    <krooger@debian.org> for making it pretty. */
 char *
-cmd_time (int interactive, void *data)
+cmd_time (int interactive, char *data)
 {
   char *msg, *tmp;
   time_t timep;
@@ -1110,7 +1081,7 @@ cmd_time (int interactive, void *data)
    window references are based on numbers, and this code doesn't
    update the number references after changing the number. */
 char *
-cmd_number (int interactive, void *data)
+cmd_number (int interactive, char *data)
 {
   rp_window_frame *frame;
   int old_number, new_number;
@@ -1125,7 +1096,7 @@ cmd_number (int interactive, void *data)
     }
   else
     {
-      str = xstrdup ((char *) data);
+      str = xstrdup (data);
     }
 
   tmp = strtok (str, " ");
@@ -1222,7 +1193,7 @@ cmd_number (int interactive, void *data)
 
 /* Toggle the display of the program bar */
 char *
-cmd_windows (int interactive, void *data)
+cmd_windows (int interactive, char *data)
 {
   struct sbuf *window_list = NULL;
   char *tmp;
@@ -1240,7 +1211,7 @@ cmd_windows (int interactive, void *data)
     {
       window_list = sbuf_new (0);
       if (data)
-	get_window_list ((char *)data, "\n", window_list, &dummy, &dummy);
+	get_window_list (data, "\n", window_list, &dummy, &dummy);
       else
 	get_window_list (defaults.window_fmt, "\n", window_list, &dummy, &dummy);
       tmp = sbuf_get (window_list);
@@ -1251,14 +1222,14 @@ cmd_windows (int interactive, void *data)
 }
 
 char *
-cmd_abort (int interactive, void *data)
+cmd_abort (int interactive, char *data)
 {
   return NULL;
 }  
 
 /* Redisplay the current window by sending 2 resize events. */
 char *
-cmd_redisplay (int interactive, void *data)
+cmd_redisplay (int interactive, char *data)
 {
   force_maximize (current_window());
   return NULL;
@@ -1266,7 +1237,7 @@ cmd_redisplay (int interactive, void *data)
 
 /* Reassign the prefix key. */
 char *
-cmd_escape (int interactive, void *data)
+cmd_escape (int interactive, char *data)
 {
   rp_window *cur;
   struct rp_key *key;
@@ -1309,7 +1280,7 @@ cmd_escape (int interactive, void *data)
     }
   else
     {
-      marked_message_printf (0, 0, " escape: unknown key '%s' ", (char *)data);
+      marked_message_printf (0, 0, " escape: unknown key '%s' ", data);
     }
 
   return NULL;
@@ -1317,10 +1288,10 @@ cmd_escape (int interactive, void *data)
 
 /* User accessible call to display the passed in string. */
 char *
-cmd_echo (int interactive, void *data)
+cmd_echo (int interactive, char *data)
 {
   if (data)
-    marked_message_printf (0, 0, " %s ", (char *)data);
+    marked_message_printf (0, 0, " %s ", data);
 
   return NULL;
 }
@@ -1353,7 +1324,7 @@ read_split (const char *str, int max)
 }
 
 char *
-cmd_h_split (int interactive, void *data)
+cmd_h_split (int interactive, char *data)
 {
   rp_window_frame *frame;
   int pixels;
@@ -1375,7 +1346,7 @@ cmd_h_split (int interactive, void *data)
 }
 
 char *
-cmd_v_split (int interactive, void *data)
+cmd_v_split (int interactive, char *data)
 {
   rp_window_frame *frame;
   int pixels;
@@ -1397,7 +1368,7 @@ cmd_v_split (int interactive, void *data)
 }
 
 char *
-cmd_only (int interactive, void *data)
+cmd_only (int interactive, char *data)
 {
   remove_all_splits();
   maximize (current_window());
@@ -1406,7 +1377,7 @@ cmd_only (int interactive, void *data)
 }
 
 char *
-cmd_remove (int interactive, void *data)
+cmd_remove (int interactive, char *data)
 {
   screen_info *s = current_screen();
   rp_window_frame *frame;
@@ -1429,14 +1400,14 @@ cmd_remove (int interactive, void *data)
 }
 
 char *
-cmd_shrink (int interactive, void *data)
+cmd_shrink (int interactive, char *data)
 {
   resize_shrink_to_window (current_frame());
   return NULL;
 }
 
 char *
-cmd_resize (int interactive, void *data)
+cmd_resize (int interactive, char *data)
 {
   screen_info *s = current_screen ();
 
@@ -1519,7 +1490,7 @@ cmd_resize (int interactive, void *data)
 }
 
 char *
-cmd_defresizeunit (int interactive, void *data)
+cmd_defresizeunit (int interactive, char *data)
 {
   int tmp;
 
@@ -1542,7 +1513,7 @@ cmd_defresizeunit (int interactive, void *data)
 
 /* banish the rat pointer */
 char *
-cmd_banish (int interactive, void *data)
+cmd_banish (int interactive, char *data)
 {
   screen_info *s;
 
@@ -1553,7 +1524,7 @@ cmd_banish (int interactive, void *data)
 }
 
 char *
-cmd_curframe (int interactive, void *data)
+cmd_curframe (int interactive, char *data)
 {
   show_frame_indicator();
   return NULL;
@@ -1562,7 +1533,7 @@ cmd_curframe (int interactive, void *data)
 /* Thanks to Martin Samuelsson <cosis@lysator.liu.se> for the
    original patch. */
 char *
-cmd_license (int interactive, void *data)
+cmd_license (int interactive, char *data)
 {
   screen_info *s = current_screen();
   XEvent ev;
@@ -1642,7 +1613,7 @@ cmd_license (int interactive, void *data)
 }
 
 char *
-cmd_help (int interactive, void *data)
+cmd_help (int interactive, char *data)
 {
   if (interactive) 
     {
@@ -1783,7 +1754,7 @@ cmd_help (int interactive, void *data)
 }
 
 char *
-cmd_rudeness (int interactive, void *data)
+cmd_rudeness (int interactive, char *data)
 {
   int num;
 
@@ -1800,9 +1771,9 @@ cmd_rudeness (int interactive, void *data)
       return NULL;
     }
 
-  if (sscanf ((char *)data, "%d", &num) < 1 || num < 0 || num > 15)
+  if (sscanf (data, "%d", &num) < 1 || num < 0 || num > 15)
     {
-      marked_message_printf (0, 0, " rudeness: invalid level '%s' ", (char *)data);
+      marked_message_printf (0, 0, " rudeness: invalid level '%s' ", data);
       return NULL;
     }
 
@@ -1871,7 +1842,7 @@ wingravity_to_string (int g)
 }
 
 char *
-cmd_gravity (int interactive, void *data)
+cmd_gravity (int interactive, char *data)
 {
   int gravity;
   rp_window *win;
@@ -1900,7 +1871,7 @@ cmd_gravity (int interactive, void *data)
 }
 
 char *
-cmd_defwingravity (int interactive, void *data)
+cmd_defwingravity (int interactive, char *data)
 {
   int gravity;
 
@@ -1922,7 +1893,7 @@ cmd_defwingravity (int interactive, void *data)
 }
 
 char *
-cmd_deftransgravity (int interactive, void *data)
+cmd_deftransgravity (int interactive, char *data)
 {
   int gravity;
 
@@ -1944,7 +1915,7 @@ cmd_deftransgravity (int interactive, void *data)
 }
 
 char *
-cmd_defmaxsizegravity (int interactive, void *data)
+cmd_defmaxsizegravity (int interactive, char *data)
 {
   int gravity;
 
@@ -1966,7 +1937,7 @@ cmd_defmaxsizegravity (int interactive, void *data)
 }
 
 char *
-cmd_msgwait (int interactive, void *data)
+cmd_msgwait (int interactive, char *data)
 {
   int tmp;
 
@@ -1988,7 +1959,7 @@ cmd_msgwait (int interactive, void *data)
 }
 
 char *
-cmd_defbargravity (int interactive, void *data)
+cmd_defbargravity (int interactive, char *data)
 {
   int gravity;
 
@@ -2040,13 +2011,13 @@ update_all_gcs ()
 
 
 char *
-cmd_deffont (int interactive, void *data)
+cmd_deffont (int interactive, char *data)
 {
   XFontStruct *font;
 
   if (data == NULL) return NULL;
 
-  font = XLoadQueryFont (dpy, (char *)data);
+  font = XLoadQueryFont (dpy, data);
   if (font == NULL)
     {
       message (" deffont: unknown font ");
@@ -2062,7 +2033,7 @@ cmd_deffont (int interactive, void *data)
 }
 
 char *
-cmd_defpadding (int interactive, void *data)
+cmd_defpadding (int interactive, char *data)
 {
   rp_window_frame *frame;
   int l, t, r, b;
@@ -2125,7 +2096,7 @@ cmd_defpadding (int interactive, void *data)
 }
 
 char *
-cmd_defborder (int interactive, void *data)
+cmd_defborder (int interactive, char *data)
 {
   int tmp;
   rp_window *win;
@@ -2158,7 +2129,7 @@ cmd_defborder (int interactive, void *data)
 }
 
 char *
-cmd_defbarborder (int interactive, void *data)
+cmd_defbarborder (int interactive, char *data)
 {
   int tmp;
   int i;
@@ -2192,7 +2163,7 @@ cmd_defbarborder (int interactive, void *data)
 }
 
 char *
-cmd_definputwidth (int interactive, void *data)
+cmd_definputwidth (int interactive, char *data)
 {
   int tmp;
 
@@ -2214,7 +2185,7 @@ cmd_definputwidth (int interactive, void *data)
 }
 
 char *
-cmd_defwaitcursor (int interactive, void *data)
+cmd_defwaitcursor (int interactive, char *data)
 {
   if (data == NULL && !interactive)
     return xsprintf ("%d", defaults.wait_for_key_cursor);
@@ -2229,7 +2200,7 @@ cmd_defwaitcursor (int interactive, void *data)
 }
 
 char *
-cmd_defwinfmt (int interactive, void *data)
+cmd_defwinfmt (int interactive, char *data)
 {
   if (data == NULL && !interactive)
     return xstrdup (defaults.window_fmt);
@@ -2244,7 +2215,7 @@ cmd_defwinfmt (int interactive, void *data)
 }
 
 char *
-cmd_defwinname (int interactive, void *data)
+cmd_defwinname (int interactive, char *data)
 {
   char *name;
 
@@ -2268,7 +2239,7 @@ cmd_defwinname (int interactive, void *data)
       return NULL;
     }
 
-  name = (char *)data;
+  name = data;
 
   /* FIXME: Using strncmp is sorta dirty since `title' and
      `titlefoobar' would both match. But its quick and dirty. */
@@ -2285,7 +2256,7 @@ cmd_defwinname (int interactive, void *data)
 }
 
 char *
-cmd_deffgcolor (int interactive, void *data)
+cmd_deffgcolor (int interactive, char *data)
 {
   int i;
   XColor color, junk;
@@ -2298,7 +2269,7 @@ cmd_deffgcolor (int interactive, void *data)
 
   for (i=0; i<num_screens; i++)
     {
-      if (!XAllocNamedColor (dpy, screens[i].def_cmap, (char *)data, &color, &junk))
+      if (!XAllocNamedColor (dpy, screens[i].def_cmap, data, &color, &junk))
 	{
 	  message (" deffgcolor: unknown color ");
 	  return NULL;
@@ -2316,7 +2287,7 @@ cmd_deffgcolor (int interactive, void *data)
 }
 
 char *
-cmd_defbgcolor (int interactive, void *data)
+cmd_defbgcolor (int interactive, char *data)
 {
   int i;
   XColor color, junk;
@@ -2329,7 +2300,7 @@ cmd_defbgcolor (int interactive, void *data)
 
   for (i=0; i<num_screens; i++)
     {
-      if (!XAllocNamedColor (dpy, screens[i].def_cmap, (char *)data, &color, &junk))
+      if (!XAllocNamedColor (dpy, screens[i].def_cmap, data, &color, &junk))
 	{
 	  message (" defbgcolor: unknown color ");
 	  return NULL;
@@ -2347,7 +2318,7 @@ cmd_defbgcolor (int interactive, void *data)
 }
 
 char *
-cmd_setenv (int interactive, void *data)
+cmd_setenv (int interactive, char *data)
 {
   char *token, *dup;
   struct sbuf *env;
@@ -2362,7 +2333,7 @@ cmd_setenv (int interactive, void *data)
   env = sbuf_new(0);
 
   /* Get the 2 arguments. */
-  dup = xstrdup ((char *)data);
+  dup = xstrdup (data);
   token = strtok (dup, " ");
   if (token == NULL)
     {
@@ -2402,7 +2373,7 @@ cmd_setenv (int interactive, void *data)
 }
 
 char *
-cmd_getenv (int interactive, void *data)
+cmd_getenv (int interactive, char *data)
 {
   char *var;
   char *result = NULL;
@@ -2443,7 +2414,7 @@ cmd_getenv (int interactive, void *data)
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original
    patch. */
 char *
-cmd_chdir (int interactive, void *data)
+cmd_chdir (int interactive, char *data)
 {
   char *dir;
 
@@ -2457,7 +2428,7 @@ cmd_chdir (int interactive, void *data)
 	}
     }
   else
-    dir = (char *)data;
+    dir = data;
 
   if (chdir (dir) == -1)
     marked_message_printf (0, 0, " chdir: %s : %s ", dir, strerror(errno));
@@ -2468,7 +2439,7 @@ cmd_chdir (int interactive, void *data)
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original
    patch. */
 char *
-cmd_unsetenv (int interactive, void *data)
+cmd_unsetenv (int interactive, char *data)
 {
   if (data == NULL)
     {
@@ -2477,7 +2448,7 @@ cmd_unsetenv (int interactive, void *data)
     }
 
   /* Remove all instances of the env. var. */
-  putenv ((char *)data);
+  putenv (data);
 
   return NULL;
 }
@@ -2485,7 +2456,7 @@ cmd_unsetenv (int interactive, void *data)
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original
    patch. */
 char *
-cmd_info (int interactive, void *data)
+cmd_info (int interactive, char *data)
 {
   if (current_window() == NULL)
     {
@@ -2506,14 +2477,14 @@ cmd_info (int interactive, void *data)
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original
    patch. */
 char *
-cmd_lastmsg (int interactive, void *data)
+cmd_lastmsg (int interactive, char *data)
 {
   show_last_message();
   return NULL;
 }
 
 char *
-cmd_focusup (int interactive, void *data)
+cmd_focusup (int interactive, char *data)
 {
   rp_window_frame *frame;
 
@@ -2524,7 +2495,7 @@ cmd_focusup (int interactive, void *data)
 }
 
 char *
-cmd_focusdown (int interactive, void *data)
+cmd_focusdown (int interactive, char *data)
 {
   rp_window_frame *frame;
 
@@ -2535,7 +2506,7 @@ cmd_focusdown (int interactive, void *data)
 }
 
 char *
-cmd_focusleft (int interactive, void *data)
+cmd_focusleft (int interactive, char *data)
 {
   rp_window_frame *frame;
 
@@ -2546,7 +2517,7 @@ cmd_focusleft (int interactive, void *data)
 }
 
 char *
-cmd_focusright (int interactive, void *data)
+cmd_focusright (int interactive, char *data)
 {
   rp_window_frame *frame;
 
@@ -2557,14 +2528,14 @@ cmd_focusright (int interactive, void *data)
 }
 
 char *
-cmd_restart (int interactive, void *data)
+cmd_restart (int interactive, char *data)
 {
   hup_signalled = 1;
   return NULL;
 }
 
 char *
-cmd_startup_message (int interactive, void *data)
+cmd_startup_message (int interactive, char *data)
 {
   if (data == NULL && !interactive)
     return xsprintf ("%s", defaults.startup_message ? "on":"off");
@@ -2586,7 +2557,7 @@ cmd_startup_message (int interactive, void *data)
 }
 
 char *
-cmd_focuslast (int interactive, void *data)
+cmd_focuslast (int interactive, char *data)
 {
   rp_window_frame *frame = find_last_frame(current_screen());
 
@@ -2599,14 +2570,14 @@ cmd_focuslast (int interactive, void *data)
 }
 
 char *
-cmd_link (int interactive, void *data)
+cmd_link (int interactive, char *data)
 {
   char *cmd = NULL;
 
   if (!data)
     return NULL;
 
-  cmd = resolve_command_from_keydesc ((char *)data, 0);
+  cmd = resolve_command_from_keydesc (data, 0);
   if (cmd)
     return command (interactive, cmd);
 
@@ -2616,7 +2587,7 @@ cmd_link (int interactive, void *data)
 /* Thanks to Doug Kearns <djkea2@mugc.its.monash.edu.au> for the
    original patch. */
 char *
-cmd_defbarpadding (int interactive, void *data)
+cmd_defbarpadding (int interactive, char *data)
 {
   int x, y;
 
@@ -2657,7 +2628,7 @@ find_alias_index (char *name)
 }
 
 char *
-cmd_alias (int interactive, void *data)
+cmd_alias (int interactive, char *data)
 {
   char *name, *alias;
   int index;
@@ -2702,7 +2673,7 @@ cmd_alias (int interactive, void *data)
 }
 
 char *
-cmd_unalias (int interactive, void *data)
+cmd_unalias (int interactive, char *data)
 {
   char *name;
   int index;
@@ -2714,7 +2685,7 @@ cmd_unalias (int interactive, void *data)
     }
 
   /* Parse out the arguments. */
-  name = (char *)data;
+  name = data;
 
   /* Are we updating an existing alias, or creating a new one? */
   index = find_alias_index (name);
@@ -2748,7 +2719,7 @@ cmd_unalias (int interactive, void *data)
 }
 
 char *
-cmd_nextscreen (int interactive, void *data)
+cmd_nextscreen (int interactive, char *data)
 {
   int new_screen;
 
@@ -2768,7 +2739,7 @@ cmd_nextscreen (int interactive, void *data)
 }
 
 char *
-cmd_prevscreen (int interactive, void *data)
+cmd_prevscreen (int interactive, char *data)
 {
   int new_screen;
 
@@ -2789,7 +2760,7 @@ cmd_prevscreen (int interactive, void *data)
 }
 
 char *
-cmd_warp (int interactive, void *data)
+cmd_warp (int interactive, char *data)
 {
   if (data == NULL && !interactive)
     return xsprintf ("%s", defaults.warp ? "on":"off");
@@ -2813,7 +2784,7 @@ cmd_warp (int interactive, void *data)
 /* Temporarily give control over to another window manager, reclaiming
    control when that WM terminates. */
 char *
-cmd_tmpwm (int interactive, void *data)
+cmd_tmpwm (int interactive, char *data)
 {
   struct list_head *tmp, *iter;
   rp_window *win = NULL;
@@ -2866,7 +2837,7 @@ cmd_tmpwm (int interactive, void *data)
     }
 
   /* Launch the new WM and wait for it to terminate. */
-  pid = spawn ((char *)data);
+  pid = spawn (data);
   waitpid (pid, &status, 0);
 
   /* Enable the event selection on the root window. */
@@ -2895,7 +2866,7 @@ cmd_tmpwm (int interactive, void *data)
 
 /* Select a frame by number. */
 char *
-cmd_fselect (int interactive, void *data)
+cmd_fselect (int interactive, char *data)
 {
   rp_window_frame *frame;
   screen_info *s = current_screen();
@@ -3006,7 +2977,7 @@ cmd_fselect (int interactive, void *data)
 }
 
 char *
-cmd_fdump (int interactively, void *data)
+cmd_fdump (int interactively, char *data)
 {
   struct sbuf *s;
   char *tmp;
@@ -3027,7 +2998,7 @@ cmd_fdump (int interactively, void *data)
 }
 
 char *
-cmd_frestore (int interactively, void *data)
+cmd_frestore (int interactively, char *data)
 {
   screen_info *s = current_screen();
   char *token;
@@ -3045,7 +3016,7 @@ cmd_frestore (int interactively, void *data)
 
   INIT_LIST_HEAD (&fset);
 
-  dup = xstrdup ((char *)data);
+  dup = xstrdup (data);
   token = strtok (dup, ",");
   if (token == NULL)
     {
@@ -3124,7 +3095,7 @@ cmd_frestore (int interactively, void *data)
 }
 
 char *
-cmd_verbexec (int interactive, void *data)
+cmd_verbexec (int interactive, char *data)
 {
   char msg[100]="Running ";
   strncat(msg, data, 100-strlen(msg));
@@ -3134,7 +3105,7 @@ cmd_verbexec (int interactive, void *data)
 }
 
 char *
-cmd_defwinliststyle (int interactive, void *data)
+cmd_defwinliststyle (int interactive, char *data)
 {
   if (data == NULL && !interactive)
     return xsprintf ("%s", defaults.window_list_style ? "column":"row");

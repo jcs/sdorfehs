@@ -1,5 +1,8 @@
 2003-04-06  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/actions.h: All cmd_* functions take char* instead of
+	void*. All callers updated.
+
 	* src/bar.c (marked_wrapped_message): make the marked line span
 	the whole line.
 
