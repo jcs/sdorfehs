@@ -1,3 +1,59 @@
+2001-02-13  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* bar.c (update_window_names): get indexes around current window
+	text to pass to display_msg_in_bar
+	(display_msg_in_bar): xor a rectangle around the text represented
+	by mark_start and mark_end arguments
+
+	* conf.h (BAR_FG_COLOR): changed to black
+	(BAR_BG_COLOR): changed to white 
+	(FONT_NAME): changed to 9x15bold
+	(BAR_Y_PADDING): changed to zero
+	(BAR_X_PADDING): changed to zero
+
+	* data.h (struct screen_info): removed bold_gc
+
+	* events.c (handle_key): can no longer over modify keystrokes
+	(handle_key): updated call to display_msg_in_bar to take extra
+	highlighting parameters.
+
+	* main.c (init_screen): removed bold_color
+	(XGCValues gv): made global
+
+	* actions.h (user_command): new struct
+	(argtype): new enumeration
+
+	* actions.h: many updated prototypes
+
+	* actions.c (key_actions): every command is now executed by
+	calling command() with a string version of the command, rewrote
+	this table to reflect that.
+	(user_commands): new symbol table added, a mapping between strings
+	and functions and arguments.
+	(spawn): now handles commands with arguments by calling them
+	through "/bin/sh -c"
+	(get_screen): new function.
+
+	* actions.c: all calls to display_msg_in_bar updated to call with
+	2 additional highlight parameters.
+
+	* actions.c (goto_win_by_name, rename_current_window, ...): most
+	all user functions that need arguments will prompt the user for
+	them, unless they are supplied.  Allows the same function to be
+	used interactively or internally.
+	
+	* bar.h (display_msg_in_bar): updated prototype
+
+	* bar.c (display_msg_in_bar): takes two additional int arguments
+	which are offsets into the string describing which part of the
+	text to draw highlighted.
+	(update_window_names): highlight current window
+
+2001-02-12  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.c (spawn): will now execute commands with arguments by
+	execl'ing through /bin/sh -c
+
 2001-02-11  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* ratpoison.h: #include "sbuf.h"
