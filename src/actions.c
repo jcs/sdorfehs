@@ -302,8 +302,10 @@ show_clock (void *data)
 }
 
 void
-goto_window_number (int n)
+goto_window_number (void *data)
 {
+  int n = (int)data;
+
   rp_window *win;
 
   if ((win = find_window_by_number (n)) == NULL)

@@ -1,5 +1,12 @@
 2001-02-10  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* ratpoison.h: #include "messages.h"
+
+	* list.h (goto_window_number): moved prototype to actions.h
+
+	* actions.h (goto_window_number): added prototype
+	(goto_window): removed prototype
+	
 	* Makefile.am (ratpoison_SOURCES): added messages.h
 
 	* actions.c (prev_window): display correct message when there is

@@ -22,7 +22,7 @@ void switch_to(void *which);
 void bye(void *dummy);
 void generate_prefix (void *data);
 void abort_keypress (void *data);
-void goto_window (void *data);
+void goto_window_number (void* data);
 void spawn(void *data);
 void execute_command (void *data);
 void kill_window (void *data);
