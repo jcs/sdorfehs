@@ -28,9 +28,6 @@
 #define KEY_PREFIX      't'
 #define MODIFIER_PREFIX ControlMask
 
-/* Pressing a key sends the mouse to the bottom right corner. This
-   doesn't work very well yet. */
-//#define HIDE_MOUSE 
 
 /* Quit ratpoison when there are no more managed windows. */
 //#define AUTO_CLOSE		
@@ -38,25 +35,21 @@
 /* The minimum size of the input window */
 #define INPUT_WINDOW_SIZE 200
 
-#define BAR_FG_COLOR    "black"
-#define BAR_BG_COLOR    "white"
-#define FONT_NAME       "9x15bold"
+/* Pressing a key sends the mouse to the bottom right corner. This
+   doesn't work very well yet. */
+//#define HIDE_MOUSE 
 
-/* The amount of padding on the top and bottom of the message bar. */
-#define BAR_Y_PADDING   0       
+/* #define THEME T_CHOCOLATE_BAR */
+#include "themes.h"
 
-/* The amount of padding on the left and right of the message bar. */
-#define BAR_X_PADDING   0       
+#define BAR_Y_PADDING   0       /* The amount of padding on the top
+				   and bottom of the message bar  */
+#define BAR_X_PADDING   0       /* The amount of padding on the left
+				   and right of the message bar  */
+#define BAR_LOCATION    0	/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
+#define BAR_TIMEOUT     5	/* Number of seconds before the progam bar autohides 0=don't autohide */
 
-/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
-#define BAR_LOCATION    3 
-
-/* Number of seconds before the progam bar autohides.  Setting it to 0
-   disable autohide. */
-#define BAR_TIMEOUT     5 
-
-/* space not to be taken up around managed windows */
-#define PADDING_LEFT 	0 
+#define PADDING_LEFT 	0	/* space not to be taken up around managed windows */
 #define PADDING_TOP 	0
 #define PADDING_RIGHT 	0
 #define PADDING_BOTTOM 	0
