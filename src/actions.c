@@ -549,6 +549,10 @@ cmd_select (int interactive, void *data)
   else
     str = strdup ((char *) data);
 
+  /* User aborted. */
+  if (str == NULL)
+    return NULL;
+
   /* Only search if the string contains something to search for. */
   if (strlen (str) > 0)
     {
@@ -596,6 +600,10 @@ cmd_rename (int interactive, void *data)
     winname = get_input (MESSAGE_PROMPT_NEW_WINDOW_NAME);
   else
     winname = strdup ((char *) data);
+
+  /* User aborted. */
+  if (winname == NULL)
+    return NULL;
 
   if (*winname)
     {
@@ -717,6 +725,10 @@ cmd_colon (int interactive, void *data)
   else
     input = get_more_input (MESSAGE_PROMPT_COMMAND, data);
 
+  /* User aborted. */
+  if (input == NULL)
+    return NULL;
+
   result = command (1, input);
 
   /* Gobble the result. */
@@ -737,6 +749,10 @@ cmd_exec (int interactive, void *data)
     cmd = get_input (MESSAGE_PROMPT_SHELL_COMMAND);
   else
     cmd = strdup ((char *) data);
+
+  /* User aborted. */
+  if (cmd == NULL)
+    return NULL;
 
   spawn (cmd);
 
@@ -781,6 +797,10 @@ cmd_newwm(int interactive, void *data)
     prog = get_input (MESSAGE_PROMPT_SWITCH_WM);
   else
     prog = strdup ((char *) data);
+
+  /* User aborted. */
+  if (prog == NULL)
+    return NULL;
 
   PRINT_DEBUG ("Switching to %s\n", prog);
 

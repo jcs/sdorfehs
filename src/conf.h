@@ -28,6 +28,10 @@
 #define KEY_PREFIX      XK_t
 #define MODIFIER_PREFIX ControlMask
 
+/* This is the abort key when typing input. */
+#define INPUT_ABORT_KEY      XK_g
+#define INPUT_ABORT_MODIFIER ControlMask
+
 /* After hitting the prefix key ratpoison will change the mouse cursor
    to a square to indicate that it is waiting for a second
    keystroke. If do not wish this functionality, comment out the

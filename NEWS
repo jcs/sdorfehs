@@ -2,6 +2,18 @@ ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 0.1.1
 
+** Transient window handling has changed
+Transient windows now map ontop of the current window.
+
+** new command 'rudeness'
+This command allows you to fine tune what windows rp will map
+when. For instance you can ask rp not to map new windows. Instead it
+will notify you with a message: "New window #1 (emacs)".
+
+** user abort key sequence
+When typing input, hit C-g (customizable in conf.h) to abort the
+input.
+
 ** new key syntax
 keys are now specified with C-, M-, A-, H-, S- which stand for the
 control, meta, alt, hyper, and super modifiers. ^ does not denote

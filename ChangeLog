@@ -1,3 +1,17 @@
+2001-08-24  Shawn  <sabetts@hotdog>
+
+	* src/input.c (get_more_input): detect and handle a user abort key
+	sequence.
+
+	* src/conf.h (INPUT_ABORT_KEY): new define
+	(INPUT_ABORT_MODIFIER): likewise
+
+	* src/actions.c (cmd_select): handle a user abort.
+	(cmd_rename): likewise
+	(cmd_colon): likewise
+	(cmd_exec): likewise
+	(cmd_newwm): likewise
+
 2001-08-23  Shawn  <sabetts@hotlunch>
 
 	* src/manage.c (maximize_normal): In the new height on windows

@@ -323,6 +323,14 @@ get_more_input (char *prompt, char *preinput)
 	  if (cur_len > 0) cur_len--;
 	  update_input_window(s, prompt, str, cur_len);
 	}
+      else if (ch == INPUT_ABORT_KEY && modifier == INPUT_ABORT_MODIFIER)
+	{
+	  /* User aborted. */
+	  free (str);
+	  XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
+	  XUnmapWindow (dpy, s->input_window);
+	  return NULL;
+	}
       else
 	{
 	  if (cur_len + nbytes > allocated_len - 1)
