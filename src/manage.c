@@ -110,7 +110,9 @@ get_wmname (Window w)
       return NULL;
     }
 
-  /* duplicate the string into out own buffer, and free the one given
+  PRINT_DEBUG (("WM_NAME: '%s'", name));
+
+  /* duplicate the string into our own buffer, and free the one given
      to us by X. */
   ret = xstrdup (name);
   XFree (name);
