@@ -17,10 +17,10 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.12 2001/02/19 20:51:40 rcyeske Exp $
+dnl $Id: configure.in,v 1.13 2001/02/22 04:14:15 rcyeske Exp $
 
 AC_INIT(src/main.c)
-AM_INIT_AUTOMAKE(ratpoison, 0.0.6)
+AM_INIT_AUTOMAKE(ratpoison, 0.0.6-cvs)
 
 AM_CONFIG_HEADER(src/config.h)
 
@@ -57,7 +57,7 @@ if test x$TERM_PROG = xno; then
    AC_MSG_ERROR([*** Can't find x terminal emulator \`$term_prog'])
 fi
 
-dnl check for an Emacs
+dnl check for an Emacs (we dont really want to do this, c'mon)
 AC_CHECK_PROG(EMACS_PROG,$emacs_prog,yes,no)
 if test x$EMACS_PROG = xno; then
    AC_MSG_WARN([*** Can't find Emacs \`$emacs_prog'])
