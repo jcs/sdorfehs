@@ -94,6 +94,7 @@ static struct option ratpoison_longopts[] =
   { {"help", 	no_argument, 		0, 	'h'},
     {"version", no_argument, 		0, 	'v'},
     {"command", required_argument, 	0, 	'c'},
+    {"display", required_argument, 	0, 	'd'},
     {0, 	0, 			0, 	0} };
 
 static char ratpoison_opts[] = "hvc:";
@@ -311,7 +312,8 @@ print_help ()
   printf ("Help for %s %s\n\n", PACKAGE, VERSION);
   printf ("-h, --help            Display this help screen\n");
   printf ("-v, --version         Display the version\n");
-  printf ("-c, --command         Send ratpoison a colon-command\n\n");
+  printf ("-d, --display <dpy>   Set the X display to use\n");
+  printf ("-c, --command <cmd>   Send ratpoison a colon-command\n\n");
 
   printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
 
@@ -498,6 +500,7 @@ main (int argc, char *argv[])
   int c;
   char **command = NULL;
   int cmd_count = 0;
+  char *display = NULL;
 
   myargv = argv;
 
@@ -531,12 +534,15 @@ main (int argc, char *argv[])
 	  command[cmd_count] = xstrdup (optarg);
 	  cmd_count++;
 	  break;
+	case 'd':
+	  display = xstrdup (optarg);
+	  break;
 	default:
 	  exit (EXIT_FAILURE);
 	}
     }
 
-  if (!(dpy = XOpenDisplay (NULL)))
+  if (!(dpy = XOpenDisplay (display)))
     {
       fprintf (stderr, "Can't open display\n");
       return EXIT_FAILURE;

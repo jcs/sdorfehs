@@ -880,6 +880,9 @@ Display this help screen
 @item -v, --version
 Display the version
 
+@item -d, --display
+Specify the X display to connect to.
+
 @item -c, --command
 Send ratpoison a colon-command. This allows you to control ratpoison
 from the command-line. with the @option{-c} option you can script

@@ -1,5 +1,11 @@
 2003-04-13  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/main.c (main): add switch case for the display command line
+	option.
+	(print_help): add --display option. Add text to demonstrate
+	--display and --command take an argument.
+	(ratpoison_longopts): add display.
+
 	* src/manage.c (get_wmname): add debugging output to print
 	returned elements from X11 call.
 
