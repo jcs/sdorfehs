@@ -1,3 +1,8 @@
+2001-03-03  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.c (cmd_bind): Do not pollute the message bar with
+	chatter about the keybinding.
+
 2001-03-03  shawn  <sabetts@livingston>
 
 	* manage.c (maximize_normal): windows with resize increments

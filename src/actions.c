@@ -238,10 +238,10 @@ cmd_bind (void *data)
 	  if (key)
 	    {
 	      rp_action *key_action;
-	      char foo[1000];
 
-	      sprintf (foo, " %d %ld : '%s' ", key->state, key->sym, cmd);
-	      message (foo);
+/* 	      char foo[1000]; */
+/* 	      sprintf (foo, " %d %ld : '%s' ", key->state, key->sym, cmd); */
+/* 	      message (foo); */
 
 	      if ((key_action = find_keybinding (key->sym, key->state)))
 		replace_keybinding (key_action, cmd);
