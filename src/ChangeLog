@@ -1,5 +1,9 @@
 2001-02-26  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* list.c (save_mouse_position): stores the mouse position relative
+	to the root window.
+	(set_active_window): warps the mouse relative to the root window.
+
 	* actions.h: prototype for force_maximize added
 
 	* actions.c: the user command "maximize" calls force_maximize

@@ -367,7 +367,7 @@ save_mouse_position (rp_window *win)
   ignore_badwindow = 1;
 
   XQueryPointer (dpy, win->w, &root_win, &child_win, 
-		 &win_x, &win_y, &win->mouse_x, &win->mouse_y, &mask);
+		 &win->mouse_x, &win->mouse_y, &win_x, &win_y, &mask);
 
   ignore_badwindow = 0;
 }
@@ -391,7 +391,8 @@ set_active_window (rp_window *rp_w)
       save_mouse_position (rp_current_window);
     }
 
-  XWarpPointer (dpy, None, rp_w->w, 0, 0, 0, 0, rp_w->mouse_x, rp_w->mouse_y);
+  XWarpPointer (dpy, None, rp_w->scr->root, 
+		0, 0, 0, 0, rp_w->mouse_x, rp_w->mouse_y);
   XSync (dpy, False);
 
   XSetInputFocus (dpy, rp_w->w, 
