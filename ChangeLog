@@ -1,5 +1,7 @@
 2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* configure.in: add AM_MAINTAINER_MODE
+
 	* src/globals.h (rp_exec_newwm): new extern.
 
 	* src/globals.c (rp_exec_newwm): new global.
