@@ -25,6 +25,8 @@
 #include <X11/Xatom.h>
 #include <X11/Xproto.h>
 
+#include <string.h>
+
 #include "ratpoison.h"
 
 
