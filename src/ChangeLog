@@ -1,3 +1,7 @@
+2000-10-20  shawn  <sabetts@badbox.secure.basis.org>
+
+	* events.c (key_press): fixed MODIFIER_PREFIX bug
+
 2000-10-19  Ryan yeske  <rcyeske@van.gobasis.com>
 
 	* manage.c (unmanaged_window): added.
