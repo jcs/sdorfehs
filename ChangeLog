@@ -1,4 +1,4 @@
-2004-05-05    <shawn.betts@sophos.com>
+2004-05-05  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/input.c (grab_key): use keysym_to_keycode_mod to get the
 	keycode and modifier for the keysym.
