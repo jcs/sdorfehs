@@ -34,7 +34,7 @@ static user_command user_commands[] =
   { {"abort",		cmd_abort,	arg_VOID},
     {"banish",          cmd_banish,     arg_VOID},
     {"bind",		cmd_bind,	arg_VOID},
-    {"clock", 		cmd_clock, 	arg_VOID},
+    {"time", 		cmd_time, 	arg_VOID},
     {"colon",	 	cmd_colon,	arg_STRING},
     {"curframe",        cmd_curframe,   arg_VOID},
     {"delete", 		cmd_delete, 	arg_VOID},
@@ -927,7 +927,7 @@ cmd_quit(int interactive, void *data)
    <cosis@lysator.liu.se> for the patch. Thanks to Jonathan Walther
    <krooger@debian.org> for making it pretty. */
 char *
-cmd_clock (int interactive, void *data)
+cmd_time (int interactive, void *data)
 {
   char *msg, *tmp;
   time_t timep;

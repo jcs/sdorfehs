@@ -1,3 +1,9 @@
+2001-09-17  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/actions.c (cmd_clock): rename to cmd_time. Dependant code
+	updated.
+	(user_commands): rename "clock" command to "time".
+
 2001-09-16  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/actions.c (update_all_gcs): new function

@@ -56,7 +56,7 @@ char * cmd_prev (int interactive, void *data);
 char * cmd_prev_frame (int interactive, void *data);
 char * cmd_windows (int interactive, void *data);
 char * cmd_other (int interactive, void *data);
-char * cmd_clock (int interactive, void *data);
+char * cmd_time (int interactive, void *data);
 char * cmd_version (int interactive, void *data);
 char * cmd_unimplemented (int interactive, void *data);
 char * cmd_bind (int interactive, void* data);
