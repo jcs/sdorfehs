@@ -109,15 +109,27 @@ frame_move_down (rp_frame *frame, int amount)
   frame->y += amount;
 }
 
+static void
+init_frame (rp_frame *f)
+{
+  f->number = 0;
+  f->x = 0;
+  f->y = 0;
+  f->width = 0;
+  f->height = 0;
+  f->win_number = 0;
+  f->last_access = 0;
+  f->dedicated = 0;
+}
+
 rp_frame *
 frame_new (rp_screen *s)
 {
   rp_frame *f;
 
   f = xmalloc (sizeof (rp_frame));
+  init_frame(f);
   f->number = numset_request (s->frames_numset);
-  f->last_access = 0;
-  f->dedicated = 0;
 
   return f;
 }
@@ -188,6 +200,7 @@ frame_read (char *str)
 
   /* Create a blank frame. */
   f = xmalloc (sizeof (rp_frame));
+  init_frame(f);
 
   PRINT_DEBUG(("parsing '%s'\n", str));
   

@@ -3,6 +3,9 @@
 	* src/frame.c (frame_dump): dump the frame as an sexpr instead of
 	a list of numbers.
 	(frame_read): read the new frame dump format
+	(init_frame): new static function
+	(frame_new): call init_frame
+	(frame_read): likewise
 
 	* src/actions.c (cmd_describekey): fix error messages.
 
