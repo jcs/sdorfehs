@@ -1,3 +1,10 @@
+2001-03-01  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.c: Use PRINT_DEBUG instead of fprintf.  Put useful error
+	text in calls to message().
+	(cmd_select): Show the window list if there is no such window
+	number.
+
 2001-02-28  shawn  <sabetts@badbox.secure.basis.org>
 
 	* manage.c (map_window): calls update_window_information.

@@ -58,7 +58,7 @@ add_keybinding (int keysym, int state, char *cmd)
       /* double the key table size */
       key_actions_table_size *= 2;
       key_actions = (rp_action*) realloc (key_actions, sizeof (rp_action) * key_actions_table_size);
-      fprintf (stderr, "realloc()ed key_table %d\n", key_actions_table_size);
+      PRINT_DEBUG ("realloc()ed key_table %d\n", key_actions_table_size);
     }
 
   key_actions[key_actions_last].key = keysym;
@@ -219,7 +219,7 @@ cmd_bind (void *data)
 
   if (!data)
     {
-      message (" FIXME: cmd_bind: need some args ");
+      message (" bind: at least one argument required ");
       return;
     }
 
@@ -228,11 +228,11 @@ cmd_bind (void *data)
   cmd = data + strlen (keydesc);
 
   if (!keydesc)
-    message (" FIXME: cmd_bind: need a key ");
+    message (" bind: at least one argument required ");
   else
     {
       if (!cmd || !*cmd)
-	message (" FIXME: cmd_bind: need a command to bind to key ");
+	message (" bind: need a command to bind to key ");
       else
 	{
 	  struct rp_key *key = parse_keydesc (keydesc);
@@ -251,7 +251,7 @@ cmd_bind (void *data)
 		add_keybinding (key->sym, key->state, cmd);
 	    }
 	  else
-	    message (" FIXME: cmd_bind: couldnt parse key ");
+	    message (" bind: could not parse key description ");
 	}
     }
 
@@ -401,7 +401,8 @@ cmd_select (void *data)
       if ((w = find_window_number (n)))
 	set_active_window (w);
       else
-	message ("no window by that number (FIXME: show window list)");
+	/* show the window list as feedback */
+	show_bar (current_screen ());
     }
   else
     /* try by name */
@@ -410,7 +411,7 @@ cmd_select (void *data)
 	set_active_window (w);
       else
 	/* we need to format a string that includes the str */
-	message ("MESSAGE_NO_WINDOW_NAMED (FIXME:)");
+	message (" no window by that name ");
     }
 
   free (str);
@@ -745,6 +746,6 @@ cmd_escape (void *data)
     }
   else
     {
-      message (" FIXME: cmd_bind: couldnt parse key ");
+      message (" escape: could not parse key description ");
     }
 }
