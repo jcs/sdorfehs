@@ -12,6 +12,7 @@ void goto_window_2 (void *data);
 void goto_window_1 (void *data);
 void goto_window_0 (void *data);
 void spawn(void *data);
+void execute_command (void *data);
 void kill_window (void *data);
 void delete_window (void *data);
 void rename_current_window (void *data);
