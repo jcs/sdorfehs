@@ -178,10 +178,7 @@ find_window (Window w)
 void
 set_current_window (rp_window *win)
 {
-  rp_window_frame *frame;
-
-  frame = screen_get_frame (current_screen(), current_screen()->current_frame);
-  set_frames_window (frame, win);
+  set_frames_window (current_frame(), win);
 }
 
 rp_window *

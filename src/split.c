@@ -38,6 +38,13 @@ update_last_access (rp_window_frame *frame)
   counter++;
 }
 
+rp_window_frame *
+current_frame ()
+{
+  screen_info *s = current_screen();
+  return screen_get_frame (s, s->current_frame);
+}
+
 int
 num_frames (screen_info *s)
 {
@@ -232,8 +239,7 @@ find_frame_prev (rp_window_frame *frame)
 rp_window *
 current_window ()
 {
-  return find_window_number (screen_get_frame (&screens[rp_current_screen],
-					       screens[rp_current_screen].current_frame)->win_number);
+  return find_window_number (current_frame()->win_number);
 }
 
 static int
@@ -296,7 +302,7 @@ split_frame (rp_window_frame *frame, int way, int pixels)
   new_frame = frame_new (s);
 
   /* Add the frame to the frameset. */
-  list_add (&new_frame->node, &(screen_get_frame (s, s->current_frame)->node));
+  list_add (&new_frame->node, &current_frame()->node);
 
   set_frames_window (new_frame, NULL);
 
@@ -367,7 +373,7 @@ void
 remove_all_splits ()
 {
   struct list_head *tmp, *iter;
-  screen_info *s = &screens[rp_current_screen];
+  screen_info *s = current_screen();
   rp_window_frame *frame;
   rp_window *win;
 
@@ -389,8 +395,8 @@ remove_all_splits ()
     }
 
   /* Maximize the frame and the windows in the frame. */
-  maximize_frame (screen_get_frame (s, s->current_frame));
-  maximize_all_windows_in_frame (screen_get_frame (s, s->current_frame));
+  maximize_frame (current_frame());
+  maximize_all_windows_in_frame (current_frame());
 }
 
 /* Shrink the size of the frame to fit it's current window. */
@@ -811,10 +817,11 @@ set_active_frame (rp_window_frame *frame)
   screen_info *s = frames_screen (frame);
   int old = current_screen()->current_frame;
   rp_window *win, *old_win;
+  rp_window_frame *old_frame;
 
   win = find_window_number (frame->win_number);
-  old_win = find_window_number (screen_get_frame (current_screen(), 
-						  current_screen()->current_frame)->win_number);
+  old_frame = current_frame();
+  old_win = find_window_number (old_frame->win_number);
 
   /* Make the switch */
   give_window_focus (win, old_win);
@@ -847,7 +854,7 @@ blank_frame (rp_window_frame *frame)
 
   if (frame->win_number == EMPTY) return;
 
-  win = find_window_number (frame->number);
+  win = find_window_number (frame->win_number);
   hide_window (win);
   hide_others (win);
 
@@ -878,7 +885,7 @@ show_frame_message (char *msg)
   int width, height;
   rp_window_frame *frame;
 
-  frame = screen_get_frame (s, s->current_frame);
+  frame = current_frame();
 
   width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
   height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);

@@ -1,3 +1,30 @@
+2003-03-31  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/window.c (set_current_window): use current_frame()
+
+	* src/split.h (current_frame): new prototype
+
+	* src/split.c (current_frame): new function
+	(current_window): use current_frame()
+	(split_frame): likewise
+	(remove_all_splits): likewise
+	(set_active_frame): likewise
+	(show_frame_message): likewise
+	(remove_all_splits): use current_screen()
+
+	* src/actions.c (cmd_prev_frame): use current_frame()
+	(cmd_next_frame): likewise
+	(cmd_select): likewise
+	(cmd_h_split): likewise
+	(cmd_v_split): likewise
+	(cmd_remove): likewise
+	(cmd_shrink): likewise
+	(cmd_resize): likewise
+	(cmd_focusup): likewise
+	(cmd_focusdown): likewise
+	(cmd_focusleft): likewise
+	(cmd_focusright): likewise
+
 2003-03-30  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/split.c (current_window): call screen_get_frame.

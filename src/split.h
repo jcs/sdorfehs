@@ -54,4 +54,6 @@ rp_window_frame *find_frame_up (rp_window_frame *frame);
 rp_window_frame *find_last_frame (screen_info *s);
 rp_window_frame *find_frame_number (screen_info *s, int num);
 
+rp_window_frame *current_frame ();
+
 #endif

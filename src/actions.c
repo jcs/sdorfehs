@@ -674,7 +674,7 @@ cmd_prev_frame (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  frame = find_frame_prev (screen_get_frame (current_screen(), current_screen()->current_frame));
+  frame = find_frame_next (current_frame());
   if (!frame)
     message (MESSAGE_NO_OTHER_FRAME);
   else
@@ -716,7 +716,7 @@ cmd_next_frame (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  frame = find_frame_next (screen_get_frame (current_screen(), current_screen()->current_frame));
+  frame = find_frame_next (current_frame());
   if (!frame)
     message (MESSAGE_NO_OTHER_FRAME);
   else
@@ -778,7 +778,7 @@ cmd_select (int interactive, void *data)
     {
       if (strlen (str) == 1 && str[0] == '-')
 	{
-	  blank_frame (screen_get_frame (current_screen(), current_screen()->current_frame));
+	  blank_frame (current_frame());
 	}
 /*       else if ((w = find_window_name (str))) */
 /* 	{ */
@@ -1339,7 +1339,7 @@ cmd_h_split (int interactive, void *data)
   rp_window_frame *frame;
   int pixels;
 
-  frame = screen_get_frame (current_screen(), current_screen()->current_frame);
+  frame = current_frame();
 
   /* Default to dividing the frame in half. */
   if (data == NULL)
@@ -1361,7 +1361,7 @@ cmd_v_split (int interactive, void *data)
   rp_window_frame *frame;
   int pixels;
 
-  frame = screen_get_frame (current_screen(), current_screen()->current_frame);
+  frame = current_frame();
 
   /* Default to dividing the frame in half. */
   if (data == NULL)
@@ -1398,11 +1398,11 @@ cmd_remove (int interactive, void *data)
       return NULL;
     }
 
-  frame = find_frame_next (screen_get_frame (s, s->current_frame));
+  frame = find_frame_next (current_frame());
 
   if (frame)
     {
-      remove_frame (screen_get_frame (s, s->current_frame));
+      remove_frame (current_frame());
       set_active_frame (frame);
     }
 
@@ -1412,9 +1412,7 @@ cmd_remove (int interactive, void *data)
 char *
 cmd_shrink (int interactive, void *data)
 {
-  screen_info *s = current_screen ();
-
-  resize_shrink_to_window (screen_get_frame (s, s->current_frame));
+  resize_shrink_to_window (current_frame());
   return NULL;
 }
 
@@ -1450,16 +1448,16 @@ cmd_resize (int interactive, void *data)
 	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer), 1);
 
 	  if (c == RESIZE_VGROW_KEY && mod == RESIZE_VGROW_MODIFIER)
-	    resize_frame_vertically (screen_get_frame (s, s->current_frame), defaults.frame_resize_unit);
+	    resize_frame_vertically (current_frame(), defaults.frame_resize_unit);
 	  else if (c == RESIZE_VSHRINK_KEY && mod == RESIZE_VSHRINK_MODIFIER)
-	    resize_frame_vertically (screen_get_frame (s, s->current_frame), -defaults.frame_resize_unit);
+	    resize_frame_vertically (current_frame(), -defaults.frame_resize_unit);
 	  else if (c == RESIZE_HGROW_KEY && mod == RESIZE_HGROW_MODIFIER)
-	    resize_frame_horizontally (screen_get_frame (s, s->current_frame), defaults.frame_resize_unit);
+	    resize_frame_horizontally (current_frame(), defaults.frame_resize_unit);
 	  else if (c == RESIZE_HSHRINK_KEY && mod == RESIZE_HSHRINK_MODIFIER)
-	    resize_frame_horizontally (screen_get_frame (s, s->current_frame), -defaults.frame_resize_unit);
+	    resize_frame_horizontally (current_frame(), -defaults.frame_resize_unit);
 	  else if (c == RESIZE_SHRINK_TO_WINDOW_KEY 
 		   && mod == RESIZE_SHRINK_TO_WINDOW_MODIFIER)
-	    resize_shrink_to_window (screen_get_frame (s, s->current_frame));
+	    resize_shrink_to_window (current_frame());
 	  else if (c == INPUT_ABORT_KEY && mod == INPUT_ABORT_MODIFIER)
 	    {
 	      rp_window_frame *cur;
@@ -1494,8 +1492,8 @@ cmd_resize (int interactive, void *data)
 	  return NULL;
 	}
 
-      resize_frame_horizontally (screen_get_frame (s, s->current_frame), xdelta);
-      resize_frame_vertically (screen_get_frame (s, s->current_frame), ydelta);
+      resize_frame_horizontally (current_frame(), xdelta);
+      resize_frame_vertically (current_frame(), ydelta);
     }
 
   return NULL;
@@ -2491,7 +2489,7 @@ cmd_focusup (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_up (screen_get_frame (current_screen(), current_screen()->current_frame))))
+  if ((frame = find_frame_up (current_frame())))
     set_active_frame (frame);
 
   return NULL;
@@ -2502,7 +2500,7 @@ cmd_focusdown (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_down (screen_get_frame (current_screen(), current_screen()->current_frame))))
+  if ((frame = find_frame_down (current_frame())))
     set_active_frame (frame);
 
   return NULL;
@@ -2513,7 +2511,7 @@ cmd_focusleft (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_left (screen_get_frame (current_screen(), current_screen()->current_frame))))
+  if ((frame = find_frame_left (current_frame())))
     set_active_frame (frame);
 
   return NULL;
@@ -2524,7 +2522,7 @@ cmd_focusright (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_right (screen_get_frame (current_screen(), current_screen()->current_frame))))
+  if ((frame = find_frame_right (current_frame())))
     set_active_frame (frame);
 
   return NULL;
