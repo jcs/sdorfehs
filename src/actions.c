@@ -161,19 +161,19 @@ generate_key_event (void *data)
   XEvent ev1, ev;
   ev = *rp_current_event;
 
-  fprintf (stderr, "type==%d\n", ev.xkey.type);
-  fprintf (stderr, "serial==%ld\n", ev.xkey.serial);
-  fprintf (stderr, "send_event==%d\n", ev.xkey.send_event);
-  fprintf (stderr, "display=%p\n", ev.xkey.display);
-/*   fprintf (stderr, "root==%x  ???\n", ev.xkey.root); */
-/*   fprintf (stderr, "window==%x  ???\n", ev.xkey.window); */
-/*   fprintf (stderr, "subwindow==%x  ???\n", ev.xkey.subwindow); */
-  fprintf (stderr, "time==%ld\n", ev.xkey.time);
-  fprintf (stderr, "x==%d  y==%d\n", ev.xkey.x, ev.xkey.y);
-  fprintf (stderr, "x_root==%d  y_root==%d\n", ev.xkey.x_root, ev.xkey.y_root);
-  fprintf (stderr, "state==%d\n", ev.xkey.state);
-  fprintf (stderr, "keycode==%d\n", ev.xkey.keycode);
-  fprintf (stderr, "same_screen=%d\n", ev.xkey.same_screen);
+  PRINT_DEBUG ("type==%d\n", ev.xkey.type);
+  PRINT_DEBUG ("serial==%ld\n", ev.xkey.serial);
+  PRINT_DEBUG ("send_event==%d\n", ev.xkey.send_event);
+  PRINT_DEBUG ("display=%p\n", ev.xkey.display);
+/*   PRINT_DEBUG ("root==%x  ???\n", ev.xkey.root); */
+/*   PRINT_DEBUG ("window==%x  ???\n", ev.xkey.window); */
+/*   PRINT_DEBUG ("subwindow==%x  ???\n", ev.xkey.subwindow); */
+  PRINT_DEBUG ("time==%ld\n", ev.xkey.time);
+  PRINT_DEBUG ("x==%d  y==%d\n", ev.xkey.x, ev.xkey.y);
+  PRINT_DEBUG ("x_root==%d  y_root==%d\n", ev.xkey.x_root, ev.xkey.y_root);
+  PRINT_DEBUG ("state==%d\n", ev.xkey.state);
+  PRINT_DEBUG ("keycode==%d\n", ev.xkey.keycode);
+  PRINT_DEBUG ("same_screen=%d\n", ev.xkey.same_screen);
 
   /* I am not sure which of the following fields I have to fill in or
      what to fill them in with (rcy) I wouldnt be suprised if this
