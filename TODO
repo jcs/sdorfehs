@@ -1,25 +1,15 @@
 -*- outline -*-
 
-* Bugs
-** Multiple screens, multiheaded x server, is busted.
-
-* Misc
-Flip a bit when an X error occurs and display it in the main event
-loop (events.c:get_event) to avoid an infinite loop.
-
 * command stuff
-
 ** general argument parsing strategy
 Its a free for all right now.
 
 ** return the current setting for the def* command suite
-When in non-interactive mode, so scripts that need to change them can
-change them back when they're done. Low priority.
+All def* commands that can do this, do do this.
 
 * implement these screen commands (see the screen info for documentation):
 command ???
 hardcopy (screenshot)
-license
 lockscreen
 msgminwait
 nethack
