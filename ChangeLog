@@ -1,3 +1,7 @@
+2003-04-08  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/main.c (WAIT_ANY): define it if it isn't already define.
+
 2003-04-07  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/input.c (read_key): remove the local variable, key_presses.

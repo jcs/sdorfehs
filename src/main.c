@@ -37,6 +37,12 @@
 
 #include "ratpoison.h"
 
+/* Several systems seem not to have WAIT_ANY defined, so define it if
+   it isn't. */
+#ifndef WAIT_ANY
+# define WAIT_ANY -1
+#endif
+
 static void init_screen (screen_info *s, int screen_num);
 
 int alarm_signalled = 0;
