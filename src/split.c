@@ -897,7 +897,7 @@ blank_frame (rp_frame *frame)
   update_bar (s);
 
   /* Give the key window focus. */
-  set_window_focus (current_screen()->key_window);
+  set_window_focus (frames_screen(frame)->key_window);
 }
 
 void

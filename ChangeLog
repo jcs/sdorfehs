@@ -1,5 +1,7 @@
 2004-11-02  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/split.c (blank_frame): use the frames screen, not the current screen.
+
 	* src/group.c (group_last_window): add argument, the screen to find the
 	window in. All callers updated.
 	(group_prev_window): make sure the matched window is in the same

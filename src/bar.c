@@ -454,7 +454,7 @@ draw_inverse_box (rp_screen *s, int x, int y, int width, int height)
   GC lgc;
   unsigned long mask;
 
-  lgv.foreground = current_screen()->fg_color;
+  lgv.foreground = s->fg_color;
   lgv.function = GXxor;
   mask = GCForeground | GCFunction;
   lgc = XCreateGC(dpy, s->root, mask, &lgv);
