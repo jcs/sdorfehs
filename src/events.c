@@ -216,6 +216,40 @@ destroy_window (XDestroyWindowEvent *ev)
 }
 
 static void
+configure_notify (XConfigureEvent *e)
+{
+  rp_window *win;
+
+  win = find_window (e->window);
+
+  if (win && win->state == NormalState)
+    {
+      if (win->height != e->height
+	  || win->width != e->width
+	  || win->border != e->border_width
+	  || win->x != e->x
+	  || win->y != e->y)
+	{
+	  /* The notify event was generated from a granted configure
+	     request which means we must re-maximize the window. 
+
+	     If the window has resize increments then ratpoison has to
+	     know the real size of the window to increment properly. So,
+	     update the structure before calling maximize. */
+
+	  win->x = e->x;
+	  win->y = e->y;
+	  win->width = e->width;
+	  win->height = e->height;
+	  win->border = e->border_width;
+
+	  maximize (win);
+	}
+    }
+}
+
+
+static void
 configure_request (XConfigureRequestEvent *e)
 {
   int border;
@@ -274,11 +308,19 @@ configure_request (XConfigureRequestEvent *e)
 	  changes.width = e->width;
 	  PRINT_DEBUG("request CWWidth %d\n", e->width);
 	}
+      else
+	{
+	  changes.width = win->width;
+	}
 
       if (e->value_mask & CWHeight)
 	{
 	  changes.height = e->height;
 	  PRINT_DEBUG("request CWHeight %d\n", e->height);
+	}
+      else
+	{
+	  changes.height = win->height;
 	}
 
       if (e->value_mask & CWX)
@@ -286,43 +328,29 @@ configure_request (XConfigureRequestEvent *e)
 	  changes.x = e->x + border;
 	  PRINT_DEBUG("request CWX %d\n", e->x);
 	}
+      else
+	{
+	  changes.x = win->x;
+	}
 
       if (e->value_mask & CWY)
 	{
 	  changes.y = e->y + border;
 	  PRINT_DEBUG("request CWY %d\n", e->y);
 	}
+      else
+	{
+	  changes.y = win->y;
+	}
 
       if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
 	{
-	  if (win->state == NormalState)
-	    {
-	      /* Draw the hardline. Visible windows always maximize. */ 
-	      maximize (win);
-	    }
-	  else
-	    {
-	      /* The window isn't visible so grant it whatever it
-		 likes. */
-	      XConfigureWindow (dpy, win->w, 
-				e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
-				&changes);
+	  XConfigureWindow (dpy, win->w, 
+			    e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
+			    &changes);
 
-	      /* Update the window's structure. */
-	      if (e->value_mask & CWX)
-		win->x = changes.x;
-	      if (e->value_mask & CWY)
-		win->y = changes.y;
-	      if (e->value_mask & CWBorderWidth)
-		win->border = border;
-	      if (e->value_mask & CWWidth)
-		win->width = changes.width;
-	      if (e->value_mask & CWHeight)
-		win->height = changes.height;
-	    }
-
-	  /* This is required to be ICCCM compliant. */
-	  send_configure (win);
+	  send_configure (win->w, changes.x, changes.y, changes.width, changes.height,
+			  border);
 	}
     }
   else
@@ -600,7 +628,7 @@ property_notify (XEvent *ev)
 
 	case XA_WM_TRANSIENT_FOR:
 	  PRINT_DEBUG ("Transient for\n");
-	  win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);  
+	  win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);
 	  break;
 
 	default:
@@ -753,6 +781,10 @@ delegate_event (XEvent *ev)
       break;
 
     case ConfigureNotify:
+      PRINT_DEBUG ("--- Handling ConfigureNotify ---\n");
+      configure_notify (&ev->xconfigure);
+      break;
+
     case MapNotify:
     case Expose:
     case MotionNotify:

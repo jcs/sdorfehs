@@ -31,7 +31,7 @@ void unmanage (rp_window *w);
 int update_window_name (rp_window *win);
 void update_normal_hints (rp_window *win);
 void rename_current_window ();
-void send_configure (rp_window *win);
+void send_configure (Window w, int x, int y, int width, int height, int border);
 void set_state (rp_window *win, int state);
 long get_state (rp_window *win);
 

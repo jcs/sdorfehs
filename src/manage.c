@@ -230,22 +230,22 @@ update_window_name (rp_window *win)
 
 /* Send an artificial configure event to the window. */ 
 void
-send_configure (rp_window *win)
+send_configure (Window w, int x, int y, int width, int height, int border)
 {
   XConfigureEvent ce;
 
   ce.type = ConfigureNotify;
-  ce.event = win->w;
-  ce.window = win->w;
-  ce.x = win->x;
-  ce.y = win->y;
-  ce.width = win->width;
-  ce.height = win->height;
-  ce.border_width = win->border;
+  ce.event = w;
+  ce.window = w;
+  ce.x = x;
+  ce.y = y;
+  ce.width = width;
+  ce.height = height;
+  ce.border_width = border;
   ce.above = None;
   ce.override_redirect = 0;
 
-  XSendEvent (dpy, win->w, False, StructureNotifyMask, (XEvent*)&ce);
+  XSendEvent (dpy, w, False, StructureNotifyMask, (XEvent*)&ce);
 }
 
 void
