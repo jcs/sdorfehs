@@ -1,3 +1,7 @@
+2001-02-27  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* doc/ratpoison.texi (Commands): added escape command
+
 2001-02-25  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* configure.in (AC_OUTPUT): added man/Makefile 
