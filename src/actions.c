@@ -79,6 +79,8 @@ static user_command user_commands[] =
     {"defwinfmt", 	cmd_defwinfmt, 		arg_STRING},
     {"defwinname", 	cmd_defwinname,		arg_STRING},
     {"defwinpos",	cmd_defwinpos, 		arg_STRING},
+    {"deffgcolor",	cmd_deffgcolor,		arg_STRING},
+    {"defbgcolor",	cmd_defbgcolor,		arg_STRING},
 
     /* Commands to help debug ratpoison. */
 #ifdef DEBUG
@@ -1681,4 +1683,86 @@ cmd_defwinname (int interactive, void *data)
     message (" defwinname: Bad argument ");
 
   return NULL;      
+}
+
+static void
+update_gc (screen_info *s)
+{
+  XGCValues gv;
+
+  gv.foreground = s->fg_color;
+  gv.background = s->bg_color;
+  gv.function = GXcopy;
+  gv.line_width = 1;
+  gv.subwindow_mode = IncludeInferiors;
+  gv.font = defaults.font->fid;
+  XFreeGC (dpy, s->normal_gc);
+  s->normal_gc = XCreateGC(dpy, s->root, 
+			   GCForeground | GCBackground 
+			   | GCFunction | GCLineWidth
+			   | GCSubwindowMode | GCFont, &gv);
+}
+
+char *
+cmd_deffgcolor (int interactive, void *data)
+{
+  int i;
+  XColor color, junk;
+
+  if (data == NULL)
+    {
+      message (" deffgcolor: One argument required ");
+      return NULL;
+    }
+
+  for (i=0; i<num_screens; i++)
+    {
+      if (!XAllocNamedColor (dpy, screens[i].def_cmap, (char *)data, &color, &junk))
+	{
+	  message (" deffgcolor: Unknown color ");
+	  return NULL;
+	}
+
+      screens[i].fg_color = color.pixel;
+      update_gc (&screens[i]);
+      XSetWindowBorder (dpy, screens[i].bar_window, color.pixel);
+      XSetWindowBorder (dpy, screens[i].key_window, color.pixel);
+      XSetWindowBorder (dpy, screens[i].input_window, color.pixel);
+      XSetWindowBorder (dpy, screens[i].frame_window, color.pixel);
+      XSetWindowBorder (dpy, screens[i].help_window, color.pixel);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defbgcolor (int interactive, void *data)
+{
+  int i;
+  XColor color, junk;
+
+  if (data == NULL)
+    {
+      message (" defbgcolor: One argument required ");
+      return NULL;
+    }
+
+  for (i=0; i<num_screens; i++)
+    {
+      if (!XAllocNamedColor (dpy, screens[i].def_cmap, (char *)data, &color, &junk))
+	{
+	  message (" defbgcolor: Unknown color ");
+	  return NULL;
+	}
+
+      screens[i].bg_color = color.pixel;
+      update_gc (&screens[i]);
+      XSetWindowBackground (dpy, screens[i].bar_window, color.pixel);
+      XSetWindowBackground (dpy, screens[i].key_window, color.pixel);
+      XSetWindowBackground (dpy, screens[i].input_window, color.pixel);
+      XSetWindowBackground (dpy, screens[i].frame_window, color.pixel);
+      XSetWindowBackground (dpy, screens[i].help_window, color.pixel);
+    }
+
+  return NULL;
 }

@@ -68,8 +68,6 @@ int ignore_badwindow = 0;
 
 char **myargv;
 
-XGCValues gv;
-
 struct rp_key prefix_key;
 
 struct modifier_info rp_modifier_info;
@@ -517,6 +515,8 @@ init_rat_cursor (screen_info *s)
 static void
 init_screen (screen_info *s, int screen_num)
 {
+  XGCValues gv;
+
   /* Select on some events on the root window, if this fails, then
      there is already a WM running and the X Error handler will catch
      it, terminating ratpoison. */

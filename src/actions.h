@@ -88,6 +88,8 @@ char * cmd_definputwidth (int interactive, void *data);
 char * cmd_defwaitcursor (int interactive, void *data);
 char * cmd_defwinfmt (int interactive, void *data);
 char * cmd_defwinname (int interactive, void *data);
+char * cmd_deffgcolor (int interactive, void *data);
+char * cmd_defbgcolor (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 

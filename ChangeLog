@@ -1,5 +1,11 @@
 2001-09-09  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/bar.c (marked_message): use the screen_info fg_color and
+	bg_color to create the inverse GC.
+
+	* src/actions.h (cmd_deffgcolor): new prototype
+	(cmd_defbgcolor): new prototype
+
 	* src/actions.c (cmd_defbartimeout): merge the 2 ifs.
 	(cmd_defbartimeout): verify that the number is positive.
 	(cmd_defborder): likewise
@@ -8,6 +14,10 @@
 	(cmd_windows): Use the argument as a window format string in
 	non-interactive mode.
 	(cmd_windows): if data is NULL use the default format string.
+	(user_commands): new commands deffgcolor, defbgcolor.
+	(update_gc): new function
+	(cmd_deffgcolor): likewise
+	(cmd_defbgcolor): likewise
 
 2001-09-08  shawn  <sabetts@diggin.lamenet.tmp>
 

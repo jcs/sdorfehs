@@ -209,14 +209,14 @@ marked_message (char *msg, int mark_start, int mark_end)
 
       PRINT_DEBUG ("%d %d strlen(%d)==> %d %d\n", mark_start, mark_end, strlen(msg), start, end);
 
-      lgv.foreground = gv.foreground;
+      lgv.foreground = current_screen()->fg_color;
       lgv.function = GXxor;
       mask = GCForeground | GCFunction;
       lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
       XFillRectangle (dpy, s->bar_window, lgc, start, 0, end, height);
 
-      lgv.foreground = gv.background;
+      lgv.foreground = s->bg_color;
       lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
       XFillRectangle (dpy, s->bar_window, lgc, start, 0, end, height);
