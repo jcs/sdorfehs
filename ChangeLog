@@ -1,3 +1,8 @@
+2001-12-11  John Betts  <hotpulp@netidea.com>
+
+	* src/actions.c (parse_keydesc): Don't mangle the key description
+	argument.
+
 2001-12-11  Ryan C Yeske  <rcyeske@sfu.ca>
 
 	* contrib/genrpbindings: Add ruby bindings.  From Doug Kearns

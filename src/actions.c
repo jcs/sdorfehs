@@ -328,15 +328,19 @@ static int string_to_keysym (char *str)
   return keysym;
 }
 
+/* Parse a key description. 's' is, naturally, the key description. */
 struct rp_key*
-parse_keydesc (char *keydesc)
+parse_keydesc (char *s)
 {
   static struct rp_key key;
   struct rp_key *p = &key;
-  char *token, *next_token;
+  char *token, *next_token, *keydesc;
 
-  if (!keydesc) 
+  if (s == NULL) 
     return NULL;
+
+  /* Avoid mangling s. */
+  keydesc = xstrdup (s);
 
   p->state = 0;
   p->sym = 0;
@@ -354,6 +358,7 @@ parse_keydesc (char *keydesc)
       if (token == NULL)
 	{
 	  /* It was nothing but hyphens */
+	  free (keydesc);
 	  return NULL;
 	}
 
@@ -394,6 +399,7 @@ parse_keydesc (char *keydesc)
 		}
 	      else
 		{
+		  free (keydesc);
 		  return NULL;
 		}
 	    }
@@ -401,6 +407,8 @@ parse_keydesc (char *keydesc)
 	  token = next_token;
 	} while (next_token != NULL);
     }
+
+  free (keydesc);
 
   if (!p->sym)
     return NULL;
