@@ -103,7 +103,7 @@ handler (Display *d, XErrorEvent *e)
   fprintf (stderr, "ratpoison: %s!\n", error_msg);
 
   return 0;
-  //  exit (EXIT_FAILURE);
+  /*  exit (EXIT_FAILURE); */
 }
 
 void
