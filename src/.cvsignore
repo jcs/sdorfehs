@@ -6,3 +6,4 @@ config.h
 stamp-h
 stamp-h.in
 .deps
+config.h.in
