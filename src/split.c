@@ -66,8 +66,10 @@ cleanup_frame (rp_frame *frame)
 {
   rp_window *last_win;
   rp_window *win;
+  rp_screen *screen;
+  screen = frames_screen(frame);
 
-  win = find_window_other ();
+  win = find_window_other (screen);
   if (win == NULL)
     {
       set_frames_window (frame, NULL);

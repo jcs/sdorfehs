@@ -318,12 +318,11 @@ groups_del_window (rp_window *win)
 }
 
 rp_window *
-group_last_window (rp_group *g)
+group_last_window (rp_group *g, rp_screen *s)
 {
   int last_access = 0;
   rp_window_elem *most_recent = NULL;
   rp_window_elem *cur;
-  rp_screen *s = current_screen();
 
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
@@ -350,13 +349,13 @@ group_next_window (rp_group *g, rp_window *win)
 
   /* If there is no window, then get the last accessed one. */
   if (win == NULL) 
-    return group_last_window (g);
+    return group_last_window (g, current_screen());
 
   /* If we can't find the window, then it's in a different group, so
      get the last accessed one in this group. */
   we = group_find_window (&g->mapped_windows, win);
   if (we == NULL)
-    return group_last_window (g);
+    return group_last_window (g, win->scr);
 
   /* The window is in this group, so find the next one in the list
      that isn't already displayed. */
@@ -364,7 +363,7 @@ group_next_window (rp_group *g, rp_window *win)
        cur != we; 
        cur = list_next_entry (cur, &g->mapped_windows, node))
     {
-      if (!find_windows_frame (cur->win) && (cur->win->scr == current_screen() || rp_have_xinerama))
+      if (!find_windows_frame (cur->win) && (cur->win->scr == win->scr || rp_have_xinerama))
 	{
 	  return cur->win;
 	}
@@ -380,13 +379,13 @@ group_prev_window (rp_group *g, rp_window *win)
 
   /* If there is no window, then get the last accessed one. */
   if (win == NULL) 
-    return group_last_window (g);
+    return group_last_window (g, current_screen());
 
   /* If we can't find the window, then it's in a different group, so
      get the last accessed one in this group. */
   we = group_find_window (&g->mapped_windows, win);
   if (we == NULL)
-    return group_last_window (g);
+    return group_last_window (g, win->scr);
 
   /* The window is in this group, so find the previous one in the list
      that isn't already displayed. */
@@ -394,7 +393,7 @@ group_prev_window (rp_group *g, rp_window *win)
        cur != we; 
        cur = list_prev_entry (cur, &g->mapped_windows, node))
     {
-      if (!find_windows_frame (cur->win) && (cur->win->scr == current_screen() || rp_have_xinerama))
+      if (!find_windows_frame (cur->win) && (cur->win->scr == win->scr || rp_have_xinerama))
 	{
 	  return cur->win;
 	}

@@ -919,7 +919,7 @@ cmd_other (int interactive, char *data)
   rp_window *w;
 
 /*   w = find_window_other (); */
-  w = group_last_window (rp_current_group);
+  w = group_last_window (rp_current_group, current_screen());
 
   if (!w)
     message (MESSAGE_NO_OTHER_WINDOW);

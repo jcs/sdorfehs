@@ -346,7 +346,7 @@ client_msg (XClientMessageEvent *ev)
 	  PRINT_DEBUG (("Iconify Request.\n"));
 	  if (win->state == NormalState)
 	    {
-	      rp_window *w = find_window_other();
+	      rp_window *w = find_window_other(win->scr);
 
 	      if (w)
 		set_active_window (w);

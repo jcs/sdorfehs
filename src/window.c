@@ -266,9 +266,9 @@ find_window_next (rp_window *w)
 }
 
 rp_window *
-find_window_other ()
+find_window_other (rp_screen *screen)
 {
-  return group_last_window (rp_current_group);
+  return group_last_window (rp_current_group, screen);
 }
 
 
@@ -652,7 +652,7 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
   if (buffer == NULL) return;
 
   sbuf_clear (buffer);
-  other_window = find_window_other ();
+  other_window = find_window_other (current_screen());
 
   /* We only loop through the current group to look for windows. */
   list_for_each_entry (we,&rp_current_group->mapped_windows,node)

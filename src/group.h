@@ -24,7 +24,7 @@ rp_window *group_next_window (rp_group *g, rp_window *win);
 rp_group *groups_find_group_by_name (char *s);
 rp_group *groups_find_group_by_number (int n);
 
-rp_window *group_last_window (rp_group *g);
+rp_window *group_last_window (rp_group *g, rp_screen *screen);
 
 rp_group *group_prev_group ();
 rp_group *group_next_group ();

@@ -1,3 +1,14 @@
+2004-11-02  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/group.c (group_last_window): add argument, the screen to find the
+	window in. All callers updated.
+	(group_prev_window): make sure the matched window is in the same
+	screen as win.
+	(group_next_window): likewise
+
+	* src/window.c (find_window_other): add argument, the screen to
+	find the window in. All callers updated.
+
 2004-10-29  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* contrib/rpws: remove the echo /tmp/boom line.
