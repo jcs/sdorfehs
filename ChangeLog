@@ -1,3 +1,11 @@
+2001-09-09  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/actions.c (cmd_defbartimeout): merge the 2 ifs.
+	(cmd_defbartimeout): verify that the number is positive.
+	(cmd_defborder): likewise
+	(cmd_defwinname): gobble leading whitespace. Use strings as
+	arguments, not numbers.
+
 2001-09-08  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/list.h (update_window_position): new prototype

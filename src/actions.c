@@ -1006,7 +1006,7 @@ cmd_windows (int interactive, void *data)
   else
     {
       window_list = sbuf_new (0);
-      get_window_list (defaults.window_fmt, "\n", window_list, &dummy, &dummy);
+      get_window_list ((char *)data, "\n", window_list, &dummy, &dummy);
       tmp = sbuf_get (window_list);
       free (window_list);
 
@@ -1439,12 +1439,18 @@ cmd_defmaxsizepos (int interactive, void *data)
 char *
 cmd_defbartimeout (int interactive, void *data)
 {
-  if (data == NULL) return NULL;
+  int tmp;
 
-  if (sscanf (data, "%d", &defaults.bar_timeout) < 1)
+  if (data == NULL 
+      || sscanf (data, "%d", &tmp) < 1)
     {
       message (" defbartimeout: One argument required ");
     }
+
+  if (tmp >= 0)
+    defaults.bar_timeout = tmp;
+  else
+    message (" defbartimeout: Bad argument ");    
 
   return NULL;
 }
@@ -1572,13 +1578,22 @@ cmd_defpadding (int interactive, void *data)
 char *
 cmd_defborder (int interactive, void *data)
 {
+  int tmp;
   rp_window *win;
 
   if (data == NULL) return NULL;
 
-  if (sscanf (data, "%d", &defaults.window_border_width) < 1)
+  if (sscanf (data, "%d", &tmp) < 1)
     {
       message (" defborder: One argument required ");
+    }
+
+  if (tmp >= 0)
+    defaults.window_border_width = tmp;
+  else
+    {
+    message (" defborder: Bad argument ");
+    return NULL;
     }
 
   /* Update all the visible windows. */
@@ -1620,7 +1635,8 @@ cmd_defwaitcursor (int interactive, void *data)
 char *
 cmd_defwinfmt (int interactive, void *data)
 {
-  if (data == NULL) return NULL;
+  if (data == NULL)
+    return NULL;
 
   free (defaults.window_fmt);
   defaults.window_fmt = strdup (data);
@@ -1637,11 +1653,29 @@ cmd_defwinfmt (int interactive, void *data)
 char *
 cmd_defwinname (int interactive, void *data)
 {
-  if (data == NULL 
-      || sscanf (data, "%d", &defaults.win_name) < 1)
+  char *name;
+
+  if (data == NULL)
     {
       message (" defwinname: One argument required ");
+      return NULL;
     }
+
+  /* Gobble whitespace */
+  name = (char *)data;
+  while (*name == ' ') 
+    name++;
+
+  /* FIXME: Using strncmp is sorta dirty since `title' and
+     `titlefoobar' would both match. But its quick and dirty. */
+  if (!strncmp (name, "title", 5))
+    defaults.win_name = 0;
+  else if (!strncmp (name, "name", 4))
+    defaults.win_name = 1;
+  else if (!strncmp (name, "class", 5))
+    defaults.win_name = 2;
+  else
+    message (" defwinname: Bad argument ");
 
   return NULL;      
 }
