@@ -23,6 +23,8 @@
 
 #include "ratpoison.h"
 
+#include <string.h>
+
 void
 hook_add (struct list_head *hook, struct sbuf *s)
 {
