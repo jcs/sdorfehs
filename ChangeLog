@@ -1,3 +1,7 @@
+2003-05-31  Shawn Betts  <sabetts@sfu.ca>
+
+	* configure.in: check for usleep
+
 2003-05-28  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/completions.c (completions_complete): if direction is
