@@ -611,17 +611,26 @@ remove_frame (rp_window_frame *frame)
   free (frame);
 }
 
+/* Switch the input focus to another frame, and therefore a different
+   window. */
 void
 set_active_frame (rp_window_frame *frame)
 {
+  screen_info *old_s = current_screen();
   screen_info *s = frames_screen (frame);
-  rp_window_frame *old = s->rp_current_frame;
+  rp_window_frame *old = current_screen()->rp_current_frame;
 
-  give_window_focus (frame->win, s->rp_current_frame->win);
+  /* Make the switch */
+  give_window_focus (frame->win, old->win);
   update_last_access (frame);
   s->rp_current_frame = frame;
 
-  if (old != s->rp_current_frame && num_frames(s) > 1)
+  /* If frame->win == NULL, then rp_current_screen is not updated. */
+  rp_current_screen = s->screen_num;
+
+  /* Possibly show the frame indicator. */
+  if ((old != s->rp_current_frame && num_frames(s) > 1) 
+      || s != old_s)
     {
       show_frame_indicator();
     }

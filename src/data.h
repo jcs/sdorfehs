@@ -37,6 +37,7 @@ typedef struct rp_window_frame rp_window_frame;
 
 struct rp_window_frame
 {
+  int number;
   int x, y, width, height;
   rp_window *win;
 

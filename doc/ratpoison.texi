@@ -84,11 +84,13 @@ This document explains how to use ratpoison.
 * Concepts::                    Window manipulation concepts
 * General Use::                 How does this thing work??
 * Splitting Frames::            When you want to see more than one window
+* Multiple Monitors::           What to do with all your computer junk
 * Keystrokes::                  Key commands and functionality
 * Commands::                    ratpoison commands
 * Input::                       Typing text into ratpoison
 * Command Line Arguments::      ratpoison command-line actions
 * Startup file::                They threatened me...with violence!
+
 
 
 @end menu
@@ -178,7 +180,7 @@ how we didn't have to drag a single window, or click a single maximize
 button? Beautiful wasn't it? Felt fast? Cool? Its modern computing at
 its best boys and girls.
 
-@node  Splitting Frames, Keystrokes, General Use, Top
+@node  Splitting Frames, Multiple Monitors, General Use, Top
 @chapter Splitting Frames
 Sometimes you may want to see two or more windows at the same
 time. ratpoison allows you to split the display into frames (see
@@ -200,7 +202,28 @@ Finally, when you've had enough of the splitting and you just want
 good ol' full screen ratpoison press @kbd{C-t Q} to remove all splits
 and leave you with the current window full screen.
 
-@node Keystrokes, Commands, Splitting Frames, Top
+@node Multiple Monitors, Keystrokes, Splitting Frames, Top
+@chapter Multiple Monitors
+When you've finally accumulated enough computer junk, you'll find
+youself attaching a second monitor to your computer. ratpoison has
+functionality to help you get around your new and improved desktop
+space.
+
+The X Windowing System assigns each monitor a screen number. To switch
+to another screen use the commands @command{nextscreen} and
+@command{prevscreen}. ratpoison will tell you which frame has focus by
+drawing the current frame indicator in it.
+
+Many commands operate only on the current screen. This becomes
+apparent when you have 2 screens each with 1 frame. In each frame you
+have an xterm. If you try to switch to the other xterm with the
+command @command{other}, for instance, you'll get a message ``No other
+window.'' ratpoison means there's no other window to switch to in the
+current screen. If you want to switch to the other xterm you can
+switch to it by name (use @command{select} or @kbd{C-t '}), by number,
+or you can use @command{nextscreen} and @command{prevscreen}.
+
+@node Keystrokes, Commands, Multiple Monitors, Top
 @chapter Keystrokes
 
 ratpoison is a very simple window manager. Each window is maximized and
@@ -566,6 +589,10 @@ This jumps you to the next window in the window list. This one is
 bound to three keystrokes, namely @kbd{C-t n}, @kbd{C-t space},
 and @kbd{C-t enter}.
 
+@item nextscreen
+This jumps you to the next X11 screen. @command{nextscreen} is
+used for dual-head displays and multiple monitor setups.
+
 @item newwm @var{window-manager}
 This is a bad-bad command. It kills ratpoison and revives that
 ugly rodent! Yuck! Avoid!
@@ -588,6 +615,10 @@ default, this is bound to @kbd{C-t C-t}.
 @item prev
 This jumps you to the previous window in the window list. By default,
 this is bound to @kbd{C-t p}.
+
+@item prevscreen
+This jumps you to the previous X11 screen. @command{prevscreen} is
+used for dual-head displays and multiple monitor setups.
 
 @item quit
 Quit ratpoison.

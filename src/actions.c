@@ -82,6 +82,8 @@ static user_command user_commands[] =
     {"startup_message",	cmd_startup_message, arg_STRING},
     {"link",		cmd_link,	arg_STRING},
     {"alias",		cmd_alias,	arg_STRING},
+    {"prevscreen",	cmd_prevscreen,	arg_VOID},
+    {"nextscreen",	cmd_nextscreen,	arg_VOID},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
@@ -2427,6 +2429,40 @@ cmd_alias (int interactive, void *data)
       alias_list[alias_list_last].alias = xstrdup (alias);
       alias_list_last++;
     }
+
+  return NULL;
+}
+
+char *
+cmd_nextscreen (int interactive, void *data)
+{
+  int new_screen;
+
+  /* No need to go through the motions when we don't have to. */
+  if (num_screens <= 1) return NULL;
+
+  new_screen = rp_current_screen + 1;
+  if (new_screen >= num_screens)
+    new_screen = 0;
+
+  set_active_frame (screens[new_screen].rp_current_frame);
+
+  return NULL;
+}
+
+char *
+cmd_prevscreen (int interactive, void *data)
+{
+  int new_screen;
+
+  /* No need to go through the motions when we don't have to. */
+  if (num_screens <= 1) return NULL;
+
+  new_screen = rp_current_screen - 1;
+  if (new_screen < 0)
+    new_screen = num_screens - 1;
+
+  set_active_frame (screens[new_screen].rp_current_frame);
 
   return NULL;
 }

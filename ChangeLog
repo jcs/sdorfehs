@@ -1,3 +1,18 @@
+2002-03-13  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/split.c (set_active_frame): fix to operate properly with
+	multiple screens.
+
+	* src/data.h (struct rp_window_frame): new data member 'number'.
+
+	* src/actions.h (cmd_prevscreen): new prototype
+	(cmd_nextscreen): likewise
+
+	* src/actions.c (user_commands): new commands "nextscreen" and
+	"prevscreen"
+	(cmd_nextscreen): new function
+	(cmd_prevscreen): likewise
+
 2002-02-19  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/split.c: include string.h
