@@ -1,5 +1,8 @@
 2002-01-26  shawn  <sabetts@vcn.bc.ca>
 
+	* src/list.c (format_window_name): If res_class or res_name are
+	NULL use "None" instead.
+
 	* src/actions.c (alias_t): rename data structure from cmd_alias to
 	avoid a name clash with the function cmd_alias. Dependant code
 	updated.

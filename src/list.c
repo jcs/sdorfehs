@@ -672,11 +672,17 @@ format_window_name (char *fmt, rp_window *win, rp_window *other_win,
 	      break;
 
 	    case 'a':
-	      sbuf_concat (buffer, win->res_name);
+	      if (win->res_name)
+		sbuf_concat (buffer, win->res_name);
+	      else
+		sbuf_concat (buffer, "None");
 	      break;
 
 	    case 'c':
-	      sbuf_concat (buffer, win->res_class);
+	      if (win->res_class)
+		sbuf_concat (buffer, win->res_class);
+	      else
+		sbuf_concat (buffer, "None");
 	      break;
 
 	    case 'i':
