@@ -27,6 +27,7 @@
 rp_window *rp_window_head, *rp_window_tail;
 rp_window *rp_current_window;
 
+/* Allocate a new window and add it to the list of managed windows */
 rp_window *
 add_to_window_list (screen_info *s, Window w)
 {
@@ -45,6 +46,7 @@ add_to_window_list (screen_info *s, Window w)
   new_window->state = STATE_UNMAPPED;
   new_window->number = -1;	
   new_window->named = 0;
+  new_window->hints = XAllocSizeHints ();
 
   if ((new_window->name = malloc (strlen ("Unnamed") + 1)) == NULL)
     {
@@ -95,6 +97,7 @@ remove_from_window_list (rp_window *w)
      left. */
   if (rp_current_window == w) rp_current_window = NULL;
 
+  XFree (w->hints);
   free (w);
   PRINT_DEBUG ("Removed window from list.\n");
 }
