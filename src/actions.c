@@ -1456,114 +1456,142 @@ cmd_license (int interactive, void *data)
 char *
 cmd_help (int interactive, void *data)
 {
-  screen_info *s = current_screen();
-  XEvent ev;
-  Window fwin;			/* Window currently in focus */
-  int revert;			
-  int i, old_i;
-  int x = 10;
-  int y = 0;
-  int max_width = 0;
-  int drawing_keys = 1;		/* 1 if we are drawing keys 0 if we are drawing commands */
-  char *keysym_name;
-
-  XMapRaised (dpy, s->help_window);
-
-  XGetInputFocus (dpy, &fwin, &revert);
-  XSetInputFocus (dpy, s->help_window, RevertToPointerRoot, CurrentTime);
-
-  XDrawString (dpy, s->help_window, s->normal_gc,
-	       10, y + defaults.font->max_bounds.ascent,
-	       "ratpoison key bindings", strlen ("ratpoison key bindings"));
-
-  y += FONT_HEIGHT (defaults.font) * 2;
-
-  XDrawString (dpy, s->help_window, s->normal_gc,
-	       10, y + defaults.font->max_bounds.ascent,
-	       "Command key: ", strlen ("Command key: "));
-
-  keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
-  XDrawString (dpy, s->help_window, s->normal_gc,
-	       10 + XTextWidth (defaults.font, "Command key: ", strlen ("Command key: ")),
-	       y + defaults.font->max_bounds.ascent,
-	       keysym_name, strlen (keysym_name));
-  free (keysym_name);
-
-  y += FONT_HEIGHT (defaults.font) * 2;
-  
-  i = 0;
-  old_i = 0;
-  while (i<key_actions_last || drawing_keys)
+  if (interactive) 
     {
-      if (drawing_keys)
-	{
-	  keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
+      screen_info *s = current_screen();
+      XEvent ev;
+      Window fwin;			/* Window currently in focus */
+      int revert;			
+      int i, old_i;
+      int x = 10;
+      int y = 0;
+      int max_width = 0;
+      int drawing_keys = 1;		/* 1 if we are drawing keys 0 if we are drawing commands */
+      char *keysym_name;
 
-	  XDrawString (dpy, s->help_window, s->normal_gc,
-		       x, y + defaults.font->max_bounds.ascent,
-		       keysym_name, strlen (keysym_name));
+      XMapRaised (dpy, s->help_window);
 
-	  if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
-	    max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
+      XGetInputFocus (dpy, &fwin, &revert);
+      XSetInputFocus (dpy, s->help_window, RevertToPointerRoot, CurrentTime);
 
-	  free (keysym_name);
-	}
-      else
-	{
-	  XDrawString (dpy, s->help_window, s->normal_gc,
-		       x, y + defaults.font->max_bounds.ascent,
-		       key_actions[i].data, strlen (key_actions[i].data));
+      XDrawString (dpy, s->help_window, s->normal_gc,
+                   10, y + defaults.font->max_bounds.ascent,
+                   "ratpoison key bindings", strlen ("ratpoison key bindings"));
 
-	  if (XTextWidth (defaults.font, key_actions[i].data, strlen (key_actions[i].data)) > max_width)
-	    {
-	      max_width = XTextWidth (defaults.font, key_actions[i].data, strlen (key_actions[i].data));
-	    }
-	}
+      y += FONT_HEIGHT (defaults.font) * 2;
 
-      y += FONT_HEIGHT (defaults.font);
-      /* Make sure the next line fits entirely within the window. */
-      if (y + FONT_HEIGHT (defaults.font) >= s->root_attr.height)
-	{
-	  if (drawing_keys)
-	    {
-	      x += max_width + 10;
-	      drawing_keys = 0;
-	      i = old_i;
-	    }
-	  else
-	    {
-	      x += max_width + 20;
-	      drawing_keys = 1;
-	      i++;
-	      old_i = i;
-	    }
+      XDrawString (dpy, s->help_window, s->normal_gc,
+                   10, y + defaults.font->max_bounds.ascent,
+                   "Command key: ", strlen ("Command key: "));
 
-	  max_width = 0;
-	  y = FONT_HEIGHT (defaults.font) * 4;
-	}
-      else
-	{
-	  i++;
-	  if (i >= key_actions_last && drawing_keys)
-	    {
-	      x += max_width + 10;
-	      drawing_keys = 0;
-	      y = FONT_HEIGHT (defaults.font) * 4;
-	      i = old_i;
-	      max_width = 0;
-	    }
-	}
+      keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
+      XDrawString (dpy, s->help_window, s->normal_gc,
+                   10 + XTextWidth (defaults.font, "Command key: ", strlen ("Command key: ")),
+                   y + defaults.font->max_bounds.ascent,
+                   keysym_name, strlen (keysym_name));
+      free (keysym_name);
+
+      y += FONT_HEIGHT (defaults.font) * 2;
+      
+      i = 0;
+      old_i = 0;
+      while (i<key_actions_last || drawing_keys)
+        {
+          if (drawing_keys)
+            {
+              keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
+
+              XDrawString (dpy, s->help_window, s->normal_gc,
+            	       x, y + defaults.font->max_bounds.ascent,
+            	       keysym_name, strlen (keysym_name));
+
+              if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
+                max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
+
+              free (keysym_name);
+            }
+          else
+            {
+              XDrawString (dpy, s->help_window, s->normal_gc,
+            	       x, y + defaults.font->max_bounds.ascent,
+            	       key_actions[i].data, strlen (key_actions[i].data));
+
+              if (XTextWidth (defaults.font, key_actions[i].data, strlen (key_actions[i].data)) > max_width)
+                {
+                  max_width = XTextWidth (defaults.font, key_actions[i].data, strlen (key_actions[i].data));
+                }
+            }
+
+          y += FONT_HEIGHT (defaults.font);
+          /* Make sure the next line fits entirely within the window. */
+          if (y + FONT_HEIGHT (defaults.font) >= s->root_attr.height)
+            {
+              if (drawing_keys)
+                {
+                  x += max_width + 10;
+                  drawing_keys = 0;
+                  i = old_i;
+                }
+              else
+                {
+                  x += max_width + 20;
+                  drawing_keys = 1;
+                  i++;
+                  old_i = i;
+                }
+
+              max_width = 0;
+              y = FONT_HEIGHT (defaults.font) * 4;
+            }
+          else
+            {
+              i++;
+              if (i >= key_actions_last && drawing_keys)
+                {
+                  x += max_width + 10;
+                  drawing_keys = 0;
+                  y = FONT_HEIGHT (defaults.font) * 4;
+                  i = old_i;
+                  max_width = 0;
+                }
+            }
+        }
+
+      XMaskEvent (dpy, KeyPressMask, &ev);
+      XUnmapWindow (dpy, s->help_window);
+      XSetInputFocus (dpy, fwin, revert, CurrentTime);
+
+      /* The help window overlaps the bar, so redraw it. */
+      if (current_screen()->bar_is_raised)
+        show_last_message();
+
+      return NULL;
     }
+  else
+    {
+      struct sbuf *help_list;
+      char *keysym_name;
+      char *tmp;
+      int i;
 
-  XMaskEvent (dpy, KeyPressMask, &ev);
-  XUnmapWindow (dpy, s->help_window);
-  XSetInputFocus (dpy, fwin, revert, CurrentTime);
+      help_list = sbuf_new (0);
 
-  /* The help window overlaps the bar, so redraw it. */
-  if (current_screen()->bar_is_raised)
-    show_last_message();
+      for (i = 0; i < key_actions_last; i++)
+        {
+          keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
+          sbuf_concat (help_list, keysym_name);
+          free (keysym_name);
+          sbuf_concat (help_list, " ");
+          sbuf_concat (help_list, key_actions[i].data);
+          if (i < key_actions_last - 1)
+            sbuf_concat (help_list, "\n");
+        }
 
-  return NULL;
+      tmp = sbuf_get (help_list);
+      free (help_list);
+
+      return tmp;
+    }
 }
 
 char *

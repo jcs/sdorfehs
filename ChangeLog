@@ -1,3 +1,8 @@
+2003-01-25  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_help): Print key binding when called
+	non-interactively.
+
 2002-12-11  Shawn  <sabetts@sfu.ca>
 
 	* configure.in (AC_CHECK_FUNCS): Add check for putenv, remove
