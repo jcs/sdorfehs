@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2000-2004 Shawn Betts <sabetts@vcn.bc.ca>
+# Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
 #
 # This file is part of ratpoison.
 #
@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-# $Id: autogen.sh,v 1.6 2004/12/02 00:22:38 sabetts Exp $
+# $Id: autogen.sh,v 1.7 2004/12/03 01:20:56 sabetts Exp $
 #
 # usage: ./autogen.sh [-f]
 # option "-f" means forcefully create symlinks for missing files
