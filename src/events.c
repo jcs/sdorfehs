@@ -286,7 +286,7 @@ configure_request (XConfigureRequestEvent *e)
 static void
 client_msg (XClientMessageEvent *ev)
 {
-  PRINT_DEBUG ("Recieved client message.\n");
+  PRINT_DEBUG ("Received client message.\n");
 
   if (ev->message_type == rp_restart)
     {
@@ -382,8 +382,12 @@ key_press (XEvent *ev)
     }
 }
 
-void
-receive_command()
+/* Read a command off the window and execute it. Some commands return
+   text. This text is passed back using the RP_COMMAND_RESULT
+   Atom. The client will wait for this property change so something
+   must be returned. */
+static void
+execute_remote_command (Window w)
 {
   Atom type_ret;
   int format_ret;
@@ -391,12 +395,12 @@ receive_command()
   unsigned long bytes_after;
   unsigned char *req;
 
-  if (XGetWindowProperty (dpy, DefaultRootWindow (dpy), rp_command,
+  if (XGetWindowProperty (dpy, w, rp_command,
 			  0, 0, False, XA_STRING,
 			  &type_ret, &format_ret, &nitems, &bytes_after,
 			  &req) == Success
       &&
-      XGetWindowProperty (dpy, DefaultRootWindow (dpy), rp_command,
+      XGetWindowProperty (dpy, w, rp_command,
 			  0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
 			  True, XA_STRING, &type_ret, &format_ret, &nitems, 
 			  &bytes_after, &req) == Success)
@@ -414,6 +418,50 @@ receive_command()
     }
 }
 
+/* Command requests are posted as a property change using the
+   RP_COMMAND_REQUEST Atom on the root window. A Command request is a
+   Window that holds the actual command as a property using the
+   RP_COMMAND Atom. receive_command reads the list of Windows and
+   executes their associated command. */
+static void
+receive_command ()
+{
+  Atom type_ret;
+  int format_ret;
+  unsigned long nitems;
+  unsigned long bytes_after;
+  void *prop_return;
+
+  do
+    {
+      if (XGetWindowProperty (dpy, DefaultRootWindow (dpy),
+			      rp_command_request, 0, 
+			      sizeof (Window) / 4 + (sizeof (Window) % 4 ?1:0),
+			      True, XA_WINDOW, &type_ret, &format_ret, &nitems,
+			      &bytes_after, (unsigned char **)&prop_return) == Success)
+	{
+	  if (prop_return)
+	    {
+	      Window w;
+
+	      w = *(Window *)prop_return;
+	      XFree (prop_return);
+
+	      execute_remote_command (w);
+	      XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+			       8, PropModeReplace, "Success", 8);
+	    }
+	  else
+	    {
+	      PRINT_DEBUG ("Couldn't get RP_COMMAND_REQUEST Property\n");
+	    }
+
+	  PRINT_DEBUG ("command requests: %ld\n", nitems);
+	}
+    } while (nitems > 0);
+			  
+}
+
 void
 property_notify (XEvent *ev)
 {
@@ -421,8 +469,9 @@ property_notify (XEvent *ev)
 
   PRINT_DEBUG ("atom: %ld\n", ev->xproperty.atom);
 
-  if (ev->xproperty.atom == rp_command
-      && ev->xproperty.window == DefaultRootWindow (dpy))
+  if (ev->xproperty.atom == rp_command_request
+      && ev->xproperty.window == DefaultRootWindow (dpy)
+      && ev->xproperty.state == PropertyNewValue)
     {
       PRINT_DEBUG ("ratpoison command\n");
       receive_command();

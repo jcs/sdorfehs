@@ -147,12 +147,12 @@ user_command user_commands[] =
     {"bind",		cmd_bind,		arg_VOID},
     {"source",		cmd_source,		arg_STRING},
     {"escape",          cmd_escape,             arg_STRING},
+    {"echo", 		cmd_echo, 		arg_STRING},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
        emulated with these commands */
 
-    {"echo", 		cmd_unimplemented, 	arg_VOID},
     {"stuff", 		cmd_unimplemented, 	arg_VOID},
     {"number", 		cmd_unimplemented, 	arg_VOID},
     {"hardcopy",	cmd_unimplemented,	arg_VOID},
@@ -753,4 +753,11 @@ cmd_escape (void *data)
     {
       message (" escape: could not parse key description ");
     }
+}
+
+/* User accessible call to display the passed in string. */
+void
+cmd_echo (void *data)
+{
+  if (data) message ((char *)data);
 }

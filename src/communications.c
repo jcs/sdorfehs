@@ -67,9 +67,69 @@ send_kill ()
     }
 }
 
+/* Sending commands to ratpoison */
+
+static void
+recieve_command_result (Window w)
+{
+  Atom type_ret;
+  int format_ret;
+  unsigned long nitems;
+  unsigned long bytes_after;
+  unsigned char *result;
+
+
+  if (XGetWindowProperty (dpy, w, rp_command_result,
+			  0, 0, False, XA_STRING,
+			  &type_ret, &format_ret, &nitems, &bytes_after,
+			  &result) == Success
+      &&
+      XGetWindowProperty (dpy, w, rp_command_result,
+			  0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+			  True, XA_STRING, &type_ret, &format_ret, &nitems, 
+			  &bytes_after, &result) == Success)
+    {
+      if (result)
+	{
+	  printf ("%s\n", result);
+	}
+      XFree (result);
+    }
+}
+
 int
 send_command (unsigned char *cmd)
 {
-  return XChangeProperty (dpy, DefaultRootWindow (dpy), rp_command, XA_STRING,
-			  8, PropModeAppend, cmd, strlen (cmd) + 1);
+  Window w;
+  int done = 0;
+
+  w = XCreateSimpleWindow (dpy, DefaultRootWindow (dpy),
+			   0, 0, 1, 1, 0, 0, 0);
+
+  // Select first to avoid race condition
+  XSelectInput (dpy, w, PropertyChangeMask);
+
+  XChangeProperty (dpy, w, rp_command, XA_STRING,
+		   8, PropModeReplace, cmd, strlen (cmd) + 1);
+
+  XChangeProperty (dpy, DefaultRootWindow (dpy), 
+		   rp_command_request, XA_WINDOW,
+		   8, PropModeAppend, (unsigned char *)&w, sizeof (Window));
+
+  while (!done)
+    {
+      XEvent ev;
+
+      XMaskEvent (dpy, PropertyChangeMask, &ev);
+      if (ev.xproperty.atom == rp_command_result 
+	  && ev.xproperty.state == PropertyNewValue)
+	{
+	  recieve_command_result(ev.xproperty.window);
+	  done = 1;
+	}
+    }
+
+  XDestroyWindow (dpy, w);
+
+  return 1;
 }

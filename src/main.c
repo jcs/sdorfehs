@@ -51,6 +51,8 @@ Atom wm_colormaps;
 Atom rp_restart;
 Atom rp_kill;
 Atom rp_command;
+Atom rp_command_request;
+Atom rp_command_result;
 
 screen_info *screens;
 int num_screens;
@@ -365,6 +367,8 @@ main (int argc, char *argv[])
   rp_restart = XInternAtom (dpy, "RP_RESTART", False);
   rp_kill = XInternAtom (dpy, "RP_KILL", False);
   rp_command = XInternAtom (dpy, "RP_COMMAND", False);
+  rp_command_request = XInternAtom (dpy, "RP_COMMAND_REQUEST", False);
+  rp_command_result = XInternAtom (dpy, "RP_COMMAND_RESULT", False);
 
   if (do_kill)
     {

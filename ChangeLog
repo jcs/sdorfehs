@@ -1,3 +1,25 @@
+2001-03-28  Shawn  <sabetts@vcn.bc.ca>
+
+	* src/main.c (main): initialize rp_command_request and
+	rp_command_result.
+
+	* src/data.h (rp_command_request): new global
+	(rp_command_result): new global
+
+	* src/events.c (execute_remote_command): new function
+	(receive_command): loops through the list of command requests
+	calling execute_remote_command on each one.
+	(property_notify): better detection of command requests.
+
+	* src/communications.c (recieve_command_result): new function
+	(send_command): creates a new window to attach the command
+	to. Waits for confirmation that the command has been executed.
+
+	* src/actions.h (cmd_echo): new prototype
+
+	* src/actions.c (cmd_echo): new function
+	(user_commands): update "echo" entry
+
 2001-03-22  Gergely Nagy  <8@free.bsd.hu>
 
 	* debian/control: removed build-dependency on x-terminal-emulator,

@@ -62,6 +62,7 @@ void cmd_bind (void* data);
 void cmd_source (void* data);
 void cmd_maximize (void *data);
 void cmd_escape (void *data);
+void cmd_echo (void *data);
 
 /* void cmd_xterm (void *data); */
 
