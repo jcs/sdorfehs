@@ -162,8 +162,12 @@ scanwins(screen_info *s)
       XGetWindowAttributes(dpy, wins[i], &attr);
       if (wins[i] == s->bar_window || wins[i] == s->key_window) continue;
 
-      win = add_to_window_list (s, wins[i]);
-      if (attr.map_state == IsViewable) manage (win, s);
+      
+      if (attr.override_redirect != True)
+	{
+	  win = add_to_window_list (s, wins[i]);
+	  if (attr.map_state != IsUnmapped) manage (win, s);
+	}
     }
   XFree((void *) wins);	/* cast is to shut stoopid compiler up */
 }
