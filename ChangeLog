@@ -1,5 +1,7 @@
 2001-03-02  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* doc/Makefile.am (EXTRA_DIST): man page comes with the distro.
+
 	* Makefile.am (SUBDIRS): removed man/
 
 	* configure.in (AC_OUTPUT): removed man/Makefile

@@ -1,5 +1,7 @@
 2001-03-02  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* main.c (print_version): updated copyright notice.
+
 	* actions.c (initialize_default_keybindings): removed emacs
 	binding.
 
