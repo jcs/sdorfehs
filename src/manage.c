@@ -39,64 +39,64 @@ grab_prefix_key (Window w)
 	   GrabModeAsync, GrabModeAsync);
 }
 
-/* Reget the WM_NAME property for the window and update its name. */
-int
-update_window_name (rp_window *win)
+char *
+get_window_name (Window w)
 {
+  char *name;
   XTextProperty text;
   char **name_list;
   int list_len;
 
-  /* Don't overwrite the window name if the user specified one. */
-  if (win->named) return 0;
-
-  if (!XGetWMName (dpy, win->w, &text))
+  if (!XGetWMName (dpy, w, &text))
     {
       PRINT_DEBUG ("I can't get the WMName.\n");
-      return 0;
+      return NULL;
     }
 
   if (!XTextPropertyToStringList (&text, &name_list, &list_len))
     {
       PRINT_DEBUG ("Error retrieving TextList.\n");
-      return 0;
+      return NULL;
     }
 
-  /* Sorta sick... */
-#ifdef DEBUG
-  {
-    int i;
-
-    for (i=0; i<list_len; i++)
-      {
-	PRINT_DEBUG ("WMName: %s\n", name_list[i]);
-      }
-  }
-#endif /* DEBUG */
-
-  /* Set the window's name to the first in the name_list */
   if (list_len > 0)
     {
-      char *loc;
-
-      free (win->name);
-      if ((win->name = malloc (strlen (name_list[0]) + 1)) == NULL)
+      if ((name = malloc (strlen (name_list[0]) + 1)) == NULL)
 	{
 	  PRINT_ERROR ("Out of memory!\n");
 	  exit (EXIT_FAILURE);
 	}    
-      strcpy (win->name, name_list[0]);
+      strcpy (name, name_list[0]);
 
-      /* A bit of a hack. If there's a : in the string, crop the
-         string off there. This is mostly brought on by netscape's
-         disgusting tendency to put its current URL in the WMName!!
-         arg! */
-      loc = strchr (win->name, ':');
-      if (loc) loc[0] = '\0';
+      /* Its our responsibility to free this. */ 
+      XFreeStringList (name_list);
+
+      return name;
     }
 
   /* Its our responsibility to free this. */ 
   XFreeStringList (name_list);
+
+  return NULL;
+}
+
+/* Reget the WM_NAME property for the window and update its name. */
+int
+update_window_name (rp_window *win)
+{
+  char *loc;
+
+  /* Don't overwrite the window name if the user specified one. */
+  if (win->named) return 0;
+
+  win->name = get_window_name (win->w);
+
+  /* A bit of a hack. If there's a : in the string, crop the
+     string off there. This is mostly brought on by netscape's
+     disgusting tendency to put its current URL in the WMName!!
+     arg! */
+  loc = strchr (win->name, ':');
+  if (loc) loc[0] = '\0';
 
   return 1;
 }
