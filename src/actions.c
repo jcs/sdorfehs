@@ -2582,7 +2582,7 @@ cmd_escape (int interactive, struct cmdarg **args)
       if (key->state != 0)
 	action->state = 0;
       else
-	action-state = RP_CONTROL_MASK;
+	action->state = RP_CONTROL_MASK;
     }
 
   /* Remove the grab on the current prefix key */
