@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** New windows formatting option %l
+Prints a last access number. The higher the number, the more recently
+the window was accessed.
+
 ** Remove command line options --kill and --restart
 Use -c quit and -c restart instead.
 

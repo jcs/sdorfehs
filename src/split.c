@@ -88,7 +88,7 @@ create_initial_frame ()
   rp_current_frame->prev = rp_window_frame_sentinel;
 
   maximize_frame (rp_current_frame);
-  
+
   set_frames_window (rp_current_frame, NULL);
 }
 
@@ -444,6 +444,15 @@ remove_frame (rp_window_frame *frame)
       rp_window_frame tmp_frame;
       int fits = 0;
 
+      if (cur->win)
+	{
+	  PRINT_DEBUG ("Trying frame containing window '%s'\n", window_name (cur->win));
+	}
+      else
+	{
+	  PRINT_DEBUG ("Trying some empty frame\n");
+	}
+
       /* Backup the frame */
       memcpy (&tmp_frame, cur, sizeof (rp_window_frame));
 
@@ -455,9 +464,17 @@ remove_frame (rp_window_frame *frame)
 	  cur->height += frame->height;
 	}
 
+      PRINT_DEBUG ("Attempting vertical Frame y=%d height=%d\n", cur->y, cur->height);
       PRINT_DEBUG ("New Total Area: %d\n", total_frame_area());
 
-      if (total_frame_area() > area || frame_overlaps (cur))
+      /* If the area is bigger than before, the frame takes up too
+	 much space. If the current frame and the deleted frame DON'T
+	 overlap then the current window took up just the right amount
+	 of space but didn't take up the space left behind by the
+	 deleted window. If any active frames overlap, it could have
+	 taken up the right amount of space, overlaps with the deleted
+	 frame but obviously didn't fit. */
+      if (total_frame_area() > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
 	{
 	  PRINT_DEBUG ("Didn't fit vertically\n");
 
@@ -481,9 +498,11 @@ remove_frame (rp_window_frame *frame)
 	  cur->width += frame->width;
 	}
 
+      PRINT_DEBUG ("Attempting horizontal Frame x=%d width=%d\n", cur->x, cur->width);
       PRINT_DEBUG ("New Total Area: %d\n", total_frame_area());
 
-      if (total_frame_area() > area || frame_overlaps (cur))
+      /* Same test as the vertical test, above. */
+      if (total_frame_area() > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
 	{
 	  PRINT_DEBUG ("Didn't fit horizontally\n");
 

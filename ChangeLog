@@ -1,5 +1,10 @@
 2001-10-09  shawn  <sabetts@vcn.bc.ca>
 
+	* src/split.c (remove_frame): Make sure the frame attempting to
+	take up the space of the deleted frame overlaps the deleted frame
+	after the size change.
+	(remove_frame): More debug messages
+
 	* src/list.c (format_window_name): add formatting option '%l' to
 	grab the last_access field from the window.
 
