@@ -1,3 +1,27 @@
+2003-05-20  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/linkedlist.h: Move all C function to linkedlist.c
+
+2003-05-19  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/window.c (find_window): add debugging output describing
+	which window list the window was found in.
+
+	* src/group.c (group_new): assign the group's number the number
+	passed as an argument.
+
+	* src/events.c (destroy_window): withdraw iconified and normal
+	windows before unmanaging them.
+	(handle_signals): delete the node from the list before freeing it.
+
+	* src/bar.h (message): remove define.
+	(marked_wrapped_message): remove prototype
+	(message): new prototype
+
+	* src/bar.c (message): new function
+	(marked_wrapped_message): renamed to marked_message. remove
+	marked_message.
+
 2003-05-18  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/bar.c (marked_wrapped_message): Free the GC's created with

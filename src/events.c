@@ -176,7 +176,33 @@ destroy_window (XDestroyWindowEvent *ev)
   win = find_window (ev->window);
   if (win == NULL) return;
 
-  ignore_badwindow++;
+  ignore_badwindow++;  
+
+  /* If, somehow, the window is not withdrawn before it is destroyed,
+     perform the necessary steps to withdraw the window before it is
+     unmanaged. */
+  if (win->state == IconicState)
+    {
+      PRINT_DEBUG (("Destroying Iconic Window (%s)\n", window_name (win)));
+      withdraw_window (win);
+    }
+  else if (win->state == NormalState)
+    {
+      rp_frame *frame;
+
+      PRINT_DEBUG (("Destroying Normal Window (%s)\n", window_name (win)));
+      frame = find_windows_frame (win);
+      if (frame)
+	{
+	  cleanup_frame (frame);
+	  if (frame->number == win->scr->current_frame) 
+	    set_active_frame (frame);
+	}
+      withdraw_window (win);
+    }
+
+  /* Now that the window is guaranteed to be in the unmapped window
+     list, we can safely stop managing it. */
   unmanage (win);
   ignore_badwindow--;
 }
@@ -787,9 +813,9 @@ handle_signals ()
 	      if (cur->status != 0)
 		marked_message_printf (0,0, " /bin/sh -c \"%s\" finished (%d) ", 
 				       cur->cmd, cur->status);
+	      list_del  (&cur->node);
 	      free (cur->cmd);
 	      free (cur);
-	      list_del  (&cur->node);
 	    }
 	}
 

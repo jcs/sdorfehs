@@ -29,9 +29,8 @@ int hide_bar (rp_screen *s);
 int bar_y (rp_screen *s, int height);
 int bar_x (rp_screen *s, int width);
 
-#define message(msg) marked_message ((msg), 0, 0)
-void marked_message (char *msg, int hl_start, int hl_end);
-void marked_wrapped_message (char *msg, int hl_start, int hl_end);
+void message (char *s);
+void marked_message (char *s, int mark_start, int mark_end);
 void marked_message_printf (int mark_start, int mark_end, char *fmt, ...);
 void show_last_message ();
 void free_bar ();

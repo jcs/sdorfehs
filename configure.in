@@ -17,7 +17,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.35 2003/05/17 10:26:19 sabetts Exp $
+dnl $Id: configure.in,v 1.36 2003/05/20 07:20:14 sabetts Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 1.3.0-cvs)
@@ -68,6 +68,9 @@ CFLAGS="$CFLAGS $X_CFLAGS"
 
 AC_CHECK_LIB(X11, XOpenDisplay,,
 	AC_MSG_ERROR([*** Can't find libX11]))
+
+dnl Check for electric fence library
+dnl AC_CHECK_LIB(efence,malloc,,)
 
 dnl Checks for header files.
 AC_HEADER_STDC

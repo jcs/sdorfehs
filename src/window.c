@@ -167,11 +167,20 @@ find_window (Window w)
 {
   rp_window *win = NULL;
 
+
   win = find_window_in_list (w, &rp_mapped_window);
 
   if (!win) 
     {
       win = find_window_in_list (w, &rp_unmapped_window);
+      if (win)
+	PRINT_DEBUG (("Window found in unmapped window list\n"));
+      else
+	PRINT_DEBUG (("Window not found.\n"));
+    }
+  else
+    {
+      PRINT_DEBUG (("Window found in mapped window list.\n"));
     }
 
   return win;

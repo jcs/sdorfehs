@@ -148,7 +148,7 @@ update_bar (rp_screen *s)
     }
   else
     {
-      /* The bar is showing a window list. */
+      /* bar is showing a window list. */
       update_window_names (s);
     }
 }
@@ -172,12 +172,18 @@ update_window_names (rp_screen *s)
   else
     {
       get_window_list (defaults.window_fmt, "\n", bar_buffer, &mark_start, &mark_end);
-      marked_wrapped_message (sbuf_get (bar_buffer), mark_start, mark_end);
+      marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
     }
 
 
 /*   marked_message (sbuf_get (bar_buffer), mark_start, mark_end); */
   sbuf_free (bar_buffer);
+}
+
+void
+message (char *s)
+{
+  marked_message (s, 0, 0);
 }
 
 void
@@ -269,7 +275,7 @@ line_beginning (char* msg, int pos)
 }
 
 void
-marked_wrapped_message (char *msg, int mark_start, int mark_end)
+marked_message (char *msg, int mark_start, int mark_end)
 {
   XGCValues lgv;
   GC lgc;
@@ -423,111 +429,6 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
   /* Keep a record of the message. */
   /* FIXME: What about multiple screens? We need a bar structure for
      each screen. */
-  if (last_msg)
-    free (last_msg);
-  last_msg = xstrdup (msg);
-  last_mark_start = mark_start;
-  last_mark_end = mark_end;
-}
-
-
-
-void
-marked_message (char *msg, int mark_start, int mark_end)
-{
-  XGCValues lgv;
-  GC lgc;
-  unsigned long mask;
-  rp_screen *s = current_screen ();
-
-  int width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
-  int height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
-
-  PRINT_DEBUG (("%s\n", msg));
-
-  /* Map the bar if needed */
-  if (!s->bar_is_raised)
-    {
-      s->bar_is_raised = BAR_IS_MESSAGE;
-      XMapRaised (dpy, s->bar_window);
-    }
-
-  /* Reset the alarm to auto-hide the bar in BAR_TIMEOUT seconds. */
-  alarm (defaults.bar_timeout);
-  alarm_signalled = 0;
-
-  XMoveResizeWindow (dpy, s->bar_window, 
-		     bar_x (s, width), bar_y (s, height),
-		     width,
-		     height);
-
-  XRaiseWindow (dpy, s->bar_window);
-  XClearWindow (dpy, s->bar_window);
-  XSync (dpy, False);
-  XDrawString (dpy, s->bar_window, s->normal_gc, 
-	       defaults.bar_x_padding, 
-	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-	       msg, strlen (msg));
-  XSync (dpy, False);
-  
-  /* Crop to boundary conditions. */
-  if (mark_start < 0)
-    mark_start = 0;
-
-  if (mark_end < 0)
-    mark_end = 0;
-
-  if (mark_start > strlen (msg))
-    mark_start = strlen (msg);
-
-  if (mark_end > strlen (msg))
-    mark_end = strlen (msg);
-
-  if (mark_start > mark_end)
-    {
-      int tmp;
-      tmp = mark_start;
-      mark_start = mark_end;
-      mark_end = tmp;
-    }
-
-  /* xor the string representing the current window */
-  if (mark_start != mark_end)
-    {
-      int start;
-      int end;
-      int width;
-
-      if (mark_start == 0)
-	start = 0;
-      else
-	start = XTextWidth (defaults.font, msg, mark_start) + defaults.bar_x_padding;
-
-      if (mark_end == strlen (msg))
-	end = XTextWidth (defaults.font, msg, mark_end) + defaults.bar_x_padding * 2;
-      else
-	end = XTextWidth (defaults.font, msg, mark_end) + defaults.bar_x_padding;
-
-      width = end - start;
-
-      PRINT_DEBUG (("start = %d, end = %d, width = %d\n", start, end, width));
-
-      lgv.foreground = current_screen()->fg_color;
-      lgv.function = GXxor;
-      mask = GCForeground | GCFunction;
-      lgc = XCreateGC(dpy, s->root, mask, &lgv);
-
-      XFillRectangle (dpy, s->bar_window, lgc, start, 0, width, height);
-      XFreeGC (dpy, lgc);
-
-      lgv.foreground = s->bg_color;
-      lgc = XCreateGC(dpy, s->root, mask, &lgv);
-
-      XFillRectangle (dpy, s->bar_window, lgc, start, 0, width, height);
-      XFreeGC (dpy, lgc);
-    }
-
-  /* Keep a record of the message. */
   if (last_msg)
     free (last_msg);
   last_msg = xstrdup (msg);

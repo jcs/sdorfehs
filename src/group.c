@@ -23,7 +23,7 @@ group_new (int number)
 
   g = xmalloc (sizeof (rp_group));
 
-  g->number = numset_request (group_numset);
+  g->number = number;
   g->numset = numset_new();
   INIT_LIST_HEAD (&g->unmapped_windows);
   INIT_LIST_HEAD (&g->mapped_windows);
@@ -172,6 +172,16 @@ group_del_window (rp_group *g, rp_window *win)
 	  free (cur);
 	}
     }
+
+  /* Make sure the window isn't in the list of mapped windows. This
+     would mean there is a bug. */
+#ifdef DEBUG
+  list_for_each_entry (cur, &g->mapped_windows, node)
+    {
+      if (cur->win == win)
+	PRINT_DEBUG (("This window wasn't removed from the mapped window list.\n"));
+    }
+#endif
 }
 
 /* Remove the window from any groups in resides in. */
