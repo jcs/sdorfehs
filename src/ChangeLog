@@ -1,3 +1,21 @@
+2000-12-15  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* list.c (add_to_window_list): Added init code for `hints'
+
+	* events.c (property_notify): Added handler for XA_WM_NORMAL_HINTS.
+
+	* data.h (struct rp_window): Added XSizeHints member
+
+	* actions.c (maximize): Adhere to the window's Size Hints
+
+2000-12-14  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* manage.h (update_normal_hints): added prototype
+
+	* manage.c (update_normal_hints): added
+
+	* list.c (add_to_window_list): added comment describing function
+
 2000-12-13  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* actions.c: removed gross tabs from key_actions definition. Add
