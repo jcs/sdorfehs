@@ -34,6 +34,11 @@
 /* The minimum size of the input window */
 #define INPUT_WINDOW_SIZE 200
 
+/* If you want the input window to take up the length of the screen,
+   use this: */
+/* #define INPUT_WINDOW_SIZE (s->root_attr.width - prompt_width) */
+
+
 /* The border width ratpoison configures all windows with */
 #define WINDOW_BORDER_WIDTH 0
 
