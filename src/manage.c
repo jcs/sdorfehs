@@ -472,8 +472,8 @@ maximize_transient (rp_window *win)
       PRINT_DEBUG ("frame width=%d height=%d\n", 
 		   frame->width, frame->height);
 
-      if (maxx > frame->width) maxx = frame->width - win->border * 2;
-      if (maxy > frame->height) maxy = frame->height - win->border * 2;
+      if (maxx + win->border * 2 > frame->width) maxx = frame->width - win->border * 2;
+      if (maxy + win->border * 2 > frame->height) maxy = frame->height - win->border * 2;
     }
 
   /* Make sure we maximize to the nearest Resize Increment specified
@@ -577,20 +577,24 @@ maximize (rp_window *win)
 
   /* Handle maximizing transient windows differently. */
   if (win->transient)
-    {
-      maximize_transient (win);
-    }
+    maximize_transient (win);
   else
-    {
-      maximize_normal (win);
-    }
+    maximize_normal (win);
 
   /* Reposition the window. */
   move_window (win);
 
-  /* Actually do the maximizing */
+  PRINT_DEBUG ("Resizing window '%s' to x:%d y:%d w:%d h:%d\n", window_name (win), 
+	       win->x, win->y, win->width, win->height);
+
+
+  /* Actually do the maximizing, and ignore the event created by the
+     maximizing. */
+  XSelectInput (dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);
+  XSelectInput (dpy, win->w, WIN_EVENTS);
+
   XSync (dpy, False);
 }
 
@@ -607,6 +611,13 @@ force_maximize (rp_window *win)
   /* Reposition the window. */
   move_window (win);
 
+  /* Don't listen to the events caused by the maximize. */
+  XSelectInput (dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
+
+  /* This little dance is to force a maximize event. If the window is
+     already "maximized" X11 will optimize away the event since to
+     geometry changes were made. This initial resize solves the
+     problem. */
   if (win->hints->flags & PResizeInc)
     {
       XMoveResizeWindow (dpy, win->w, win->x, win->y,
@@ -618,8 +629,11 @@ force_maximize (rp_window *win)
       XResizeWindow (dpy, win->w, win->width + 1, win->height + 1);
     }
 
+  /* Resize the window to its proper maximum size. */
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);
+
+  XSelectInput (dpy, win->w, WIN_EVENTS);
   XSync (dpy, False);
 }
 
@@ -680,12 +694,17 @@ unhide_window (rp_window *win)
 {
   if (win == NULL) return;
 
-  /* Always raise the window. */
+  /* Always raise the window. But ignore notify event. */
+  XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XRaiseWindow (dpy, win->w);
+  XSelectInput (dpy, win->w, WIN_EVENTS);
 
   if (win->state != IconicState) return;
 
+  /* Ignore the notify event. */
+  XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XMapWindow (dpy, win->w);
+  XSelectInput (dpy, win->w, WIN_EVENTS);
   set_state (win, NormalState);
 }
 
@@ -702,7 +721,10 @@ unhide_window_below (rp_window *win)
 
   if (win->state != IconicState) return;
 
+  /* Ignore the event caused by the window mapping. */
+  XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XMapWindow (dpy, win->w);
+  XSelectInput (dpy, win->w, WIN_EVENTS);
   set_state (win, NormalState);
 }
 

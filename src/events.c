@@ -226,8 +226,6 @@ configure_notify (XConfigureEvent *e)
 
   win = find_window (e->window);
 
-  PRINT_DEBUG("event=%ld window=%ld\n", e->event, e->window);
-
   if (win && win->state == NormalState)
     {
       if (win->height != e->height
@@ -243,8 +241,8 @@ configure_notify (XConfigureEvent *e)
 	     know the real size of the window to increment properly. So,
 	     update the structure before calling maximize. */
 
-	  PRINT_DEBUG ("x=%d y=%d width=%d height=%d\n", e->x, e->y, e->width, e->height);
-	  PRINT_DEBUG ("x=%d y=%d width=%d height=%d\n", win->x, win->y, win->width, win->height);
+	  PRINT_DEBUG ("Notify geom: x=%d y=%d width=%d height=%d\n", e->x, e->y, e->width, e->height);
+	  PRINT_DEBUG ("Current geom: x=%d y=%d width=%d height=%d\n", win->x, win->y, win->width, win->height);
 
 	  win->x = e->x;
 	  win->y = e->y;
@@ -261,7 +259,6 @@ configure_notify (XConfigureEvent *e)
 static void
 configure_request (XConfigureRequestEvent *e)
 {
-  int border;
   XWindowChanges changes;
   rp_window *win;
 
@@ -269,8 +266,12 @@ configure_request (XConfigureRequestEvent *e)
 
   if (win)
     {
-      /* Initialize border variable. */
-      border = win->border;
+      /* Initialize the XWindowChanges structure. */
+      changes.x = win->x;
+      changes.y = win->y;
+      changes.width = win->width;
+      changes.height = win->height;
+      changes.border_width = win->border;
 
       if (e->value_mask & CWStackMode)
 	{
@@ -308,7 +309,6 @@ configure_request (XConfigureRequestEvent *e)
       if (e->value_mask & CWBorderWidth)
 	{
 	  changes.border_width = e->border_width;
-	  border = e->border_width;
 	  PRINT_DEBUG("request CWBorderWidth %d\n", e->border_width);
 	}
 
@@ -317,39 +317,23 @@ configure_request (XConfigureRequestEvent *e)
 	  changes.width = e->width;
 	  PRINT_DEBUG("request CWWidth %d\n", e->width);
 	}
-      else
-	{
-	  changes.width = win->width;
-	}
 
       if (e->value_mask & CWHeight)
 	{
 	  changes.height = e->height;
 	  PRINT_DEBUG("request CWHeight %d\n", e->height);
 	}
-      else
-	{
-	  changes.height = win->height;
-	}
 
       if (e->value_mask & CWX)
 	{
-	  changes.x = e->x + border;
+	  changes.x = e->x;
 	  PRINT_DEBUG("request CWX %d\n", e->x);
-	}
-      else
-	{
-	  changes.x = win->x;
 	}
 
       if (e->value_mask & CWY)
 	{
-	  changes.y = e->y + border;
+	  changes.y = e->y;
 	  PRINT_DEBUG("request CWY %d\n", e->y);
-	}
-      else
-	{
-	  changes.y = win->y;
 	}
 
       if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
