@@ -397,9 +397,6 @@ get_mark_box (char *msg, int mark_start, int mark_end,
   int start_line_beginning;
   int end_line_beginning;
 
-  if (mark_end == 0)
-    return;
-
   /* If the mark_end is on a new line or the end of the string, then
      back it up one character. */
   if (msg[mark_end-1] == '\n' || mark_end == strlen (msg))
@@ -479,6 +476,10 @@ static void
 draw_mark (rp_screen *s, char *msg, int mark_start, int mark_end)
 {
   int x, y, width, height;
+
+  /* when this happens, there is no mark. */
+  if (mark_end == 0 || mark_start == mark_end)
+    return;
 
   get_mark_box (msg, mark_start, mark_end, 
 		&x, &y, &width, &height);

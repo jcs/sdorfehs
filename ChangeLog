@@ -1,5 +1,10 @@
 2003-06-02  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/group.c (groups_merge): don't merge a group with itself.
+
+	* src/bar.c (draw_mark): abort if mark_end is the beginning of the
+	line or the start and end of the mark is the same.
+
 	* src/actions.c (group_completions): use a group's number if it
 	has no name.
 

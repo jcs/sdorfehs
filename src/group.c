@@ -443,6 +443,10 @@ groups_merge (rp_group *from, rp_group *to)
   rp_window_elem *cur;
   struct list_head *iter, *tmp;
 
+  /* Merging a group with itself makes no sense. */
+  if (from == to)
+    return;
+
   /* Move the unmapped windows. */
   list_for_each_safe_entry (cur, iter, tmp, &from->unmapped_windows, node)
     {
