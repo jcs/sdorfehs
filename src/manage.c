@@ -204,6 +204,15 @@ unmanage (rp_window *w)
 {
   return_window_number (w->number);
   remove_from_window_list (w);
+
+#ifdef AUTO_CLOSE
+  if (!rp_current_window)
+    {
+      /* If rp_current_window is NULL then we have run out of managed
+	 windows, So kill ratpoison. */
+      send_kill();
+    }
+#endif
 }
 
 /* When starting up scan existing windows and start managing them. */

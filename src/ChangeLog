@@ -1,3 +1,10 @@
+2001-02-18  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* conf.h: restructured comments. Added #define for AUTO_CLOSE.
+
+	* manage.c (unmanage): kills ratpoison when there are no more
+	windows.
+
 2001-02-17  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* manage.c (current_screen): Rename get_screen() and move to this
