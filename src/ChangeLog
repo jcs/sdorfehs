@@ -1,3 +1,10 @@
+2001-02-15  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.c (xterm_command): added new function.  Thanks to Ben
+	Leslie <benno@sesgroup.net>
+	(user_commands): added "xterm"
+	(key_actions): added C-t C-! binding for "xterm"
+
 2001-02-14  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* actions.h (generate_key_event): added prototype
