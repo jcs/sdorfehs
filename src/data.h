@@ -166,13 +166,9 @@ struct modifier_info
 {
 /*   unsigned int mode_switch_mask; */
   unsigned int meta_mod_mask;
-  KeySym meta_sym;
   unsigned int alt_mod_mask;
-  KeySym alt_sym;
   unsigned int super_mod_mask;
-  KeySym super_sym;
   unsigned int hyper_mod_mask;
-  KeySym hyper_sym;
 };
 
 /* Keeps track of which mod mask each modifier is under. */

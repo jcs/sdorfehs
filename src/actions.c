@@ -21,7 +21,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <X11/keysym.h>
-#include <X11/extensions/XTest.h>
 #include <string.h>
 #include <time.h>
 
@@ -353,99 +352,46 @@ cmd_source (void *data)
 void
 cmd_generate (void *data)
 {
-  XEvent ev;
+  XEvent ev1, ev;
   ev = *rp_current_event;
 
-  if (current_window() == NULL) return;
+  PRINT_DEBUG ("type==%d\n", ev.xkey.type);
+  PRINT_DEBUG ("serial==%ld\n", ev.xkey.serial);
+  PRINT_DEBUG ("send_event==%d\n", ev.xkey.send_event);
+  PRINT_DEBUG ("display=%p\n", ev.xkey.display);
+  /*   PRINT_DEBUG ("root==%x  ???\n", ev.xkey.root); */
+  /*   PRINT_DEBUG ("window==%x  ???\n", ev.xkey.window); */
+  /*   PRINT_DEBUG ("subwindow==%x  ???\n", ev.xkey.subwindow); */
+  PRINT_DEBUG ("time==%ld\n", ev.xkey.time);
+  PRINT_DEBUG ("x==%d  y==%d\n", ev.xkey.x, ev.xkey.y);
+  PRINT_DEBUG ("x_root==%d  y_root==%d\n", ev.xkey.x_root, ev.xkey.y_root);
+  PRINT_DEBUG ("state==%d\n", ev.xkey.state);
+  PRINT_DEBUG ("keycode==%d\n", ev.xkey.keycode);
+  PRINT_DEBUG ("same_screen=%d\n", ev.xkey.same_screen);
 
-  PRINT_DEBUG ("Generate\n");
+  /* I am not sure which of the following fields I have to fill in or
+     what to fill them in with (rcy) I wouldnt be suprised if this
+     breaks in some cases.  */
 
-  XGrabServer (dpy);
-  ungrab_prefix_key (current_window()->w);
+  ev1.xkey.type = KeyPress;
+  /*   ev1.xkey.serial =  */
+  /*   ev1.xkey.send_event = */
+  ev1.xkey.display = dpy;
+  /*   ev1.xkey.root =  */
+  ev1.xkey.window = current_window()->w;
+  /*   ev1.xkey.subwindow =  */
+  /*   ev1.xkey.time = ev.xkey.time; */
+  /*   ev1.xkey.x == */
+  /*   ev1.xkey.y == */
+  /*   ev1.xkey.x_root == */
+  /*   ev1.xkey.y_root == */
 
-/*   ev.xkey.type = KeyPress; */
-/*   ev.xkey.window = current_window()->w; */
-/*   ev.xkey.state = prefix_key.state; */
-/*   ev.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym); */
-/*   XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev); */
-  
-  /* Release unwanted modifiers */
-/*   if (rp_current_event->xkey.state & rp_modifier_info.meta_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.meta_sym), False, CurrentTime); */
-/*     } */
-/*   if (rp_current_event->xkey.state & rp_modifier_info.alt_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.alt_sym), False, CurrentTime); */
-/*     } */
-/*   if (rp_current_event->xkey.state & rp_modifier_info.hyper_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.hyper_sym), False, CurrentTime); */
-/*     } */
-/*   if (rp_current_event->xkey.state & rp_modifier_info.super_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.super_sym), False, CurrentTime); */
-/*     } */
+  ev1.xkey.state = prefix_key.state;
+  ev1.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
 
-  /* Press wanted modifiers */
-/*   if (prefix_key.state & rp_modifier_info.meta_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.meta_sym), True, CurrentTime); */
-/*     } */
-/*   if (prefix_key.state & rp_modifier_info.alt_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.alt_sym), True, CurrentTime); */
-/*     } */
-/*   if (prefix_key.state & rp_modifier_info.hyper_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.hyper_sym), True, CurrentTime); */
-/*     } */
-/*   if (prefix_key.state & rp_modifier_info.super_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.super_sym), True, CurrentTime); */
-/*     } */
+  XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev1);
 
-  XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, XK_k), True, CurrentTime);
-  XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, XK_k), False, CurrentTime);
-
-  /* Release wanted modifiers */
-/*   if (prefix_key.state & rp_modifier_info.meta_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.meta_sym), False, CurrentTime); */
-/*     } */
-/*   if (prefix_key.state & rp_modifier_info.alt_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.alt_sym), False, CurrentTime); */
-/*     } */
-/*   if (prefix_key.state & rp_modifier_info.hyper_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.hyper_sym), False, CurrentTime); */
-/*     } */
-/*   if (prefix_key.state & rp_modifier_info.super_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.super_sym), False, CurrentTime); */
-/*     } */
-
-  /* Restore modifier state */
-/*   if (rp_current_event->xkey.state & rp_modifier_info.meta_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.meta_sym), True, CurrentTime); */
-/*     } */
-/*   if (rp_current_event->xkey.state & rp_modifier_info.alt_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.alt_sym), True, CurrentTime); */
-/*     } */
-/*   if (rp_current_event->xkey.state & rp_modifier_info.hyper_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.hyper_sym), True, CurrentTime); */
-/*     } */
-/*   if (rp_current_event->xkey.state & rp_modifier_info.super_mod_mask) */
-/*     { */
-/*       XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, rp_modifier_info.super_sym), True, CurrentTime); */
-/*     } */
-
-  grab_prefix_key (current_window()->w);
-  XUngrabServer (dpy);
+  /*   XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, 't'), True, 0); */
 
   XSync (dpy, False);
 }
