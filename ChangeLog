@@ -1,5 +1,8 @@
 2001-08-27  Shawn  <sabetts@hotdog>
 
+	* src/actions.c (cmd_clock): pad the time with spaces on either
+	side.
+
 	* src/manage.c (maximize_normal)[MAXSIZE_WINDOWS_ARE_TRANSIENTS]:
 	use maxx, maxy not the window's width and height.
 

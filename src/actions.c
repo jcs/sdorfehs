@@ -829,7 +829,7 @@ cmd_clock (int interactive, void *data)
   strncpy(msg, tmp, strlen (tmp) - 1);	/* Remove the newline */
   msg[strlen(tmp) - 1] = 0;
 
-  message (msg);
+  marked_message_printf (0, 0, " %s ", msg);
   free (msg);
   
   return NULL;
