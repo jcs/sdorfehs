@@ -87,15 +87,15 @@ alrm_handler ()
 int
 handler (Display *d, XErrorEvent *e)
 {
-  char msg[100];
+  char error_msg[100];
 
   if (e->request_code == X_ChangeWindowAttributes && e->error_code == BadAccess) {
     fprintf(stderr, "ratpoison: There can be only ONE.\n");
     exit(EXIT_FAILURE);
   }  
 
-  XGetErrorText (d, e->error_code, msg, sizeof (msg));
-  fprintf (stderr, "ratpoison: %s!\n", msg);
+  XGetErrorText (d, e->error_code, error_msg, sizeof (error_msg));
+  fprintf (stderr, "ratpoison: %s!\n", error_msg);
 
   exit (EXIT_FAILURE);
 }
@@ -114,7 +114,7 @@ main (int argc, char *argv[])
     }
 
   /* Setup signal handlers. */
-  // XSetErrorHandler(handler);  
+  //XSetErrorHandler(handler);  
   if (signal (SIGALRM, alrm_handler) == SIG_IGN) signal (SIGALRM, SIG_IGN);
   if (signal (SIGTERM, sighandler) == SIG_IGN) signal (SIGTERM, SIG_IGN);
   if (signal (SIGINT, sighandler) == SIG_IGN) signal (SIGINT, SIG_IGN);
