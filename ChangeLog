@@ -1,3 +1,7 @@
+2002-02-05  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (cmd_set): check if var is NULL before checking strlen(var)
+
 2004-10-07  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* doc/ratpoison.texi (Frame Numbering): new topic

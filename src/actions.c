@@ -2761,7 +2761,6 @@ char *
 cmd_unsetenv (int interactive, char *data)
 {
   struct sbuf *s;
-  char *str;
 
   if (data == NULL)
     {
@@ -4272,7 +4271,7 @@ cmd_set (int interactive, char *data)
 	{
 	  char *tmp;
 	  var = get_input (MESSAGE_PROMPT_SELECT_VAR, var_completions);
-	  if (strlen (var) == 0)
+	  if (var == NULL || strlen (var) == 0)
 	    {
 	      free (var);
 	      return NULL;
