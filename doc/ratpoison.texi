@@ -86,8 +86,8 @@ This document explains how to use ratpoison.
 * Splitting Frames::            When you want to see more than one window
 * Keystrokes::                  Key commands and functionality
 * Commands::                    ratpoison commands
-* Command Line Arguments::      ratpoison command-line actions
 * Input::                       Typing text into ratpoison
+* Command Line Arguments::      ratpoison command-line actions
 * Startup file::                They threatened me...with violence!
 
 
@@ -328,7 +328,7 @@ Indicate which frame is the current frame.
 
 @end table
 
-@node Commands, Command Line Arguments, Keystrokes, Top
+@node Commands, Input, Keystrokes, Top
 @chapter ratpoison commands
 
 ratpoison can be controlled with commands (so called colon-commands).
@@ -373,14 +373,26 @@ Set the message bar location. @var{n} is a value between 0 and 3. 0 is
 the top left and the values move clockwise around the screen to the
 bottom left which is 3.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item defbarpadding @var{x} @var{y}
 Set the horizontal and vertical padding inside the bar.
+
+When called non-interactively with no arguments, the current setting is
+returned.
 
 @item msgwait @var{n}
 Set the bar's timeout in seconds.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item defborder @var{n}
 Set the border width for all windows.
+
+When called non-interactively with no arguments, the current setting is
+returned.
 
 @item deffont @var{font}
 Set the font. @var{font} is a font string like @samp{9x15bold}.
@@ -388,21 +400,36 @@ Set the font. @var{font} is a font string like @samp{9x15bold}.
 @item definputwidth @var{n}
 Set the width of the input window.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item defmaxsizegravity @var{g}
 Set the default alignment for windows with maxsize hints. See the
 @command{gravity} command.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item defpadding @var{left} @var{top} @var{right} @var{bottom}
 Set the padding around the edge of the screen.
+
+When called non-interactively with no arguments, the current setting is
+returned.
 
 @item deftransgravity @var{g}
 Set the default alignment for transient windows. See the
 @command{gravity} command.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item defwaitcursor @var{n}
 Set whether the rat cursor should change into a square when waiting
 for a key. A non-zero number means change the cursor. Zero means don't
 change the cursor.
+
+When called non-interactively with no arguments, the current setting is
+returned.
 
 @item defwinfmt @var{fmt}
 Set the default window format for the @command{windows} command. By
@@ -427,6 +454,9 @@ A unique number based on when the window was last accessed. The higher
 the number, the more recently it was accessed.
 @end table
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item defwinname @var{name}
 There are three resources ratpoison can get a window's name from: the
 WMNAME hint, the res_name from the WMCLASS hint, or the res_class from
@@ -434,9 +464,15 @@ the WMCLASS hint. @var{name} can be @samp{title} which is what most
 window managers put in the title bar, @samp{name} which is the
 res_name, or @samp{class} which is the res_class.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item defwingravity @var{g}
 Set the default gravity for normal windows. See the
 @command{gravity} command.
+
+When called non-interactively with no arguments, the current setting is
+returned.
 
 @item deffgcolor @var{color}
 Set the foreground color for all text ratpoison displays. @var{color}
@@ -652,33 +688,7 @@ described in @command{defwinfmt}.
 
 @end table
 
-@node Command Line Arguments, Input, Commands, Top
-@chapter Command Line Arguments
-ratpoison supports command line arguments to request various actions
-when invoking ratpoison.
-
-@table @code
-@item -h, --help
-Display this help screen
-
-@item -v, --version
-Display the version
-
-@item -c, --command
-Send ratpoison a colon-command. This allows you to control ratpoison
-from the command-line. with the @option{-c} option you can script
-ratpoison using any programming language that can spawn a
-process. Some commands behave differently when invoked this
-way. Currently the only command that behaves differently is the
-@code{windows} command. Instead of displaying the window list in a
-message window, it is printed to stdout. The output can then be
-captured and used in the ratpoison script. For instance, this could be
-used to check whether a program is running and if it is switch to its
-window otherwise launch it.
-
-@end table
-
-@node Input, Startup file, Command Line Arguments, Top
+@node Input, Command Line Arguments, Commands, Top
 @chapter Input
 At various times ratpoison will prompt you for input. Currently only
 very basic text editing commands exist.
@@ -697,7 +707,33 @@ Cycle forwards through the history.
 All input is stored in the same history list. By default ratpoison has
 a history length of 50 entries.
 
-@node Startup file,  , Input, Top
+@node Command Line Arguments, Startup file, Input, Top
+@chapter Command Line Arguments
+ratpoison supports command line arguments to request various actions
+when invoking ratpoison.
+
+@table @code
+@item -h, --help
+Display this help screen
+
+@item -v, --version
+Display the version
+
+@item -c, --command
+Send ratpoison a colon-command. This allows you to control ratpoison
+from the command-line. with the @option{-c} option you can script
+ratpoison using any programming language that can spawn a
+process. Some commands behave differently when invoked this
+way. Currently the only commands that behaves differently are the
+@code{windows} command and some def* commands. Instead of displaying
+the window list in a message window, it is printed to stdout. The
+output can then be captured and used in the ratpoison script. For
+instance, this could be used to check whether a program is running and
+if it is switch to its window otherwise launch it.
+
+@end table
+
+@node Startup file,  , Command Line Arguments, Top
 @chapter Startup file
 
 Now you've probably read the web page, and you've no doubt dug up some
