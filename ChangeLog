@@ -1,5 +1,7 @@
 2003-04-09  Shawn Betts  <sabetts@sfu.ca>
 
+	* configure.in (TERM_PROG): Add doc string
+
 	* src/events.c (receive_command): handle the case when more than
 	one client requests a command (fix infinite loop bug).
 
