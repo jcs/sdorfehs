@@ -28,6 +28,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <X11/Xlib.h>
 
 /* Some error reporting macros */
@@ -68,5 +69,7 @@ void fatal (const char *msg);
 void *xmalloc (size_t size);
 void *xrealloc (void *ptr, size_t size);
 char *xstrdup (char *s);
+char *xsprintf (char *fmt, ...);
+char *xvsprintf (char *fmt, va_list ap);
 
 #endif /* ! _RATPOISON_H */

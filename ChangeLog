@@ -1,5 +1,21 @@
 2001-12-21  shawn  <sabetts@vcn.bc.ca>
 
+	* src/sbuf.h (sbuf_printf_concat): new prototype
+	(sbuf_printf): likewise
+
+	* src/sbuf.c (sbuf_printf_concat): new function
+	(sbuf_printf): likewise
+
+	* src/ratpoison.h: include stdarg.h
+	(xvsprintf): new prototype
+	(xsprintf): likewise
+
+	* src/main.c (xvsprintf): new function
+	(xsprintf): likewise
+
+	* src/bar.c: remove include of stdarg.h
+	(marked_message_printf): call xvsprintf.
+
 	* src/input.c (input_history): new static global
 	(input_num_history_entries): likewise
 	(get_more_input): cycle through the input history.

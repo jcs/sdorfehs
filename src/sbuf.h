@@ -38,5 +38,7 @@ char *sbuf_concat (struct sbuf *b, const char *str);
 char *sbuf_copy (struct sbuf *b, const char *str);
 char *sbuf_clear (struct sbuf *b);
 char *sbuf_get (struct sbuf *b);
+char *sbuf_printf (struct sbuf *b, char *fmt, ...);
+char *sbuf_printf_concat (struct sbuf *b, char *fmt, ...);
 
 #endif /* ! _RATPOISON_SBUF_H */

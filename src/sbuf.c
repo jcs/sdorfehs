@@ -89,3 +89,33 @@ sbuf_get (struct sbuf *b)
 {
   return b->data;
 }
+
+char *
+sbuf_printf (struct sbuf *b, char *fmt, ...)
+{
+  va_list ap;
+
+  free (b->data);
+
+  va_start (ap, fmt);
+  b->data = xvsprintf (fmt, ap);
+  va_end (ap);
+
+  return b->data;
+}
+
+char *
+sbuf_printf_concat (struct sbuf *b, char *fmt, ...)
+{
+  char *buffer;
+  va_list ap;
+
+  va_start (ap, fmt);
+  buffer = xvsprintf (fmt, ap);
+  va_end (ap);
+
+  sbuf_concat (b, buffer);
+  free (buffer);
+
+  return b->data;
+}

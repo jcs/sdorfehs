@@ -124,6 +124,54 @@ xstrdup (char *s)
   return value;
 }
 
+/* Return a new string based on fmt. */
+char *
+xvsprintf (char *fmt, va_list ap)
+{
+  int size, nchars;
+  char *buffer;
+
+  /* A resonable starting value. */
+  size = strlen (fmt) + 1;
+  buffer = (char *)xmalloc (size);
+
+  nchars = vsnprintf (buffer, size, fmt, ap);
+
+  /* From the GNU Libc manual: In versions of the GNU C library prior
+     to 2.1 the return value is the number of characters stored, not
+     including the terminating null; unless there was not enough space
+     in S to store the result in which case `-1' is returned. */
+  if (nchars == -1)
+    {
+      do
+	{
+	  size *= 2;
+	  buffer = (char *)xrealloc (buffer, size);
+	} while (vsnprintf (buffer, size, fmt, ap) == -1);
+    }
+  else if (nchars >= size)
+    {
+      buffer = (char *)xrealloc (buffer, nchars + 1);
+      vsnprintf (buffer, nchars + 1, fmt, ap);
+    }
+
+  return buffer;
+}
+
+/* Return a new string based on fmt. */
+char *
+xsprintf (char *fmt, ...)
+{
+  char *buffer;
+  va_list ap;
+
+  va_start (ap, fmt);
+  buffer = xvsprintf (fmt, ap);
+  va_end (ap);
+
+  return buffer;
+}
+
 void
 sighandler (int signum)
 {
