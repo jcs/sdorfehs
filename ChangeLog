@@ -1,7 +1,12 @@
 2002-01-23  Shawn  <sabetts@vcn.bc.ca>
 
-	* src/events.c (configure_notify): remove function
-	(delegate_event): add ConfigureNotify to the ignored events list.
+	* src/manage.c (send_configure): Change parameters to X11 window,
+	x, y, width, height and border. Prototype updated. All callers
+	updated.
+
+	* src/events.c (configure_request): For the changes variable, fill
+	in geometry parameters not part of the request with the
+	window's geometry.
 
 	* src/manage.c (update_normal_hints): improve debugging output.
 
