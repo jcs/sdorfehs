@@ -1,3 +1,7 @@
+2001-08-07  Ryan Yeske  <rcyeske@vcn.bc.ca>
+
+	* doc/ratpoison.texi: Fix spelling and grammar.
+
 2001-06-29  Gergely Nagy <8@free.bsd.hu>
 
 	* Makefile.am: do not include debian/ in the tarball

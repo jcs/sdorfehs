@@ -92,8 +92,8 @@ This document explains how to use ratpoison.
 
 ratpoison is a simple Window Manager with no fat library dependencies,
 no fancy graphics, no window decorations, and no flashy wank. It is
-largely modelled after GNU Screen which has done wonders in virtual
-
+largely modelled after GNU Screen which has done wonders in the
+virtual terminal market.
 
 All interaction with the window manager is done through
 keystrokes. ratpoison has a prefix map to minimize the key clobbering
@@ -331,7 +331,7 @@ This displays the Program Bar which displays the windows you currently
 have running. The number before each window name is used to jump to
 that window. You can do this by typing @kbd{C-t @var{n}} where @var{n}
 is the number of the window. Note that only windows with numbers from
-0 to 9 can be referenced using this keystoke.  To reach windows with
+0 to 9 can be referenced using this keystroke.  To reach windows with
 numbers greater than 9, use @kbd{C-t '} and type the number at the
 prompt.
 
