@@ -321,7 +321,7 @@ This deletes the current window. You can access it with the @kbd{C-t k}
 keystroke.
 
 @item escape @var{key}
-Set the prefix to to @var{key}. For example @samp{escape ^b} sets the
+Set the prefix to to @var{key}. For example @samp{escape C-b} sets the
 prefix key to @key{C-b}.
 
 @item focus
