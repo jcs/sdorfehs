@@ -177,8 +177,8 @@ print_help ()
   exit (EXIT_SUCCESS);
 }
 
-static void
-load_rc_file (char *filename)
+void
+read_rc_file (char *filename)
 {
   FILE *rcfile;
 
@@ -225,7 +225,7 @@ load_rc_file (char *filename)
 }
 
 static void
-read_initialization_files ()
+read_startup_files ()
 {
   char *homedir;
 
@@ -237,7 +237,7 @@ read_initialization_files ()
     {
       char *rcfile = (char*)malloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
       sprintf (rcfile, "%s/.ratpoisonrc", homedir);
-      load_rc_file (rcfile);
+      read_rc_file (rcfile);
     }
 }
 
@@ -345,7 +345,7 @@ main (int argc, char *argv[])
 
   initialize_default_keybindings ();
 
-  read_initialization_files ();
+  read_startup_files ();
 
   /* Set an initial window as active. */
   set_active_window (find_window_other ());

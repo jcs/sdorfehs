@@ -60,6 +60,7 @@ void cmd_clock (void *data);
 void cmd_version (void *data);
 void cmd_unimplemented (void *data);
 void cmd_bind (void* data);
+void cmd_source (void* data);
 
 /* void cmd_xterm (void *data); */
 

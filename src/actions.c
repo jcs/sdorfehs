@@ -150,6 +150,7 @@ user_command user_commands[] =
     {"generate",	cmd_generate,		arg_STRING}, /* rename to stuff */
     {"version",		cmd_version,		arg_VOID},
     {"bind",		cmd_bind,		arg_VOID},
+    {"source",		cmd_source,		arg_STRING},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
@@ -260,6 +261,12 @@ cmd_unimplemented (void *data)
 }
 
 void
+cmd_source (void *data)
+{
+  read_rc_file ((char*)data);
+}
+
+void
 cmd_generate (void *data)
 {
   XEvent ev1, ev;
@@ -317,7 +324,7 @@ cmd_prev (void *data)
     {
       w = find_window_prev (rp_current_window);
 
-      if (w == rp_current_window)
+      if (!w)
 	message (MESSAGE_NO_OTHER_WINDOW);
       else
 	set_active_window (w);
@@ -335,7 +342,7 @@ cmd_next (void *data)
     {
       w = find_window_next (rp_current_window);
 
-      if (w == rp_current_window)
+      if (!w)
 	message (MESSAGE_NO_OTHER_WINDOW);
       else
 	set_active_window (w);
@@ -349,7 +356,7 @@ cmd_other (void *data)
 
   w = find_window_other ();
 
-  if (w == rp_current_window)
+  if (!w)
     message (MESSAGE_NO_OTHER_WINDOW);
   else
     set_active_window (w);

@@ -1,3 +1,14 @@
+2001-02-25  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* main.c (read_rc_file): rename from load_rc_file.  Remove static
+	keyword.
+
+	* actions.c (cmd_prev): Handle situation when there is no other
+	window.
+	(cmd_next): Likewise.
+	(cmd_other): Likewise.
+	(cmd_source): New function.
+
 2001-02-24  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* main.c (load_rc_file): new function
