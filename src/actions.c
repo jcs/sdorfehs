@@ -797,6 +797,12 @@ cmd_source (int interactive, char *data)
 {
   FILE *fileptr;
 
+  if (data == NULL)
+    {
+      message (" source: one argument required ");
+      return NULL;
+    }
+
   if ((fileptr = fopen (data, "r")) == NULL)
     marked_message_printf (0, 0, " source: %s : %s ", data, strerror(errno));
   else

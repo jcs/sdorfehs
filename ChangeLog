@@ -2,6 +2,7 @@
 
 	* src/actions.c (cmd_unsetenv): add an '=' to the string passed to
 	putenv.
+	(cmd_source): display an error message if no file is supplied.
 
 	* src/main.c (print_version): update copyright date.
 
