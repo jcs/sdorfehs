@@ -355,6 +355,8 @@ cmd_generate (void *data)
   XEvent ev1, ev;
   ev = *rp_current_event;
 
+  if (current_window() == NULL) return;
+
   PRINT_DEBUG ("type==%d\n", ev.xkey.type);
   PRINT_DEBUG ("serial==%ld\n", ev.xkey.serial);
   PRINT_DEBUG ("send_event==%d\n", ev.xkey.send_event);
