@@ -436,6 +436,16 @@ maximize_transient (rp_window *win)
       maxy = win->height;
     }
 
+  /* Fit the window inside its frame (if it has one) */
+  if (frame)
+    {
+      PRINT_DEBUG ("frame width=%d height=%d\n", 
+		   frame->width, frame->height);
+
+      if (maxx > frame->width) maxx = frame->width - win->border * 2;
+      if (maxy > frame->height) maxy = frame->height - win->border * 2;
+    }
+
   /* Make sure we maximize to the nearest Resize Increment specified
      by the window */
   if (win->hints->flags & PResizeInc)

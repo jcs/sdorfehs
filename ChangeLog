@@ -1,3 +1,8 @@
+2001-12-18  shawn  <sabetts@vcn.bc.ca>
+
+	* src/manage.c (maximize_transient): Fit the transient window
+	inside its frame.
+
 2001-12-11  John Betts  <hotpulp@netidea.com>
 
 	* src/actions.c (parse_keydesc): Don't mangle the key description
