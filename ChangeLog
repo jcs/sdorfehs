@@ -1,3 +1,7 @@
+2001-05-09  Gergely Nagy  <8@free.bsd.hu>
+
+	* ratpoison.spec: spec file for rpm-based systems
+
 2001-05-03  Gergely Nagy  <8@free.bsd.hu>
 
 	* debian/control: adjust build-depends to potato
