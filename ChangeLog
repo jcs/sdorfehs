@@ -1,5 +1,25 @@
 2003-03-06  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/split.h (find_frame_number): new prototype
+
+	* src/split.c (create_initial_frame): give a number to the
+	initial frame
+	(split_frame): give the new frame a unique number 
+	(split_frame): add the new frame after the current frame
+	(remove_all_splits): return the frame's number when deleting it.
+	(remove_frame): likewise
+	(find_frame_number): new function
+	
+	* src/main.c (init_screen): initialize the frames_numset member
+	(free_screen): free the frames_numset member
+
+	* src/data.h (struct screen_info): new member, frames_numset
+
+	* src/actions.h (cmd_fselect): new prototype
+
+	* src/actions.c (user_commands): new command "fselect"
+	(cmd_fselect): new function
+
 	* src/Makefile.am (ratpoison_SOURCES): remove list.h and list.c,
 	add window.c and window.h
 

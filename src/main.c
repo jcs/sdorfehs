@@ -632,6 +632,9 @@ init_screen (screen_info *s, int screen_num)
                | SubstructureRedirectMask | SubstructureNotifyMask );
   XSync (dpy, False);
 
+  /* Create the numset for the frames. */
+  s->frames_numset = numset_new ();
+
   /* Build the display string for each screen */
   s->display_string = xmalloc (strlen(DisplayString (dpy)) + 21);
   sprintf (s->display_string, "DISPLAY=%s", DisplayString (dpy));
@@ -720,6 +723,8 @@ free_screen (screen_info *s)
   XFreeGC (dpy, s->normal_gc);
 
   free (s->display_string);
+
+  numset_free (s->frames_numset);
 }
 
 void

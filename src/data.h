@@ -23,6 +23,7 @@
 #define _RATPOISON_DATA_H
 
 #include "linkedlist.h"
+#include "number.h"
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -108,6 +109,9 @@ struct screen_info
   /* A list of frames that may or may not contain windows. There should
      always be one in the list. */
   struct list_head rp_window_frames;
+
+  /* Keep track of which numbers have been given to frames. */
+  struct numset *frames_numset;
 
   /* Pointer to the currently focused frame. One for each screen so
      when you switch screens the focus doesn't get frobbed. */

@@ -148,7 +148,9 @@ create_initial_frame (screen_info *screen)
 
   list_add_tail (&screen->rp_current_frame->node, &screen->rp_window_frames);
 
+  screen->rp_current_frame->number = numset_request (screen->frames_numset);
   update_last_access (screen->rp_current_frame);
+
   maximize_frame (screen->rp_current_frame);
   set_frames_window (screen->rp_current_frame, NULL);
 }
@@ -284,6 +286,9 @@ split_frame (rp_window_frame *frame, int way, int pixels)
 
   new_frame = xmalloc (sizeof (rp_window_frame));
 
+  /* Give the frame a unique number. */
+  new_frame->number = numset_request (s->frames_numset);
+
   /* It seems intuitive to make the last frame the newly created
      frame. */
   update_last_access (new_frame);
@@ -291,7 +296,7 @@ split_frame (rp_window_frame *frame, int way, int pixels)
   /* TODO: don't put the new frame at the end of the list, put it
      after the existing frame. Then cycling frames cycles in the order
      they were created. */
-  list_add_tail (&new_frame->node, &s->rp_window_frames);
+  list_add (&new_frame->node, &s->rp_current_frame->node);
 
   set_frames_window (new_frame, NULL);
 
@@ -379,6 +384,8 @@ remove_all_splits ()
       if (frame != s->rp_current_frame)
 	{
 	  list_del (&frame->node);
+
+	  numset_release (s->frames_numset, frame->number);
 	  free (frame);
 	}
     }
@@ -520,7 +527,7 @@ resize_frame_horizontally (rp_window_frame *frame, int diff)
   list_for_each_entry (cur, &s->rp_window_frames, node)
     {
       if (cur->x == (frame->x + frame->width)
-      	  && (cur->y + cur->height) > frame->y
+	  && (cur->y + cur->height) > frame->y
       	  && cur->y < (frame->y + frame->height))
 	{
 	  cur->width -= diff;
@@ -687,6 +694,7 @@ remove_frame (rp_window_frame *frame)
   area = total_frame_area(s);
   PRINT_DEBUG (("Total Area: %d\n", area));
 
+  numset_release (s->frames_numset, frame->number);
   list_del (&frame->node);
   hide_window (frame->win);
   hide_others (frame->win);
@@ -936,6 +944,20 @@ find_frame_right (rp_window_frame *frame)
 	  if (frame->y >= cur->y && frame->y < cur->y + cur->height)
 	    return cur;
 	}
+    }
+
+  return NULL;
+}
+
+rp_window_frame *
+find_frame_number (screen_info *s, int num)
+{
+  rp_window_frame *cur;
+
+  list_for_each_entry (cur, &s->rp_window_frames, node)
+    {
+      if (cur->number == num)
+	return cur;
     }
 
   return NULL;

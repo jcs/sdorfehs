@@ -92,6 +92,7 @@ static user_command user_commands[] =
     {"resize",		cmd_resize,	arg_STRING},
     {"shrink",		cmd_shrink,	arg_VOID},
     {"tmpwm",		cmd_tmpwm,	arg_STRING},
+    {"fselect",		cmd_fselect,	arg_VOID},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
@@ -2823,5 +2824,117 @@ cmd_tmpwm (int interactive, void *data)
 		    RevertToPointerRoot, CurrentTime);
 
   /* And we're back in ratpoison. */
+  return NULL;
+}
+
+/* Select a frame by number. */
+char *
+cmd_fselect (int interactive, void *data)
+{
+  rp_window_frame *frame;
+  screen_info *s = current_screen();
+  int fnum = -1;
+
+  /* If the command was specified on the command line or an argument
+     was supplied to it, then try to read that argument. */
+  if (!interactive || data != NULL)
+    {
+      if (data == NULL)
+	{
+	  /* The command was from the command line, but they didn't
+	     specify an argument. FIXME: give some indication of
+	     failure. */
+	  return NULL;
+	}
+
+      /* Attempt to read the argument. */
+      if (sscanf (data, "%d", &fnum) < 1)
+	{
+	  message (" fselect: numerical argument required ");
+	  return NULL;
+	}
+    }
+  /* The command was called interactively and no argument was
+     supplied, so we show the frames' numbers and read a number from
+     the keyboard. */
+  else
+    {
+      KeySym c;
+      unsigned int mod;
+      Window fwin;
+      int revert;
+      Window *wins;
+      XSetWindowAttributes attr;
+      int i;
+      rp_window_frame *cur;
+
+      /* Set up the window attributes to be used in the loop. */
+      attr.border_pixel = s->fg_color;
+      attr.background_pixel = s->bg_color;
+      attr.override_redirect = True;
+
+      wins = xmalloc (sizeof (Window) * num_frames (s));
+
+      /* Loop through each frame and display its number in it's top
+	 left corner. */
+      i = 0;
+      list_for_each_entry (cur, &s->rp_window_frames, node)
+	{
+	  int width, height;
+	  char *num;
+
+	  /* Create the string to be displayed in the window and
+	     determine the height and width of the window. */
+	  num = xsprintf (" %d ", cur->number);
+	  width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, num, strlen (num));
+	  height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
+
+	  /* Create and map the window. */
+	  wins[i] = XCreateWindow (dpy, s->root, cur->x, cur->y, width, height, 1, 
+				   CopyFromParent, CopyFromParent, CopyFromParent,
+				   CWOverrideRedirect | CWBorderPixel | CWBackPixel,
+				   &attr);
+	  XMapWindow (dpy, wins[i]);
+	  XClearWindow (dpy, wins[i]);
+
+	  /* Display the frame's number inside the window. */
+	  XDrawString (dpy, wins[i], s->normal_gc, 
+		       defaults.bar_x_padding, 
+		       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+		       num, strlen (num));
+
+	  free (num);
+	  i++;
+	}
+      XSync (dpy, False);
+
+      /* Read a key. */
+      XGetInputFocus (dpy, &fwin, &revert);
+      XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
+      read_key (&c, &mod, NULL, 0);
+      XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
+
+      /* Destroy our number windows and free the array. */
+      for (i=0; i<num_frames (s); i++)
+	XDestroyWindow (dpy, wins[i]);
+
+      free (wins);
+
+      /* FIXME: big assumption here. We don't know for sure if all the
+	 number keys are between XK_0 and XK_9. */
+      if (c >= XK_0 && c <= XK_9)
+	fnum = c - XK_0;
+      else 
+	return NULL;
+    }
+
+  /* Now that we have a frame number to go to, let's try to jump to
+     it. */
+  frame = find_frame_number (s, fnum);
+  if (frame)
+    set_active_frame (frame);
+  else
+    marked_message_printf (0, 0, " fselect: No such frame (%d) ", fnum);
+
   return NULL;
 }
