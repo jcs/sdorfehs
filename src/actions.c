@@ -4895,14 +4895,14 @@ cmd_describekey (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" readkey: keymap expected ");
+      message (" describekey: keymap expected ");
       return NULL;
     }
 
   map = find_keymap (data);
   if (map == NULL)
     {
-      marked_message_printf (0, 0, " readkey: Unknown keymap '%s' ", data);
+      marked_message_printf (0, 0, " describekey: Unknown keymap '%s' ", data);
       return NULL;
     }
 

@@ -1,3 +1,7 @@
+2004-11-19  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (cmd_describekey): fix error messages.
+
 2004-11-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (set_vars): add maxundos
