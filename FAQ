@@ -34,6 +34,8 @@ Windows can be divided into different groups. Each group of windows
 has a number and optionally a name. With a bit of glue code, you can
 create workspaces.
 
+I've created just the glue you need. look at contrib/rpws for details.
+
 ** Can I save and restore frame configurations?
 Yes you can! Look at fdump and frestore.
 
