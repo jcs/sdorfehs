@@ -26,6 +26,7 @@
 
 /* This tells Alpha OSF/1 not to define a getopt prototype in <stdio.h>.
    Ditto for AIX 3.2 and <stdlib.h>.  */
+
 #ifndef _NO_PROTO
 #define _NO_PROTO
 #endif
@@ -33,6 +34,8 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#ifndef HAVE_GETOPT_LONG
 
 #if !defined (__STDC__) || !__STDC__
 /* This is a separate conditional since some stdc systems
@@ -1043,3 +1046,5 @@ main (argc, argv)
 }
 
 #endif /* TEST */
+
+#endif /* HAVE_GETOPT_LONG */

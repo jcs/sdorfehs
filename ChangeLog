@@ -1,5 +1,11 @@
 2001-09-05  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* configure.in: check for getopt and getopt_long.
+
+	* src/getopt.c: wrap the whole file in an #ifndef HAVE_GETOPT_LONG
+
+	* src/getopt1.c: wrap the whole file in an #ifndef HAVE_GETOPT_LONG
+
 	* src/messages.h (MESSAGE_WELCOME): The help keystroke is not
 	hardcoded.
 

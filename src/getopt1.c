@@ -19,9 +19,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
    USA.  */
 
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#ifndef HAVE_GETOPT_LONG
 
 #include "getopt.h"
 
@@ -187,3 +190,5 @@ main (argc, argv)
 }
 
 #endif /* TEST */
+
+#endif /* HAVE_GETOPT_LONG */
