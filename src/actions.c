@@ -857,18 +857,21 @@ spawn(void *data)
    * ugly dance to avoid leaving zombies.  Could use SIGCHLD,
    * but it's not very portable.
    */
-  if (fork() == 0) {
-    if (fork() == 0) {
-      putenv(DisplayString(dpy));
-      execl("/bin/sh", "sh", "-c", cmd, 0);
+  if (fork() == 0) 
+    {
+      if (fork() == 0) 
+	{
+	  /* Some process setup to make sure the spawned process runs
+	     in its own session. */
+	  putenv(DisplayString(dpy));
+	  setsid();
+	  setpgid (0, 0);
 
-      PRINT_ERROR ("exec '%s' ", cmd); 
-      perror(" failed");
-
-      exit(EXIT_FAILURE);
+	  execl("/bin/sh", "sh", "-c", cmd, 0);
+	  _exit(EXIT_FAILURE);
+	}
+      _exit(EXIT_SUCCESS);
     }
-    exit(0);
-  }
   wait((int *) 0);
   PRINT_DEBUG ("spawned %s\n", cmd);
 }

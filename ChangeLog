@@ -1,3 +1,8 @@
+2001-09-14  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/actions.c (spawn): set the process group ID and session ID
+	for the spawned process.
+
 2001-09-13  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/actions.c (command): Gobble the whitespace between the
