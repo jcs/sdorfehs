@@ -1,5 +1,8 @@
 2001-08-18  Shawn  <sabetts@hotdog>
 
+	* src/actions.c (cmd_bind): Gobble whitespace between keystroke and command.
+	(cmd_help): keystrokes and commands no longer overlap.
+
 	* src/events.c (configure_request): grant Iconized and Withdrawn
 	windows any geometry they like.
 

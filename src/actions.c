@@ -306,6 +306,12 @@ cmd_bind (int interactive, void *data)
   sscanf (data, "%s", keydesc);
   cmd = data + strlen (keydesc);
 
+  /* Gobble remaining whitespace before command starts */
+  while (*cmd == ' ')
+    {
+      cmd++;
+    }
+  
   if (!keydesc)
     message (" bind: at least one argument required ");
   else
@@ -1062,10 +1068,11 @@ cmd_help (int interactive, void *data)
   XEvent ev;
   Window fwin;			/* Window currently in focus */
   int revert;			
-  int i;
+  int i, old_i;
   int x = 10;
   int y = 0;
   int max_width = 0;
+  int drawing_keys = 1;		/* 1 if we are drawing keys 0 if we are drawing commands */
   char *keysym_name;
 
   XMapRaised (dpy, s->help_window);
@@ -1092,33 +1099,66 @@ cmd_help (int interactive, void *data)
 
   y += FONT_HEIGHT (s->font) * 2;
   
-  for (i=0; i<key_actions_last; i++)
+  i = 0;
+  while (i<key_actions_last || drawing_keys)
     {
-      keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
-
-      XDrawString (dpy, s->help_window, s->normal_gc,
-		   x, y + s->font->max_bounds.ascent,
-		   keysym_name, strlen (keysym_name));
-
-      if (XTextWidth (s->font, key_actions[i].data, strlen (key_actions[i].data))
-	  + XTextWidth (s->font, keysym_name, strlen (keysym_name)) > max_width)
+      if (drawing_keys)
 	{
-	  max_width = XTextWidth (s->font, key_actions[i].data, strlen (key_actions[i].data))
-	    + XTextWidth (s->font, keysym_name, strlen (keysym_name));
+	  keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
+
+	  XDrawString (dpy, s->help_window, s->normal_gc,
+		       x, y + s->font->max_bounds.ascent,
+		       keysym_name, strlen (keysym_name));
+
+	  if (XTextWidth (s->font, keysym_name, strlen (keysym_name)) > max_width)
+	    {
+	      max_width = XTextWidth (s->font, keysym_name, strlen (keysym_name));
+	    }
+
+	  free (keysym_name);
 	}
+      else
+	{
+	  XDrawString (dpy, s->help_window, s->normal_gc,
+		       x, y + s->font->max_bounds.ascent,
+		       key_actions[i].data, strlen (key_actions[i].data));
 
-      XDrawString (dpy, s->help_window, s->normal_gc,
-		   x + 90, y + s->font->max_bounds.ascent,
-		   key_actions[i].data, strlen (key_actions[i].data));
-
-      free (keysym_name);
+	  if (XTextWidth (s->font, key_actions[i].data, strlen (key_actions[i].data)) > max_width)
+	    {
+	      max_width = XTextWidth (s->font, key_actions[i].data, strlen (key_actions[i].data));
+	    }
+	}
 
       y += FONT_HEIGHT (s->font);
       if (y > s->root_attr.height)
 	{
-	  x += max_width + 10 + 90;
-	  y = FONT_HEIGHT (s->font) * 4;
+	  if (drawing_keys)
+	    {
+	      x += max_width + 10;
+	      drawing_keys = 0;
+	      i = old_i;
+	    }
+	  else
+	    {
+	      x += max_width + 20;
+	      drawing_keys = 1;
+	      old_i = i;
+	    }
+
 	  max_width = 0;
+	  y = FONT_HEIGHT (s->font) * 4;
+	}
+      else
+	{
+	  i++;
+	  if (i >= key_actions_last && drawing_keys)
+	    {
+	      x += max_width + 10;
+	      drawing_keys = 0;
+	      y = FONT_HEIGHT (s->font) * 4;
+	      i = old_i;
+	      max_width = 0;
+	    }
 	}
     }
 
