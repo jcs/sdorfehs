@@ -1,3 +1,12 @@
+2001-02-15  Gergely Nagy  <8@free.bsd.hu>
+
+	* getopt.c: fixed a warning
+
+	* events.c (handle_key): use dynamically allocated strings
+
+	* bar.c (display_msg_in_bar),
+	* sbuf.c (xrealloc): changed an fprintf to PRINT_DEBUG
+
 2001-02-15  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* list.c (save_mouse_position): changed declaration of mask to
@@ -390,4 +399,3 @@
 
 	* main.c, data.h, events.c: Added ability to kill and hup running
 	ratpoison processes.
-
