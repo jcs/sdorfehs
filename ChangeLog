@@ -1,3 +1,9 @@
+2003-08-24  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/window.c (goto_window): don't do anything if the window is
+	already the current window.
+	(set_active_window): don't abort if last_win and win are the same.
+
 2003-08-22  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/window.c (set_active_window): don't do anything if the

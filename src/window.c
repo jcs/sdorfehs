@@ -471,11 +471,6 @@ set_active_window (rp_window *win)
   if (last_win) PRINT_DEBUG (("last window: %s\n", window_name (last_win)));
   PRINT_DEBUG (("new window: %s\n", window_name (win)));
 
-  /* If we're dealing with the same window, just abort. There is
-     nothing to do. */
-  if (last_win == win)
-    return;
-
   /* Make sure the window comes up full screen */
   maximize (win);
 
@@ -509,6 +504,10 @@ void
 goto_window (rp_window *win)
 {
   rp_frame *frame;
+
+  /* There is nothing to do if it is already the current window. */
+  if (current_window() == win)
+    return;
 
   frame = find_windows_frame (win);
   if (frame)
