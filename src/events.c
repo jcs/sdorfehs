@@ -333,7 +333,7 @@ handle_key (screen_info *s)
 
   /* No key match, notify user. */
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
-  display_msg_in_bar (s, msg, 0, 0);
+  message (msg, 0, 0);
 
   free (msg);
 }

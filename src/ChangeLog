@@ -1,3 +1,13 @@
+2001-02-17  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* manage.c (current_screen): Rename get_screen() and move to this
+	file.
+	
+	* input.c (get_input): Remove screen_info as paramater.  Call
+	current_screen() to get screen_info.
+
+	* actions.c (get_screen): Remove.
+
 2001-02-17  Gergely Nagy  <8@free.bsd.hu>
 
 	* actions.c (goto_window_by_name, rename_current_window, command)

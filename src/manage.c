@@ -53,6 +53,15 @@ grab_prefix_key (Window w)
 #endif
 }
 
+screen_info*
+current_screen ()
+{
+  if (rp_current_window)
+    return rp_current_window->scr;
+  else
+    return &screens[0];
+}
+
 void
 update_normal_hints (rp_window *win)
 {

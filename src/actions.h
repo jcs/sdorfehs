@@ -42,7 +42,7 @@ void bye(void *dummy);
 void generate_prefix (void *data);
 void generate_key_event (void *data);
 void abort_keypress (void *data);
-void goto_window_number (void* data);
+void goto_window_number (void *data);
 void spawn(void *data);
 void shell_command (void *data);
 void command (void *data);

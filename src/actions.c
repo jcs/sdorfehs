@@ -37,16 +37,6 @@
 /*   { {XK_t, C, "main-prefix"}, */
 /*     {0,0,NULL} }; */
 
-static screen_info*
-get_screen ()
-{
-  if (rp_current_window)
-    return rp_current_window->scr;
-  else
-    return &screens[0];
-}
-
-
 rp_action key_actions[] = 
   { {XK_t, 		C, 	"other",  	command}, 
     {XK_t, 		0, 	"generate",	command},
@@ -218,14 +208,14 @@ prev_window (void *data)
       else
 	{
 	  if (rp_current_window == new_win)
-	    display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW, 0, 0);
+	    message (MESSAGE_NO_OTHER_WINDOW, 0, 0);
 	  else
 	    set_active_window (new_win);
 	}
     }
   else
     {
-      display_msg_in_bar (&screens[0], MESSAGE_NO_MANAGED_WINDOWS, 0, 0);
+      message (MESSAGE_NO_MANAGED_WINDOWS, 0, 0);
     }
 }
 
@@ -246,14 +236,14 @@ next_window (void *data)
       else
 	{
 	  if (rp_current_window == new_win)
-	    display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW, 0, 0);
+	    message (MESSAGE_NO_OTHER_WINDOW, 0, 0);
 	  else
 	    set_active_window (new_win);
 	}
     }
   else
     {
-      display_msg_in_bar (&screens[0], MESSAGE_NO_MANAGED_WINDOWS, 0, 0);
+      message (MESSAGE_NO_MANAGED_WINDOWS, 0, 0);
     }
 }
 
@@ -269,7 +259,7 @@ last_window (void *data)
 
   if (rp_current_window == oldwin)
     {
-      display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW, 0, 0);
+      message (MESSAGE_NO_OTHER_WINDOW, 0, 0);
     }
 }
 
@@ -282,7 +272,7 @@ goto_win_by_name (void *data)
   if (rp_current_window == NULL) return;
 
   if (data == NULL)
-    winname = get_input (rp_current_window->scr, MESSAGE_PROMPT_GOTO_WINDOW_NAME);
+    winname = get_input (MESSAGE_PROMPT_GOTO_WINDOW_NAME);
   else
     winname = strdup ((char *) data);
 
@@ -299,7 +289,7 @@ rename_current_window (void *data)
   if (rp_current_window == NULL) return;
 
   if (data == NULL)
-    winname = get_input (rp_current_window->scr, MESSAGE_PROMPT_NEW_WINDOW_NAME);
+    winname = get_input (MESSAGE_PROMPT_NEW_WINDOW_NAME);
   else
     winname = strdup ((char *) data);
 
@@ -355,7 +345,7 @@ kill_window (void *data)
 void
 show_version (void *data)
 {
-  display_msg_in_bar (get_screen(), " " PACKAGE " " VERSION " ", 0, 0);
+  message (" " PACKAGE " " VERSION " ", 0, 0);
 }
 
 void
@@ -369,7 +359,7 @@ command (void *data)
   struct sbuf *buf = NULL;
   
   if (data == NULL)
-    input = get_input (get_screen(), MESSAGE_PROMPT_COMMAND);
+    input = get_input (MESSAGE_PROMPT_COMMAND);
   else
     input = strdup ((char *) data);
   
@@ -430,7 +420,7 @@ command (void *data)
   sbuf_concat (buf, cmd);
   sbuf_concat (buf, "' ");
 
-  display_msg_in_bar (get_screen(), sbuf_get (buf), 0, 0);
+  message (sbuf_get (buf), 0, 0);
   
   sbuf_free (buf);
 
@@ -443,7 +433,7 @@ shell_command (void *data)
   char *cmd;
 
   if (data == NULL)
-    cmd = get_input (get_screen(), MESSAGE_PROMPT_SHELL_COMMAND);
+    cmd = get_input (MESSAGE_PROMPT_SHELL_COMMAND);
   else
     cmd = strdup ((char *) data);
 
@@ -458,7 +448,7 @@ xterm_command (void *data)
   char *cmd, *realcmd;
 
   if (data == NULL)
-    cmd = get_input (get_screen(), MESSAGE_PROMPT_XTERM_COMMAND);
+    cmd = get_input (MESSAGE_PROMPT_XTERM_COMMAND);
   else
     cmd = strdup ((char *) data);
 
@@ -504,7 +494,7 @@ switch_to(void *data)
   char *prog;
 
   if (data == NULL)
-    prog = get_input (get_screen(), MESSAGE_PROMPT_SWITCH_WM);
+    prog = get_input (MESSAGE_PROMPT_SWITCH_WM);
   else
     prog = strdup ((char *) data);
 
@@ -558,7 +548,7 @@ show_clock (void *data)
   if (rp_current_window) 
     {
       s = rp_current_window->scr;
-      display_msg_in_bar (s, msg, 0, 0);
+      message (msg, 0, 0);
     }
   free(msg);
 }

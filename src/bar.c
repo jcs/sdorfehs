@@ -136,15 +136,16 @@ update_window_names (screen_info *s)
       sbuf_copy (bar_buffer, MESSAGE_NO_MANAGED_WINDOWS);
     }
 
-  display_msg_in_bar (s, sbuf_get (bar_buffer), mark_start, mark_end);
+  message (sbuf_get (bar_buffer), mark_start, mark_end);
 }
 
 void
-display_msg_in_bar (screen_info *s, char *msg, int mark_start, int mark_end)
+message (char *msg, int mark_start, int mark_end)
 {
   XGCValues lgv;
   GC lgc;
   unsigned long mask;
+  screen_info *s = current_screen ();
 
   int width = BAR_X_PADDING * 2 + XTextWidth (s->font, msg, strlen (msg));
   int height = (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2);

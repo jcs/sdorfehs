@@ -25,6 +25,7 @@
 #include "data.h"
 
 int unmanaged_window (Window w);
+screen_info* current_screen ();
 void scanwins(screen_info *s);
 void manage (rp_window *w, screen_info *s);
 void unmanage (rp_window *w);

@@ -128,8 +128,9 @@ read_key (KeySym *keysym, unsigned int *modifiers)
 }
 
 char *
-get_input (screen_info *s, char *prompt)
+get_input (char *prompt)
 {
+  screen_info *s = current_screen ();
   int cur_len;			/* Current length of the string. */
   int allocated_len=100;		/* The ammount of memory we allocated for str */
   KeySym ch;
@@ -139,6 +140,7 @@ get_input (screen_info *s, char *prompt)
   int prompt_width = XTextWidth (s->font, prompt, strlen (prompt));
   int width = 200 + prompt_width;
   char *str;
+
 
   /* We don't want to draw overtop of the program bar. */
   hide_bar (s);
