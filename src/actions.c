@@ -51,8 +51,10 @@ prev_window (void *data)
 	{
 	  new_win = rp_window_tail;
 	}
-      if (new_win->state == STATE_UNMAPPED) prev_window (new_win);
-      set_active_window (new_win);
+      if (new_win->state == STATE_UNMAPPED) 
+	prev_window (new_win);
+      else
+	set_active_window (new_win);
     }
 }
 
@@ -70,8 +72,10 @@ next_window (void *data)
 	{
 	  new_win = rp_window_head;
 	}
-      if (new_win->state == STATE_UNMAPPED) next_window (new_win);
-      set_active_window (new_win);
+      if (new_win->state == STATE_UNMAPPED) 
+	next_window (new_win);
+      else
+	set_active_window (new_win);
     }
 }
 
