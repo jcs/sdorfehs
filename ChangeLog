@@ -1,5 +1,10 @@
 2003-03-06  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/Makefile.am (ratpoison_SOURCES): remove list.h and list.c,
+	add window.c and window.h
+
+	* src/ratpoison.h: include window.h instead of list.h
+
 	* src/main.c (main): call init_window_stuff(). Remove call to init_numbers().
 	(clean_up): call free_window_stuff(). Remove call to free_numbers().
 

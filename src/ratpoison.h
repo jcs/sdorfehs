@@ -57,7 +57,7 @@ extern XGCValues gv;
 
 #include "data.h"
 #include "manage.h"
-#include "list.h"
+#include "window.h"
 #include "bar.h"
 #include "events.h"
 #include "number.h"
