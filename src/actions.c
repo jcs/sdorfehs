@@ -1392,6 +1392,10 @@ cmd_license (int interactive, void *data)
   XUnmapWindow (dpy, s->help_window);
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
 
+  /* The help window overlaps the bar, so redraw it. */
+  if (current_screen()->bar_is_raised)
+    show_last_message();
+
   return NULL;
 }
 
@@ -1498,6 +1502,10 @@ cmd_help (int interactive, void *data)
   XMaskEvent (dpy, KeyPressMask, &ev);
   XUnmapWindow (dpy, s->help_window);
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
+
+  /* The help window overlaps the bar, so redraw it. */
+  if (current_screen()->bar_is_raised)
+    show_last_message();
 
   return NULL;
 }

@@ -1,5 +1,8 @@
 2002-02-14  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (cmd_license): redraw the bar if it was visible.
+	(cmd_help): likewise
+
 	* configure.in: fix the --enable-debug help string.
 
 	* src/events.c (configure_request): Ignore the configure notify
