@@ -44,6 +44,8 @@ add_to_window_list (screen_info *s, Window w)
   new_window->prev = NULL;
   new_window->state = STATE_UNMAPPED;
   new_window->number = -1;	
+  new_window->named = 0;
+
   if ((new_window->name = malloc (strlen ("Unnamed") + 1)) == NULL)
     {
       fprintf (stderr, "list.c:add_to_window_list():Out of memory.\n");

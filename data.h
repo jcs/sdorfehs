@@ -40,6 +40,7 @@ struct rp_window
   char *name;
   int state;
   int last_access;		
+  int named;
   rp_window *next, *prev;  
 };
 

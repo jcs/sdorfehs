@@ -32,35 +32,6 @@
 
 extern Atom wm_state;
 
-void
-grab_keys (screen_info *s)
-{
-  int i;
-
-  for (i='0'; i<='9'; i++)
-    XGrabKey(dpy, XKeysymToKeycode (dpy, i ), AnyModifier, s->key_window, True, 
-	     GrabModeAsync, GrabModeAsync);  
-
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_XTERM ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_EMACS ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREVWINDOW ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_NEXTWINDOW ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_TOGGLEBAR ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_LASTWINDOW ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_DELETE ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREFIX ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_WINBYNAME ), AnyModifier, s->key_window, True, 
-	   GrabModeAsync, GrabModeAsync);
-}
-
 static void
 grab_prefix_key (Window w)
 {
@@ -76,6 +47,9 @@ update_window_name (rp_window *win)
   char **name_list;
   int list_len;
   int i;
+
+  /* Don't overwrite the window name if the user specified one. */
+  if (win->named) return 0;
 
   if (!XGetWMName (dpy, win->w, &text))
     {
@@ -119,6 +93,30 @@ update_window_name (rp_window *win)
   XFreeStringList (name_list);
 
   return 1;
+}
+
+void
+rename_current_window ()
+{
+  char winname[100];
+  
+  if (rp_current_window == NULL) return;
+
+  get_input (rp_current_window->scr, "Name: ", winname, 100);
+  printf ("user entered: %s\n", winname);
+
+  free (rp_current_window->name);
+  rp_current_window->name = malloc (sizeof (char) * strlen (winname) + 1);
+  if (rp_current_window->name == NULL)
+    {
+      fprintf (stderr, "ratpoison:rename_window(): Out of memory\n");
+      exit (EXIT_FAILURE);
+    }
+  strcpy (rp_current_window->name, winname);
+  rp_current_window->named = 1;
+  
+  /* Update the program bar. */
+  update_window_names (rp_current_window->scr);
 }
 
 void

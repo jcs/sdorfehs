@@ -22,9 +22,9 @@
 
 #include "data.h"
 
-void grab_keys ();
 void scanwins(screen_info *s);
 void manage (rp_window *w, screen_info *s);
 void unmanage (rp_window *w);
 int update_window_name (rp_window *win);
+void rename_current_window ();
 #endif /* _MANAGE_H */

@@ -97,7 +97,8 @@ handler (Display *d, XErrorEvent *e)
   XGetErrorText (d, e->error_code, error_msg, sizeof (error_msg));
   fprintf (stderr, "ratpoison: %s!\n", error_msg);
 
-  exit (EXIT_FAILURE);
+  return 0;
+  //  exit (EXIT_FAILURE);
 }
 
 int
@@ -114,7 +115,7 @@ main (int argc, char *argv[])
     }
 
   /* Setup signal handlers. */
-  //XSetErrorHandler(handler);  
+  XSetErrorHandler(handler);  
   if (signal (SIGALRM, alrm_handler) == SIG_IGN) signal (SIGALRM, SIG_IGN);
   if (signal (SIGTERM, sighandler) == SIG_IGN) signal (SIGTERM, SIG_IGN);
   if (signal (SIGINT, sighandler) == SIG_IGN) signal (SIGINT, SIG_IGN);
@@ -225,13 +226,13 @@ init_screen (screen_info *s, int screen_num)
   s->bar_is_raised = 0;
   s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0,
 				       1, 1, 1, fg_color.pixel, bg_color.pixel);
+  XSelectInput (dpy, s->bar_window, StructureNotifyMask);
 
   /* Setup the window that will recieve all keystrokes once the prefix
      key has been pressed. */
   s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, WhitePixel (dpy, 0), BlackPixel (dpy, 0));
-  XSelectInput (dpy, s->bar_window, StructureNotifyMask);
+  XSelectInput (dpy, s->key_window, KeyPressMask);
   XMapWindow (dpy, s->key_window);
-  grab_keys (s);
 
   /* Create the input window. */
   s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 

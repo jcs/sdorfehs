@@ -146,12 +146,6 @@ destroy_window (XDestroyWindowEvent *ev)
   win = find_window (ev->window);
 
   last_destroy_event = !more_destroy_events();
-  if (last_destroy_event && (switch_window_pending || win))
-    {
-      last_window ();
-      switch_window_pending = 0;
-    }
-
   if (win)
     {
       /* Goto the last accessed window. */
@@ -159,11 +153,9 @@ destroy_window (XDestroyWindowEvent *ev)
 	{
 	  printf ("Destroying current window.\n");
 	  
-	  /* If there are more DestroyNotify events, then it is unsafe
-             to go to the last window since it could be
-             deleted. Therefore, wait until the last DestroyNotify
-             event and then switch windows. */
-	  if (!last_destroy_event) switch_window_pending = 1;
+	  /* tell ratpoison to switch to the last window when all the
+             destroy events have been delt with. */
+	  switch_window_pending = 1;
 	  unmanage (win);
 	}
       else
@@ -171,6 +163,12 @@ destroy_window (XDestroyWindowEvent *ev)
 	  printf ("Destroying some other window.\n");
 	  unmanage (win);
 	}
+    }
+
+  if (last_destroy_event && switch_window_pending)
+    {
+      last_window ();
+      switch_window_pending = 0;
     }
 }
 
@@ -262,6 +260,7 @@ handle_key (screen_info *s)
   int revert;
   Window fwin;
   XEvent ev;
+  int keysym;
 
 #ifdef DEBUG
   printf ("handling key.\n");
@@ -282,14 +281,25 @@ handle_key (screen_info *s)
       return;
     }
 
-  if (XLookupKeysym((XKeyEvent *) &ev, 0) >= '0' 
-      && XLookupKeysym((XKeyEvent *) &ev, 0) <= '9')
+  keysym = XLookupKeysym((XKeyEvent *) &ev, 0);
+
+  if (keysym == KEY_TOGGLEBAR)
     {
-      goto_window_number (XLookupKeysym((XKeyEvent *) &ev, 0) - '0');
+      toggle_bar (s);
       return;
     }
 
-  switch (XLookupKeysym((XKeyEvent *) &ev, 0))
+  /* All functions tested for after this point hide the program bar. */
+  hide_bar (s);
+
+  if (keysym >= '0' && keysym <= '9')
+    {
+      goto_window_number (XLookupKeysym((XKeyEvent *) &ev, 0) - '0');
+      hide_bar (s);
+      return;
+    }
+
+  switch (keysym)
     {
     case KEY_XTERM:
       spawn (TERM_PROG);
@@ -303,21 +313,21 @@ handle_key (screen_info *s)
     case KEY_NEXTWINDOW:
       next_window ();
       break;
-    case KEY_TOGGLEBAR:
-      toggle_bar (s);
-      break;
     case KEY_LASTWINDOW:
       last_window ();
       break;
     case KEY_WINBYNAME:
       goto_win_by_name (s);
       break;
+    case KEY_RENAME:
+      rename_current_window ();
+      break;
     case KEY_DELETE:
       if (ev.xkey.state & ShiftMask) kill_window ();
       else delete_window ();
       break;
     default:
-      fprintf (stderr, "Unknown key command %c", (char)XKeycodeToKeysym(dpy, ev.xkey.keycode, 0));
+      fprintf (stderr, "Unknown key command '%c'\n", (char)keysym);
       break;
     }
 }
