@@ -31,6 +31,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <string.h>
 
 #include "ratpoison.h"
 
@@ -181,30 +182,45 @@ load_rc_file (char *filename)
 {
   FILE *rcfile;
 
-  char *lineptr;
-  size_t n;
-
-  n = 0;
-  lineptr = NULL;
- 
   if ((rcfile = fopen (filename, "r")) == NULL)
     {
       fprintf (stderr, "ratpoison: could not open %s\n", filename);
     }
   else
     {
-      size_t retval;
-      n = 256;
-      lineptr = (char*)malloc(n);
-      
-      while ((retval = getline (&lineptr, &n, rcfile)) != EOF)
-	{
-	  fprintf (stderr, "read command: %s\n", lineptr);
+      size_t n = 256;
+      char *partial;
+      char *line;
+      int linesize = n;
 
-	  command (lineptr);
+      partial = (char*)malloc(n);
+      line = (char*)malloc(linesize);
+
+      *line = '\0';
+      while (fgets (partial, n, rcfile) != NULL)
+	{
+	  if ((strlen (line) + strlen (partial)) <= linesize)
+	    {
+	      linesize *= 2;
+	      line = (char*) realloc (line, linesize);
+	    }
+
+	  strcat (line, partial);
+
+	  if (feof(rcfile) || (*(line + strlen(line) - 1) == '\n'))
+	    {
+	      fprintf (stderr, "read line: %s\n", line);
+
+	      /* do it */
+	      command (line);
+
+	      *line = '\0';
+	    }
 	}
 
-      free (lineptr);
+
+      free (line);
+      free (partial);
     }
 }
 
