@@ -633,7 +633,7 @@ Kill the current frame. This is a no-op if there is only one frame.
 Restart ratpoison.
 
 @item rudeness @var{n}
-The rudeness command let's you decide what windows pop-up automatically
+The rudeness command lets you decide what windows pop-up automatically
 and when. This is often useful for those deep hack sessions when you
 absolutely can't be disturbed.
 
