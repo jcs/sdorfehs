@@ -70,6 +70,15 @@ add_keybinding (int keysym, int state, char *cmd)
   ++key_actions_last;
 }
 
+static void
+replace_keybinding (rp_action *key_action, char *newcmd)
+{
+  if (strlen (key_action->data) < strlen (newcmd))
+    key_action->data = (char*) realloc (key_action->data, strlen (newcmd) + 1);
+
+  strcpy (key_action->data, newcmd);
+}
+
 void
 initialize_default_keybindings (void)
 {
@@ -221,19 +230,23 @@ cmd_bind (void *data)
 	message (" FIXME: cmd_bind: need a command to bind to key ");
       else
 	{
-	  char foo[1000];
-
 	  struct key *key = parse_keydesc (keydesc);
-
+	  
 	  if (key)
 	    {
+	      rp_action *key_action;
+	      char foo[1000];
+
 	      sprintf (foo, " %ld %ld : '%s' ", key->state, key->sym, cmd);
-	      add_keybinding (key->sym, key->state, cmd);
+	      message (foo);
+
+	      if ((key_action = find_keybinding (key->sym, key->state)))
+		replace_keybinding (key_action, cmd);
+	      else
+		add_keybinding (key->sym, key->state, cmd);
 	    }
 	  else
-	    sprintf (foo, " FIXME: cmd_bind: couldnt parse key ");
-
-	  message (foo);
+	    message (" FIXME: cmd_bind: couldnt parse key ");
 	}
     }
 

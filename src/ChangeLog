@@ -1,3 +1,12 @@
+2001-02-24  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* conf.h: remove themes support
+	
+	* themes.h: remove file
+
+	* actions.c (replace_keybinding): add function
+	(cmd_bind): handle binding of previously bound key
+
 2001-02-23  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* main.c (main): passes return value of find_window_other() to
