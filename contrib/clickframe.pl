@@ -8,45 +8,8 @@
 # "perl /home/sabetts/src/ratpoison/contrib/clickframe.pl &"
 # control + b:1
 #
-# REQUIRES xbindkeys-1.6.4 with the following patch applied:
-#
-# --- xbindkeys.c~	2003-04-06 08:43:27.000000000 -0700
-# +++ xbindkeys.c	2003-09-24 11:46:20.000000000 -0700
-# @@ -143,7 +143,15 @@
-# 
-# 
-# 
-# +void
-# +add_button_env (int x, int y)
-# +{
-# +  char *env;
-# 
-# +  env = malloc (256 * sizeof (char));
-# +  snprintf (env, 255, "XBINDKEYS_BUTTONLOC=%d,%d", x, y);
-# +  putenv (env);
-# +}
-# 
-# 
-#  static void
-# @@ -240,6 +248,8 @@
-#  			       | Button1Mask | Button2Mask | Button3Mask
-#  			       | Button4Mask | Button5Mask);
-# 
-# +	  add_button_env (e.xbutton.x, e.xbutton.y);
-# +
-#  	  for (i = 0; i < nb_keys; i++)
-#  	    {
-#  	      if (keys[i].type == BUTTON && keys[i].event_type == PRESS)
-# @@ -266,6 +276,8 @@
-#  			       | Button1Mask | Button2Mask | Button3Mask
-#  			       | Button4Mask | Button5Mask);
- 
-# +	  add_button_env (e.xbutton.x, e.xbutton.y);
-# +
-#  	  for (i = 0; i < nb_keys; i++)
-#  	    {
-#  	      if (keys[i].type == BUTTON && keys[i].event_type == RELEASE)
-#
+# Requires xbindkeys-1.6.4 with the patch at the end of this file
+# applied. This file can be fed directly to patch.
 
 # Make sure the env vars are there
 $ENV{XBINDKEYS_BUTTONLOC} || die '$XBINDKEYS_BUTTONLOC not bound';
@@ -70,3 +33,43 @@ foreach $frame (@framelist) {
 	system ("$ratpoison_bin -c \"fselect $num\"");
     }
 }
+
+__END__
+
+--- xbindkeys.c~	2003-04-06 08:43:27.000000000 -0700
++++ xbindkeys.c	2003-09-24 11:46:20.000000000 -0700
+@@ -143,7 +143,15 @@
+
+
+
++void
++add_button_env (int x, int y)
++{
++  char *env;
+
++  env = malloc (256 * sizeof (char));
++  snprintf (env, 255, "XBINDKEYS_BUTTONLOC=%d,%d", x, y);
++  putenv (env);
++}
+
+
+ static void
+@@ -240,6 +248,8 @@
+ 			       | Button1Mask | Button2Mask | Button3Mask
+ 			       | Button4Mask | Button5Mask);
+
++	  add_button_env (e.xbutton.x, e.xbutton.y);
++
+ 	  for (i = 0; i < nb_keys; i++)
+ 	    {
+ 	      if (keys[i].type == BUTTON && keys[i].event_type == PRESS)
+@@ -266,6 +276,8 @@
+ 			       | Button1Mask | Button2Mask | Button3Mask
+ 			       | Button4Mask | Button5Mask);
+
++	  add_button_env (e.xbutton.x, e.xbutton.y);
++
+ 	  for (i = 0; i < nb_keys; i++)
+ 	    {
+ 	      if (keys[i].type == BUTTON && keys[i].event_type == RELEASE)
+
