@@ -1385,12 +1385,13 @@ cmd_pos (int interactive, void *data)
   int pos;
   rp_window *win;
 
-  if (current_window() == NULL) return NULL;
   if (data == NULL) 
     {
       message (" pos: Two arguments needed ");
       return NULL;
     }
+
+  if (current_window() == NULL) return NULL;
 
   win = current_window();
   
@@ -1412,9 +1413,15 @@ cmd_defwinpos (int interactive, void *data)
 {
   int pos;
 
+  if (data == NULL) 
+    {
+      message (" defwinpos: Two arguments needed ");
+      return NULL;
+    }
+
   if ((pos = parse_winpos (data)) < 0)
     {
-      message (" pos: Unknown position ");
+      message (" defwinpos: Unknown position ");
     }
   else
     {
@@ -1428,6 +1435,12 @@ char *
 cmd_deftranspos (int interactive, void *data)
 {
   int pos;
+
+  if (data == NULL) 
+    {
+      message (" deftranspos: Two arguments needed ");
+      return NULL;
+    }
 
   if ((pos = parse_winpos (data)) < 0)
     {
@@ -1446,9 +1459,15 @@ cmd_defmaxsizepos (int interactive, void *data)
 {
   int pos;
 
+  if (data == NULL) 
+    {
+      message (" defmaxsizepos: Two arguments needed ");
+      return NULL;
+    }
+
   if ((pos = parse_winpos (data)) < 0)
     {
-      message (" pos: Unknown position ");
+      message (" defmaxsizepos: Unknown position ");
     }
   else
     {

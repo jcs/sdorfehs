@@ -1,6 +1,12 @@
 2001-09-18  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/actions.c(user_commands)[0]: remove "lastmsg" from the list.
+	(cmd_defwinpos): abort if data is NULL
+	(cmd_deftranspos): likewise
+	(cmd_defmaxsizepos): likewise
+	(cmd_defmaxsizepos): Use the correct command name in call to message.
+	(cmd_deftranspos): likewise
+	(cmd_defwinpos): likewise
 
 	* src/actions.h (cmd_info): new prototype
 	(cmd_lastmsg): likewise
