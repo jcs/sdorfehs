@@ -561,7 +561,7 @@ property_notify (XEvent *ev)
   PRINT_DEBUG (("atom: %ld\n", ev->xproperty.atom));
 
   if (ev->xproperty.atom == rp_command_request
-      && ev->xproperty.window == DefaultRootWindow (dpy)
+      && is_a_root_window (ev->xproperty.window)
       && ev->xproperty.state == PropertyNewValue)
     {
       PRINT_DEBUG (("ratpoison command\n"));

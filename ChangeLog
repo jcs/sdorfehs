@@ -1,3 +1,15 @@
+2004-10-04  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/screen.h (is_a_root_window): new prototype
+
+	* src/screen.c (is_a_root_window): new function
+
+	* src/events.c (property_notify): check for ratpoison commands on
+	every root window, not just the default root window.
+
+	* src/communications.c (send_command): store the root window in a
+	variable, root. and use it whenever the root window is needed.
+
 2004-09-29  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* configure.in: Warn when the history header or library is not

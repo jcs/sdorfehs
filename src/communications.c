@@ -83,7 +83,7 @@ receive_command_result (Window w)
 int
 send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
 {
-  Window w;
+  Window w, root;
   int done = 0;
   struct sbuf *s;
 
@@ -94,15 +94,11 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
   /* If the user specified a specific screen, then send the event to
      that screen. */
   if (screen_num >= 0)
-    {
-      w = XCreateSimpleWindow (dpy, RootWindow (dpy, screen_num),
-			       0, 0, 1, 1, 0, 0, 0);
-    }
+    root = RootWindow (dpy, screen_num);
   else
-    {
-      w = XCreateSimpleWindow (dpy, DefaultRootWindow (dpy),
-			       0, 0, 1, 1, 0, 0, 0);
-    }
+    root = DefaultRootWindow (dpy);
+
+  w = XCreateSimpleWindow (dpy, root, 0, 0, 1, 1, 0, 0, 0);
 
   /* Select first to avoid race condition */
   XSelectInput (dpy, w, PropertyChangeMask);
@@ -110,7 +106,7 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
   XChangeProperty (dpy, w, rp_command, XA_STRING,
 		   8, PropModeReplace, sbuf_get(s), strlen (cmd) + 2);
 
-  XChangeProperty (dpy, DefaultRootWindow (dpy), 
+  XChangeProperty (dpy, root, 
 		   rp_command_request, XA_WINDOW,
 		   8, PropModeAppend, (unsigned char *)&w, sizeof (Window));
 

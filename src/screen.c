@@ -146,6 +146,17 @@ find_screen (Window w)
    return NULL;
  }
 
+/* Return 1 if w is a root window of any of the screens. */
+int
+is_a_root_window (int w)
+{
+  int i;
+  for (i=0; i<num_screens; i++)
+    if (screens[i].root == w) return 1;
+
+  return 0;
+}
+
 void
 init_screens (int screen_arg, int screen_num)
 {

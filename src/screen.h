@@ -37,6 +37,6 @@ rp_frame *screen_get_frame (rp_screen *s, int frame_num);
 void init_screens (int screen_arg, int screen_num);
 
 int is_rp_window_for_screen (Window w, rp_screen *s);
-
+int is_a_root_window (int w);
 
 #endif
