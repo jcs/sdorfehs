@@ -1,3 +1,7 @@
+2001-02-11  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* autogen.sh: added to repository
+
 2001-02-04  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* doc/ratpoison.texi: added keystroke for `Show current time.'
