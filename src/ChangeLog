@@ -1,5 +1,10 @@
 2001-02-21  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* manage.c (manage): comment out broken sort_window_list_by_number
+	call
+
+	* actions.h (key): new structure
+
 	* actions.c (find_keybinding): return an rp_action*, not a char*
 	(user_commands): add bind command
 	(parse_keydesc): new function
