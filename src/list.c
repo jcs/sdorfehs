@@ -529,6 +529,12 @@ set_active_window (rp_window *win)
 	  /* We only need to hide the transients "between" last_win and win */
 	  hide_transient_for_between (last_win, win);
 	}
+      else if (last_win && last_win->transient && win->transient &&
+	       last_win->transient_for == win->transient_for)
+	{
+	  /* Both last_win and win have the same transient_for so we
+             don't need to hide anything more */
+	}
       else
 	{
 	  hide_transient_for (last_win);

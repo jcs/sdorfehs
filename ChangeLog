@@ -1,3 +1,11 @@
+2001-08-22  Shawn  <sabetts@hotdog>
+
+	* src/list.c (set_active_window): Don't hide last_win's transient_for
+	windows if last_win and win share the same transient_for window.
+
+	* src/events.c (cleanup_frame): Don't hide last_win's transient_for
+	windows if last_win and win share the same transient_for window.
+
 2001-08-20  Shawn  <sabetts@hotdog>
 
 	* src/events.c (cleanup_frame): set the new window's frame before
