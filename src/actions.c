@@ -66,6 +66,7 @@ static user_command user_commands[] =
     {"vsplit",		cmd_v_split,	arg_VOID},
     {"windows", 	cmd_windows, 	arg_VOID},
     {"setenv",		cmd_setenv,	arg_STRING},
+    {"chdir",		cmd_chdir,	arg_STRING},
 
     /* Commands to set default behavior. */
     {"defbarloc",	cmd_defbarloc, 		arg_STRING},
@@ -142,9 +143,9 @@ add_keybinding (KeySym keysym, int state, char *cmd)
 
   key_actions[key_actions_last].key = keysym;
   key_actions[key_actions_last].state = state;
-  key_actions[key_actions_last].data = strdup (cmd); /* free this on
-							shutdown, or
-							re/unbinding */
+  key_actions[key_actions_last].data = xstrdup (cmd); /* free this on
+							 shutdown, or
+							 re/unbinding */
 
   ++key_actions_last;
 }
@@ -634,7 +635,7 @@ cmd_select (int interactive, void *data)
   if (data == NULL)
     str = get_input (MESSAGE_PROMPT_SWITCH_TO_WINDOW);
   else
-    str = strdup ((char *) data);
+    str = xstrdup ((char *) data);
 
   /* User aborted. */
   if (str == NULL)
@@ -686,7 +687,7 @@ cmd_rename (int interactive, void *data)
   if (data == NULL)
     winname = get_input (MESSAGE_PROMPT_NEW_WINDOW_NAME);
   else
-    winname = strdup ((char *) data);
+    winname = xstrdup ((char *) data);
 
   /* User aborted. */
   if (winname == NULL)
@@ -762,7 +763,7 @@ command (int interactive, char *data)
     return NULL;
 
   /* get a writable copy for strtok() */
-  input = strdup ((char *) data);
+  input = xstrdup ((char *) data);
 
   cmd = strtok (input, " ");
 
@@ -835,7 +836,7 @@ cmd_exec (int interactive, void *data)
   if (data == NULL)
     cmd = get_input (MESSAGE_PROMPT_SHELL_COMMAND);
   else
-    cmd = strdup ((char *) data);
+    cmd = xstrdup ((char *) data);
 
   /* User aborted. */
   if (cmd == NULL)
@@ -891,7 +892,7 @@ cmd_newwm(int interactive, void *data)
   if (data == NULL)
     prog = get_input (MESSAGE_PROMPT_SWITCH_WM);
   else
-    prog = strdup ((char *) data);
+    prog = xstrdup ((char *) data);
 
   /* User aborted. */
   if (prog == NULL)
@@ -963,7 +964,7 @@ cmd_number (int interactive, void *data)
     }
   else
     {
-      str = strdup ((char *) data);
+      str = xstrdup ((char *) data);
     }
 
   if ((new_number = string_to_window_number (str)) >= 0)
@@ -1685,13 +1686,7 @@ cmd_defwinfmt (int interactive, void *data)
     return NULL;
 
   free (defaults.window_fmt);
-  defaults.window_fmt = strdup (data);
-
-  if (defaults.window_fmt == NULL)
-    {
-      PRINT_ERROR ("Not enough memory\n");
-      exit (EXIT_FAILURE);
-    }
+  defaults.window_fmt = xstrdup (data);
 
   return NULL;
 }
@@ -1813,5 +1808,19 @@ cmd_setenv (int interactive, void *data)
 
   free (var);
   free (string);
+  return NULL;
+}
+
+char *
+cmd_chdir (int interactive, void *data)
+{
+  if (!data)
+    {
+      char *homedir = getenv("HOME");
+      if (homedir)
+        chdir (homedir);
+    }
+
+  chdir ((char *)data);
   return NULL;
 }

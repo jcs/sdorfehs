@@ -67,5 +67,6 @@ void read_rc_file (FILE *file);
 void fatal (const char *msg);
 void *xmalloc (size_t size);
 void *xrealloc (void *ptr, size_t size);
+char *xstrdup (char *s);
 
 #endif /* ! _RATPOISON_H */

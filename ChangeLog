@@ -1,8 +1,19 @@
 2001-09-17  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/ratpoison.h (xstrdup): new prototype
+
+	* src/main.c (xstrdup): new function. All calls to strdup replaced
+	with calls to xstrdup.
+	(main): Keep a list of all commands pasted in through the -c command-line option.
+	(main): execute all commands pasted in through the -c command-line option.
+
+	* src/actions.h (cmd_chdir): new prototype
+
 	* src/actions.c (cmd_clock): rename to cmd_time. Dependant code
 	updated.
 	(user_commands): rename "clock" command to "time".
+	(cmd_chdir): new function
+	(user_commands): new command "chdir".
 
 2001-09-16  shawn  <sabetts@diggin.lamenet.tmp>
 

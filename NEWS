@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** Multiple commands passed to ratpoison via the command-line are now processed
+A stream of commands like, `ratpoison -c next -c prev -c next' are
+processed in order.
+
 ** clock command renamed to time
 This was to improve screen compatibility.
 

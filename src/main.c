@@ -115,6 +115,16 @@ xrealloc (void *ptr, size_t size)
   return value;
 }
 
+char *
+xstrdup (char *s)
+{
+  char *value;
+  value = strdup (s);
+  if (value == 0)
+    fatal ("Virtual memory exhausted");
+  return value;
+}
+
 void
 sighandler (int signum)
 {
@@ -373,12 +383,7 @@ init_defaults ()
 
   defaults.wait_for_key_cursor = 1;
 
-  defaults.window_fmt = strdup ("%n%s%t");
-  if (defaults.window_fmt == NULL)
-    {
-      PRINT_ERROR ("Not enough memory\n");
-      exit (EXIT_FAILURE);
-    }
+  defaults.window_fmt = xstrdup ("%n%s%t");
 
   defaults.win_name = 0;
 }
@@ -390,8 +395,8 @@ main (int argc, char *argv[])
   int c;
   int do_kill = 0;
   int do_restart = 0;
-  int do_command = 0;
-  char *command = NULL;
+  char **command = NULL;
+  int cmd_count = 0;
 
   myargv = argv;
 
@@ -418,9 +423,18 @@ main (int argc, char *argv[])
 	  do_restart = 1;
 	  break;
 	case 'c':
-	  command = xmalloc (strlen (optarg) + 1);
-	  strcpy (command, optarg);
-	  do_command = 1;
+	  if (!command)
+	    {
+	      command = xmalloc (sizeof(char *));
+	      cmd_count = 0;
+	    }
+	  else
+	    {
+	      command = xrealloc (command, sizeof (char *) * (cmd_count + 1));
+	    }
+
+	  command[cmd_count] = xstrdup (optarg);
+	  cmd_count++;
 	  break;
 	default:
 	  exit (EXIT_FAILURE);
@@ -454,9 +468,16 @@ main (int argc, char *argv[])
       XCloseDisplay (dpy);
       return EXIT_SUCCESS;
     }
-  if (do_command)
+  if (cmd_count > 0)
     {
-      send_command (command);
+      int i;
+
+      for (i=0; i<cmd_count; i++)
+	{
+	  send_command (command[i]);
+	  free (command[i]);
+	}
+
       free (command);
       XCloseDisplay (dpy);
       return EXIT_SUCCESS;
