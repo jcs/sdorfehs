@@ -1,5 +1,12 @@
 2002-01-24  shawn  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (find_alias_index): new function
+	(cmd_alias): When an alias is already in the alias list, replace
+	it with the new alias.
+
+	* src/events.c (configure_request): do not send a synthetic
+	configure notify event.
+
 	* src/actions.c (wingravity_to_string): Fix the north gravity
 	string to return "n" not "ng".
 	(cmd_defborder): return NULL when no (or a bad) argument is passed

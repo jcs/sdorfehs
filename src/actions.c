@@ -2324,10 +2324,25 @@ cmd_defbarpadding (int interactive, void *data)
   return NULL;
 }
 
+/* Search the alias table for a match. If a match is found, return its
+   index into the table. Otherwise return -1. */
+static int
+find_alias_index (char *name)
+{
+  int i;
+
+  for (i=0; i<alias_list_last; i++)
+    if (!strcmp (name, alias_list[i].name))
+      return i;
+
+  return -1;
+}
+
 char *
 cmd_alias (int interactive, void *data)
 {
   char *name, *alias;
+  int index;
   
   if (data == NULL)
     {
@@ -2335,12 +2350,7 @@ cmd_alias (int interactive, void *data)
       return NULL;
     }
 
-  if (alias_list_last >= alias_list_size)
-    {
-      alias_list_size *= 2;
-      alias_list = xrealloc (alias_list, sizeof (cmd_alias) * alias_list_size);
-    }
-
+  /* Parse out the arguments. */
   name = strtok (data, " ");
   alias = strtok (NULL, "\0");
 
@@ -2349,10 +2359,26 @@ cmd_alias (int interactive, void *data)
       message (" alias: Two arguments required ");
       return NULL;
     }
-      
-  alias_list[alias_list_last].name = xstrdup (name);
-  alias_list[alias_list_last].alias = xstrdup (alias);
-  alias_list_last++;
+
+  /* Are we updating an existing alias, or creating a new one? */
+  index = find_alias_index (name);
+  if (index >= 0)
+    {
+      free (alias_list[index].alias);
+      alias_list[index].alias = xstrdup (alias);
+    }
+  else
+    {
+      if (alias_list_last >= alias_list_size)
+	{
+	  alias_list_size *= 2;
+	  alias_list = xrealloc (alias_list, sizeof (cmd_alias) * alias_list_size);
+	}
+
+      alias_list[alias_list_last].name = xstrdup (name);
+      alias_list[alias_list_last].alias = xstrdup (alias);
+      alias_list_last++;
+    }
 
   return NULL;
 }

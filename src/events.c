@@ -348,9 +348,6 @@ configure_request (XConfigureRequestEvent *e)
 	  XConfigureWindow (dpy, win->w, 
 			    e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
 			    &changes);
-
-	  send_configure (win->w, changes.x, changes.y, changes.width, changes.height,
-			  border);
 	}
     }
   else
