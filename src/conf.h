@@ -29,11 +29,14 @@
 #define MODIFIER_PREFIX ControlMask
 
 /* Pressing a key sends the mouse to the bottom right corner. This
-   doesn't work ver well yet. */
+   doesn't work very well yet. */
 //#define HIDE_MOUSE 
 
 /* Quit ratpoison when there are no more managed windows. */
 //#define AUTO_CLOSE		
+
+/* The minimum size of the input window */
+#define INPUT_WINDOW_SIZE 200
 
 #define BAR_FG_COLOR    "black"
 #define BAR_BG_COLOR    "white"

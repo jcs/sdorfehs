@@ -1,3 +1,21 @@
+2001-02-19  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* manage.c (manage): calls sort_window_list_by_number
+
+	* list.h (sort_window_list_by_number): Added prototype
+
+	* list.c (swap_list_elements): Added
+	(sort_window_list_by_number): Added
+
+	* input.c (update_input_window): Added
+	(get_input): calls update_input_window in place of xlib calls. 
+	(get_input): exits if realloc fails
+
+	* conf.h: Added INPUT_WINDOW_SIZE
+
+	* bar.c (update_window_names): loops through window list from head
+	to tail.
+
 2001-02-18  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* conf.h: restructured comments. Added #define for AUTO_CLOSE.

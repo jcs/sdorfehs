@@ -557,16 +557,22 @@ void
 goto_window_number (void *data)
 {
   int n = (int)data;
-
   rp_window *win;
 
-  if ((win = find_window_by_number (n)) == NULL)
+  win = find_window_by_number (n);
+
+  if (win == NULL)
     {
       /* Display window list to indicate failure. */
       /* FIXME: We can always assume there is 1 screen, but which one
 	 is the active one? Need to test on multi-screen x-servers. */
       show_bar (&screens[0]);
       return;
+    }
+
+  if (win == rp_current_window)
+    {
+      /* TODO: Add message "This IS window # (xxx) */
     }
 
   set_active_window (win);

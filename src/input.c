@@ -127,50 +127,70 @@ read_key (KeySym *keysym, unsigned int *modifiers)
     } while (IsModifierKey (*keysym));
 }
 
+static void
+update_input_window (screen_info *s, char *prompt, char *input, int input_len)
+{
+  int 	prompt_width = XTextWidth (s->font, prompt, strlen (prompt));
+  int 	input_width  = XTextWidth (s->font, input, input_len);
+  int 	width;
+
+  width = BAR_X_PADDING * 2 + prompt_width + input_width;
+
+  if (width < INPUT_WINDOW_SIZE + prompt_width)
+    {
+      width = INPUT_WINDOW_SIZE + prompt_width;
+    }
+
+  XMoveResizeWindow (dpy, s->input_window, 
+		     bar_x (s, width), bar_y (s), width,
+		     (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2));
+
+  XClearWindow (dpy, s->input_window);
+
+  XDrawString (dpy, s->input_window, s->normal_gc, 
+	       BAR_X_PADDING, 
+	       BAR_Y_PADDING + s->font->max_bounds.ascent, prompt, 
+	       strlen (prompt));
+
+  XDrawString (dpy, s->input_window, s->normal_gc, 
+	       BAR_X_PADDING + prompt_width,
+	       BAR_Y_PADDING + s->font->max_bounds.ascent, input, 
+	       input_len);
+}
+
 char *
 get_input (char *prompt)
 {
   screen_info *s = current_screen ();
-  int cur_len;			/* Current length of the string. */
-  int allocated_len=100;		/* The ammount of memory we allocated for str */
+  int cur_len = 0;		/* Current length of the string. */
+  int allocated_len=100; /* The amount of memory we allocated for str */
   KeySym ch;
   unsigned int modifier;
   int revert;
   Window fwin;
-  int prompt_width = XTextWidth (s->font, prompt, strlen (prompt));
-  int width = 200 + prompt_width;
   char *str;
 
-
-  /* We don't want to draw overtop of the program bar. */
-  hide_bar (s);
-
-  XMapWindow (dpy, s->input_window);
-  XMoveResizeWindow (dpy, s->input_window, 
-		     bar_x (s, width), bar_y (s), width, 
-		     (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2));
-  XClearWindow (dpy, s->input_window);
-  XRaiseWindow (dpy, s->input_window);
-
-  /* draw the window prompt. */
-  XDrawString (dpy, s->input_window, s->normal_gc, BAR_X_PADDING, 
-	       BAR_Y_PADDING + s->font->max_bounds.ascent, prompt, 
-	       strlen (prompt));
-
-  XGetInputFocus (dpy, &fwin, &revert);
-  XSetInputFocus (dpy, s->input_window, RevertToPointerRoot, CurrentTime);
-  /* XSync (dpy, False); */
-
-  cur_len = 0;
-
-  /* Allocate some memory */
-  str = (char *) malloc ( 100 ); /* Most of the time people
-  				 won't type more than 100 chars, will they ?*/
+  /* Allocate some memory to start with */
+  str = (char *) malloc ( allocated_len );
   if ( str == NULL )
     {
       PRINT_ERROR ("Out of memory\n");
       exit (EXIT_FAILURE);
     }
+
+  /* We don't want to draw overtop of the program bar. */
+  hide_bar (s);
+
+  XMapWindow (dpy, s->input_window);
+  XClearWindow (dpy, s->input_window);
+  XRaiseWindow (dpy, s->input_window);
+
+  update_input_window (s, prompt, str, cur_len);
+
+  XGetInputFocus (dpy, &fwin, &revert);
+  XSetInputFocus (dpy, s->input_window, RevertToPointerRoot, CurrentTime);
+  /* XSync (dpy, False); */
+
 
   read_key (&ch, &modifier);
   while (ch != XK_Return) 
@@ -179,30 +199,24 @@ get_input (char *prompt)
       if (ch == XK_BackSpace)
 	{
 	  if (cur_len > 0) cur_len--;
-	  XClearWindow (dpy, s->input_window);
-	  XDrawString (dpy, s->input_window, s->normal_gc, BAR_X_PADDING, 
-		       BAR_Y_PADDING + s->font->max_bounds.ascent, prompt, 
-		       strlen (prompt));
-	  XDrawString (dpy, s->input_window, s->normal_gc, 
-		       BAR_X_PADDING + prompt_width,
-		       BAR_Y_PADDING + s->font->max_bounds.ascent, str, 
-		       cur_len);
+	  update_input_window(s, prompt, str, cur_len);
 	}
       else
 	{
 	  if (cur_len > allocated_len - 1)
 	    {
-	      str = realloc ( str, allocated_len + 100 );
-	      /** FIXME: realloc(3) is unlcear to me, how should I check for
-	      its success ? - algernon **/
 	      allocated_len += 100;
+	      str = realloc ( str, allocated_len );
+	      if (str == NULL)
+		{
+		  PRINT_ERROR ("Out of memory\n");
+		  exit (EXIT_FAILURE);
+		}
 	    }
 	  str[cur_len] = ch;
 	  cur_len++;
 
-	  XDrawString (dpy, s->input_window, s->normal_gc, 
-		       BAR_X_PADDING + prompt_width,
-		       BAR_Y_PADDING + s->font->max_bounds.ascent, str, cur_len);
+	  update_input_window(s, prompt, str, cur_len);
 	}
 
       read_key (&ch, &modifier);

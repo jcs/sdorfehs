@@ -35,5 +35,6 @@ void set_current_window (rp_window *win);
 int goto_window_name (char *name);
 rp_window *find_last_accessed_window ();
 rp_window *find_window_by_number (int n);
+void sort_window_list_by_number ();
 
 #endif /* ! _RATPOISON_LIST_H */

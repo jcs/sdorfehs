@@ -219,6 +219,59 @@ find_last_accessed_window ()
   return most_recent;
 }
 
+/* This somewhat CPU intensive (memcpy) swap function sorta defeats
+   the purpose of a linear linked list. */
+static void
+swap_list_elements (rp_window *a, rp_window *b)
+{
+  rp_window tmp;
+  rp_window *tmp_a_next, *tmp_a_prev;
+  rp_window *tmp_b_next, *tmp_b_prev;
+
+  if (a == NULL || b == NULL || a == b) return;
+
+  tmp_a_next = a->next;
+  tmp_a_prev = a->prev;
+
+  tmp_b_next = b->next;
+  tmp_b_prev = b->prev;
+
+  memcpy (&tmp, a, sizeof (rp_window));
+  memcpy (a, b, sizeof (rp_window));
+  memcpy (b, &tmp, sizeof (rp_window));
+
+  a->next = tmp_a_next;
+  a->prev = tmp_a_prev;
+
+  b->next = tmp_b_next;
+  b->prev = tmp_b_prev;
+}
+
+/* Can you say b-b-b-b-bubble sort? */
+void
+sort_window_list_by_number ()
+{
+  rp_window *i, *j, *smallest;
+
+  for (i=rp_window_head; i; i=i->next)
+    {
+      if (i->state == STATE_UNMAPPED) continue;
+
+      smallest = i;
+      for (j=i->next; j; j=j->next)
+	{
+	  if (j->state == STATE_UNMAPPED) continue;
+
+	  if (j->number < smallest->number)
+	    {
+	      smallest = j;
+	    }
+	}
+
+      swap_list_elements (i, smallest);
+    }
+}
+
 static void
 save_mouse_position (rp_window *win)
 {
