@@ -1506,6 +1506,36 @@ cmd_defbarloc (int interactive, void *data)
   return NULL;
 }
 
+static void
+update_gc (screen_info *s)
+{
+  XGCValues gv;
+
+  gv.foreground = s->fg_color;
+  gv.background = s->bg_color;
+  gv.function = GXcopy;
+  gv.line_width = 1;
+  gv.subwindow_mode = IncludeInferiors;
+  gv.font = defaults.font->fid;
+  XFreeGC (dpy, s->normal_gc);
+  s->normal_gc = XCreateGC(dpy, s->root, 
+			   GCForeground | GCBackground 
+			   | GCFunction | GCLineWidth
+			   | GCSubwindowMode | GCFont, &gv);
+}
+
+static void
+update_all_gcs ()
+{
+  int i;
+
+  for (i=0; i<num_screens; i++)
+    {
+      update_gc (&screens[i]);
+    }
+}
+
+
 char *
 cmd_deffont (int interactive, void *data)
 {
@@ -1523,6 +1553,7 @@ cmd_deffont (int interactive, void *data)
   /* Save the font as the default. */
   XFreeFont (dpy, defaults.font);
   defaults.font = font;
+  update_all_gcs();
 
   return NULL;
 }
@@ -1690,24 +1721,6 @@ cmd_defwinname (int interactive, void *data)
     message (" defwinname: Bad argument ");
 
   return NULL;      
-}
-
-static void
-update_gc (screen_info *s)
-{
-  XGCValues gv;
-
-  gv.foreground = s->fg_color;
-  gv.background = s->bg_color;
-  gv.function = GXcopy;
-  gv.line_width = 1;
-  gv.subwindow_mode = IncludeInferiors;
-  gv.font = defaults.font->fid;
-  XFreeGC (dpy, s->normal_gc);
-  s->normal_gc = XCreateGC(dpy, s->root, 
-			   GCForeground | GCBackground 
-			   | GCFunction | GCLineWidth
-			   | GCSubwindowMode | GCFont, &gv);
 }
 
 char *

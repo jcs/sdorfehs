@@ -1,5 +1,8 @@
 2001-09-16  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/actions.c (update_all_gcs): new function
+	(cmd_deffont): update the graphics contexts.
+
 	* src/list.c (format_window_name): Use 2 character escape codes,
 	like printf. Dependant code updated.
 
