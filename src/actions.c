@@ -97,6 +97,7 @@ static user_command user_commands[] =
     {"defwingravity",		cmd_defwingravity,	arg_STRING},
     {"deffgcolor",		cmd_deffgcolor,		arg_STRING},
     {"defbgcolor",		cmd_defbgcolor,		arg_STRING},
+    {"defbarpadding", 		cmd_defbarpadding, 	arg_STRING},
 
     /* Commands to help debug ratpoison. */
 #ifdef DEBUG
@@ -2038,5 +2039,28 @@ cmd_link (int interactive, void *data)
   if (cmd)
     return command (interactive, cmd);
 
+  return NULL;
+}
+
+char *
+cmd_defbarpadding (int interactive, void *data)
+{
+  int x, y;
+
+  if (data == NULL || sscanf (data, "%d %d", &x, &y) < 2) 
+    {
+      message (" defbarpadding: Two arguments required ");
+      return NULL;
+    }
+
+  if (x >= 0 && y >= 0)
+    {
+      defaults.bar_x_padding = x;
+      defaults.bar_y_padding = y;
+    }
+  else
+    {
+      message (" defbarpadding: Bad argument ");    
+    }
   return NULL;
 }

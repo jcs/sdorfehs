@@ -104,6 +104,7 @@ char * cmd_restart (int interactive, void *data);
 char * cmd_startup_message (int interactive, void *data);
 char * cmd_focuslast (int interactive, void *data);
 char * cmd_link (int interactive, void *data);
+char * cmd_defbarpadding (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 

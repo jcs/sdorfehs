@@ -371,6 +371,9 @@ Set the message bar location. @var{n} is a value between 0 and 3. 0 is
 the top left and the values move clockwise around the screen to the
 bottom left which is 3.
 
+@item defbarpadding @var{x} @var{y}
+Set the horizontal and vertical padding inside the bar.
+
 @item msgwait @var{n}
 Set the bar's timeout in seconds.
 

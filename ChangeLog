@@ -1,5 +1,12 @@
 2001-12-21  shawn  <sabetts@vcn.bc.ca>
 
+	* src/input.c (update_input_window): Draw the cursor in the right place.
+
+	* src/actions.h (cmd_defbarpadding): new prototype
+
+	* src/actions.c (user_commands): new command entry "defbarpadding"
+	(cmd_defbarpadding): new function
+
 	* src/data.h (rp_error_msg): new global extern
 
 	* src/main.c (rp_error_msg): new global variable

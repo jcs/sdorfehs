@@ -295,9 +295,9 @@ update_input_window (screen_info *s, char *prompt, char *input, int input_len)
 
   /* Draw a cheap-o cursor. */
   XDrawLine (dpy, s->input_window, s->normal_gc, 
-	     defaults.bar_x_padding * 2 + prompt_width + input_width + 2, 
+	     defaults.bar_x_padding + prompt_width + input_width + 2, 
 	     defaults.bar_y_padding + 1, 
-	     defaults.bar_x_padding * 2 + prompt_width + input_width + 2,
+	     defaults.bar_x_padding + prompt_width + input_width + 2,
 	     defaults.bar_y_padding + FONT_HEIGHT (defaults.font) - 1);
 }
 
