@@ -31,7 +31,8 @@ static int key_actions_last;
 static int key_actions_table_size;
 
 static user_command user_commands[] = 
-  { {"abort",		cmd_abort,	arg_VOID},
+  { /*@begin (tag required for genrpbindings) */
+    {"abort",		cmd_abort,	arg_VOID},
     {"banish",          cmd_banish,     arg_VOID},
     {"bind",		cmd_bind,	arg_VOID},
     {"time", 		cmd_time, 	arg_VOID},
@@ -71,6 +72,7 @@ static user_command user_commands[] =
     {"vsplit",		cmd_v_split,	arg_VOID},
     {"windows", 	cmd_windows, 	arg_VOID},
     {"setenv",		cmd_setenv,	arg_STRING},
+    {"getenv",		cmd_getenv,	arg_STRING},
     {"chdir",		cmd_chdir,	arg_STRING},
     {"unsetenv",	cmd_unsetenv,	arg_STRING},
     {"info",		cmd_info,	arg_VOID},
@@ -78,6 +80,7 @@ static user_command user_commands[] =
     {"restart",		cmd_restart,	arg_VOID},
     {"startup_message",	cmd_startup_message, arg_STRING},
     {"link",		cmd_link,	arg_STRING},
+    /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
     {"defbarloc",		cmd_defbarloc, 		arg_STRING},
@@ -1831,6 +1834,45 @@ cmd_setenv (int interactive, void *data)
   free (var);
   free (string);
   return NULL;
+}
+
+char *
+cmd_getenv (int interactive, void *data)
+{
+  char *var;
+  char *result = NULL;
+  char *value;
+
+  if (data == NULL)
+    {
+      message (" getenv: One argument required ");
+      return NULL;
+    }
+
+  /* Get the 2 arguments. */
+  var = xmalloc (strlen (data) + 1);
+  if (sscanf (data, "%s", var) < 1)
+    {
+      message (" getenv: one argument required ");
+      free (var);
+      return NULL;
+    }
+
+  value = getenv (var);
+
+  if (interactive)
+    {
+      marked_message_printf (0,0, " %s ", value);
+      return NULL;
+    }
+
+  if (value)
+    {
+      result = xmalloc (strlen (value) + 1);
+      strcpy (result, getenv (var));
+    }
+
+  return result;
 }
 
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original
