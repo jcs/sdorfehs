@@ -150,10 +150,6 @@ The summary of available commands is listed below:
 This is a pretty useless command. By default, it is bound to
 @kbd{C-t g}, and its purpose is to abort other commands.
 
-@item center
-If you want to center a window, this is the command to use. This
-is not bound to any key by default.
-
 @item clock
 Show current time. Disappears after 5 seconds, like all other info bars.
 In the default setup, the @kbd{C-t a} keystroke is bound to this command.
@@ -195,9 +191,6 @@ default, this is bound to @kbd{C-t C-t}.
 @item prev
 This jumps you to the previous window in the window list. By default,
 this is bound to @kbd{C-t p}.
-
-@item resize @var{horizontal} x @var{vertical}
-Resizes the current window to the given size.
 
 @item select @var{window-name}
 Go to a window by name. A shourcut is @var{C-t '}.
