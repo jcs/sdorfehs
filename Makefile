@@ -13,7 +13,9 @@ CFLAGS = -g -Wall -I/usr/X11R6/include
 SRC = main.o events.o manage.o list.o bar.o
 HEADERS = bar.h conf.h data.h events.h list.h manage.h ratpoison.h
 
-ratpoison: $(SRC)
+all: ratpoison ratpoison.info
+
+ratpoison: $(SRC) 
 	gcc $(SRC) -o $@ $(CFLAGS) $(LDFLAGS) $(LIBS) 
 
 ratpoison.info : ratpoison.texi
@@ -26,4 +28,4 @@ install: ratpoison
 	$(CC) -c $(CFLAGS) $(DEBUG) $< -o $@
 
 clean :
-	rm -f *.o ratpoison
+	rm -f *.o ratpoison ratpoison.info
