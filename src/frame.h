@@ -21,25 +21,25 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-void frame_move_down (rp_window_frame *frame, int amount);
-void frame_move_up (rp_window_frame *frame, int amount);
-void frame_move_right (rp_window_frame *frame, int amount);
-void frame_move_left (rp_window_frame *frame, int amount);
-void frame_resize_down (rp_window_frame *frame, int amount);
-void frame_resize_up (rp_window_frame *frame, int amount);
-void frame_resize_right (rp_window_frame *frame, int amount);
-void frame_resize_left (rp_window_frame *frame, int amount);
-int frame_height(rp_window_frame *frame);
-int frame_width(rp_window_frame *frame);
-int frame_bottom (rp_window_frame *frame);
-int frame_right (rp_window_frame *frame);
-int frame_top (rp_window_frame *frame);
-int frame_left (rp_window_frame *frame);
+void frame_move_down (rp_frame *frame, int amount);
+void frame_move_up (rp_frame *frame, int amount);
+void frame_move_right (rp_frame *frame, int amount);
+void frame_move_left (rp_frame *frame, int amount);
+void frame_resize_down (rp_frame *frame, int amount);
+void frame_resize_up (rp_frame *frame, int amount);
+void frame_resize_right (rp_frame *frame, int amount);
+void frame_resize_left (rp_frame *frame, int amount);
+int frame_height(rp_frame *frame);
+int frame_width(rp_frame *frame);
+int frame_bottom (rp_frame *frame);
+int frame_right (rp_frame *frame);
+int frame_top (rp_frame *frame);
+int frame_left (rp_frame *frame);
 
-rp_window_frame *frame_new (rp_screen *s);
-void frame_free (rp_screen *s, rp_window_frame *f);
-rp_window_frame *frame_copy (rp_window_frame *frame);
-char *frame_dump (rp_window_frame *frame);
-rp_window_frame *frame_read (char *str);
+rp_frame *frame_new (rp_screen *s);
+void frame_free (rp_screen *s, rp_frame *f);
+rp_frame *frame_copy (rp_frame *frame);
+char *frame_dump (rp_frame *frame);
+rp_frame *frame_read (char *str);
 
 #endif

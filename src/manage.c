@@ -475,7 +475,7 @@ get_state (rp_window *win)
 static void
 move_window (rp_window *win)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   if (win->frame_number == EMPTY) 
     return;
@@ -528,7 +528,7 @@ move_window (rp_window *win)
 static void
 maximize_transient (rp_window *win)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   int maxx, maxy;
 
   frame = win_get_frame (win);
@@ -586,7 +586,7 @@ maximize_transient (rp_window *win)
 static void
 maximize_normal (rp_window *win)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   int maxx, maxy;
 
   frame = win_get_frame (win);
@@ -819,7 +819,7 @@ withdraw_window (rp_window *win)
 void
 hide_others (rp_window *win)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   rp_window *cur;
 
   if (win == NULL) return;

@@ -31,6 +31,6 @@ int screen_width (rp_screen *s);
 struct list_head *screen_copy_frameset (rp_screen *s);
 void screen_restore_frameset (rp_screen *s, struct list_head *head);
 void frameset_free (struct list_head *head);
-rp_window_frame *screen_get_frame (rp_screen *s, int frame_num);
+rp_frame *screen_get_frame (rp_screen *s, int frame_num);
 
 #endif

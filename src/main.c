@@ -70,7 +70,7 @@ rp_screen *screens;
 int num_screens;
 Display *dpy;
 
-struct rp_child_info child_info;
+LIST_HEAD (rp_children);
 struct rp_defaults defaults;
 
 int ignore_badwindow = 0;
@@ -218,6 +218,7 @@ chld_handler (int signum)
 {
   int pid, status, serrno;
   serrno = errno;
+  rp_child_info *cur;
 
   while (1)
     {
@@ -227,15 +228,18 @@ chld_handler (int signum)
 
       PRINT_DEBUG(("Child status: %d\n", WEXITSTATUS (status)));
 
-      /* Tell ratpoison about the CHLD signal. We are only interested
-	 in reporting commands that failed to execute. These processes
-	 have a return value of 127 (according to the sh manual). */
-      if (WEXITSTATUS (status) == 127)
+      /* Find the child and update its structure. */
+      list_for_each_entry (cur, &rp_children, node)
 	{
-	  chld_signalled = 1;
-	  child_info.pid = pid;
-	  child_info.status = status;
+	  if (cur->pid == pid)
+	    {
+	      cur->terminated = 1;
+	      cur->status = WEXITSTATUS (status);
+	      break;
+	    }
 	}
+
+      chld_signalled = 1;
     }
   errno = serrno;  
 }
@@ -763,10 +767,10 @@ init_screen (rp_screen *s, int screen_num)
 static void
 free_screen (rp_screen *s)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   struct list_head *iter, *tmp;
 
-  list_for_each_safe_entry (frame, iter, tmp, &s->rp_window_frames, node)
+  list_for_each_safe_entry (frame, iter, tmp, &s->frames, node)
     {
       frame_free (s, frame);
     }

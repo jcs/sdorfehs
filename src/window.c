@@ -368,7 +368,7 @@ give_window_focus (rp_window *win, rp_window *last_win)
 void
 unhide_transient_for (rp_window *win)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   rp_window *transient_for;
 
   if (win == NULL) return;
@@ -474,7 +474,7 @@ void
 set_active_window (rp_window *win)
 {
   rp_window *last_win;
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   if (win == NULL) return;
 
@@ -511,7 +511,7 @@ set_active_window (rp_window *win)
 void
 goto_window (rp_window *win)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   frame = find_windows_frame (win);
   if (frame)
@@ -692,7 +692,7 @@ free_window_stuff ()
   numset_free (rp_window_numset);
 }
 
-rp_window_frame *
+rp_frame *
 win_get_frame (rp_window *win)
 {
   if (win->frame_number != EMPTY)

@@ -22,97 +22,97 @@
 #include "ratpoison.h"
 
 int
-frame_left (rp_window_frame *frame)
+frame_left (rp_frame *frame)
 {
   return frame->x;
 }
 
 int
-frame_top (rp_window_frame *frame)
+frame_top (rp_frame *frame)
 {
   return frame->y;
 }
 
 int
-frame_right (rp_window_frame *frame)
+frame_right (rp_frame *frame)
 {
   return frame->x + frame->width;
 }
 
 int
-frame_bottom (rp_window_frame *frame)
+frame_bottom (rp_frame *frame)
 {
   return frame->y + frame->height;
 }
 
 int
-frame_width(rp_window_frame *frame)
+frame_width(rp_frame *frame)
 {
   return frame->width;
 }
 
 int
-frame_height(rp_window_frame *frame)
+frame_height(rp_frame *frame)
 {
   return frame->height;
 }
 
 void
-frame_resize_left (rp_window_frame *frame, int amount)
+frame_resize_left (rp_frame *frame, int amount)
 {
   frame->x -= amount;
   frame->width += amount;
 }
 
 void
-frame_resize_right (rp_window_frame *frame, int amount)
+frame_resize_right (rp_frame *frame, int amount)
 {
   frame->width += amount;
 }
 
 void
-frame_resize_up (rp_window_frame *frame, int amount)
+frame_resize_up (rp_frame *frame, int amount)
 {
   frame->y -= amount;
   frame->height += amount;
 }
 
 void
-frame_resize_down (rp_window_frame *frame, int amount)
+frame_resize_down (rp_frame *frame, int amount)
 {
   frame->height += amount;
 }
 
 void
-frame_move_left (rp_window_frame *frame, int amount)
+frame_move_left (rp_frame *frame, int amount)
 {
   frame->x -= amount;
 }
 
 void
-frame_move_right (rp_window_frame *frame, int amount)
+frame_move_right (rp_frame *frame, int amount)
 {
   frame->x += amount;
 }
 
 void
-frame_move_up (rp_window_frame *frame, int amount)
+frame_move_up (rp_frame *frame, int amount)
 {
   frame->y -= amount;
 }
 
 void
-frame_move_down (rp_window_frame *frame, int amount)
+frame_move_down (rp_frame *frame, int amount)
 {
   frame->y += amount;
 }
 
-rp_window_frame *
+rp_frame *
 frame_new (rp_screen *s)
 {
-  rp_window_frame *f;
+  rp_frame *f;
 
-  f = xmalloc (sizeof (rp_window_frame));
+  f = xmalloc (sizeof (rp_frame));
   f->number = numset_request (s->frames_numset);
   f->last_access = 0;
 
@@ -120,19 +120,19 @@ frame_new (rp_screen *s)
 }
 
 void
-frame_free (rp_screen *s, rp_window_frame *f)
+frame_free (rp_screen *s, rp_frame *f)
 {
   numset_release (s->frames_numset, f->number);
   free (f);
 }
 
 
-rp_window_frame *
-frame_copy (rp_window_frame *frame)
+rp_frame *
+frame_copy (rp_frame *frame)
 {
-  rp_window_frame *copy;
+  rp_frame *copy;
 
-  copy = xmalloc (sizeof (rp_window_frame));
+  copy = xmalloc (sizeof (rp_frame));
 
   copy->number = frame->number;
   copy->x = frame->x;
@@ -146,7 +146,7 @@ frame_copy (rp_window_frame *frame)
 }
 
 char *
-frame_dump (rp_window_frame *frame)
+frame_dump (rp_frame *frame)
 {
   rp_window *win;
   char *tmp;
@@ -171,14 +171,14 @@ frame_dump (rp_window_frame *frame)
   return tmp;
 }
 
-rp_window_frame *
+rp_frame *
 frame_read (char *str)
 {
   Window w;
   rp_window *win;
-  rp_window_frame *f;
+  rp_frame *f;
 
-  f = xmalloc (sizeof (rp_window_frame));
+  f = xmalloc (sizeof (rp_frame));
   if (sscanf (str, "%d %d %d %d %d %ld %d", 
 	      &f->number,
 	      &f->x,

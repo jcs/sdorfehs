@@ -49,9 +49,10 @@
 typedef struct rp_window rp_window;
 typedef struct rp_screen rp_screen;
 typedef struct rp_action rp_action;
-typedef struct rp_window_frame rp_window_frame;
+typedef struct rp_frame rp_frame;
+typedef struct rp_child_info rp_child_info;
 
-struct rp_window_frame
+struct rp_frame
 {
   int number;
   int x, y, width, height;
@@ -123,7 +124,7 @@ struct rp_screen
 
   /* A list of frames that may or may not contain windows. There should
      always be one in the list. */
-  struct list_head rp_window_frames;
+  struct list_head frames;
 
   /* Keep track of which numbers have been given to frames. */
   struct numset *frames_numset;
@@ -194,13 +195,28 @@ struct rp_defaults
 /* Information about a child process. */
 struct rp_child_info
 {
+  /* The command that was executed. */
+  char *cmd;
+
+  /* PID of the process. */
   int pid;
+
+  /* Return status when the child process finished. */
   int status;
+
+  /* When this is != 0 then the process finished. */
+  int terminated;
+
+  /* This structure can exist in a list. */
+  struct list_head node;
 };
 
-/* When a child process exits this structure holds the information
-   about it to be used to report back to the user. */
-extern struct rp_child_info child_info;
+/* Each child process is stored in this list. spawn, creates a new
+   entry in this list, the SIGCHLD handler sets child.terminated to be
+   true and handle_signals in events.c processes each terminated
+   process by printing a message saying the process ended and
+   displaying it's exit code. */
+extern struct list_head rp_children;
 
 extern struct rp_defaults defaults;
 

@@ -672,7 +672,7 @@ cmd_prev (int interactive, char *data)
 char *
 cmd_prev_frame (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   frame = find_frame_next (current_frame());
   if (!frame)
@@ -714,7 +714,7 @@ cmd_next (int interactive, char *data)
 char *
 cmd_next_frame (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   frame = find_frame_next (current_frame());
   if (!frame)
@@ -1012,6 +1012,7 @@ cmd_exec (int interactive, char *data)
 int
 spawn(char *cmd)
 {
+  rp_child_info *child;
   int pid;
 
   pid = fork();
@@ -1037,6 +1038,14 @@ spawn(char *cmd)
 
 /*   wait((int *) 0); */
   PRINT_DEBUG (("spawned %s\n", cmd));
+
+  /* Add this child process to our list. */
+  child = malloc (sizeof (rp_child_info));
+  child->cmd = strdup (cmd);
+  child->pid = pid;
+  child->terminated = 0;
+
+  list_add (&child->node, &rp_children);
 
   return pid;
 }
@@ -1107,7 +1116,7 @@ cmd_time (int interactive, char *data)
 char *
 cmd_number (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   int old_number, new_number;
   rp_window *other_win, *win;
   char *str;
@@ -1350,7 +1359,7 @@ read_split (const char *str, int max)
 char *
 cmd_h_split (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   int pixels;
 
   frame = current_frame();
@@ -1372,7 +1381,7 @@ cmd_h_split (int interactive, char *data)
 char *
 cmd_v_split (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   int pixels;
 
   frame = current_frame();
@@ -1404,7 +1413,7 @@ char *
 cmd_remove (int interactive, char *data)
 {
   rp_screen *s = current_screen();
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   if (num_frames(s) <= 1)
     {
@@ -1474,10 +1483,10 @@ cmd_resize (int interactive, char *data)
 	    resize_shrink_to_window (current_frame());
 	  else if (c == INPUT_ABORT_KEY && mod == INPUT_ABORT_MODIFIER)
 	    {
-	      rp_window_frame *cur;
+	      rp_frame *cur;
 
 	      screen_restore_frameset (s, bk);
-	      list_for_each_entry (cur, &s->rp_window_frames, node)
+	      list_for_each_entry (cur, &s->frames, node)
 		{
 		  maximize_all_windows_in_frame (cur);
 		}
@@ -2059,7 +2068,7 @@ cmd_deffont (int interactive, char *data)
 char *
 cmd_defpadding (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   int l, t, r, b;
 
   if (data == NULL && !interactive)
@@ -2078,7 +2087,7 @@ cmd_defpadding (int interactive, char *data)
 
   /* Resize the frames to make sure they are not too big and not too
      small. */
-  list_for_each_entry (frame,&(current_screen()->rp_window_frames),node)
+  list_for_each_entry (frame,&(current_screen()->frames),node)
     {
       int bk_pos, bk_len;
 
@@ -2510,7 +2519,7 @@ cmd_lastmsg (int interactive, char *data)
 char *
 cmd_focusup (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   if ((frame = find_frame_up (current_frame())))
     set_active_frame (frame);
@@ -2521,7 +2530,7 @@ cmd_focusup (int interactive, char *data)
 char *
 cmd_focusdown (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   if ((frame = find_frame_down (current_frame())))
     set_active_frame (frame);
@@ -2532,7 +2541,7 @@ cmd_focusdown (int interactive, char *data)
 char *
 cmd_focusleft (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   if ((frame = find_frame_left (current_frame())))
     set_active_frame (frame);
@@ -2543,7 +2552,7 @@ cmd_focusleft (int interactive, char *data)
 char *
 cmd_focusright (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
 
   if ((frame = find_frame_right (current_frame())))
     set_active_frame (frame);
@@ -2583,7 +2592,7 @@ cmd_startup_message (int interactive, char *data)
 char *
 cmd_focuslast (int interactive, char *data)
 {
-  rp_window_frame *frame = find_last_frame(current_screen());
+  rp_frame *frame = find_last_frame(current_screen());
 
   if (frame)
       set_active_frame (frame);
@@ -2842,7 +2851,7 @@ cmd_tmpwm (int interactive, char *data)
   /* FIXME: drop all our windows. We shouldn't do this. */
   list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
     {
-      rp_window_frame *frame;
+      rp_frame *frame;
 
       /* Remove the window from the frame. */
       frame = find_windows_frame (win);
@@ -2892,7 +2901,7 @@ cmd_tmpwm (int interactive, char *data)
 char *
 cmd_fselect (int interactive, char *data)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   rp_screen *s = current_screen();
   int fnum = -1;
 
@@ -2927,7 +2936,7 @@ cmd_fselect (int interactive, char *data)
       Window *wins;
       XSetWindowAttributes attr;
       int i;
-      rp_window_frame *cur;
+      rp_frame *cur;
 
       /* Set up the window attributes to be used in the loop. */
       attr.border_pixel = s->fg_color;
@@ -2939,7 +2948,7 @@ cmd_fselect (int interactive, char *data)
       /* Loop through each frame and display its number in it's top
 	 left corner. */
       i = 0;
-      list_for_each_entry (cur, &s->rp_window_frames, node)
+      list_for_each_entry (cur, &s->frames, node)
 	{
 	  int width, height;
 	  char *num;
@@ -3005,12 +3014,12 @@ cmd_fdump (int interactively, char *data)
 {
   struct sbuf *s;
   char *tmp;
-  rp_window_frame *cur;
+  rp_frame *cur;
 
   s = sbuf_new (0);
 
   /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
-  list_for_each_entry (cur, &current_screen()->rp_window_frames, node)
+  list_for_each_entry (cur, &current_screen()->frames, node)
     {
       sbuf_concat (s, frame_dump (cur));
       sbuf_concat (s, ",");
@@ -3027,7 +3036,7 @@ cmd_frestore (int interactively, char *data)
   rp_screen *s = current_screen();
   char *token;
   char *dup;
-  rp_window_frame *new, *cur;
+  rp_frame *new, *cur;
   rp_window *win;
   struct list_head fset;
   int max = -1;
@@ -3066,7 +3075,7 @@ cmd_frestore (int interactively, char *data)
   free (dup);
 
   /* Clear all the frames. */
-  list_for_each_entry (cur, &s->rp_window_frames, node)
+  list_for_each_entry (cur, &s->frames, node)
     {
       PRINT_DEBUG (("blank %d\n", cur->number));
       blank_frame (cur);
@@ -3077,7 +3086,7 @@ cmd_frestore (int interactively, char *data)
   numset_clear (s->frames_numset);
 
   /* Process the frames a bit to make sure everything lines up. */
-  list_for_each_entry (cur, &s->rp_window_frames, node)
+  list_for_each_entry (cur, &s->frames, node)
     {
       rp_window *win;
 

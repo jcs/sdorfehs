@@ -61,14 +61,14 @@ struct list_head *
 screen_copy_frameset (rp_screen *s)
 {
   struct list_head *head;
-  rp_window_frame *cur;
+  rp_frame *cur;
 
   /* Init our new list. */
   head = xmalloc (sizeof (struct list_head));
   INIT_LIST_HEAD (head);
 
   /* Copy each frame to our new list. */
-  list_for_each_entry (cur, &s->rp_window_frames, node)
+  list_for_each_entry (cur, &s->frames, node)
     {
       list_add_tail (&(frame_copy (cur))->node, head);
     }
@@ -80,11 +80,11 @@ screen_copy_frameset (rp_screen *s)
 void
 screen_restore_frameset (rp_screen *s, struct list_head *head)
 {
-  frameset_free (&s->rp_window_frames);
-  INIT_LIST_HEAD (&s->rp_window_frames);
+  frameset_free (&s->frames);
+  INIT_LIST_HEAD (&s->frames);
 
   /* Hook in our new frameset. */
-  list_splice (head, &s->rp_window_frames);
+  list_splice (head, &s->frames);
 }
 
 /* Given a list of frames, free them, but don't remove their numbers
@@ -92,23 +92,23 @@ screen_restore_frameset (rp_screen *s, struct list_head *head)
 void
 frameset_free (struct list_head *head)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   struct list_head *iter, *tmp;
 
   list_for_each_safe_entry (frame, iter, tmp, head, node)
     {
-      /* FIXME: what if rp_window_frames has memory inside its struct
+      /* FIXME: what if frames has memory inside its struct
 	 that needs to be freed? */
       free (frame);
     }
 }
 
-rp_window_frame *
+rp_frame *
 screen_get_frame (rp_screen *s, int frame_num)
 {
-  rp_window_frame *cur;
+  rp_frame *cur;
 
-  list_for_each_entry (cur, &s->rp_window_frames, node)
+  list_for_each_entry (cur, &s->frames, node)
     {
       if (cur->number == frame_num)
 	return cur;

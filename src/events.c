@@ -68,7 +68,7 @@ new_window (XCreateWindowEvent *e)
 static void 
 unmap_notify (XEvent *ev)
 {
-  rp_window_frame *frame;
+  rp_frame *frame;
   rp_window *win;
 
   /* ignore SubstructureNotify unmaps. */
@@ -775,7 +775,24 @@ handle_signals ()
 
   if (chld_signalled > 0)
     {
-      marked_message_printf (0,0, " Command not found ");
+      rp_child_info *cur;
+      struct list_head *iter, *tmp;
+
+      /* Report and remove terminated processes. */
+      list_for_each_safe_entry (cur, iter, tmp, &rp_children, node)
+	{
+	  if (cur->terminated)
+	    {
+	      /* Report any child that didn't return 0. */
+	      if (cur->status != 0)
+		marked_message_printf (0,0, " /bin/sh -c \"%s\" finished (%d) ", 
+				       cur->cmd, cur->status);
+	      free (cur->cmd);
+	      free (cur);
+	      list_del  (&cur->node);
+	    }
+	}
+
       chld_signalled = 0;
     }
 

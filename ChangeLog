@@ -1,3 +1,26 @@
+2003-05-15  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/data.h (struct rp_frame): renamed from rp_window_frame. All
+	dependant code updated.
+
+	* src/main.c: remove child_info global. Add rp_children global.
+	(chld_handler): update the terminated and status fields of any
+	terminated children.
+
+	* src/events.c (handle_signals): loop through each child process
+	and remove them from the list. Print a message for any child that
+	doesn't return a 0 status.
+
+	* src/data.h (rp_child_info): new fields, terminated and node.
+	remove child_info global. Add rp_children global.
+
+	* src/actions.c (spawn): Add the command to the list of children.
+
+2003-05-14  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/data.h (struct rp_screen): rename from
+	screen_info. Dependant code updated.
+
 2003-05-09  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/manage.h (clear_unmanaged_list): new prototype
