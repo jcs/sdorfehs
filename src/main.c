@@ -330,7 +330,7 @@ main (int argc, char *argv[])
   int do_kill = 0;
   int do_restart = 0;
   int do_command = 0;
-  char *command;
+  char *command = NULL;
 
   myargv = argv;
 
