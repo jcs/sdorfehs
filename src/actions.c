@@ -469,6 +469,10 @@ initialize_default_keybindings (void)
   add_keybinding (XK_S, RP_CONTROL_MASK, "hsplit", map);
   add_keybinding (XK_Tab, 0, "focus", map);
   add_keybinding (XK_Tab, RP_META_MASK, "focuslast", map);
+  add_keybinding (XK_Left, 0, "focusleft", map);
+  add_keybinding (XK_Right, 0, "focusright", map);
+  add_keybinding (XK_Up, 0, "focusup", map);
+  add_keybinding (XK_Down, 0, "focusdown", map);
   add_keybinding (XK_Q, 0, "only", map);
   add_keybinding (XK_R, 0, "remove", map);
   add_keybinding (XK_f, 0, "fselect", map);
@@ -1758,6 +1762,40 @@ cmd_shrink (int interactive, char *data)
   return NULL;
 }
 
+typedef struct resize_binding resize_binding;
+
+struct resize_binding
+{
+  struct rp_key key;
+  enum resize_action {RESIZE_UNKNOWN=0, RESIZE_VGROW, RESIZE_VSHRINK,
+      RESIZE_HGROW, RESIZE_HSHRINK, RESIZE_TO_WINDOW,
+      RESIZE_ABORT, RESIZE_END } action;
+};
+
+static resize_binding resize_bindings[] =
+   { {{INPUT_ABORT_KEY,		INPUT_ABORT_MODIFIER},       	RESIZE_ABORT},
+     {{RESIZE_VGROW_KEY,	RESIZE_VGROW_MODIFIER}, 	RESIZE_VGROW},
+     {{RESIZE_VSHRINK_KEY,	RESIZE_VSHRINK_MODIFIER},	RESIZE_VSHRINK},
+     {{RESIZE_HGROW_KEY,	RESIZE_HGROW_MODIFIER}, 	RESIZE_HGROW},
+     {{RESIZE_HSHRINK_KEY,	RESIZE_HSHRINK_MODIFIER},	RESIZE_HSHRINK},
+     {{RESIZE_SHRINK_TO_WINDOW_KEY,RESIZE_SHRINK_TO_WINDOW_MODIFIER},RESIZE_TO_WINDOW},
+     {{RESIZE_END_KEY,		RESIZE_END_MODIFIER},		RESIZE_END},
+/* Some more default keys 
+ * (after the values from conf.h, so that they have lower priority):
+ * first the arrow keys: */
+     {{XK_Escape, 		0},          			RESIZE_ABORT},
+     {{XK_Down, 		0},           			RESIZE_VGROW},
+     {{XK_Up,	 		0},           			RESIZE_VSHRINK},
+     {{XK_Right, 		0},           			RESIZE_HGROW},
+     {{XK_Left,	 		0},           			RESIZE_HSHRINK},
+/* some vi-like bindings: */
+     {{XK_j,	 		0},           			RESIZE_VGROW},
+     {{XK_k,	 		0},           			RESIZE_VSHRINK},
+     {{XK_l,	 		0},           			RESIZE_HGROW},
+     {{XK_h,	 		0},           			RESIZE_HSHRINK},
+     {{0, 			0},            			RESIZE_UNKNOWN} };
+
+
 char *
 cmd_resize (int interactive, char *data)
 {
@@ -1784,24 +1822,31 @@ cmd_resize (int interactive, char *data)
 
       while (1)
 	{
+          struct resize_binding *binding;
+
 	  show_frame_message (" Resize frame ");
 	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
 
 	  /* Convert the mask to be compatible with ratpoison. */
 	  mod = x11_mask_to_rp_mask (mod);
 
-	  if (c == RESIZE_VGROW_KEY && mod == RESIZE_VGROW_MODIFIER)
+	  for (binding = resize_bindings; binding->action; binding++)
+            {
+              if (c == binding->key.sym && mod == binding->key.state)
+                  break;
+            }
+
+	  if (binding->action == RESIZE_VGROW)
 	    resize_frame_vertically (current_frame(), defaults.frame_resize_unit);
-	  else if (c == RESIZE_VSHRINK_KEY && mod == RESIZE_VSHRINK_MODIFIER)
+	  else if (binding->action == RESIZE_VSHRINK)
 	    resize_frame_vertically (current_frame(), -defaults.frame_resize_unit);
-	  else if (c == RESIZE_HGROW_KEY && mod == RESIZE_HGROW_MODIFIER)
+	  else if (binding->action == RESIZE_HGROW)
 	    resize_frame_horizontally (current_frame(), defaults.frame_resize_unit);
-	  else if (c == RESIZE_HSHRINK_KEY && mod == RESIZE_HSHRINK_MODIFIER)
+	  else if (binding->action == RESIZE_HSHRINK)
 	    resize_frame_horizontally (current_frame(), -defaults.frame_resize_unit);
-	  else if (c == RESIZE_SHRINK_TO_WINDOW_KEY 
-		   && mod == RESIZE_SHRINK_TO_WINDOW_MODIFIER)
+	  else if (binding->action == RESIZE_TO_WINDOW)
 	    resize_shrink_to_window (current_frame());
-	  else if (c == INPUT_ABORT_KEY && mod == INPUT_ABORT_MODIFIER)
+	  else if (binding->action == RESIZE_ABORT)
 	    {
 	      rp_frame *cur;
 
@@ -1812,7 +1857,7 @@ cmd_resize (int interactive, char *data)
 		}
 	      break;
 	    }
-	  else if (c == RESIZE_END_KEY && mod == RESIZE_END_MODIFIER)
+	  else if (binding->action == RESIZE_END)
 	    {
 	      frameset_free (bk);
 	      break;
@@ -1948,6 +1993,40 @@ cmd_ratclick (int interactive, char *data)
   return NULL;  
 }
 
+char *
+cmd_rathold (int interactive, char *data) 
+{
+  int button = 1;
+  char *command;
+  
+  if (data != NULL)
+    {
+      char *tmp;
+      tmp = strtok(data, " ");
+      command = strtok(NULL, "");
+      if (!tmp || !command)
+        {
+          message ("rathold: invalid argument");
+	  return NULL;
+	}
+      button = strtol(tmp, NULL, 10);
+    }
+  else
+    {
+      message ("rathold: Needs at least 1 argument. ");
+      return NULL;
+    }
+
+    
+  if (!strcmp(command, "down")) 
+    XTestFakeButtonEvent(dpy, button, True, CurrentTime);
+  else if(!strcmp(command,"up"))
+    XTestFakeButtonEvent(dpy, button, False, CurrentTime);
+  else
+    marked_message_printf (0, 0, "rathold: %s invalid argument", command);
+  
+  return NULL;
+}
 
 char *
 cmd_curframe (int interactive, char *data)

@@ -1063,6 +1063,18 @@ select a frame by number.
 @item C-t F
 Indicate which frame is the current frame.
 
+@item C-t Down
+Move to the frame below the current frame.
+
+@item C-t Left
+Move to the frame left of the current frame.
+
+@item C-t Right
+Move to the frame right of the current frame.
+
+@item C-t Up
+Move to the frame above the current frame.
+
 @end table
 
 @node Hooks, The Status Bar, Keystrokes, Top
