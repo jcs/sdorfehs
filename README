@@ -1,0 +1,47 @@
+Ratpoison - Say good-bye to the rodent
+--------------------------------------
+
+About
+-----
+
+ratpoison is a simple Window Manager with no fat library dependencies,
+no fancy graphics, no window decorations, and no flashy wank. It is
+largely modelled after GNU Screen which has done wonders in virtual
+terminal market.
+
+All interaction with the window manager is done through
+keystrokes. ratpoison has a prefix map to minimize the key clobbering
+that cripples EMACS and other quality pieces of software.
+
+You'll also be pleased to hear that there is NO ratpoison.conf to
+configure. If you want to configure ratpoison, edit the source.
+
+Building
+--------
+
+ratpoison comes with a Makefile that should work in most cases on most
+architectures. If you have trouble compiling you may have to edit it.
+
+The first thing to do is compile the beast by typing 'make':
+
+$ make
+gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG main.c -o main.o
+gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG events.c -o events.o
+gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG manage.c -o manage.o
+gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG list.c -o list.o
+gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG bar.c -o bar.o
+gcc main.o events.o manage.o list.o bar.o -o ratpoison -g -Wall -I/usr/X11R6/include  -L/usr/X11R6/lib -lX11 
+
+
+if you want to install it, simply type 'make install' as a privileged user:
+
+# make install
+cp ratpoison /usr/local/bin
+
+If you don't want ratpoison to install in /usr/local/bin, then edit
+the Makefile.
+
+Using
+-----
+
+See the info manual for more information.
