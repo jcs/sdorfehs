@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
 # clickframe.pl is a utility to switch frames by clicking the
-# mouse. While it does not require xbindkeys, it has been tested with
-# it. You must apply the patch below to xbindkeys for this script to
-# work. Add an entry like this to your .xbindkeysrc file:
+# mouse. You must apply the patch below to xbindkeys for this script
+# to work. And add an entry like this to your .xbindkeysrc file:
 #
 # # bind C-mouse1 to ratpoison click focus hack
 # "perl /home/sabetts/src/ratpoison/contrib/clickframe.pl &"
