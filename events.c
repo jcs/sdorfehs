@@ -131,12 +131,23 @@ more_destroy_events ()
 void
 destroy_window (XDestroyWindowEvent *ev)
 {
-  screen_info *s;
+  /* if there are multiple destroy events queued, and a mapped window
+     is deleted then switch_window_pending is set to 1 and the window
+     switch is done after all destroy events have been done. */
+  static int switch_window_pending = 0; 
+  int last_destroy_event;
   rp_window *win;
 
-  s = find_screen (ev->event);
   win = find_window (ev->window);
-  if (s && win)
+
+  last_destroy_event = !more_destroy_events();
+  if (last_destroy_event && (switch_window_pending || win))
+    {
+      last_window ();
+      switch_window_pending = 0;
+    }
+
+  if (win)
     {
       /* Goto the last accessed window. */
       if (win == rp_current_window) 
@@ -147,7 +158,7 @@ destroy_window (XDestroyWindowEvent *ev)
              to go to the last window since it could be
              deleted. Therefore, wait until the last DestroyNotify
              event and then switch windows. */
-	  if (!more_destroy_events ()) last_window (); 
+	  if (!last_destroy_event) switch_window_pending = 1;
 	  unmanage (win);
 	}
       else
