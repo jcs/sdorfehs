@@ -1,5 +1,7 @@
 2001-09-18  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/actions.c(user_commands)[0]: remove "lastmsg" from the list.
+
 	* src/actions.h (cmd_info): new prototype
 	(cmd_lastmsg): likewise
 
