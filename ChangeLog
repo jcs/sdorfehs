@@ -1,3 +1,7 @@
+2004-12-12  Ryan Yeske  <rcyeske@gmail.com>
+
+	* MERCHANDISE: Add file.
+
 2004-12-09  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/actions.c (cmd_unmanage): fix message formatting
