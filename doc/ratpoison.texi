@@ -406,6 +406,10 @@ unbinding the key.
 @item chdir
 Change the current directory for ratpoison.
 
+@item clrunmanaged
+Clear the unmanaged window list. See @command{unmanange} for an
+explanation of the unmanaged window list.
+
 @item colon @var{command}
 Run a ratpoison command.
 
@@ -790,6 +794,14 @@ Remove @var{name} from the list of defined aliases.
 
 @item unbind @var{key}
 Unbind a keystroke.
+
+@item unmanage @var{text}
+Add @var{text} to the unmanaged window list. Any window that matches
+any of the strings in the unmanaged window list will not be handled in
+any way by ratpoison. This only applies to new windows (not windows
+already managed by ratpoison).
+
+When called non-interactively with no arguments, the list is returned.
 
 @item unsetenv @var{env}
 Clear the value of the environment variable, @var{env}.

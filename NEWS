@@ -1,5 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes since 1.2.0-beta4
+** new commands unmanage and clrunmanaged
+Instead of editing conf.h you can use these commands to dynamically
+add (and clear) the unmanaged window list.
+
 * Changes since 1.2.0-beta3
 ** new command line argumen --screen
 Now you can specify the screen you want to manage. By default
