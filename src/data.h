@@ -160,6 +160,9 @@ struct rp_defaults
   int win_name;
 
   int startup_message;
+
+  /* Pointer warping toggle. */
+  int warp;
 };
 
 extern struct rp_defaults defaults;

@@ -1,3 +1,18 @@
+2002-11-20  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/main.c (init_defaults): set pointer warping to on by
+	default.
+
+	* src/list.c (give_window_focus): only warp the pointer if the
+	warp setting is turned on.
+
+	* src/data.h (struct rp_defaults): new member, warp.
+
+	* src/actions.h (cmd_ward): new prototype
+
+	* src/actions.c (user_command): new command "warp"
+	(cmd_warp): new function
+
 2002-10-18  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/actions.c (read_split): a negative number means subtract the

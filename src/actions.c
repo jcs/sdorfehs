@@ -86,6 +86,7 @@ static user_command user_commands[] =
     {"unalias",		cmd_unalias,	arg_STRING},
     {"prevscreen",	cmd_prevscreen,	arg_VOID},
     {"nextscreen",	cmd_nextscreen,	arg_VOID},
+    {"warp",		cmd_warp,	arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
@@ -2569,5 +2570,27 @@ cmd_prevscreen (int interactive, void *data)
 
   set_active_frame (screens[new_screen].rp_current_frame);
 
+  return NULL;
+}
+
+char *
+cmd_warp (int interactive, void *data)
+{
+  if (data == NULL && !interactive)
+    return xsprintf ("%s", defaults.warp ? "on":"off");
+
+  if (data == NULL)
+    {
+      message (" warp; one argument required ");
+      return NULL;
+    }
+
+  if (!strcasecmp (data, "on"))
+    defaults.warp = 1;
+  else if (!strcasecmp (data, "off"))
+    defaults.warp = 0;
+  else
+    message (" warp; Invalid argument ");
+ 
   return NULL;
 }

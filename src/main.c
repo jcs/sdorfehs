@@ -449,6 +449,7 @@ init_defaults ()
 
   defaults.win_name = 0;
   defaults.startup_message = 1;
+  defaults.warp = 1;
 }
 
 int
