@@ -27,6 +27,6 @@ int cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym
 char *get_input (char *prompt);
 char *get_more_input (char *prompt, char *preinput);
 int read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len);
-void init_modifier_map ();
+void update_modifier_map ();
 
 #endif /* ! _RATPOISON_INPUT_H */

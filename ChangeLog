@@ -1,3 +1,11 @@
+2001-05-18  Shawn Betts  <sabetts@van.gobasis.com>
+
+	* src/input.c (update_modifier_map): rename from
+	init_modifier_map. all callers updated. prototype updated.
+
+	* src/events.c (mapping_notify): new function
+	(delegate_event): handle MappingNotify events.
+
 2001-05-09  Gergely Nagy  <8@free.bsd.hu>
 
 	* ratpoison.spec: spec file for rpm-based systems

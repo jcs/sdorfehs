@@ -584,6 +584,38 @@ focus_change (XFocusChangeEvent *ev)
     }
 }
 
+static void
+mapping_notify (XMappingEvent *ev)
+{
+  rp_window *cur;
+
+  /* Remove the grab on the current prefix key */
+  for (cur = rp_mapped_window_sentinel->next; 
+       cur != rp_mapped_window_sentinel; 
+       cur = cur->next)
+    {
+      ungrab_prefix_key (cur->w);
+    }
+
+  switch (ev->request)
+    {
+    case MappingModifier:
+      update_modifier_map();
+      /* This is meant to fall through.  */
+    case MappingKeyboard:
+      XRefreshKeyboardMapping (ev);
+      break;
+    }
+
+  /* Add the grab on the current prefix key */
+  for (cur = rp_mapped_window_sentinel->next; 
+       cur != rp_mapped_window_sentinel; 
+       cur = cur->next)
+    {
+      grab_prefix_key (cur->w);
+    }
+}
+
 /* Given an event, call the correct function to handle it. */
 void
 delegate_event (XEvent *ev)
@@ -676,6 +708,7 @@ delegate_event (XEvent *ev)
       break;
     case MappingNotify:
       PRINT_DEBUG ("MappingNotify\n");
+      mapping_notify( &ev->xmapping );
       break;
     default:
       PRINT_DEBUG ("Unhandled event %d\n", ev->type);

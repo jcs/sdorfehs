@@ -420,8 +420,8 @@ main (int argc, char *argv[])
   init_numbers ();
   init_window_list ();
   init_frame_list ();
+  update_modifier_map ();
   initialize_default_keybindings ();
-  init_modifier_map ();
 
   font = XLoadQueryFont (dpy, FONT);
   if (font == NULL)

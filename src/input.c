@@ -30,7 +30,7 @@
 
 /* Figure out what keysyms are attached to what modifiers */
 void
-init_modifier_map ()
+update_modifier_map ()
 {
   unsigned int modmasks[] = 
     { Mod1Mask, Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask };
