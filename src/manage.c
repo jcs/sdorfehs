@@ -392,6 +392,13 @@ scanwins(rp_screen *s)
       /* FIXME - with this code, windows which are entirely off-screen
        * when RP starts won't ever be managed when Xinerama is enabled.
        */
+      { 
+	XWindowAttributes root_attr;
+
+	XGetWindowAttributes (dpy, s->root, &root_attr);
+      PRINT_DEBUG (("attrs: %d %d %d %d %d %d\n", root_attr.x, root_attr.y, 
+		    s->left, s->top, s->left + s->width, s->top + s->height));}
+
       if (rp_have_xinerama
 	  && ((attr.x > s->left + s->width)
                || (attr.x < s->left)
