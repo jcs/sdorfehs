@@ -63,4 +63,8 @@ screen_info *find_screen (Window w);
 
 void read_rc_file (FILE *file);
 
+void fatal (const char *msg);
+void *xmalloc (size_t size);
+void *xrealloc (void *ptr, size_t size);
+
 #endif /* ! _RATPOISON_H */

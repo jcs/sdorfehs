@@ -318,12 +318,8 @@ handle_key (screen_info *s)
   else
     {
       keysym_name = keysym_to_string (keysym, mod);
-      msg = (char *) malloc ( strlen ( keysym_name ) + 20 );
-      if ( msg == NULL )
-	{
-	  PRINT_ERROR ("Out of memory\n");
-	  exit (EXIT_FAILURE);
-	}
+      msg = (char *) xmalloc ( strlen ( keysym_name ) + 20 );
+
       snprintf (msg, strlen (keysym_name) + 13, "%s unbound key!", keysym_name);
       free (keysym_name);
 

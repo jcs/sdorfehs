@@ -62,12 +62,7 @@ find_empty_cell ()
   if (num_taken >= max_taken)
     {
       max_taken *= 2;
-      numbers_taken = realloc (numbers_taken, sizeof (int) * max_taken);
-      if (numbers_taken == NULL)
-	{
-	  PRINT_ERROR ("Out of memory\n");
-	  exit (EXIT_FAILURE);
-	}
+      numbers_taken = xrealloc (numbers_taken, sizeof (int) * max_taken);
     }
   num_taken++;
 
@@ -122,11 +117,5 @@ init_numbers ()
   max_taken = 10;
   num_taken = 0;
 
-  numbers_taken = malloc (max_taken * sizeof (int));
-  if (numbers_taken == NULL)
-    {
-      PRINT_ERROR ("Cannot allocate memory for numbers_taken.\n");
-      exit (EXIT_FAILURE);
-    }
-
+  numbers_taken = xmalloc (max_taken * sizeof (int));
 }

@@ -74,6 +74,32 @@ static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
 static char ratpoison_opts[] = "hvrk";
 
 void
+fatal (const char *msg)
+{
+  fprintf (stderr, "ratpoison: %s", msg);
+  abort ();
+}
+
+void *
+xmalloc (size_t size)
+{
+  register void *value = malloc (size);
+  if (value == 0)
+    fatal ("Virtual memory exhausted");
+  return value;
+}
+
+void *
+xrealloc (void *ptr, size_t size)
+{
+  register void *value = realloc (ptr, size);
+  if (value == 0)
+    fatal ("Virtual memory exhausted");
+  PRINT_DEBUG("realloc: %d\n", size);
+  return value;
+}
+
+void
 sighandler (int signum)
 {
   fprintf (stderr, "ratpoison: Agg! I've been SHOT!\n"); 
@@ -192,8 +218,8 @@ read_rc_file (FILE *file)
   char *line;
   int linesize = n;
 
-  partial = (char*)malloc(n);
-  line = (char*)malloc(linesize);
+  partial = (char*)xmalloc(n);
+  line = (char*)xmalloc(linesize);
 
   *line = '\0';
   while (fgets (partial, n, file) != NULL)
@@ -201,7 +227,7 @@ read_rc_file (FILE *file)
       if ((strlen (line) + strlen (partial)) <= linesize)
 	{
 	  linesize *= 2;
-	  line = (char*) realloc (line, linesize);
+	  line = (char*) xrealloc (line, linesize);
 	}
 
       strcat (line, partial);
@@ -245,7 +271,7 @@ read_startup_files ()
     fprintf (stderr, "ratpoison: $HOME not set!?\n");
   else
     {
-      char *filename = (char*)malloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
+      char *filename = (char*)xmalloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
       sprintf (filename, "%s/.ratpoisonrc", homedir);
       
       if ((fileptr = fopen (filename, "r")) == NULL)
@@ -359,11 +385,7 @@ main (int argc, char *argv[])
     }
 
   num_screens = ScreenCount (dpy);
-  if ((screens = (screen_info *)malloc (sizeof (screen_info) * num_screens)) == NULL)
-    {
-      PRINT_ERROR ("Out of memory!\n");
-      exit (EXIT_FAILURE);
-    }  
+  screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
 
   PRINT_DEBUG ("%d screens.\n", num_screens);
 

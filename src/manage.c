@@ -107,11 +107,8 @@ get_window_name (Window w)
 
   if (list_len > 0)
     {
-      if ((name = malloc (strlen (name_list[0]) + 1)) == NULL)
-	{
-	  PRINT_ERROR ("Out of memory!\n");
-	  exit (EXIT_FAILURE);
-	}    
+      name = xmalloc (strlen (name_list[0]) + 1);
+
       strcpy (name, name_list[0]);
 
       /* Its our responsibility to free this. */ 

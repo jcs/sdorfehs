@@ -1,5 +1,26 @@
 2001-03-01  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* ratpoison.h (xmalloc, xrealloc, fatal): Prototype.
+
+	* main.c (xmalloc): Move here from sbuf.c.
+	(xrealloc): Likewise.
+	(fatal): Likewise.
+
+	* number.c (find_empty_cell): Use xrealloc, remove error check.
+	(init_numbers): Likewise.
+
+	* manage.c (get_window_name): Likewise.
+
+	* main.c (main): Likewise.
+
+	* list.c (add_to_window_list): Likewise.
+	(add_to_window_list): Likewise.
+
+	* events.c (handle_key): Likewise.
+
+	* input.c (keysym_to_string): Likewise.
+	(get_more_input): Use xrealloc, remove error check.
+
 	* actions.c (cmd_source): Open the file.  Error report as
 	appropriate.
 	(cmd_windows): Call current_screen() to find the current screen.

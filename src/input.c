@@ -43,12 +43,7 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
   unsigned char *name;
   int pos, i;
 
-  name = malloc (15);
-  if (name == NULL)
-    {
-      PRINT_ERROR ("Out of memory!\n");
-      exit (EXIT_FAILURE);
-    }
+  name = xmalloc (15);
 
   for (pos = 0, i = 0; i < 6; i++)
     {
@@ -177,12 +172,7 @@ get_more_input (char *prompt, char *preinput)
   char *str;
 
   /* Allocate some memory to start with */
-  str = (char *) malloc ( allocated_len );
-  if ( str == NULL )
-    {
-      PRINT_ERROR ("Out of memory\n");
-      exit (EXIT_FAILURE);
-    }
+  str = (char *) xmalloc ( allocated_len );
 
   /* load in the preinput */
   strcpy (str, preinput);
@@ -216,12 +206,7 @@ get_more_input (char *prompt, char *preinput)
 	  if (cur_len > allocated_len - 1)
 	    {
 	      allocated_len += 100;
-	      str = realloc ( str, allocated_len );
-	      if (str == NULL)
-		{
-		  PRINT_ERROR ("Out of memory\n");
-		  exit (EXIT_FAILURE);
-		}
+	      str = xrealloc ( str, allocated_len );
 	    }
 	  str[cur_len] = ch;
 	  cur_len++;

@@ -47,12 +47,8 @@ add_to_window_list (screen_info *s, Window w)
 {
   rp_window *new_window;
 
-  new_window = malloc (sizeof (rp_window));
-  if (new_window == NULL)
-    {
-      PRINT_ERROR ("Out of memory!\n");
-      exit (EXIT_FAILURE);
-    }
+  new_window = xmalloc (sizeof (rp_window));
+
   new_window->w = w;
   new_window->scr = s;
   new_window->last_access = 0;
@@ -69,11 +65,8 @@ add_to_window_list (screen_info *s, Window w)
 
   XSelectInput (dpy, new_window->w, PropertyChangeMask | ColormapChangeMask);
 
-  if ((new_window->name = malloc (strlen ("Unnamed") + 1)) == NULL)
-    {
-      PRINT_ERROR ("Out of memory!\n");
-      exit (EXIT_FAILURE);
-    }
+  new_window->name = xmalloc (strlen ("Unnamed") + 1);
+
   strcpy (new_window->name, "Unnamed");
 
   /* Add the window to the end of the unmapped list. */
@@ -123,15 +116,8 @@ set_current_window (rp_window *win)
 void
 init_window_list ()
 {
-  rp_mapped_window_sentinel = malloc (sizeof (rp_window));
-  rp_unmapped_window_sentinel = malloc (sizeof (rp_window));
-
-  if (!rp_mapped_window_sentinel
-      || !rp_unmapped_window_sentinel)
-    {
-      PRINT_ERROR ("Out of memory!\n");
-      exit (EXIT_FAILURE);
-    }
+  rp_mapped_window_sentinel = xmalloc (sizeof (rp_window));
+  rp_unmapped_window_sentinel = xmalloc (sizeof (rp_window));
 
   rp_mapped_window_sentinel->next = rp_mapped_window_sentinel;
   rp_mapped_window_sentinel->prev = rp_mapped_window_sentinel;
