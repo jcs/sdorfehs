@@ -1,5 +1,8 @@
 2001-10-11  shawn  <sabetts@vcn.bc.ca>
 
+	* src/bar.c (show_last_message): abort if there was no last
+	message.
+
 	* src/events.c (configure_request): Always check the rudeness
 	level before honouring a raise request.
 

@@ -253,6 +253,8 @@ show_last_message ()
 {
   char *msg;
 
+  if (last_msg == NULL) return;
+
   /* A little kludge to avoid last_msg in marked_message from being
      strdup'd right after freeing the pointer. Note: in this case
      marked_message's msg arg would have been the same as
