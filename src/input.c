@@ -426,6 +426,10 @@ get_more_input (char *prompt, char *preinput,
   char *final_input;
   edit_status status;
 
+#ifdef HAVE_READLINE_HISTORY_H
+  history_reset();
+#endif /* HAVE_READLINE_HISTORY_H */
+
   /* Create our line structure */
   line = input_line_new (prompt, preinput, compl_fn);
 

@@ -35,8 +35,6 @@ history_load ()
   if (filename && read_history (filename) != 0)
     PRINT_DEBUG (("ratpoison: could not read %s - %s\n", filename, strerror (errno)));
 
-  using_history();
-
   free (filename);
 }
 
@@ -44,8 +42,6 @@ void
 history_save ()
 {
   char *filename = get_history_filename ();
-
-  using_history ();
 
   if (filename && write_history (filename) != 0)
     PRINT_ERROR (("ratpoison: could not write %s - %s\n", filename, strerror (errno)));
@@ -75,7 +71,6 @@ history_add (char *item)
 
   PRINT_DEBUG (("Adding item: %s\n", item));
   add_history (item);
-  using_history();
 }
 
 char *

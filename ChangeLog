@@ -1,4 +1,12 @@
-2004-11-02  Shawn Betts  <katia_dilkina@verizon.net>
+2004-11-03  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/input.c (get_more_input): call history_reset
+
+	* src/history.c (history_load): remove call to using_history.
+	(history_save): likewise
+	(history_add): likewise
+
+2004-11-02  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/split.c (blank_frame): use the frames screen, not the current screen.
 
@@ -11,11 +19,11 @@
 	* src/window.c (find_window_other): add argument, the screen to
 	find the window in. All callers updated.
 
-2004-10-29  Shawn Betts  <katia_dilkina@verizon.net>
+2004-10-29  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* contrib/rpws: remove the echo /tmp/boom line.
 
-2004-10-28  Shawn Betts  <katia_dilkina@verizon.net>
+2004-10-28  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (set_padding): fix the padding order in xsprintf.
 
