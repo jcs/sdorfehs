@@ -1,3 +1,7 @@
+2002-02-02  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/bar.c (marked_message): Fix text marking bug.
+
 2002-02-01  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (command): bail out if alias recursion gets too deep.
