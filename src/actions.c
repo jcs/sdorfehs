@@ -2043,15 +2043,23 @@ cmd_rathold (int interactive, char *data)
   
   if (data != NULL)
     {
-      char *tmp;
-      tmp = strtok(data, " ");
-      command = strtok(NULL, "");
-      if (!tmp || !command)
+      char *tmp, *tail;
+      command = strtok(data, " ");
+      tmp = strtok(NULL, " ");
+      if (!command)
         {
-          message ("rathold: invalid argument");
+          message (" rathold: Needs at least 1 argument. ");
 	  return NULL;
 	}
-      button = strtol(tmp, NULL, 10);
+      if (tmp)
+	{
+	  button = strtol(tmp, &tail, 10);
+	  if (*tail != '\0')
+	    {
+	      marked_message_printf (0, 0, " rathold: %s not a number. ", tmp);
+	      return NULL;
+	    }
+	}
     }
   else
     {
@@ -2059,7 +2067,6 @@ cmd_rathold (int interactive, char *data)
       return NULL;
     }
 
-    
   if (!strcmp(command, "down")) 
     XTestFakeButtonEvent(dpy, button, True, CurrentTime);
   else if(!strcmp(command,"up"))
@@ -4599,10 +4606,11 @@ cmd_sfdump (int interactively, char *data)
   struct sbuf *s;
   char *tmp, *tmp2;
   rp_frame *cur;
+  int i;
 
   s = sbuf_new (0);
 
-  register int i;
+
   for (i=0; i<num_screens; i++)
     {
       tmp2 = xsprintf (" %d,", (rp_have_xinerama)?(screens[i].xine_screen_num):(screens[i].screen_num));

@@ -1,4 +1,12 @@
+2004-11-20  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (cmd_rathold): change argument order. echo parse
+	errors.
+
 2004-11-19  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (cmd_sfdump): properly declare i at the top of the
+	function.
 
 	* src/frame.c (frame_dump): dump the frame as an sexpr instead of
 	a list of numbers.
