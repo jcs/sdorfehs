@@ -1,5 +1,10 @@
 2001-02-15  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* list.c (save_mouse_position): changed declaration of mask to
+	unsigned int
+	(get_mouse_root_position): changed declaration of mask to unsigned
+	int
+
 	* actions.c (xterm_command): added new function.  Thanks to Ben
 	Leslie <benno@sesgroup.net>
 	(user_commands): added "xterm"
