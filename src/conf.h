@@ -68,4 +68,9 @@
 /* Maximum depth of a link. Used in the 'link' command. */
 #define MAX_LINK_DEPTH 16
 
+/* Bad window messages can be safely ignored now that ratpoison has
+   become stable enough. Comment this line if you wish to be notified
+   about bad window messages. */
+#define IGNORE_BADWINDOW 1
+
 #endif /* !_ _RATPOISON_CONF_H */

@@ -1,3 +1,10 @@
+2002-07-28  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/main.c (handler): do not report badwindow errors if
+	IGNORE_BADWINDOW is define.
+
+	* src/conf.h (IGNORE_BADWINDOW): new define
+
 2002-07-06  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_help): key descriptions don't run off the

@@ -211,7 +211,11 @@ handler (Display *d, XErrorEvent *e)
     exit(EXIT_FAILURE);
   }  
 
+#ifdef IGNORE_BADWINDOW
+  return 0;
+#else
   if (ignore_badwindow && e->error_code == BadWindow) return 0;
+#endif
 
   XGetErrorText (d, e->error_code, error_msg, sizeof (error_msg));
   fprintf (stderr, "ratpoison: ERROR: %s!\n", error_msg);
