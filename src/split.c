@@ -524,8 +524,7 @@ set_active_frame (rp_window_frame *frame)
   give_window_focus (frame->win, rp_current_frame->win);
   rp_current_frame = frame;
 
-  if ((!frame->win || old != rp_current_frame)
-      && num_frames() > 1) 
+  if (old != rp_current_frame && num_frames() > 1)
     {
       show_frame_indicator();
     }
@@ -544,24 +543,15 @@ blank_frame (rp_window_frame *frame)
   if (frame->win == NULL) return;
   
   hide_window (frame->win);
-  set_frames_window (frame, NULL);
+  hide_others (frame->win);
 
-  if (frame == rp_current_frame && num_frames() > 1)
-    {
-      show_frame_indicator();  
-      XSetInputFocus (dpy, current_screen()->frame_window, 
-		      RevertToPointerRoot, CurrentTime);
-    }
+  set_frames_window (frame, NULL);
 }
 
 void
 hide_frame_indicator ()
 {
-  /* Only hide the frame indicator if a window occupies the frame */
-  if (num_frames() <= 1 || rp_current_frame->win)
-    {
-      XUnmapWindow (dpy, current_screen()->frame_window);
-    }
+  XUnmapWindow (dpy, current_screen()->frame_window);
 }
 
 void

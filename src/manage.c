@@ -421,10 +421,8 @@ maximize_normal (rp_window *win)
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
   if (win->hints->flags & PMaxSize && frame)
     {
-      off_x = frame->x - maxx / 2 
-	+ (frame->width - win->border * 2) / 2;
-      off_y = frame->y - maxy / 2
-	+ (frame->height - win->border * 2) / 2;
+      off_x = (frame->width - win->border * 2) / 2 - maxx / 2;
+      off_y = (frame->height - win->border * 2) / 2 - maxy / 2;
     }
 #endif
 

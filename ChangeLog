@@ -1,3 +1,20 @@
+2001-08-31  Shawn  <sabetts@hotdog>
+
+	* src/split.c (set_active_frame): Only show the frame indicator
+	when switching to a new frame and when there is more than 1 frame.
+
+	* src/actions.c (cmd_next_frame): display MESSAGE_NO_OTHER_FRAME
+	when there is only 1 frame.
+
+	* src/messages.h (MESSAGE_NO_OTHER_FRAME): new message
+
+	* src/split.c (hide_frame_indicator): always hide the frame
+	indicator.
+	(blank_frame): don't show the frame indicator.
+	
+	* src/manage.c (maximize_normal)[MAXSIZE_WINDOWS_ARE_TRANSIENTS]:
+	win are centered properly in the frame.
+
 2001-08-29  Shawn  <sabetts@hotdog>
 
 	* src/manage.c (unhide_window): always raise the window.

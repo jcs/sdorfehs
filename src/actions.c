@@ -494,7 +494,7 @@ cmd_next_frame (int interactive, void *data)
 
   frame = find_frame_next (rp_current_frame);
   if (!frame)
-    message (MESSAGE_NO_OTHER_WINDOW);
+    message (MESSAGE_NO_OTHER_FRAME);
   else
     set_active_frame (frame);
 
