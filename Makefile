@@ -16,6 +16,9 @@ HEADERS = bar.h conf.h data.h events.h list.h manage.h ratpoison.h
 ratpoison: $(SRC)
 	gcc $(SRC) -o $@ $(CFLAGS) $(LDFLAGS) $(LIBS) 
 
+ratpoison.info : ratpoison.texi
+	makeinfo ratpoison.texi
+
 install: ratpoison
 	cp ratpoison $(INSTALL_DIR)
 
