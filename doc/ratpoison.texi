@@ -316,6 +316,83 @@ Run a ratpoison command.
 @item curframe
 Indicate which frame is the current frame.
 
+@item defbarloc @var{n}
+Set the message bar location. @var{n} is a value between 0 and 3. 0 is
+the top left and the values move clockwise around the screen to the
+bottom left which is 3.
+
+@item defbartimeout @var{n}
+Set the bar's timeout in seconds.
+
+@item defborder @var{n}
+Set the border width for all windows.
+
+@item deffont @var{font}
+Set the font. @var{font} is a font string like @samp{9x15bold}.
+
+@item definputwidth @var{n}
+Set the width of the input window.
+
+@item defmaxsizepos @var{x} @var{y}
+Set the default alignment for windows with maxsize hints. See the
+@command{pos} command.
+
+@item defpadding @var{left} @var{top} @var{right} @var{bottom}
+Set the padding around the edge of the screen.
+
+@item deftranspos @var{}
+Set the default alignment for transient windows. See the
+@command{pos} command.
+
+@item defwaitcursor @var{n}
+Set whether the rat cursor should change into a square when waiting
+for a key. A non-zero number means change the cursor. Zero means don't
+change the cursor.
+
+@item defwinfmt @var{fmt}
+Set the default window format for the @command{windows} command. By
+default it is @samp{N-W}. The following is a list of valid format
+characters:
+
+@table @samp
+@item N
+The window number
+
+@item -
+Window status (current window, last window, etc)
+
+@item W
+Window Name
+
+@item w
+Window res name
+
+@item c
+Window res class
+
+@item n
+X11 Window ID
+@end table
+
+@item defwinname @var{name}
+There are three resources ratpoison can get a window's name from: the
+WMNAME hint, the res_name from the WMCLASS hint, or the res_class from
+the WMCLASS hint. @var{name} can be @samp{title} which is what most
+window managers put in the title bar, @samp{name} which is the
+res_name, or @samp{class} which is the res_class.
+
+@item defwinpos @var{x} @var{y}
+Set the default alignment for normal windows. See the
+@command{pos} command.
+
+@item deffgcolor @var{color}
+Set the foreground color for all text ratpoison displays. @var{color}
+is any valid X11 color.
+
+@item defbgcolor @var{color}
+Set the background color for all text ratpoison displays. @var{color}
+is any valid X11 color.
+
 @item delete
 This deletes the current window. You can access it with the @kbd{C-t k}
 keystroke.
@@ -367,6 +444,14 @@ Kill all frames but the current one.
 @item other
 This toggles between the current window and the last window. By
 default, this is bound to @kbd{C-t C-t}.
+
+@item pos @var{x} @var{y}
+Change the alignment of the current window. A normal window will
+default to aligning itself to the top-left corner of the screen, but
+it can also be aligned to, say, the bottom-right. Valid values for
+@var{x} are @samp{left}, @samp{center}, and @samp{right}. Valid values
+for @var{y} are @samp{top}, @samp{center}, @samp{bottom}. @var{x} and
+@var{y} can be abbreviated to the first letter.
 
 @item prev
 This jumps you to the previous window in the window list. By default,
@@ -446,7 +531,7 @@ Print ratpoison version.  By default, this is bound to @kbd{C-t v}.
 Split the current window vertically in two. The last accessed window not
 occupying a frame will be the second window.
 
-@item windows
+@item windows @var{fmt}
 This displays the Program Bar which displays the windows you currently
 have running. The number before each window name is used to jump to
 that window. You can do this by typing @kbd{C-t @var{n}} where @var{n}
@@ -467,7 +552,9 @@ $ ratpoison -c windows
 
 Instead of a message bar, you will get a list of the windows printed
 to stdout. This allows you to write more advanced scripts than simple
-keyboard macros.
+keyboard macros. This is where @var{fmt} comes into play. If
+@command{windows} is given an arg it treats it as the format string as
+described in @command{defwinfmt}.
 
 @end table
 
