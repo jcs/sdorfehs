@@ -12,6 +12,15 @@ Ratpoison Frequently Asked Questions
 There's no point.
 
 * Usability & Customization Questions
+** Hey where's the manual?
+There is a ratpoison texinfo manual. type:
+
+info ratpoison
+
+or if you use emacs, type:
+
+C-h i m nethack RET
+
 ** The Gimp is impossible to use under ratpoison!
 
 ** How do I bind a command to a single keystroke?

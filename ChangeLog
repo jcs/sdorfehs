@@ -1,3 +1,9 @@
+2003-06-14  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/window.c (set_active_window): remove duplicate call to
+	unhide_window, it is made in give_window_focus. Call
+	give_window_focus before calling hide_others.
+
 2003-06-02  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/group.c (groups_merge): don't merge a group with itself.
