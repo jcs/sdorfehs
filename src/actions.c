@@ -24,35 +24,62 @@
 
 #include "ratpoison.h"
 
-/* Initialization of the key structure */
-rp_action key_actions[] = { {KEY_PREFIX, 0, 0, generate_prefix},
-                            {XK_c, -1, TERM_PROG, spawn},
-			    {XK_e, -1, "emacs", spawn},
-			    {XK_p, -1, 0, prev_window},
-			    {XK_n, -1, 0, next_window},
-			    {XK_space, -1, 0, next_window},
-			    {XK_colon, 0, 0, execute_command},
-			    {XK_exclam, 0, 0, execute_command},
-			    {KEY_PREFIX, -1, 0, last_window},
-			    {XK_w, -1, 0, toggle_bar},
-			    {XK_K, 0, 0, kill_window},
-			    {XK_k, 0, 0, delete_window},
-			    {XK_quoteright, -1, 0, goto_win_by_name},
-			    {XK_A, -1, 0, rename_current_window},
-			    {XK_a, -1, 0, show_clock},
-			    {XK_g, ControlMask, 0, abort_keypress},
-			    {XK_0, -1, (void*)0, goto_window_number},
-			    {XK_1, -1, (void*)1, goto_window_number},
-			    {XK_2, -1, (void*)2, goto_window_number},
-			    {XK_3, -1, (void*)3, goto_window_number},
-			    {XK_4, -1, (void*)4, goto_window_number},
-			    {XK_5, -1, (void*)5, goto_window_number},
-			    {XK_6, -1, (void*)6, goto_window_number},
-			    {XK_7, -1, (void*)7, goto_window_number},
-			    {XK_8, -1, (void*)8, goto_window_number},
-			    {XK_9, -1, (void*)9, goto_window_number},
-			    {XK_m, -1, 0, maximize},
-			    { 0, 0, 0, 0 } };
+#define C ControlMask
+#define M Mod1Mask		/* Meta */
+#define A Mod2Mask		/* Alt */
+#define S Mod3Mask		/* Super */
+#define H Mod4Mask		/* Hyper */
+
+rp_action key_actions[] = 
+  { {XK_t, 		C, 	"other",  	command}, 
+    {XK_t, 		0, 	0, 		generate_prefix},
+    {XK_g, 		C, 	"abort",	command},
+    {XK_c, 		0, 	"exec xterm", 	command},
+    {XK_e, 		0, 	"exec emacs", 	command},
+    {XK_p, 		0, 	"prev", 	command},  
+    {XK_n, 		0,	"next", 	command}, 
+    {XK_space, 		0, 	"next", 	command},
+    {XK_Return,		0,	"next",		command},
+    {XK_colon, 		0, 	"colon",	command},
+    {XK_exclam, 	0, 	"exec", 	command},
+    {XK_w, 		0, 	"windows",	command},
+    {XK_K, 		0, 	"kill", 	command},    
+    {XK_k, 		0, 	"delete", 	command},  
+    {XK_quoteright, 	0,     	"select", 	command},
+    {XK_A, 		0, 	"title", 	command},
+    {XK_a, 		0, 	"clock", 	command},
+    {XK_0, 		0, 	"number 0", 	command},
+    {XK_1, 		0, 	"number 1", 	command},
+    {XK_2, 		0, 	"number 2", 	command},
+    {XK_3, 		0, 	"number 3", 	command},
+    {XK_4, 		0, 	"number 4", 	command},
+    {XK_5, 		0, 	"number 5", 	command},
+    {XK_6, 		0, 	"number 6", 	command},
+    {XK_7, 		0, 	"number 7", 	command},
+    {XK_8, 		0, 	"number 8", 	command},
+    {XK_9, 		0, 	"number 9", 	command},
+    {XK_m, 		0, 	"maximize", 	command},
+    {XK_v, 		0, 	"version", 	command},
+    {0, 		0, 	0, 		0 } };
+
+user_command user_commands[] = 
+  { {"abort",		abort_keypress,		arg_VOID},
+    {"next", 		next_window, 		arg_VOID},
+    {"prev", 		prev_window, 		arg_VOID},
+    {"exec", 		shell_command, 		arg_STRING},
+    {"number", 		goto_window_number, 	arg_NUMBER},
+    {"select", 		goto_win_by_name, 	arg_STRING},
+    {"colon",	 	command,		arg_STRING},
+    {"kill", 		kill_window, 		arg_VOID},
+    {"delete", 		delete_window, 		arg_VOID},
+    {"other", 		last_window, 		arg_VOID},
+    {"windows", 	toggle_bar, 		arg_VOID},
+    {"title", 		rename_current_window, 	arg_STRING},
+    {"clock", 		show_clock, 		arg_VOID},
+    {"maximize", 	maximize, 		arg_VOID},
+    {"newwm",		switch_to,		arg_STRING},
+    {"version",		show_version,		arg_VOID},
+    {0,			0,			0} };
 
 void
 prev_window (void *data)
@@ -70,14 +97,14 @@ prev_window (void *data)
       else
 	{
 	  if (rp_current_window == new_win)
-	    display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW);
+	    display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW, 0, 0);
 	  else
 	    set_active_window (new_win);
 	}
     }
   else
     {
-      display_msg_in_bar (&screens[0], MESSAGE_NO_MANAGED_WINDOWS);      
+      display_msg_in_bar (&screens[0], MESSAGE_NO_MANAGED_WINDOWS, 0, 0);
     }
 }
 
@@ -98,14 +125,14 @@ next_window (void *data)
       else
 	{
 	  if (rp_current_window == new_win)
-	    display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW);
+	    display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW, 0, 0);
 	  else
 	    set_active_window (new_win);
 	}
     }
   else
     {
-      display_msg_in_bar (&screens[0], MESSAGE_NO_MANAGED_WINDOWS);
+      display_msg_in_bar (&screens[0], MESSAGE_NO_MANAGED_WINDOWS, 0, 0);
     }
 }
 
@@ -121,7 +148,7 @@ last_window (void *data)
 
   if (rp_current_window == oldwin)
     {
-      display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW);
+      display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW, 0, 0);
     }
 }
 
@@ -133,8 +160,10 @@ goto_win_by_name (void *data)
   
   if (rp_current_window == NULL) return;
 
-  get_input (rp_current_window->scr, MESSAGE_PROMPT_GOTO_WINDOW_NAME, winname, 100);
-  PRINT_DEBUG ("user entered: %s\n", winname);
+  if (data == NULL)
+    get_input (rp_current_window->scr, MESSAGE_PROMPT_GOTO_WINDOW_NAME, winname, 100);
+  else
+    strncpy (winname, data, 99);
 
   goto_window_name (winname);
 }
@@ -146,8 +175,10 @@ rename_current_window (void *data)
   
   if (rp_current_window == NULL) return;
 
-  get_input (rp_current_window->scr, MESSAGE_PROMPT_NEW_WINDOW_NAME, winname, 100);
-  PRINT_DEBUG ("user entered: %s\n", winname);
+  if (data == NULL)
+    get_input (rp_current_window->scr, MESSAGE_PROMPT_NEW_WINDOW_NAME, winname, 100);
+  else
+    strncpy (winname, data, 99);
 
   if (*winname)
     {
@@ -196,23 +227,103 @@ kill_window (void *data)
   XKillClient(dpy, rp_current_window->w);
 }
 
+static screen_info*
+get_screen ()
+{
+  if (rp_current_window)
+    return rp_current_window->scr;
+  else
+    return &screens[0];
+}
+
 void
-execute_command (void *data)
+show_version (void *data)
+{
+  display_msg_in_bar (get_screen(), " " PACKAGE " " VERSION " ", 0, 0);
+}
+
+void
+command (void *data)
+{
+  char input[100];
+  char *cmd, *rest;
+  void *arg;
+
+  user_command *uc;
+  struct sbuf *buf = NULL;
+  
+  if (data == NULL)
+    get_input (get_screen(), MESSAGE_PROMPT_COMMAND, input, 100);
+  else
+    strncpy (input, data, 99);
+  
+  if (input == NULL)
+    return;
+
+  cmd = strtok (input, " ");
+
+  if (cmd == NULL)
+    return;
+
+  rest = strtok (NULL, "\0");
+
+  fprintf (stderr, "cmd==%s rest==%s\n", cmd, (char*)rest);
+
+  /* find the command */
+  for (uc = user_commands; uc->name; uc++)
+    {
+      if (!strcmp (cmd, uc->name))
+	{
+	  /* create an arg out of the rest */
+	  switch (uc->argtype)
+	    {
+	    case arg_VOID:
+	      arg = NULL;
+	      break;
+
+	    case arg_STRING:
+	      arg = rest;
+	      break;
+
+	    case arg_NUMBER:
+	      if (rest)
+		sscanf (rest, "%d", (int*)&arg);
+	      else
+		arg = 0;
+	      break;
+
+	    default:
+	      abort ();
+	    }
+
+	  uc->func (arg);
+
+	  return;
+	}
+    }
+
+  /* couldnt find the command name */
+
+  buf = sbuf_new (strlen(MESSAGE_UNKNOWN_COMMAND + strlen (cmd) + 4));
+  sbuf_copy (buf, MESSAGE_UNKNOWN_COMMAND);
+  sbuf_concat (buf, "'");
+  sbuf_concat (buf, cmd);
+  sbuf_concat (buf, "' ");
+
+  display_msg_in_bar (get_screen(), sbuf_get (buf), 0, 0);
+  
+  sbuf_free (buf);
+}
+
+void
+shell_command (void *data)
 {
   char cmd[100];
 
-  if (rp_current_window)
-    {
-      get_input (rp_current_window->scr, "Command: ", cmd, 100);
-    }
+  if (data == NULL)
+    get_input (get_screen(), MESSAGE_PROMPT_SHELL_COMMAND, cmd, 100);
   else
-    {
-      /* FIXME: We can always assume there is 1 screen, but which one
-	 is the active one? Need to test on multi-screen x-servers. */  
-    get_input (&screens[0], "Command: ", cmd, 100);
-    }
-
-  PRINT_DEBUG ("user entered: %s\n", cmd);
+    strncpy (cmd, data, 99);
 
   spawn (cmd);
 }
@@ -220,7 +331,7 @@ execute_command (void *data)
 void
 spawn(void *data)
 {
-  char *prog = data;
+  char *cmd = data;
   /*
    * ugly dance to avoid leaving zombies.  Could use SIGCHLD,
    * but it's not very portable.
@@ -228,9 +339,9 @@ spawn(void *data)
   if (fork() == 0) {
     if (fork() == 0) {
       putenv(DisplayString(dpy));
-      execlp(prog, prog, 0);
+      execl("/bin/sh", "sh", "-c", cmd, 0);
 
-      PRINT_ERROR ("exec %s ", prog); 
+      PRINT_ERROR ("exec '%s' ", cmd); 
       perror(" failed");
 
       exit(EXIT_FAILURE);
@@ -238,19 +349,24 @@ spawn(void *data)
     exit(0);
   }
   wait((int *) 0);
-  PRINT_DEBUG ("spawned %s\n", prog);
+  PRINT_DEBUG ("spawned %s\n", cmd);
 }
 
 /* Switch to a different Window Manager. Thanks to 
 "Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
 void
-switch_to(void *which)
+switch_to(void *data)
 {
-  char *prog=(char *)which;
+  char prog[100];
+
+  if (data == NULL)
+    get_input (get_screen(), MESSAGE_PROMPT_SWITCH_WM, prog, 100);
+  else
+    strncpy (prog, data, 99);
 
   PRINT_DEBUG ("Switching to %s\n", prog);
 
-  putenv(DisplayString(dpy)); 
+  putenv(DisplayString(dpy));   
   execlp(prog, prog, 0);
 
   PRINT_ERROR ("exec %s ", prog);
@@ -259,13 +375,13 @@ switch_to(void *which)
 
 /* Quit ratpoison. Thanks to 
 "Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
-void
-bye(void *dummy)
-{
-  PRINT_DEBUG ("Exiting\n");
-  clean_up ();
-  exit (EXIT_SUCCESS);
-}
+/* static void */
+/* bye(void *dummy) */
+/* { */
+/*   PRINT_DEBUG ("Exiting\n"); */
+/*   clean_up (); */
+/*   exit (EXIT_SUCCESS); */
+/* } */
 
 /* Show the current time on the bar. Thanks to 
    Martin Samuelsson <cosis@lysator.liu.se> for the patch. */
@@ -296,7 +412,7 @@ show_clock (void *data)
   if (rp_current_window) 
     {
       s = rp_current_window->scr;
-      display_msg_in_bar (s, msg);
+      display_msg_in_bar (s, msg, 0, 0);
     }
   free(msg);
 }

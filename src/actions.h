@@ -18,22 +18,40 @@
 
 /* Prototypes of all actions that can be performed with keystrokes. */
 
+#define MAX_COMMAND_LENGTH 100
+#define MAX_ARGS_LENGTH 100
+
+typedef struct user_command user_command;
+
+enum argtype { arg_VOID, arg_STRING, arg_NUMBER };
+
+struct
+user_command
+{
+  char *name;
+  void (*func)(void *);
+  int argtype;
+};
+
 void switch_to(void *which);
 void bye(void *dummy);
 void generate_prefix (void *data);
 void abort_keypress (void *data);
 void goto_window_number (void* data);
 void spawn(void *data);
-void execute_command (void *data);
+void shell_command (void *data);
+void command (void *data);
+void command (void *data);
 void kill_window (void *data);
 void delete_window (void *data);
 void rename_current_window (void *data);
 void goto_win_by_name (void *data);
 void last_window (void *data);
-void next_window (void *data);
-void prev_window (void *data);
+/* void next_window (void *data); */
+/* void prev_window (void *data); */
 void toggle_bar (void *data);
 void maximize (void *data);
 void show_clock (void *data);
+void show_version (void *data);
 
 extern rp_action key_actions[];
