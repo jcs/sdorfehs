@@ -73,12 +73,16 @@ LIST_HEAD (rp_prefix_hook);
 LIST_HEAD (rp_switch_win_hook);
 LIST_HEAD (rp_switch_frame_hook);
 LIST_HEAD (rp_switch_group_hook);
+LIST_HEAD (rp_quit_hook);
+LIST_HEAD (rp_restart_hook);
 
 struct rp_hook_db_entry rp_hook_db[]= 
   {{"prefix", 		&rp_prefix_hook},
    {"switchwin", 	&rp_switch_win_hook},
    {"switchframe", 	&rp_switch_frame_hook},
    {"switchgroup", 	&rp_switch_group_hook},
+   {"quit", 		&rp_quit_hook},
+   {"restart", 		&rp_restart_hook},
    {NULL, NULL}};
 				   
 void

@@ -1,3 +1,19 @@
+2003-10-15  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/globals.c (rp_hook_db): add hooks quit and restart
+	(rp_quit_hook): new global
+	(rp_restart_hook): likewise
+
+	* src/events.c (handle_signals): call the restart and quit hooks
+
+2003-09-24  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* contrib/clickframe.pl: put the patch at the end of the file and
+	make it runnable through patch.
+
+	* contrib/Makefile.am (EXTRA_DIST): add clickframe.pl
+	(pkgdata_DATA): likewise
+
 2003-09-21  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/bar.c (prepare_bar): move and resize the window before mapping it.

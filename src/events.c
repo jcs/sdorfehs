@@ -775,6 +775,8 @@ handle_signals ()
 
   if (hup_signalled > 0)
     {
+      PRINT_DEBUG (("Restarting\n"));
+      hook_run (&rp_restart_hook);
       clean_up (); 
       execvp(myargv[0], myargv);
     }
@@ -782,6 +784,7 @@ handle_signals ()
   if (kill_signalled > 0)
     {
       PRINT_DEBUG (("Exiting\n"));
+      hook_run (&rp_quit_hook);
       clean_up ();
       exit (EXIT_SUCCESS);
     }
