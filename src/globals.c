@@ -67,6 +67,9 @@ int rp_honour_normal_map = 1;
 
 char *rp_error_msg = NULL;
 
+/* Global frame numset */
+struct numset *rp_frame_numset;
+
 /* The hook dictionary globals. */
 
 LIST_HEAD (rp_prefix_hook);

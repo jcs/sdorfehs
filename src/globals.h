@@ -144,4 +144,6 @@ void set_window_focus (Window window);
 extern int rp_have_xinerama;
 extern int xine_screen_count;
 
+extern struct numset *rp_frame_numset;
+
 #endif

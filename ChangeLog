@@ -1,5 +1,20 @@
 2004-02-27  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/screen.c (screen_free_nums): new function. prototype added
+	(init_screens): init rp_frame_numset
+	(init_screen): set screen's frames_numset to rp_frame_numset
+
+	* src/globals.h: new global prototype, rp_frame_numset
+
+	* src/globals.c: new global, rp_frame_numset
+
+	* src/split.c (find_last_frame): find the last from of all the
+	screens. prototype updated. Callers updated.
+	(find_frame_number): search all screens. prototype
+	updated. callers updated.
+
+	* src/actions.c (cmd_fselect): select from frames in all screens.
+
 	* src/window.c (give_window_focus): save the mouse position before
 	checking if win is NULL.
 	(give_window_focus): set rp_current_screen to xine_screen_num of

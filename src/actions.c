@@ -2846,7 +2846,7 @@ cmd_startup_message (int interactive, char *data)
 char *
 cmd_focuslast (int interactive, char *data)
 {
-  rp_frame *frame = find_last_frame(current_screen());
+  rp_frame *frame = find_last_frame();
 
   if (frame)
       set_active_frame (frame);
@@ -3270,7 +3270,6 @@ char *
 cmd_fselect (int interactive, char *data)
 {
   rp_frame *frame;
-  rp_screen *s = current_screen();
   int fnum = -1;
 
   /* If the command was specified on the command line or an argument
@@ -3300,57 +3299,67 @@ cmd_fselect (int interactive, char *data)
       KeySym c;
       unsigned int mod;
       Window *wins;
-      XSetWindowAttributes attr;
-      int i;
+      int i, j;
       rp_frame *cur;
+      int frames;
 
-      /* Set up the window attributes to be used in the loop. */
-      attr.border_pixel = s->fg_color;
-      attr.background_pixel = s->bg_color;
-      attr.override_redirect = True;
+      frames = 0;
+      for (j=0; j<num_screens; j++)
+	frames += num_frames(&screens[j]);
 
-      wins = xmalloc (sizeof (Window) * num_frames (s));
+      wins = xmalloc (sizeof (Window) * frames);
 
       /* Loop through each frame and display its number in it's top
 	 left corner. */
       i = 0;
-      list_for_each_entry (cur, &s->frames, node)
+      for (j=0; j<num_screens; j++)
 	{
-	  int width, height;
-	  char *num;
+	  XSetWindowAttributes attr;
+	  rp_screen *s = &screens[j];
+      
+	  /* Set up the window attributes to be used in the loop. */
+	  attr.border_pixel = s->fg_color;
+	  attr.background_pixel = s->bg_color;
+	  attr.override_redirect = True;
 
-	  /* Create the string to be displayed in the window and
-	     determine the height and width of the window. */
-	  num = xsprintf (" %d ", cur->number);
-	  width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, num, strlen (num));
-	  height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
+	  list_for_each_entry (cur, &s->frames, node)
+	    {
+	      int width, height;
+	      char *num;
 
-	  /* Create and map the window. */
-	  wins[i] = XCreateWindow (dpy, s->root, s->left + cur->x, s->top + cur->y, width, height, 1, 
-				   CopyFromParent, CopyFromParent, CopyFromParent,
-				   CWOverrideRedirect | CWBorderPixel | CWBackPixel,
-				   &attr);
-	  XMapWindow (dpy, wins[i]);
-	  XClearWindow (dpy, wins[i]);
+	      /* Create the string to be displayed in the window and
+		 determine the height and width of the window. */
+	      num = xsprintf (" %d ", cur->number);
+	      width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, num, strlen (num));
+	      height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
-	  /* Display the frame's number inside the window. */
-	  XDrawString (dpy, wins[i], s->normal_gc, 
-		       defaults.bar_x_padding, 
-		       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-		       num, strlen (num));
+	      /* Create and map the window. */
+	      wins[i] = XCreateWindow (dpy, s->root, s->left + cur->x, s->top + cur->y, width, height, 1, 
+				       CopyFromParent, CopyFromParent, CopyFromParent,
+				       CWOverrideRedirect | CWBorderPixel | CWBackPixel,
+				       &attr);
+	      XMapWindow (dpy, wins[i]);
+	      XClearWindow (dpy, wins[i]);
 
-	  free (num);
-	  i++;
+	      /* Display the frame's number inside the window. */
+	      XDrawString (dpy, wins[i], s->normal_gc, 
+			   defaults.bar_x_padding, 
+			   defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+			   num, strlen (num));
+
+	      free (num);
+	      i++;
+	    }
 	}
       XSync (dpy, False);
 
       /* Read a key. */
-      XGrabKeyboard (dpy, s->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
+      XGrabKeyboard (dpy, current_screen()->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
       read_key (&c, &mod, NULL, 0);
       XUngrabKeyboard (dpy, CurrentTime);
 
       /* Destroy our number windows and free the array. */
-      for (i=0; i<num_frames (s); i++)
+      for (i=0; i<frames; i++)
 	XDestroyWindow (dpy, wins[i]);
 
       free (wins);
@@ -3365,7 +3374,7 @@ cmd_fselect (int interactive, char *data)
 
   /* Now that we have a frame number to go to, let's try to jump to
      it. */
-  frame = find_frame_number (s, fnum);
+  frame = find_frame_number (fnum);
   if (frame)
     set_active_frame (frame);
   else
@@ -3450,9 +3459,12 @@ cmd_frestore (int interactively, char *data)
       blank_frame (cur);
     }
 
+  /* Get rid of the frames' numbers */
+  screen_free_nums (s);
+
   /* Splice in our new frameset. */
   screen_restore_frameset (s, &fset);
-  numset_clear (s->frames_numset);
+/*   numset_clear (s->frames_numset); */
 
   /* Process the frames a bit to make sure everything lines up. */
   list_for_each_entry (cur, &s->frames, node)
@@ -3468,8 +3480,11 @@ cmd_frestore (int interactively, char *data)
 	  max = cur->last_access;
 	}
 
-      /* Grab the frame's number. */
-      numset_add_num (s->frames_numset, cur->number);
+      /* Grab the frame's number, but if it already exists request a
+	 new one. */
+      if (!numset_add_num (s->frames_numset, cur->number)) {
+	cur->number = numset_request (s->frames_numset);
+      }
 
       /* Update the window the frame points to. */
       if (cur->win_number != EMPTY)

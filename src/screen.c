@@ -91,6 +91,19 @@ screen_restore_frameset (rp_screen *s, struct list_head *head)
   list_splice (head, &s->frames);
 }
 
+
+/* Given a screen, free the frames' numbers from the numset. */
+void
+screen_free_nums (rp_screen *s)
+{
+  rp_frame *cur;
+
+  list_for_each_entry (cur, &s->frames, node)
+    {
+      numset_release (s->frames_numset, cur->number);
+    }
+}
+
 /* Given a list of frames, free them, but don't remove their numbers
    from the numset. */
 void
@@ -168,6 +181,9 @@ init_screens (int screen_arg, int screen_num)
       num_screens = 1;
     }
 
+  /* Create our global frame numset */
+  rp_frame_numset = numset_new();
+
   /* Initialize the screens */
   screens = (rp_screen *)xmalloc (sizeof (rp_screen) * num_screens);
   PRINT_DEBUG (("%d screens.\n", num_screens));
@@ -227,8 +243,8 @@ init_screen (rp_screen *s, int screen_num)
 	       | SubstructureRedirectMask | SubstructureNotifyMask );
   XSync (dpy, False);
 
-  /* Create the numset for the frames. */
-  s->frames_numset = numset_new ();
+  /* Set the numset for the frames to our global numset. */
+  s->frames_numset = rp_frame_numset;
 
   /* Build the display string for each screen */
   s->display_string = xmalloc (strlen(DisplayString (dpy)) + 21);

@@ -51,8 +51,8 @@ rp_frame *find_frame_right (rp_frame *frame);
 rp_frame *find_frame_left (rp_frame *frame);
 rp_frame *find_frame_down (rp_frame *frame);
 rp_frame *find_frame_up (rp_frame *frame);
-rp_frame *find_last_frame (rp_screen *s);
-rp_frame *find_frame_number (rp_screen *s, int num);
+rp_frame *find_last_frame ();
+rp_frame * find_frame_number (int num);
 
 rp_frame *current_frame ();
 

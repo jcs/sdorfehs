@@ -194,18 +194,24 @@ init_frame_list (rp_screen *screen)
 }
 
 rp_frame *
-find_last_frame (rp_screen *s)
+find_last_frame ()
 {
   rp_frame *cur, *last = NULL;
   int last_access = -1;
+  int i;
 
-  list_for_each_entry (cur, &s->frames, node)
+  for (i=0; i<num_screens; i++)
     {
-      if (cur->number != s->current_frame
-	  && cur->last_access > last_access)
+      rp_screen *s = &screens[i];
+
+      list_for_each_entry (cur, &s->frames, node)
 	{
-	  last_access = cur->last_access;
-	  last = cur;
+	  if (cur->number != current_screen()->current_frame
+	      && cur->last_access > last_access)
+	    {
+	      last_access = cur->last_access;
+	      last = cur;
+	    }
 	}
     }
 
@@ -1013,14 +1019,20 @@ find_frame_right (rp_frame *frame)
 }
 
 rp_frame *
-find_frame_number (rp_screen *s, int num)
+find_frame_number (int num)
 {
+  int i;
   rp_frame *cur;
 
-  list_for_each_entry (cur, &s->frames, node)
+  for (i=0; i<num_screens; i++)
     {
-      if (cur->number == num)
-	return cur;
+      rp_screen *s = &screens[i];
+  
+      list_for_each_entry (cur, &s->frames, node)
+	{
+	  if (cur->number == num)
+	    return cur;
+	}
     }
 
   return NULL;
