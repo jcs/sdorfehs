@@ -4,7 +4,7 @@
 ;; Maintainer: Gergely Nagy
 ;; Version: 0.1
 ;; Keywords: faces, ratpoison, X
-;; CVS Id: $Id: ratpoisonrc-mode.el,v 1.1 2001/09/06 20:09:50 algernon Exp $
+;; CVS Id: $Id: ratpoisonrc-mode.el,v 1.1 2001/09/16 09:39:57 sabetts Exp $
 ;; Last updated: <2001/09/06 17:57:24 algernon>
 
 ;; This file is NOT part of GNU Emacs.
