@@ -1,6 +1,9 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.1.1
+** new command fselect
+select a frame by its number.
+
 ** new command 'tmpwm'
 temporarily run a different window manager, then come back to
 ratpoison once it has terminated.

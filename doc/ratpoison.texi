@@ -550,6 +550,14 @@ Move to the frame right of the current frame.
 @item focusup
 Move to the frame above the current frame.
 
+@item fselect @var{n}
+Select a frame by number. If an argument is passed to it then attempt
+to select the frame whose number is @var{n}. If not, ratpoison will
+print a number at the top left corner of each frame and wait for the
+user to type the number they wish to select. Currently there is no way
+to select a frame whose number is greater than 9 unless the number is
+passed as an argument.
+
 @item getenv @var{env}
 Display the value of the environment variable, @var{env}.
 
