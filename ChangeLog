@@ -1,3 +1,27 @@
+2001-02-15  Gergely Nagy  <8@free.bsd.hu>
+
+	* autogen.sh: added autoheader call
+
+	* debian/control: bumped Standards-Version
+	* debian/copyright: changed URL
+	* debian/patches/00list: removed 01-xterm
+	* debian/patches/01-xterm.dpatch: removed, useless with 0.0.6
+	* debian/rules: rewritten using a newer version of my
+	build system
+
+	* man/Makefile.am: new file
+	* Makefile.am (SUBDIRS): added man
+	(debian_FILES): new variable, added to EXTRA_DIST
+
+	* debian/ratpoison.1: moved...
+	* man/ratpoison.1: ...here, and updated to include all
+	the new keystrokes
+	* doc/ratpoison.texi: updated
+	* doc/ratpoison.info: regenerated
+
+	* configure.in: fixed --enable-debug, added --with-emacs,
+	added man/Makefile to AC_OUTPUT
+
 2001-02-11  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* autogen.sh: added to repository
@@ -7,4 +31,3 @@
 	* doc/ratpoison.texi: added keystroke for `Show current time.'
 
 	* debian/ratpoison.1: added keystroke for `Show current time.'
-
