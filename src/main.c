@@ -469,6 +469,9 @@ init_rat_cursor (screen_info *s)
 				      1, 0, 1);
   s->rat = XCreatePixmapCursor(dpy, fore, mask, 
 			       &fg, &bg, RAT_HOT_X, RAT_HOT_Y);
+
+  XFreePixmap (dpy, fore);
+  XFreePixmap (dpy, mask);
 }
 
 static void
@@ -555,6 +558,22 @@ init_screen (screen_info *s, int screen_num)
 void
 clean_up ()
 {
+  int i;
+  
+  for (i=0; i<num_screens; i++)
+    {
+      XDestroyWindow (dpy, screens[i].bar_window);
+      XDestroyWindow (dpy, screens[i].key_window);
+      XDestroyWindow (dpy, screens[i].input_window);
+      XDestroyWindow (dpy, screens[i].frame_window);
+
+      XFreeCursor (dpy, screens[i].rat);
+      XFreeColormap (dpy, screens[i].def_cmap);
+      XFreeGC (dpy, screens[i].normal_gc);
+    }
+
+  XFreeFont (dpy, font);
+
   XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
   XCloseDisplay (dpy);
 }

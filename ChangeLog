@@ -1,3 +1,8 @@
+2001-04-08  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/main.c (clean_up): destroys resources stored in screens
+	(init_rat_cursor): frees the pixmaps
+
 2001-04-06  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/split.h (hide_frame_indicator): new prototype
