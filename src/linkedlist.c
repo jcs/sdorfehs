@@ -188,3 +188,15 @@ list_splice_init(struct list_head *list,
     INIT_LIST_HEAD(list);
   }
 }
+
+int
+list_size (struct list_head *list)
+{
+  struct list_head *cur;
+
+  int i = 0;
+  list_for_each (cur, list)
+    i++;
+
+  return i;
+}

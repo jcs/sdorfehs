@@ -1,3 +1,201 @@
+2005-01-14  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (ARG_STRING): new define
+	(ARG): likewise
+	(set_vars): change to a list_head.
+	(add_set_var): new function
+	(init_set_vars): likewise
+	(user_commands): change to a list_head. Move command definitions
+	to init_user_commands.
+	(add_command): new function
+	(init_user_commands): likewise
+	(cmdret_new): likewise
+	(cmdret_new_printf): likewise
+	(cmdret_free): likewise
+	(read_string): likewise
+	(read_keymap): likewise
+	(read_keydesc): likewise
+	(read_command): likewise
+	(read_shellcmd): likewise
+	(read_frame): likewise
+	(read_window): likewise
+	(read_gravity): likewise
+	(read_group): likewise
+	(read_hook): likewise
+	(read_variable): likewise
+	(hook_completions): likewise
+	(read_number): likewise
+	(read_arg): likewise
+	(parsed_input_to_args): likewise
+	(fill_in_missing_args): likewise
+	(parse_args): likewise
+	(arg_array): likewise
+	(arg_free): likewise
+	(command): use parse_args, parsed_input_to_args,
+	fill_in_missing_args to parse arguments and pass to command
+	functions.
+	(command): return cmdret* structure. prototype updated.
+	(cmd_abort): second arg is an array of struct cmdarg*. Return
+	cmdret*. Updated to use new parsed arguments.
+	(cmd_addhook): likewise
+	(cmd_alias): likewise
+	(cmd_banish): likewise
+	(cmd_bind): likewise
+	(cmd_chdir): likewise
+	(cmd_clrunmanaged): likewise
+	(cmd_colon): likewise
+	(cmd_curframe): likewise
+	(cmd_delete): likewise
+	(cmd_echo): likewise
+	(cmd_escape): likewise
+	(cmd_exec): likewise
+	(cmd_fdump): likewise
+	(cmd_focusdown): likewise
+	(cmd_focuslast): likewise
+	(cmd_focusleft): likewise
+	(cmd_focusright): likewise
+	(cmd_focusup): likewise
+	(cmd_frestore): likewise
+	(cmd_fselect): likewise
+	(cmd_gdelete): likewise
+	(cmd_getenv): likewise
+	(cmd_gmerge): likewise
+	(cmd_gmove): likewise
+	(cmd_gnew): likewise
+	(cmd_gnewbg): likewise
+	(cmd_gnext): likewise
+	(cmd_gprev): likewise
+	(cmd_gravity): likewise
+	(cmd_groups): likewise
+	(cmd_gselect): likewise
+	(cmd_h_split): likewise
+	(cmd_help): likewise
+	(cmd_info): likewise
+	(cmd_kill): likewise
+	(cmd_last): likewise
+	(cmd_lastmsg): likewise
+	(cmd_license): likewise
+	(cmd_link): likewise
+	(cmd_listhook): likewise
+	(cmd_meta): likewise
+	(cmd_msgwait): likewise
+	(cmd_newwm): likewise
+	(cmd_next): likewise
+	(cmd_next_frame): likewise
+	(cmd_nextscreen): likewise
+	(cmd_number): likewise
+	(cmd_only): likewise
+	(cmd_other): likewise
+	(cmd_prev): likewise
+	(cmd_prev_frame): likewise
+	(cmd_prevscreen): likewise
+	(cmd_quit): likewise
+	(cmd_redisplay): likewise
+	(cmd_remhook): likewise
+	(cmd_remove): likewise
+	(cmd_rename): likewise
+	(cmd_resize): likewise
+	(cmd_restart): likewise
+	(cmd_rudeness): likewise
+	(cmd_select): likewise
+	(cmd_setenv): likewise
+	(cmd_shrink): likewise
+	(cmd_source): likewise
+	(cmd_startup_message): likewise
+	(cmd_time): likewise
+	(cmd_tmpwm): likewise
+	(cmd_unalias): likewise
+	(cmd_unbind): likewise
+	(cmd_unimplemented): likewise
+	(cmd_unmanage): likewise
+	(cmd_unsetenv): likewise
+	(cmd_v_split): likewise
+	(cmd_verbexec): likewise
+	(cmd_version): likewise
+	(cmd_warp): likewise
+	(cmd_windows): likewise
+	(cmd_readkey): likewise
+	(cmd_newkmap): likewise
+	(cmd_delkmap): likewise
+	(cmd_definekey): likewise
+	(cmd_undefinekey): likewise
+	(cmd_set): likewise
+	(cmd_sselect): likewise
+	(cmd_ratwarp): likewise
+	(cmd_ratclick): likewise
+	(cmd_ratrelwarp): likewise
+	(cmd_rathold): likewise
+	(cmd_cnext): likewise
+	(cmd_cother): likewise
+	(cmd_cprev): likewise
+	(cmd_dedicate): likewise
+	(cmd_describekey): likewise
+	(cmd_inext): likewise
+	(cmd_iother): likewise
+	(cmd_iprev): likewise
+	(cmd_prompt): likewise
+	(cmd_sdump): likewise
+	(cmd_sfdump): likewise
+	(cmd_undo): likewise
+	(cmd_putsel): likewise
+	(cmd_getsel): likewise
+	(set_resizeunit): arg is an array of struct cmdarg*. Return
+	cmdret*. Updated to use new parsed arguments.
+	(set_wingravity): likewise
+	(set_transgravity): likewise
+	(set_maxsizegravity): likewise
+	(set_bargravity): likewise
+	(set_font): likewise
+	(set_padding): likewise
+	(set_border): likewise
+	(set_barborder): likewise
+	(set_inputwidth): likewise
+	(set_waitcursor): likewise
+	(set_winfmt): likewise
+	(set_winname): likewise
+	(set_fgcolor): likewise
+	(set_bgcolor): likewise
+	(set_barpadding): likewise
+	(set_winliststyle): likewise
+	(set_framesels): likewise
+	(set_maxundos): likewise
+	
+	* src/actions.h: include ratpoison.h
+	(argtype): add arg_FRAME, arg_WINDOW, arg_COMMAND, arg_SHELLCMD,
+	arg_KEYMAP, arg_KEY, arg_GRAVITY, arg_GROUP, arg_HOOK,
+	arg_VARIABLE.
+	(union arg_union): new union
+	(struct cmdarg): new struct
+	(struct argspec): likewise
+	(struct cmdret): likewise
+	(user_command): change func to reflect new command function
+	args. add num_args, ni_required_args, i_required_args.
+	(RP_CMD): new macro for prototyping command functions. all command
+	function prototypes updated to use this macro.
+	(init_user_commands): new prototype
+	(cmdret_free): likewise
+
+	* src/main.c (read_rc_file): handle cmdret* returned by command.
+	(main): call init_user_commands
+
+	* src/linkedlist.h (list_size): new prototype
+
+	* src/linkedlist.c (list_size): new function
+
+	* src/globals.h (RET_SUCCESS): new define
+	(RET_FAILURE): new define
+
+	* src/events.c (handle_key): handle the cmdret structure returned
+	by command.
+	(execute_remote_command): return cmdret*.
+	(receive_command): mark the command return string as error or
+	output before sending.
+
+	* src/data.h (struct rp_action): change data element type to char*
+
+	* src/communications.c (receive_command_result): print command
+	output to stderr if marked as an error.
+
 2005-01-04  Ryan Yeske  <rcyeske@gmail.com>
 
 	* src/actions.c (cmd_rudeness): Print rudeness to bar when called
@@ -8,6 +206,10 @@
 	* src/main.c (print_help): Update mailing list.
 
 	* src/actions.c (cmd_license): Update mailing list and website.
+
+2005-01-14  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* contrib/genrpbindings: fix regex to match new actions.c format.
 
 2004-12-12  Shawn Betts  <sabetts@vcn.bc.ca>
 

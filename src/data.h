@@ -170,7 +170,7 @@ struct rp_action
 {
   KeySym key;
   unsigned int state;
-  void *data;			/* misc data to be passed to the function */
+  char *data;			/* misc data to be passed to the function */
 /*   void (*func)(void *); */
 };
 

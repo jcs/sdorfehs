@@ -396,12 +396,18 @@ handle_key (KeySym ks, unsigned int mod, rp_screen *s)
      default keymap. Ignore the key if it doesn't have a binding. */
   if ((key_action = find_keybinding (ks, x11_mask_to_rp_mask (mod), map)))
     {
-      char *result;
+      cmdret *result;
+
+      PRINT_DEBUG(("%s\n", key_action->data));
+
       result = command (1, key_action->data);
       
-      /* Gobble the result. */
       if (result)
-	free (result);
+	{
+	  if (result->output)
+	    message (result->output);
+	  cmdret_free (result);
+	}
     }
   else
     {
@@ -437,11 +443,11 @@ key_press (XEvent *ev)
    text. This text is passed back using the RP_COMMAND_RESULT
    Atom. The client will wait for this property change so something
    must be returned. */
-static char *
+static cmdret *
 execute_remote_command (Window w)
 {
   int status;
-  char *result = NULL;
+  cmdret *ret;
   Atom type_ret;
   int format_ret;
   unsigned long nitems;
@@ -475,10 +481,10 @@ execute_remote_command (Window w)
     }
 
   PRINT_DEBUG (("command: %s\n", req));
-  result = command (req[0], (char *)&req[1]);
+  ret = command (req[0], (char *)&req[1]);
   XFree (req);
 
-  return result;
+  return ret;
 }
 
 /* Command requests are posted as a property change using the
@@ -489,6 +495,7 @@ execute_remote_command (Window w)
 static void
 receive_command (Window root)
 {
+  cmdret *cmd_ret;
   char *result;
   Atom type_ret;
   int format_ret;
@@ -535,25 +542,26 @@ receive_command (Window root)
 	  break;
 	}
 
-      /* We grabbed a window, so now find read the command stored in
+      /* We grabbed a window, so now read the command stored in
 	 this window and execute it. */
       w = *(Window *)prop_return;
       XFree (prop_return);
-      result = execute_remote_command (w);
+      cmd_ret = execute_remote_command (w);
 
       /* notify the client of any text that was returned by the
 	 command. */
-      if (result)
-	{
-	  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
-			   8, PropModeReplace, (unsigned char *)result, strlen (result));
-	  free (result);
-	}
+      if (cmd_ret->output)
+	result = xsprintf ("%c%s", cmd_ret->success ? '1':'0', cmd_ret->output);
       else
-	{
-	  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
-			   8, PropModeReplace, NULL, 0);
-	}
+	result = NULL;
+      if (result)
+	XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+			 8, PropModeReplace, (unsigned char *)result, strlen (result));
+      else
+	XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+			 8, PropModeReplace, NULL, 0);
+      free (result);
+      cmdret_free (cmd_ret);
     } while (bytes_after > 0);
 }
 

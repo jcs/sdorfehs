@@ -345,12 +345,12 @@ read_rc_file (FILE *file)
 	  /* do it */
 	  if (*line != '#')
 	    {
-	      char *result;
+	      cmdret *result;
 	      result = command (0, line);
 
 	      /* Gobble the result. */
 	      if (result)
-		free (result);
+		cmdret_free (result);
 	    }
 
 	  *line = '\0';
@@ -624,6 +624,7 @@ main (int argc, char *argv[])
 
   init_frame_lists ();
   update_modifier_map ();
+  init_user_commands();
   initialize_default_keybindings ();
 #ifdef HAVE_HISTORY
   history_load ();

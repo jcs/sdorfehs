@@ -49,6 +49,7 @@ struct list_head {
 } while (0)
 
 /* Prototypes of C functions. */
+int list_size (struct list_head *list);
 void list_splice_init(struct list_head *list,
 		      struct list_head *head);
 
