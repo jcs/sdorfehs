@@ -11,7 +11,7 @@ Now you can specify the display to connect to.
 * Changes since 1.2.0-beta2
 
 * Changes since 1.1.1
-** new comand 'defwrapwinlist'
+** new comand 'defwinliststyle'
 when turned on, the window list is displayed in a column, not a row.
 
 ** new command 'verbexec'
