@@ -1,3 +1,12 @@
+2001-02-11  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* Makefile.am (ratpoison_SOURCES): added sbuf.c sbuf.h
+
+	* bar.c (calc_bar_width): removed function
+	(update_window_names): now builds up the entire window list string
+	in dynamic storage before printing the window list.  No longer
+	displays the current window in a different colour.
+
 2001-02-11  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* main.c (set_sig_handler): Added
