@@ -1,3 +1,29 @@
+2003-04-04  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_setenv): properly parse the environment name
+	and value using strtok.
+
+	* src/window.c (add_to_window_list): init the window's frame_number to EMPTY.
+
+	* src/number.h (numset_clear): new prototype
+
+	* src/manage.c (unmanage)[AUTO_CLOSE]: code update for new globals.
+
+	* src/frame.c (frame_new): init f->last_access to 0.
+	(frame_dump): dump the X11 window ID, not the window number.
+	(frame_read): new function
+
+	* src/events.c (destroy_window): just unmanage the window.
+
+	* src/actions.h (cmd_fdump): new prototype
+	(cmd_frestore): likewise
+
+	* src/actions.c (user_commands): new commands "fdump" and "frestore".
+	(cmd_fdump): new function
+	(cmd_frestore): likewise
+
+	* src/number.c (numset_clear): new function.
+
 2003-03-31  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/window.c (set_current_window): use current_frame()

@@ -114,6 +114,7 @@ frame_new (screen_info *s)
 
   f = xmalloc (sizeof (rp_window_frame));
   f->number = numset_request (s->frames_numset);
+  f->last_access = 0;
 
   return f;
 }
@@ -147,21 +148,75 @@ frame_copy (rp_window_frame *frame)
 char *
 frame_dump (rp_window_frame *frame)
 {
+  rp_window *win;
   char *tmp;
   struct sbuf *s;
 
+  /* rather than use win_number, use the X11 window ID. */
+  win = find_window_number (frame->win_number);
+
   s = sbuf_new (0);
-  sbuf_printf (s, "%d %d %d %d %d %d %d", 
+  sbuf_printf (s, "%d %d %d %d %d %ld %d", 
 	       frame->number,
 	       frame->x,
 	       frame->y,
 	       frame->width,
 	       frame->height,
-	       frame->win_number,
+	       win ? win->w:0,
 	       frame->last_access);
 
   /* Extract the string and return it, and don't forget to free s. */
   tmp = sbuf_get (s);
   free (s);
   return tmp;
+}
+
+rp_window_frame *
+frame_read (char *str)
+{
+  Window w;
+  rp_window *win;
+  rp_window_frame *f;
+
+  f = xmalloc (sizeof (rp_window_frame));
+  if (sscanf (str, "%d %d %d %d %d %ld %d", 
+	      &f->number,
+	      &f->x,
+	      &f->y,
+	      &f->width,
+	      &f->height,
+	      &w,
+	      &f->last_access) < 7)
+    {
+      free (f);
+      return NULL;
+    }
+
+  /* Perform some integrity checks on what we got and fix any
+     problems. */
+  if (f->number <= 0)
+    f->number = 0;
+  if (f->x <= 0)
+    f->x = 0;
+  if (f->y <= 0)
+    f->y = 0;
+  if (f->width <= defaults.window_border_width*2)
+    f->width = defaults.window_border_width*2 + 1;
+  if (f->height <= defaults.window_border_width*2)
+    f->height = defaults.window_border_width*2 + 1;
+  if (f->last_access < 0)
+    f->last_access = 0;
+
+  /* Find the window with the X11 window ID. */
+  win = find_window_in_list (w, &rp_mapped_window);
+  if (win)
+    {
+      f->win_number = win->number;
+    }
+  else
+    {
+      f->win_number = EMPTY;
+    }
+
+  return f;
 }

@@ -41,5 +41,6 @@ void numset_free (struct numset *ns);
 void numset_release (struct numset *ns, int n);
 int numset_request (struct numset *ns);
 int numset_add_num (struct numset *ns, int n);
+void numset_clear (struct numset *ns);
 
 #endif /* ! _RATPOISON_NUMBER_H */

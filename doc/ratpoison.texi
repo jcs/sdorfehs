@@ -539,6 +539,11 @@ prefix key to @key{C-b}.
 @item exec @var{command}
 Execute a shell command. By default, @kbd{C-t !} does this.
 
+@item fdump
+dump the current frame layout as text. When used non-interactively
+(from the command-line), ratpoison will print the frame layout. When
+used interactively, nothing happens.
+
 @item focus
 cycle through ratpoison's frames.
 
@@ -556,6 +561,11 @@ Move to the frame right of the current frame.
 
 @item focusup
 Move to the frame above the current frame.
+
+@item frestore @var{frames}
+Restore the frame layout based on the list of frames
+@var{frames}. @var{frames} should be the text that was printed after
+calling @code{fdump}.
 
 @item fselect @var{n}
 Select a frame by number. If an argument is passed to it then attempt

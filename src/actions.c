@@ -93,6 +93,8 @@ static user_command user_commands[] =
     {"shrink",		cmd_shrink,	arg_VOID},
     {"tmpwm",		cmd_tmpwm,	arg_STRING},
     {"fselect",		cmd_fselect,	arg_VOID},
+    {"fdump",		cmd_fdump,	arg_STRING},
+    {"frestore",	cmd_frestore,	arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
@@ -2330,7 +2332,7 @@ cmd_defbgcolor (int interactive, void *data)
 char *
 cmd_setenv (int interactive, void *data)
 {
-  char *name, *value;
+  char *token, *dup;
   struct sbuf *env;
 
   if (data == NULL)
@@ -2339,25 +2341,34 @@ cmd_setenv (int interactive, void *data)
       return NULL;
     }
 
-  /* Get the 2 arguments. */
-  name = xmalloc (strlen (data) + 1);
-  value = xmalloc (strlen (data) + 1);
-  if (sscanf (data, "%s %s", name, value) < 2)
-    {
-      message (" setenv: two arguments required ");
-      free (name);
-      free (value);
-      return NULL;
-    }
-
   /* Setup the environment string. */
   env = sbuf_new(0);
-  sbuf_concat (env, name);
+
+  /* Get the 2 arguments. */
+  dup = xstrdup ((char *)data);
+  token = strtok (dup, " ");
+  if (token == NULL)
+    {
+      message (" setenv: two arguments required ");
+      free (dup);
+      sbuf_free (env);
+      return NULL;
+    }
+  sbuf_concat (env, token);
   sbuf_concat (env, "=");
-  sbuf_concat (env, value);
-  free (name);
-  free (value);
-  
+
+  token = strtok (NULL, "\0");
+  if (token == NULL)
+    {
+      message (" setenv: two arguments required ");
+      free (dup);
+      sbuf_free (env);
+      return NULL;
+    }
+  sbuf_concat (env, token);
+
+  free (dup);
+
   /* Stick it in the environment. */
   PRINT_DEBUG(("%s\n", sbuf_get(env)));
   putenv (sbuf_get (env));
@@ -2978,7 +2989,119 @@ cmd_fselect (int interactive, void *data)
 }
 
 char *
-cmd_restore (int interactively, void *data)
+cmd_fdump (int interactively, void *data)
 {
+  struct sbuf *s;
+  char *tmp;
+  rp_window_frame *cur;
+
+  s = sbuf_new (0);
+
+  /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
+  list_for_each_entry (cur, &current_screen()->rp_window_frames, node)
+    {
+      sbuf_concat (s, frame_dump (cur));
+      sbuf_concat (s, ",");
+    }
+
+  tmp = sbuf_get (s);
+  free (s);
+  return tmp;
+}
+
+char *
+cmd_frestore (int interactively, void *data)
+{
+  screen_info *s = current_screen();
+  char *token;
+  char *dup;
+  rp_window_frame *new, *cur;
+  rp_window *win;
+  struct list_head fset;
+  int max = -1;
+
+  if (data == NULL)
+    {
+      message (" frestore: one argument required ");
+      return NULL;
+    }
+
+  INIT_LIST_HEAD (&fset);
+
+  dup = xstrdup ((char *)data);
+  token = strtok (dup, ",");
+  if (token == NULL)
+    {
+      message (" frestore: bad frame format ");
+      free (dup);
+      return NULL;
+    }
+
+  /* Build the new frame set. */
+  while (token != NULL)
+    {
+      new = frame_read (token);
+      if (new == NULL)
+	{
+	  message (" frestore: bad frame format ");
+	  free (dup);
+	  return NULL;
+	}
+      list_add_tail (&new->node, &fset);
+      token = strtok (NULL, ",");
+    } 
+
+  free (dup);
+
+  /* Clear all the frames. */
+  list_for_each_entry (cur, &s->rp_window_frames, node)
+    {
+      PRINT_DEBUG (("blank %d\n", cur->number));
+      blank_frame (cur);
+    }
+
+  /* Splice in our new frameset. */
+  screen_restore_frameset (s, &fset);
+  numset_clear (s->frames_numset);
+
+  /* Process the frames a bit to make sure everything lines up. */
+  list_for_each_entry (cur, &s->rp_window_frames, node)
+    {
+      rp_window *win;
+
+      PRINT_DEBUG (("restore %d %d\n", cur->number, cur->win_number));
+
+      /* Find the current frame based on last_access. */
+      if (cur->last_access > max)
+	{
+	  s->current_frame = cur->number;
+	  max = cur->last_access;
+	}
+
+      /* Grab the frame's number. */
+      numset_add_num (s->frames_numset, cur->number);
+
+      /* Update the window the frame points to. */
+      if (cur->win_number != EMPTY)
+	{
+	  win = find_window_number (cur->win_number);
+	  set_frames_window (cur, win);
+	}
+    }
+
+  /* Show the windows in the frames. */
+  list_for_each_entry (win, &rp_mapped_window, node)
+    {
+      if (win->frame_number != EMPTY)
+	{
+	  maximize (win);
+	  unhide_window (win);
+	}
+    }
+
+  set_active_frame (current_frame());  
+  show_frame_indicator();
+
+  PRINT_DEBUG (("Done.\n"));
   return NULL;
 }

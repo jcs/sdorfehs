@@ -117,6 +117,8 @@ char *cmd_unalias (int interactive, void *data);
 char *cmd_warp(int interactive, void *data);
 char *cmd_tmpwm (int interactive, void *data);
 char *cmd_fselect (int interactive, void *data);
+char *cmd_fdump (int interactively, void *data);
+char *cmd_frestore (int interactively, void *data);
 
 void initialize_default_keybindings (void);
 void free_keybindings ();

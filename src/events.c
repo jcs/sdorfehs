@@ -168,25 +168,12 @@ map_request (XEvent *ev)
 static void
 destroy_window (XDestroyWindowEvent *ev)
 {
-  rp_window_frame *frame;
   rp_window *win;
 
   win = find_window (ev->window);
   if (win == NULL) return;
 
   ignore_badwindow++;
-
-  /* A destroyed window should never have a frame, since it should
-     have been cleaned up with an unmap notify event, but just in
-     case... */
-  frame = find_windows_frame (win);
-  if (frame)
-    {
-      cleanup_frame (frame);
-      if (frame->number == win->scr->current_frame) 
-	set_active_frame (frame);
-    }
-
   unmanage (win);
 
   ignore_badwindow--;

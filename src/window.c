@@ -119,7 +119,8 @@ add_to_window_list (screen_info *s, Window w)
   new_window->scr = s;
   new_window->last_access = 0;
   new_window->state = WithdrawnState;
-  new_window->number = -1;	
+  new_window->number = -1;
+  new_window->frame_number = EMPTY;
   new_window->named = 0;
   new_window->hints = XAllocSizeHints ();
   new_window->colormap = DefaultColormap (dpy, s->screen_num);

@@ -272,8 +272,8 @@ unmanage (rp_window *w)
   free_window (w);  
 
 #ifdef AUTO_CLOSE
-  if (rp_mapped_window_sentinel->next == rp_mapped_window_sentinel
-      && rp_mapped_window_sentinel->prev == rp_mapped_window_sentinel)
+  if (rp_mapped_window->next == &rp_mapped_window
+      && rp_mapped_window->prev == &rp_mapped_window)
     {
       /* If the mapped window list is empty then we have run out of
  	 managed windows, so kill ratpoison. */

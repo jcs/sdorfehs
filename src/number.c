@@ -128,3 +128,9 @@ numset_free (struct numset *ns)
   free (ns->numbers_taken);
   free (ns);
 }
+
+void
+numset_clear (struct numset *ns)
+{
+  ns->num_taken = 0;
+}
