@@ -304,6 +304,9 @@ occupying a frame will be the second window.
 @item C-t tab
 Cycle through ratpoison's frames.
 
+@item C-t M-tab
+Switch to the last focused frame.
+
 @item C-t Q
 Kill all frames but the current one.
 
@@ -414,6 +417,9 @@ Application Name
 Resource Class
 @item %i
 X11 Window ID
+@item %l
+A unique number based on when the window was last accessed. The higher
+the number, the more recent it was accessed.
 @end table
 
 @item defwinname @var{name}
@@ -445,6 +451,9 @@ prefix key to @key{C-b}.
 
 @item focus
 cycle through ratpoison's frames.
+
+@item focuslast
+Switch to the last focused frame.
 
 @item focusup
 Move to the frame above the current frame.
