@@ -109,7 +109,9 @@ unmap_notify (XEvent *ev)
       if (frame)
 	{
 	  cleanup_frame (frame);
-	  if (frame->number == win->scr->current_frame) set_active_frame (frame);
+	  if (frame->number == win->scr->current_frame
+	      && current_screen() == win->scr)
+	    set_active_frame (frame);
 	}
 
       withdraw_window (win);
@@ -208,7 +210,8 @@ destroy_window (XDestroyWindowEvent *ev)
       if (frame)
 	{
 	  cleanup_frame (frame);
-	  if (frame->number == win->scr->current_frame) 
+	  if (frame->number == win->scr->current_frame
+	      && current_screen() == win->scr) 
 	    set_active_frame (frame);
 	}
       withdraw_window (win);

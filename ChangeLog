@@ -1,4 +1,8 @@
-2004-12-08  Shawn Betts  <katia_dilkina@verizon.net>
+2004-12-08  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/events.c (destroy_window): make sure the current screen is
+	the windows screen before calling set_active_frame.
+	(unmap_notify): likewise
 
 	* src/actions.c (frestore): use strtok_r.
 
