@@ -1,10 +1,14 @@
-ratpoison (1.0.0-1.1) unstable; urgency=low
+ratpoison (1.0.0.cvs.20011208-1) unstable; urgency=low
 
+  * CVS snapshot release on 2001-12-08
   * Recommend ratmenu (Closes: #113624)
-  * Do not recommend xterm, but xvt, that fits better with the ratpoison
-  idea
+  * debian/control: Do not recommend xterm, but xvt, that fits better with
+    the ratpoison idea
+  * debian/control: Changed Maintainer field, and added SirDibos and
+    myself to Uploaders
+  * debian/ratpoison.examples: include most of contrib/
 
- -- Gergely Nagy <algernon@debian.org>  Sun,  7 Oct 2001 16:55:41 +0200
+ -- Gergely Nagy <algernon@debian.org>  Sat,  8 Dec 2001 23:40:32 +0100
 
 ratpoison (1.0.0-1) unstable; urgency=medium
 
