@@ -2151,23 +2151,23 @@ parse_wingravity (char *data)
 {
   int ret = -1;
 
-  if (!strcasecmp (data, "northwest") || !strcasecmp (data, "nw"))
+  if (!strcasecmp (data, "northwest") || !strcasecmp (data, "nw") || !strcmp (data, "7"))
     ret = NorthWestGravity;
-  if (!strcasecmp (data, "north") || !strcasecmp (data, "n"))
+  if (!strcasecmp (data, "north") || !strcasecmp (data, "n") || !strcmp (data, "8"))
     ret = NorthGravity;
-  if (!strcasecmp (data, "northeast") || !strcasecmp (data, "ne"))
+  if (!strcasecmp (data, "northeast") || !strcasecmp (data, "ne") || !strcmp (data, "9"))
     ret = NorthEastGravity;
-  if (!strcasecmp (data, "west") || !strcasecmp (data, "w"))
+  if (!strcasecmp (data, "west") || !strcasecmp (data, "w") || !strcmp (data, "4"))
     ret = WestGravity;
-  if (!strcasecmp (data, "center") || !strcasecmp (data, "c"))
+  if (!strcasecmp (data, "center") || !strcasecmp (data, "c") || !strcmp (data, "5"))
     ret = CenterGravity;
-  if (!strcasecmp (data, "East") || !strcasecmp (data, "e"))
+  if (!strcasecmp (data, "east") || !strcasecmp (data, "e") || !strcmp (data, "6"))
     ret = EastGravity;
-  if (!strcasecmp (data, "southwest") || !strcasecmp (data, "sw"))
+  if (!strcasecmp (data, "southwest") || !strcasecmp (data, "sw") || !strcmp (data, "1"))
     ret = SouthWestGravity;
-  if (!strcasecmp (data, "South") || !strcasecmp (data, "s"))
+  if (!strcasecmp (data, "south") || !strcasecmp (data, "s") || !strcmp (data, "2"))
     ret = SouthGravity;
-  if (!strcasecmp (data, "southeast") || !strcasecmp (data, "se"))
+  if (!strcasecmp (data, "southeast") || !strcasecmp (data, "se") || !strcmp (data, "3"))
     ret = SouthEastGravity;
 
   return ret;

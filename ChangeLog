@@ -8,6 +8,7 @@
 	aborts, the frame number when they select one, or 'No such frame'
 	when they selected a nonexistent one.
 	(cmd_version): return the version string in non-interactive mode.
+	(parse_wingravity): accept numbers for gravity.
 
 	* src/events.c (property_notify): pass the root window to
 	receive_command.
