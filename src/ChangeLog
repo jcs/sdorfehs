@@ -1,5 +1,8 @@
 2001-03-05  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* actions.c: remove silly C,M,A,S,H #defines and propagate
+	changes.
+
 	* bar.c (update_window_names): Print a '+' for the last accessed
 	window.
 

@@ -27,11 +27,11 @@
 
 #include "ratpoison.h"
 
-#define C ControlMask
-#define M Mod1Mask		/* Meta */
-#define A Mod2Mask		/* Alt */
-#define S Mod3Mask		/* Super */
-#define H Mod4Mask		/* Hyper */
+/* #define C ControlMask */
+/* #define M Mod1Mask		/\* Meta *\/ */
+/* #define A Mod2Mask		/\* Alt *\/ */
+/* #define S Mod3Mask		/\* Super *\/ */
+/* #define H Mod4Mask		/\* Hyper *\/ */
 
 rp_action *key_actions;
 int key_actions_last;
@@ -91,7 +91,7 @@ initialize_default_keybindings (void)
 
   add_keybinding (prefix_key.sym, prefix_key.state, "other");
   add_keybinding (prefix_key.sym, 0, "generate");
-  add_keybinding (XK_g, C, "abort");
+  add_keybinding (XK_g, ControlMask, "abort");
   add_keybinding (XK_0, 0, "select 0");
   add_keybinding (XK_1, 0, "select 1");
   add_keybinding (XK_2, 0, "select 2");
@@ -103,34 +103,34 @@ initialize_default_keybindings (void)
   add_keybinding (XK_8, 0, "select 8");
   add_keybinding (XK_9, 0, "select 9");
   add_keybinding (XK_A, 0, "title");
-  add_keybinding (XK_A, C, "title");
+  add_keybinding (XK_A, ControlMask, "title");
   add_keybinding (XK_K, 0, "kill");
-  add_keybinding (XK_K, C, "kill");
+  add_keybinding (XK_K, ControlMask, "kill");
   add_keybinding (XK_Return, 0, "next");
-  add_keybinding (XK_Return, C,	"next");
+  add_keybinding (XK_Return, ControlMask,	"next");
   add_keybinding (XK_a, 0, "clock");
-  add_keybinding (XK_a, C, "clock");
+  add_keybinding (XK_a, ControlMask, "clock");
   add_keybinding (XK_c, 0, "exec " TERM_PROG);
-  add_keybinding (XK_c, C, "exec " TERM_PROG);
+  add_keybinding (XK_c, ControlMask, "exec " TERM_PROG);
   add_keybinding (XK_colon, 0, "colon");
   add_keybinding (XK_exclam, 0, "exec");
-  add_keybinding (XK_exclam, C, "colon exec " TERM_PROG " -e ");
+  add_keybinding (XK_exclam, ControlMask, "colon exec " TERM_PROG " -e ");
   add_keybinding (XK_k, 0, "delete");
-  add_keybinding (XK_k, C, "delete");
+  add_keybinding (XK_k, ControlMask, "delete");
   add_keybinding (XK_m, 0, "maximize");
-  add_keybinding (XK_m, C, "maximize");
+  add_keybinding (XK_m, ControlMask, "maximize");
   add_keybinding (XK_n, 0, "next");
-  add_keybinding (XK_n, C, "next");
+  add_keybinding (XK_n, ControlMask, "next");
   add_keybinding (XK_p, 0, "prev");
-  add_keybinding (XK_p, C, "prev");
+  add_keybinding (XK_p, ControlMask, "prev");
   add_keybinding (XK_quoteright, 0, "select");
-  add_keybinding (XK_quoteright, C, "select");
+  add_keybinding (XK_quoteright, ControlMask, "select");
   add_keybinding (XK_space, 0, "next");
-  add_keybinding (XK_space, C, "next");
+  add_keybinding (XK_space, ControlMask, "next");
   add_keybinding (XK_v, 0, "version");
-  add_keybinding (XK_v, C, "version");
+  add_keybinding (XK_v, ControlMask, "version");
   add_keybinding (XK_w, 0, "windows");
-  add_keybinding (XK_w, C, "windows");
+  add_keybinding (XK_w, ControlMask, "windows");
 }
 
 user_command user_commands[] = 
