@@ -67,7 +67,7 @@ static user_command user_commands[] =
     {"rudeness",	cmd_rudeness,		arg_STRING},
     {"select", 		cmd_select,		arg_STRING},
     {"source",		cmd_source,		arg_STRING},
-    {"split",		cmd_h_split,		arg_STRING},
+    {"split",		cmd_v_split,		arg_STRING},
     {"title", 		cmd_rename, 		arg_STRING},
     {"version",		cmd_version,		arg_VOID},
     {"vsplit",		cmd_v_split,		arg_STRING},
@@ -428,8 +428,8 @@ initialize_default_keybindings (void)
   add_keybinding (XK_w, RP_CONTROL_MASK, "windows", map);
   add_keybinding (XK_s, 0, "split", map);
   add_keybinding (XK_s, RP_CONTROL_MASK, "split", map);
-  add_keybinding (XK_S, 0, "vsplit", map);
-  add_keybinding (XK_S, RP_CONTROL_MASK, "vsplit", map);
+  add_keybinding (XK_S, 0, "hsplit", map);
+  add_keybinding (XK_S, RP_CONTROL_MASK, "hsplit", map);
   add_keybinding (XK_Tab, 0, "focus", map);
   add_keybinding (XK_Tab, RP_META_MASK, "focuslast", map);
   add_keybinding (XK_Q, 0, "only", map);
@@ -1591,7 +1591,7 @@ read_split (const char *str, int max)
 }
 
 char *
-cmd_h_split (int interactive, char *data)
+cmd_v_split (int interactive, char *data)
 {
   rp_frame *frame;
   int pixels;
@@ -1607,13 +1607,13 @@ cmd_h_split (int interactive, char *data)
   if (pixels > 0)
     h_split_frame (frame, pixels);
   else
-    message (" hsplit: invalid argument ");    
+    message (" vsplit: invalid argument ");    
 
   return NULL;
 }
 
 char *
-cmd_v_split (int interactive, char *data)
+cmd_h_split (int interactive, char *data)
 {
   rp_frame *frame;
   int pixels;
@@ -1629,7 +1629,7 @@ cmd_v_split (int interactive, char *data)
   if (pixels > 0)
     v_split_frame (frame, pixels);
   else
-    message (" vsplit: invalid argument ");    
+    message (" hsplit: invalid argument ");    
 
   return NULL;
 }

@@ -1,3 +1,8 @@
+2004-04-18  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (cmd_v_split, cmd_h_split): swap names.
+	(user_commands): bind split to cmd_v_split.
+
 2004-04-03  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/main.c (init_defaults): init frame_selectors.
