@@ -1,3 +1,9 @@
+2003-06-22  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_groups): print a * beside the current
+	group. if non-interactively called, return the string.
+	(sync_wins): rewrite.
+
 2003-06-21  Shawn Betts  <sabetts@sfu.ca>
 
 	* contrib/Makefile.am (bin_SCRIPTS): add rpws

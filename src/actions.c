@@ -2930,6 +2930,155 @@ cmd_warp (int interactive, char *data)
   return NULL;
 }
 
+/* FIXME: This is sorely broken. */
+static void
+sync_wins (rp_screen *s)
+{
+  rp_window *win;
+  XWindowAttributes attr;
+  unsigned int i, nwins;
+  Window dw1, dw2, *wins;
+  XQueryTree(dpy, s->root, &dw1, &dw2, &wins, &nwins);
+
+  /* Remove any windows in our cached lists that aren't in the query
+     tree. These windows have been destroyed. */
+  list_for_each_entry (win, &rp_mapped_window, node)
+    {
+      int found;
+
+      found = 0;
+      for (i=0; i<nwins; i++)
+	{
+	  if (win->w == wins[i])
+	    {
+	      found = 1;
+	      break;
+	    }
+	}
+      if (!found)
+	{
+	  ignore_badwindow++;  
+
+	  /* If, somehow, the window is not withdrawn before it is destroyed,
+	     perform the necessary steps to withdraw the window before it is
+	     unmanaged. */
+	  if (win->state == IconicState)
+	    {
+	      PRINT_DEBUG (("Destroying Iconic Window (%s)\n", window_name (win)));
+	      withdraw_window (win);
+	    }
+	  else if (win->state == NormalState)
+	    {
+	      rp_frame *frame;
+
+	      PRINT_DEBUG (("Destroying Normal Window (%s)\n", window_name (win)));
+	      frame = find_windows_frame (win);
+	      if (frame)
+		{
+		  cleanup_frame (frame);
+		  if (frame->number == win->scr->current_frame) 
+		    set_active_frame (frame);
+		}
+	      withdraw_window (win);
+	    }
+
+	  /* Now that the window is guaranteed to be in the unmapped window
+	     list, we can safely stop managing it. */
+	  unmanage (win);
+	  ignore_badwindow--;
+	}
+    }
+
+
+  for (i=0; i<nwins; i++)
+    {
+      XGetWindowAttributes(dpy, wins[i], &attr);
+      if (wins[i] == s->bar_window 
+	  || wins[i] == s->key_window 
+	  || wins[i] == s->input_window
+	  || wins[i] == s->frame_window
+	  || wins[i] == s->help_window
+	  || attr.override_redirect == True) continue;
+      
+      /* Find the window in our mapped window list. */
+      win = find_window_in_list (wins[i], &rp_mapped_window);
+      if (win)
+	{
+	  rp_frame *frame;
+	  /* If the window is viewable and it is in a frame, then
+	     maximize it and go to the next window. */
+	  if (attr.map_state == IsViewable)
+	    {
+	      frame = find_windows_frame (win);
+	      if (frame)
+		{
+		  maximize (win);
+		}
+	      else
+		{
+		  hide_window (win);
+		}
+	    }
+	  else if (attr.map_state == IsUnmapped
+		   && get_state (win) == IconicState)
+	    {
+	      frame = find_windows_frame (win);
+	      if (frame)
+		{
+		  unhide_window (win);
+		  maximize (win);
+		}
+	    }
+	  else
+	    {
+	      PRINT_DEBUG (("I don't know what to do...\n"));
+	    }
+	  
+	  /* We've handled the window. */
+	  continue;
+	}
+
+      /* Try the unmapped window list. */
+      win = find_window_in_list (wins[i], &rp_unmapped_window);
+      if (win)
+	{
+	  rp_frame *frame;
+	  /* If the window is viewable and it is in a frame, then
+	     maximize it and go to the next window. */
+	  if (attr.map_state == IsViewable)
+	    {
+	      /* We need to map it since it's visible now. */
+	      map_window (win);
+	    }
+	  else if (attr.map_state == IsUnmapped
+		   && get_state (win) == IconicState)
+	    {
+	      /* We need to map the window and then hide it. */
+	      map_window (win);
+	      hide_window (win);
+	    }
+	  else
+	    {
+	      PRINT_DEBUG (("I think it's all sync'd up...\n"));
+	    }
+	  
+	  /* We've handled the window. */
+	  continue;
+	}
+
+      /* The window isn't in the mapped or unmapped window list so add
+	 it. */
+      win = add_to_window_list (s, wins[i]);
+      
+      /* If it's visible or iconized. "Map" it. */
+      if (attr.map_state == IsViewable
+	  || (attr.map_state == IsUnmapped
+	      && get_state (win) == IconicState))
+	map_window (win);
+    }
+
+}
+
 /* Temporarily give control over to another window manager, reclaiming
    control when that WM terminates. */
 char *
@@ -2937,6 +3086,7 @@ cmd_tmpwm (int interactive, char *data)
 {
   struct list_head *tmp, *iter;
   rp_window *win = NULL;
+  int child;
   int status;
   int pid;
   int i;
@@ -2964,30 +3114,12 @@ cmd_tmpwm (int interactive, char *data)
 
   XSync (dpy, False);
 
-  /* FIXME: drop all our windows. We shouldn't do this. */
-  list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
-    {
-      rp_frame *frame;
-
-      /* Remove the window from the frame. */
-      frame = find_windows_frame (win);
-      if (frame) cleanup_frame (frame);
-      if (frame->number == win->scr->current_frame) set_active_frame (frame);
-
-      /* put the window in the unmapped list. */
-      numset_release (rp_window_numset, win->number);
-      list_move_tail(&win->node, &rp_unmapped_window);
-    }
-
-  /* Now that all the windows are in the unmapped list, unmanage them. */
-  list_for_each_safe_entry (win, iter, tmp, &rp_unmapped_window, node)
-    {
-      unmanage (win);
-    }
-
   /* Launch the new WM and wait for it to terminate. */
   pid = spawn (data);
-  waitpid (pid, &status, 0);
+  do
+    {
+      child = waitpid (pid, &status, 0);
+    } while (child != pid);
 
   /* Enable the event selection on the root window. */
   for (i=0; i<num_screens; i++)
@@ -3000,9 +3132,12 @@ cmd_tmpwm (int interactive, char *data)
     }
   XSync (dpy, False);
 
-  /* Pick up all the windows. */
+  /* Sort through all the windows in each group and pick out the ones
+     that are unmapped or destroyed. */
   for (i=0; i<num_screens; i++)
-    scanwins (&screens[i]);
+    {
+      sync_wins (&screens[i]);
+    }
 
   /* If no window has focus, give the key_window focus. */
   if (current_window() == NULL)
@@ -3405,27 +3540,55 @@ cmd_groups (int interactive, char *data)
 
   buffer = sbuf_new (0);
 
+  /* Generate the string. */
   list_for_each_entry (cur, &rp_groups, node)
     {
       char *fmt;
+      char separator;
 
       if (cur == rp_current_group)
 	mark_start = strlen (sbuf_get (buffer));
 
-      fmt =  xsprintf ("%d-%s", cur->number, cur->name);
+      /* Pad start of group name with a space for row style. */
+      if (defaults.window_list_style == STYLE_ROW)
+	  sbuf_concat (buffer, " ");	
+
+      if(cur == rp_current_group)
+	separator = '*';
+      else
+	separator = '-';
+
+      fmt =  xsprintf ("%d%c%s", cur->number, separator, cur->name);
       sbuf_concat (buffer, fmt);
 
-      if (cur->node.next != &rp_groups)
-	sbuf_concat (buffer, "\n");
+      /* Pad end of group name with a space for row style. */
+      if (defaults.window_list_style == STYLE_ROW)
+	{
+	  sbuf_concat (buffer, " ");
+	}
+      else
+	{
+	  if (cur->node.next != &rp_groups)
+	    sbuf_concat (buffer, "\n");
+	}
 
       if (cur == rp_current_group)
 	mark_end = strlen (sbuf_get (buffer));
     }
 
-  marked_message (sbuf_get (buffer), mark_start, mark_end);
-  sbuf_free (buffer);
-
-  return NULL;
+  /* Display it or return it. */
+  if (interactive)
+    {
+      marked_message (sbuf_get (buffer), mark_start, mark_end);
+      sbuf_free (buffer);
+      return NULL;
+    }
+  else
+    {
+      char* tmp = sbuf_get(buffer);
+      free(buffer);
+      return tmp;
+    }
 }
 
 /* Move a window to a different group. */
