@@ -1,3 +1,10 @@
+2004-02-26  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/split.c (hide_frame_indicator): unmap all 'current frame'
+	indicator windows.
+	(show_frame_indicator): hide the 'current frame' indicator before
+	showing it.
+
 2004-01-30  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_tmpwm): add an XSync() call

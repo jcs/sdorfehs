@@ -888,12 +888,15 @@ blank_frame (rp_frame *frame)
 void
 hide_frame_indicator ()
 {
-  XUnmapWindow (dpy, current_screen()->frame_window);
+  int i;
+  for (i=0; i<num_screens; i++)
+    XUnmapWindow (dpy, screens[i].frame_window);
 }
 
 void
 show_frame_indicator ()
 {
+  hide_frame_indicator ();
   show_frame_message (MESSAGE_FRAME_STRING);
   alarm (defaults.frame_indicator_timeout);
 }
