@@ -68,6 +68,8 @@ static user_command user_commands[] =
     {"setenv",		cmd_setenv,	arg_STRING},
     {"chdir",		cmd_chdir,	arg_STRING},
     {"unsetenv",	cmd_unsetenv,	arg_STRING},
+    {"info",		cmd_info,	arg_VOID},
+    {"lastmsg",		cmd_lastmsg,	arg_VOID},
 
     /* Commands to set default behavior. */
     {"defbarloc",	cmd_defbarloc, 		arg_STRING},
@@ -228,10 +230,14 @@ initialize_default_keybindings (void)
   add_keybinding (XK_colon, 0, "colon");
   add_keybinding (XK_exclam, 0, "exec");
   add_keybinding (XK_exclam, ControlMask, "colon exec " TERM_PROG " -e ");
+  add_keybinding (XK_i, 0, "info");
+  add_keybinding (XK_i, ControlMask, "info");
   add_keybinding (XK_k, 0, "delete");
   add_keybinding (XK_k, ControlMask, "delete");
   add_keybinding (XK_l, 0, "redisplay");
   add_keybinding (XK_l, ControlMask, "redisplay");
+  add_keybinding (XK_m, 0, "lastmsg");
+  add_keybinding (XK_m, ControlMask, "lastmsg");
   add_keybinding (XK_n, 0, "next");
   add_keybinding (XK_n, ControlMask, "next");
   add_keybinding (XK_p, 0, "prev");
@@ -1837,5 +1843,31 @@ cmd_unsetenv (int interactive, void *data)
 
   unsetenv ((char *)data);
 
+  return NULL;
+}
+
+char *
+cmd_info (int interactive, void *data)
+{
+  if (current_window() == NULL)
+    {
+      marked_message_printf (0, 0, " (%d, %d) No window ",
+			     current_screen()->root_attr.width,
+			     current_screen()->root_attr.height);
+    }
+  else
+    {
+      rp_window *win = current_window();
+      marked_message_printf (0, 0, " (%d,%d) %d(%s) ", win->width, win->height,
+			     win->number, window_name (win));
+    }
+
+  return NULL;
+}
+
+char *
+cmd_lastmsg (int interactive, void *data)
+{
+  show_last_message();
   return NULL;
 }

@@ -1,6 +1,12 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** New command lastmsg
+Display the last message.
+
+** New command info
+display information about the current window.
+
 ** New command unsetenv
 Remove an environment variable from...well...the environment.
 

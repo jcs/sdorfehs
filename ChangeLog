@@ -1,3 +1,20 @@
+2001-09-18  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/actions.h (cmd_info): new prototype
+	(cmd_lastmsg): likewise
+
+	* src/bar.h (show_last_message): new prototype
+
+	* src/bar.c: new static globals last_msg, lash_mark_start, and last_mark_end.
+	(marked_message): Store the message in last_msg.
+	(show_last_message): new function
+
+	* src/actions.c (cmd_info): new function
+	(cmd_lastmsg): likewise
+	(user_commands): new commands "info" and "lastmsg"
+	(initialize_default_keybindings): Add key bindings for "info" and
+	"lastmsg".
+
 2001-09-17  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/actions.h (cmd_unsetenv): new prototype

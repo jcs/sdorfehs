@@ -39,6 +39,11 @@
 #define BAR_IS_WINDOW_LIST 1
 #define BAR_IS_MESSAGE     2
 
+/* A copy of the last message displayed in the message bar. */
+static char *last_msg = NULL;
+static int last_mark_start = 0;
+static int last_mark_end = 0;
+
 /* Hide the bar from sight. */
 int
 hide_bar (screen_info *s)
@@ -221,4 +226,25 @@ marked_message (char *msg, int mark_start, int mark_end)
 
       XFillRectangle (dpy, s->bar_window, lgc, start, 0, end, height);
     }
+
+  /* Keep a record of the message. */
+  if (last_msg)
+    free (last_msg);
+  last_msg = xstrdup (msg);
+  last_mark_start = mark_start;
+  last_mark_end = mark_end;
+}
+
+void
+show_last_message ()
+{
+  char *msg;
+
+  /* A little kludge to avoid last_msg in marked_message from being
+     strdup'd right after freeing the pointer. Note: in this case
+     marked_message's msg arg would have been the same as
+     last_msg.  */
+  msg = xstrdup (last_msg);
+  marked_message (msg, last_mark_start, last_mark_end);
+  free (msg);
 }
