@@ -283,7 +283,7 @@ unmanage (rp_window *w)
 	 shortly after another window is mapped most likely by the
 	 same app. */
 
-      send_kill();
+      kill_signalled = 1;
     }
 #endif
 }

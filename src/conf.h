@@ -51,6 +51,9 @@
    doesn't work very well yet. */
 /* #define HIDE_MOUSE  */
 
+/* When the last window closes, quit ratpoison. */
+/* #define AUTO_CLOSE */
+
 /* If for some sick reason you don't want ratpoison to manage a
    window, put its name in this list. These windows get drawn but
    ratpoison won't have any knowledge of them and you won't be able to

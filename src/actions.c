@@ -1339,6 +1339,13 @@ cmd_rudeness (int interactive, void *data)
 {
   int num;
 
+  if (data == NULL && !interactive)
+    return xsprintf ("%d", 
+		     rp_honour_transient_raise
+		     | (rp_honour_normal_raise << 1)
+		     | (rp_honour_transient_map << 2)
+		     | (rp_honour_normal_map << 3));
+		     
   if (data == NULL)
     {
       message (" Rudeness level required ");
@@ -1386,23 +1393,49 @@ parse_wingravity (char *data)
   return ret;
 }
 
+static char *
+wingravity_to_string (int g)
+{
+  switch (g)
+    {
+    case NorthWestGravity:
+      return "nw";
+    case WestGravity:
+      return "w";
+    case SouthWestGravity:
+      return "sw";
+    case NorthGravity:
+      return "ng";
+    case CenterGravity:
+      return "c";
+    case SouthGravity:
+      return "s";
+    case NorthEastGravity:
+      return "ne";
+    case EastGravity:
+      return "e";
+    case SouthEastGravity:
+      return "se";
+    }
+
+  PRINT_DEBUG ("Unknown gravity!\n");
+  return "Unknown";
+}
+
 char *
 cmd_gravity (int interactive, void *data)
 {
   int gravity;
   rp_window *win;
 
-  if (data == NULL) 
-    {
-      message (" gravity: Two arguments needed ");
-      return NULL;
-    }
-
   if (current_window() == NULL) return NULL;
-
   win = current_window();
-  
-  if ((gravity = parse_wingravity (data)) < 0)
+
+  if (data == NULL && !interactive) 
+    return xstrdup (wingravity_to_string (win->gravity));
+
+  if (data == NULL
+      || (gravity = parse_wingravity (data)) < 0)
     {
       message (" gravity: Unknown gravity ");
     }
@@ -1420,13 +1453,11 @@ cmd_defwingravity (int interactive, void *data)
 {
   int gravity;
 
-  if (data == NULL) 
-    {
-      message (" defwingravity: Two arguments needed ");
-      return NULL;
-    }
+  if (data == NULL && !interactive) 
+    return xstrdup (wingravity_to_string (defaults.win_gravity));
 
-  if ((gravity = parse_wingravity (data)) < 0)
+  if (data == NULL
+      || (gravity = parse_wingravity (data)) < 0)
     {
       message (" defwingravity: Unknown gravity ");
     }
@@ -1443,13 +1474,11 @@ cmd_deftransgravity (int interactive, void *data)
 {
   int gravity;
 
-  if (data == NULL) 
-    {
-      message (" deftransgravity: Two arguments needed ");
-      return NULL;
-    }
+  if (data == NULL && !interactive)
+    return xstrdup (wingravity_to_string (defaults.trans_gravity));
 
-  if ((gravity = parse_wingravity (data)) < 0)
+  if (data == NULL
+      || (gravity = parse_wingravity (data)) < 0)
     {
       message (" gravity: Unknown gravity ");
     }
@@ -1466,13 +1495,11 @@ cmd_defmaxsizegravity (int interactive, void *data)
 {
   int gravity;
 
-  if (data == NULL) 
-    {
-      message (" defmaxsizegravity: Two arguments needed ");
-      return NULL;
-    }
+  if (data == NULL && !interactive)
+    return xstrdup (wingravity_to_string (defaults.maxsize_gravity));
 
-  if ((gravity = parse_wingravity (data)) < 0)
+  if (data == NULL
+      || (gravity = parse_wingravity (data)) < 0)
     {
       message (" defmaxsizegravity: Unknown gravity ");
     }
@@ -1489,7 +1516,10 @@ cmd_msgwait (int interactive, void *data)
 {
   int tmp;
 
-  if (data == NULL 
+  if (data == NULL && !interactive)
+    return xsprintf ("%d", defaults.bar_timeout);
+    
+  if (data == NULL
       || sscanf (data, "%d", &tmp) < 1)
     {
       message (" msgwait: One argument required ");
@@ -1508,9 +1538,11 @@ cmd_defbarloc (int interactive, void *data)
 {
   int loc;
 
-  if (data == NULL) return NULL;
+  if (data == NULL && !interactive)
+    return xstrdup (wingravity_to_string (defaults.bar_location));
 
-  if (sscanf (data, "%d", &loc) < 1)
+  if (data == NULL
+      || sscanf (data, "%d", &loc) < 1)
     {
       message (" defbarloc: One argument required ");
       return NULL;
@@ -1597,13 +1629,15 @@ cmd_defpadding (int interactive, void *data)
   rp_window_frame *frame;
   int l, t, r, b;
 
-  if (data == NULL) 
-    {
-      message (" defpadding: Four arguments required ");
-      return NULL;
-    }
+  if (data == NULL && !interactive)
+    return xsprintf ("%d %d %d %d", 
+		     defaults.padding_left,
+		     defaults.padding_right,
+		     defaults.padding_top,
+		     defaults.padding_bottom);
 
-  if (sscanf (data, "%d %d %d %d", &l, &t, &r, &b) < 4)
+  if (data == NULL
+      || sscanf (data, "%d %d %d %d", &l, &t, &r, &b) < 4)
     {
       message (" defpadding: Four arguments required ");
       return NULL;
@@ -1660,9 +1694,11 @@ cmd_defborder (int interactive, void *data)
   int tmp;
   rp_window *win;
 
-  if (data == NULL) return NULL;
+  if (data == NULL && !interactive)
+    return xsprintf ("%d", defaults.window_border_width);
 
-  if (sscanf (data, "%d", &tmp) < 1)
+  if (data == NULL
+      || sscanf (data, "%d", &tmp) < 1)
     {
       message (" defborder: One argument required ");
     }
@@ -1690,7 +1726,10 @@ cmd_defborder (int interactive, void *data)
 char *
 cmd_definputwidth (int interactive, void *data)
 {
-  if (data == NULL 
+  if (data == NULL && !interactive)
+    return xsprintf ("%d", defaults.input_window_size);
+
+  if (data == NULL
       || sscanf (data, "%d", &defaults.input_window_size) < 1)
     {
       message (" definputwidth: One argument required ");
@@ -1702,7 +1741,10 @@ cmd_definputwidth (int interactive, void *data)
 char *
 cmd_defwaitcursor (int interactive, void *data)
 {
-  if (data == NULL 
+  if (data == NULL && !interactive)
+    return xsprintf ("%d", defaults.wait_for_key_cursor);
+
+  if (data == NULL
       || sscanf (data, "%d", &defaults.wait_for_key_cursor) < 1)
     {
       message (" defwaitforkey: One argument required ");
@@ -1714,6 +1756,9 @@ cmd_defwaitcursor (int interactive, void *data)
 char *
 cmd_defwinfmt (int interactive, void *data)
 {
+  if (data == NULL && !interactive)
+    return xstrdup (defaults.window_fmt);
+
   if (data == NULL)
     return NULL;
 
@@ -1727,6 +1772,20 @@ char *
 cmd_defwinname (int interactive, void *data)
 {
   char *name;
+
+  if (data == NULL && !interactive)
+    switch (defaults.win_name)
+      {
+      case 0:
+	return xstrdup ("title");
+      case 1:
+	return xstrdup ("name");
+      case 2:
+	return xstrdup ("class");
+      default:
+	PRINT_DEBUG ("Unknown win_name\n");
+	return xstrdup ("unknown");
+      }
 
   if (data == NULL)
     {
@@ -1998,9 +2057,12 @@ cmd_restart (int interactive, void *data)
 char *
 cmd_startup_message (int interactive, void *data)
 {
+  if (data == NULL && !interactive)
+    return xsprintf ("%s", defaults.startup_message ? "on":"off");
+
   if (data == NULL)
     {
-      message (" startup_message; One argument is required ");
+      message (" startup_message; one argument required ");
       return NULL;
     }
 
@@ -2049,7 +2111,11 @@ cmd_defbarpadding (int interactive, void *data)
 {
   int x, y;
 
-  if (data == NULL || sscanf (data, "%d %d", &x, &y) < 2) 
+  if (data == NULL)
+    return xsprintf ("%d %d", defaults.bar_x_padding, defaults.bar_y_padding);
+
+  if (data == NULL
+      || sscanf (data, "%d %d", &x, &y) < 2) 
     {
       message (" defbarpadding: Two arguments required ");
       return NULL;
