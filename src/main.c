@@ -224,7 +224,7 @@ read_rc_file (FILE *file)
   *line = '\0';
   while (fgets (partial, n, file) != NULL)
     {
-      if ((strlen (line) + strlen (partial)) <= linesize)
+      if ((strlen (line) + strlen (partial)) >= linesize)
 	{
 	  linesize *= 2;
 	  line = (char*) xrealloc (line, linesize);
