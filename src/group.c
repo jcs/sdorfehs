@@ -1,4 +1,26 @@
+/* Copyright (C) 2000, 2001, 2002, 2003 Shawn Betts
+ *
+ * This file is part of ratpoison.
+ *
+ * ratpoison is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * ratpoison is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ */
+
 #include "ratpoison.h"
+
+#include <string.h>
 
 static struct numset *group_numset;
 
@@ -11,18 +33,22 @@ void init_groups()
 
   /* Create the first group in the list (We always need at least
      one). */
-  g = group_new (numset_request (group_numset));
+  g = group_new (numset_request (group_numset), DEFAULT_GROUP_NAME);
   rp_current_group = g;
   list_add_tail (&g->node, &rp_groups);
 }
 
 rp_group *
-group_new (int number)
+group_new (int number, char *name)
 {
   rp_group *g;
 
   g = xmalloc (sizeof (rp_group));
 
+  if (name)
+    g->name = xstrdup (name);
+  else
+    g->name = NULL;
   g->number = number;
   g->numset = numset_new();
   INIT_LIST_HEAD (&g->unmapped_windows);
@@ -34,18 +60,19 @@ group_new (int number)
 void
 group_free (rp_group *g)
 {
-  /* free (g->name); */
+  if (g->name)
+    free (g->name);
   numset_free (g->numset);
   numset_release (group_numset, g->number);
   free (g);
 }
 
 rp_group *
-group_add_new_group ()
+group_add_new_group (char *name)
 {
   rp_group *g;
 
-  g = group_new (numset_request (group_numset));
+  g = group_new (numset_request (group_numset), name);
   list_add_tail (&g->node, &rp_groups);
 
   return g;
@@ -61,6 +88,37 @@ rp_group *
 group_prev_group ()
 {
   return list_prev_entry (rp_current_group, &rp_groups, node);
+}
+
+rp_group *
+groups_find_group_by_name (char *s)
+{
+  rp_group *cur;
+
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      if (cur->name)
+	{
+	  if (str_comp (s, cur->name, strlen (s)))
+	    return cur;
+	}
+    }
+
+  return NULL;
+}
+
+rp_group *
+groups_find_group_by_number (int n)
+{
+  rp_group *cur;
+
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      if (cur->number == n)
+	return cur;
+    }
+
+  return NULL;
 }
 
 rp_window_elem *
@@ -330,4 +388,62 @@ group_prev_window (rp_group *g, rp_window *win)
 
   return NULL;
 
+}
+
+void
+group_move_window (rp_group *to, rp_window *win)
+{
+  rp_group *cur, *from = NULL;
+  rp_window_elem *we = NULL;
+
+  /* Find the group that the window belongs to. FIXME: If the window
+     exists in multiple groups, then we're going to find the first
+     group with this window in it. */
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      we = group_find_window (&cur->mapped_windows, win);
+      if (we)
+	{
+	  from = cur;
+	  break;
+	}
+    }
+
+  if (we == NULL || from == NULL)
+    {
+      PRINT_DEBUG (("Unable to find window in mapped window lists.\n"));
+      return;
+    }
+
+  /* Manually remove the window from one group...*/
+  numset_release (from->numset, we->number);
+  list_del (&we->node);
+
+  /* and shove it into the other one. */
+  we->number = numset_request (to->numset);
+  group_insert_window (&to->mapped_windows, we);
+}
+
+void
+groups_merge (rp_group *from, rp_group *to)
+{
+  rp_window_elem *cur;
+  struct list_head *iter, *tmp;
+
+  /* Move the unmapped windows. */
+  list_for_each_safe_entry (cur, iter, tmp, &from->unmapped_windows, node)
+    {
+      list_del (&cur->node);
+      list_add_tail (&cur->node, &to->unmapped_windows);
+    }
+
+  /* Move the mapped windows. */
+  list_for_each_safe_entry (cur, iter, tmp, &from->mapped_windows, node)
+    {
+      numset_release (from->numset, cur->number);
+      list_del (&cur->node);
+
+      cur->number = numset_request (to->numset);
+      group_insert_window (&to->mapped_windows, cur);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Burrowed from the Linux kernel.
+ * Borrowed from the Linux kernel.
  */
 
 #ifndef _RATPOISON_LINKLIST_H

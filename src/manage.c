@@ -1,6 +1,6 @@
 /* Manage windows, such as Mapping them and making sure the proper key
  * Grabs have been put in place.
- * Copyright (C) 2000, 2001 Shawn Betts
+ * Copyright (C) 2000, 2001, 2002, 2003 Shawn Betts
  *
  * This file is part of ratpoison.
  *

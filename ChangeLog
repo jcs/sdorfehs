@@ -1,5 +1,51 @@
 2003-05-25  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/window.c: do not include ctype.h
+
+	* src/ratpoison.h (str_comp): new prototype
+
+	* src/messages.h (MESSAGE_PROMPT_SWITCH_TO_GROUP): new define
+
+	* src/main.c: include ctype.h
+	(str_comp): moved from window.c
+
+	* src/group.h (groups_find_group_by_name): new prototype.
+	(groups_find_group_by_number): likewise.
+	(groups_merge): likewise
+	(group_move_window): likewise
+
+	* src/group.c: include string.h
+	(group_new): new argument, name. All callers updated. prototype
+	updated.
+	(init_groups): create the first group with DEFAULT_GROUP_NAME as
+	its name.
+	(group_new): new argument, name. All callers updated. Prototype
+	updated.
+	(group_free): free the group's name.
+	(group_add_new_group): new argument, name. All callers
+	updated. Prototype updated.
+	(groups_find_group_by_name): new function
+	(groups_find_group_by_number): likewise
+	(group_move_window): likewise
+	(groups_merge): likewise
+
+	* src/conf.h (DEFAULT_GROUP_NAME): new define
+
+	* src/actions.h (cmd_gselect): new prototype
+	(cmd_groups): likewise
+	(cmd_gmove): likewise
+	(cmd_gmerge): likewise
+	(cmd_gnewbg): likewise
+
+	* src/actions.c (user_commands): new commands gselect, groups,
+	gmove, gmerge, gnewbg.
+	(cmd_gnewbg): new function
+	(find_group): likewise
+	(cmd_gselect): likewise
+	(cmd_groups): likewise
+	(cmd_gmove): likewise
+	(cmd_gmerge): likewise
+
 	* src/bar.c (reset_alarm): new function
 	(show_bar): call reset_alarm()
 	(count_lines): make function static. clean up code.

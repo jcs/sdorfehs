@@ -1,5 +1,5 @@
 /* Standard header for ratpoison.
- * Copyright (C) 2000, 2001 Shawn Betts
+ * Copyright (C) 2000, 2001, 2002, 2003 Shawn Betts
  *
  * This file is part of ratpoison.
  *
@@ -84,5 +84,6 @@ void *xrealloc (void *ptr, size_t size);
 char *xstrdup (char *s);
 char *xsprintf (char *fmt, ...);
 char *xvsprintf (char *fmt, va_list ap);
+int str_comp (char *s1, char *s2, int len);
 
 #endif /* ! _RATPOISON_H */

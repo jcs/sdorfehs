@@ -1,5 +1,5 @@
 /* Prototypes of all actions that can be performed with keystrokes.
- * Copyright (C) 2000, 2001 Shawn Betts
+ * Copyright (C) 2000, 2001, 2002, 2003 Shawn Betts
  *
  * This file is part of ratpoison.
  *
@@ -127,6 +127,11 @@ char *cmd_verbexec (int interactive, char *data);
 char *cmd_version (int interactive, char *data);
 char *cmd_warp(int interactive, char *data);
 char *cmd_windows (int interactive, char *data);
+char *cmd_gselect (int interactive, char *data);
+char *cmd_groups (int interactive, char *data);
+char *cmd_gmove (int interactive, char *data);
+char *cmd_gmerge (int interactive, char *data);
+char *cmd_gnewbg (int interactive, char *data);
 
 void initialize_default_keybindings (void);
 void free_keybindings ();

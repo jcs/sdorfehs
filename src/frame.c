@@ -1,5 +1,5 @@
 /* functions that manipulate the frame structure.
- * Copyright (C) 2000-2003 Shawn Betts
+ * Copyright (C) 2000, 2001, 2002, 2003 Shawn Betts
  *
  * This file is part of ratpoison.
  *

@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2001 Shawn Betts
+/* Copyright (C) 2000, 2001, 2002, 2003 Shawn Betts
  *
  * This file is part of ratpoison.
  *
@@ -101,6 +101,11 @@ static user_command user_commands[] =
     {"gnext",		cmd_gnext,		arg_VOID},
     {"gprev", 		cmd_gprev, 		arg_VOID},
     {"gnew", 		cmd_gnew, 		arg_VOID},
+    {"gnewbg", 		cmd_gnewbg, 		arg_VOID},
+    {"gselect",		cmd_gselect,		arg_VOID},
+    {"groups",		cmd_groups,		arg_VOID},
+    {"gmove",		cmd_gmove,		arg_VOID},
+    {"gmerge",		cmd_gmerge,		arg_VOID},
 
     /* Commands to set default behavior. */
     {"defbargravity",		cmd_defbargravity,	arg_STRING},
@@ -3156,6 +3161,136 @@ cmd_gprev (int interactive, char *data)
 char *
 cmd_gnew (int interactive, char *data)
 {
-  rp_current_group = group_add_new_group ();
+  rp_current_group = group_add_new_group (data);
+  return NULL;
+}
+
+char *
+cmd_gnewbg (int interactive, char *data)
+{
+  group_add_new_group (data);
+  return NULL;
+}
+
+/* Given a string, find a matching group. First check if the string is
+   a number, then check if it's the name of a group. */
+static rp_group *
+find_group (char *str)
+{
+  rp_group *group;
+  int n;
+
+  /* Check if the user typed a group number. */
+  n = string_to_window_number (str);
+  if (n >= 0)
+    {
+      group = groups_find_group_by_number (n);
+      if (group)
+	return group;
+    }
+
+  group = groups_find_group_by_name (str);
+  return group;
+}
+
+char *
+cmd_gselect (int interactive, char *data)
+{
+  char *str;
+  rp_group *g;
+
+  if (data == NULL)
+    str = get_input (MESSAGE_PROMPT_SWITCH_TO_GROUP);
+  else
+    str = xstrdup (data);
+
+  g = find_group (str);
+
+  if (g)
+    rp_current_group = g;
+  else
+    return cmd_groups (interactive, NULL);
+
+  free (str);
+
+  return NULL;
+}
+
+/* Show all the groups, with the current one highlighted. */
+char *
+cmd_groups (int interactive, char *data)
+{
+  rp_group *cur;
+  int mark_start = 0, mark_end = 0;
+  struct sbuf *buffer;
+
+  buffer = sbuf_new (0);
+
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      char *fmt;
+
+      if (cur == rp_current_group)
+	mark_start = strlen (sbuf_get (buffer));
+
+      fmt =  xsprintf ("%d-%s", cur->number, cur->name);
+      sbuf_concat (buffer, fmt);
+
+      if (cur->node.next != &rp_groups)
+	sbuf_concat (buffer, "\n");
+
+      if (cur == rp_current_group)
+	mark_end = strlen (sbuf_get (buffer));
+    }
+
+  marked_message (sbuf_get (buffer), mark_start, mark_end);
+  sbuf_free (buffer);
+
+  return NULL;
+}
+
+/* Move a window to a different group. */
+char *
+cmd_gmove (int interactive, char *data)
+{
+  rp_group *g;
+
+  if (data == NULL)
+    {
+      message (" gmove: one argument required ");
+      return NULL;
+    }
+
+  if (current_window() == NULL)
+    {
+      message (" gmove: No focused window ");
+      return NULL;
+    }
+
+  g = find_group (data);
+  if (g == NULL)
+    {
+      message (" gmove: Cannot find group ");
+      return NULL;
+    }
+
+  group_move_window (g, current_window());
+  return NULL;
+}
+
+char *
+cmd_gmerge (int interactive, char *data)
+{
+  rp_group *g;
+
+  if (data == NULL)
+    {
+      message (" gmerge: one argument required ");
+      return NULL;
+    }
+
+  g = find_group (data);
+
+  groups_merge (g, rp_current_group);
   return NULL;
 }

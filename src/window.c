@@ -1,5 +1,5 @@
 /* functions for handling the window list 
- * Copyright (C) 2000, 2001 Shawn Betts
+ * Copyright (C) 2000, 2001, 2002, 2003 Shawn Betts
  *
  * This file is part of ratpoison.
  *
@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "ratpoison.h"
 
@@ -205,18 +204,6 @@ find_window_number (int n)
     }
 
   return NULL;
-}
-
-/* A case insensitive strncmp. */
-static int
-str_comp (char *s1, char *s2, int len)
-{
-  int i;
-
-  for (i=0; i<len; i++)
-    if (toupper (s1[i]) != toupper (s2[i])) return 0;
-
-  return 1;
 }
 
 rp_window *

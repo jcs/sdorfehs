@@ -1,5 +1,5 @@
 /* Config file for ratpoison. Edit these values and recompile. 
- * Copyright (C) 2000, 2001 Shawn Betts
+ * Copyright (C) 2000, 2001, 2002, 2003 Shawn Betts
  *
  * This file is part of ratpoison.
  *
@@ -96,5 +96,8 @@
    become stable enough. Comment this line if you wish to be notified
    about bad window messages. */
 #define IGNORE_BADWINDOW 1
+
+/* This is the name of the first group that is created. */
+#define DEFAULT_GROUP_NAME "default"
 
 #endif /* !_ _RATPOISON_CONF_H */
