@@ -1,5 +1,8 @@
 2001-08-27  Shawn  <sabetts@hotdog>
 
+	* src/manage.c (maximize_normal)[MAXSIZE_WINDOWS_ARE_TRANSIENTS]:
+	use maxx, maxy not the window's width and height.
+
 	* src/events.c (handle_key): use marked_message_printf to notify
 	user of an unbound key.
 
