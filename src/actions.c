@@ -96,6 +96,8 @@ static user_command user_commands[] =
     {"fdump",		cmd_fdump,	arg_STRING},
     {"frestore",	cmd_frestore,	arg_STRING},
     {"verbexec", 	cmd_verbexec, 	arg_STRING},
+    {"unmanage",	cmd_unmanage,	arg_STRING},
+    {"clrunmanaged",	cmd_clrunmanaged, arg_VOID},
 
     /* Commands to set default behavior. */
     {"defbargravity",		cmd_defbargravity,	arg_STRING},
@@ -484,6 +486,28 @@ parse_keydesc (char *s)
     return NULL;
   else
     return p;
+}
+
+/* Unmanage window */
+char *
+cmd_unmanage (int interactive, char *data)
+{
+  if (data == NULL && !interactive)
+    return list_unmanaged_windows();
+
+  if (data)
+    add_unmanaged_window(data);
+  else message(" unmanage: at least one argument required ");
+
+  return NULL;
+}
+
+/* Clear the unmanaged window list */
+char *
+cmd_clrunmanaged (int interactive, char *data)
+{
+  clear_unmanaged_list();
+  return NULL;
 }
 
 char *

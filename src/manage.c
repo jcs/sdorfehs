@@ -32,12 +32,73 @@
 
 #include "ratpoison.h"
 
-const char *unmanaged_window_list[] = {
-#ifdef UNMANAGED_WINDOW_LIST
-  UNMANAGED_WINDOW_LIST,
-#endif
-  NULL
-};
+static char **unmanaged_window_list = NULL;
+static int num_unmanaged_windows = 0;
+
+void
+clear_unmanaged_list ()
+{
+  if (unmanaged_window_list) 
+    {
+      int i;
+
+      for (i = 0; i < num_unmanaged_windows; i++)
+	free(unmanaged_window_list[i]);
+
+      free(unmanaged_window_list);
+
+      unmanaged_window_list = NULL;
+    }
+  num_unmanaged_windows = 0;
+}
+
+char *
+list_unmanaged_windows ()
+{
+  char *tmp = NULL;
+  if (unmanaged_window_list) 
+    {
+      char *tpos;
+      int len = 0;
+      int i;
+
+      for (i = 0; i < num_unmanaged_windows; i++)
+	len += (strlen(unmanaged_window_list[i]) + 1);
+
+      tmp = xmalloc(len + 1);
+      tpos = tmp;
+
+      for (i = 0; i < num_unmanaged_windows; i++) 
+	{
+	  sprintf(tpos, "%s\n", unmanaged_window_list[i]);
+	  tpos += strlen(unmanaged_window_list[i])+1;
+	}
+      tpos--;
+      *tpos = '\0';
+    }
+  return tmp;
+}
+
+void
+add_unmanaged_window (char *name)
+{
+  char **tmp;
+
+  if (!name) return;
+
+  tmp = xmalloc((num_unmanaged_windows + 1) * sizeof(char *));
+
+  if (unmanaged_window_list) 
+    {
+      memcpy(tmp, unmanaged_window_list, num_unmanaged_windows * sizeof(char *));
+      free(unmanaged_window_list);
+    }
+
+  tmp[num_unmanaged_windows] = xstrdup(name);
+  num_unmanaged_windows++;
+
+  unmanaged_window_list = tmp;
+}
 
 extern Atom wm_state;
 
@@ -354,20 +415,19 @@ unmanaged_window (Window w)
   char *wname;
   int i;
 
-  for (i = 0; unmanaged_window_list[i]; i++) 
+  if (!unmanaged_window_list) return 0;
+
+  for (i = 0; i < num_unmanaged_windows; i++) 
     {
-      wname = get_wmname (w);
-      if (!wname)
-	return 0;
-      if (!strcmp (unmanaged_window_list[i], wname))
+      wname = get_wmname(w);
+      if (!wname) return 0;
+      if (!strcmp(unmanaged_window_list[i], wname)) 
 	{
-	  free (wname);
+	  free(wname);
 	  return 1;
 	}
-
-      free (wname);
+      free(wname);
     }
-
   return 0;
 }
 

@@ -116,6 +116,8 @@ char *cmd_togglewrapwinlist ();
 char *cmd_unalias (int interactive, char *data);
 char *cmd_unbind (int interactive, char *data);
 char *cmd_unimplemented (int interactive, char *data);
+char *cmd_unmanage (int interactive, char *data);
+char *cmd_clrunmanaged (int interactive, char *data);
 char *cmd_unsetenv (int interactive, char *data);
 char *cmd_v_split (int interactive, char *data);
 char *cmd_verbexec (int interactive, char *data);

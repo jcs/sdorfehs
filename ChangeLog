@@ -1,5 +1,25 @@
 2003-05-09  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/manage.h (clear_unmanaged_list): new prototype
+	(list_unmanaged_windows): likewise
+	(add_unmanaged_window): likewise
+
+	* src/manage.c (unmanaged_window_list): no longer a const.
+	(num_unmanaged_windows): new static global
+	(clear_unmanaged_list): new function
+	(list_unmanaged_windows): likewise
+	(add_unmanaged_window): likewise
+	(unmanaged_window): use num_unmanaged_windows to tell how many
+	elements are in the unmanaged list.
+	
+	* src/actions.h (cmd_unmanage): new prototype
+	(cmd_clrunmanaged): likewise
+
+	* src/actions.c (user_commands): new commands unmanage,
+	clrunmanaged.
+	(cmd_unmanage): new function
+	(cmd_clrunmanaged): likewise
+
 	* src/split.c (split_frame): call update_bar() instead of
 	update_window_names().
 	(set_active_frame): likewise

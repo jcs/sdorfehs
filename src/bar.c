@@ -199,9 +199,10 @@ count_lines (char* msg, int len)
 {
   int ret=1;
   int i=0;
-  for(; i<len; ++i) {
-    if(msg[i]=='\n') ret++;
-  }
+  for(; i<len; ++i) 
+    {
+      if(msg[i]=='\n') ret++;
+    }
   PRINT_DEBUG(("count_lines: %d\n", ret));
   return ret;
 }
@@ -217,15 +218,17 @@ max_line_length (char* msg)
   int current_width=0;
   char tmp_buf[100];
   
-  for(; i<=len; ++j, ++i) {
-    if(msg[i]=='\n' || msg[i]=='\0') {
-      tmp_buf[j]='\0';
-      current_width = XTextWidth (defaults.font, tmp_buf, strlen (tmp_buf));
-      if(current_width>ret) ret=current_width;
-      j=0;
+  for(; i<=len; ++j, ++i) 
+    {
+      if(msg[i]=='\n' || msg[i]=='\0') 
+	{
+	  tmp_buf[j]='\0';
+	  current_width = XTextWidth (defaults.font, tmp_buf, strlen (tmp_buf));
+	  if(current_width>ret) ret=current_width;
+	  j=0;
+	}
+      else tmp_buf[j]=msg[i];
     }
-    else tmp_buf[j]=msg[i];
-  }
   PRINT_DEBUG(("max_line_length: %d\n", ret));
   return ret;
 }
@@ -235,7 +238,8 @@ pos_in_line (char* msg, int pos)
 {
   int i=pos - 1;
   int ret=0;
-  if(i>=0) {
+  if(i>=0) 
+    {
     for(; i<=pos && i>=0; ++ret, --i) if(msg[i]=='\n') break;
   }
   PRINT_DEBUG (("pos_in_line(\"%s\", %d) = %d\n", msg, pos, ret));
@@ -247,15 +251,18 @@ line_beginning (char* msg, int pos)
 {
   int ret=0;
   int i=pos-1;
-  if(i) {
-    for(; i>=0; --i) {
-      /*      PRINT_DEBUG("pos = %d, i = %d, msg[i] = '%c'\n", pos, i, msg[i]); */
-      if (msg[i]=='\n') {
-	ret=i+1;
-	break;
-      }
+  if(i) 
+    {
+      for(; i>=0; --i) 
+	{
+	  /*      PRINT_DEBUG("pos = %d, i = %d, msg[i] = '%c'\n", pos, i, msg[i]); */
+	  if (msg[i]=='\n') 
+	    {
+	      ret=i+1;
+	      break;
+	    }
+	}
     }
-  }
   PRINT_DEBUG (("line_beginning(\"%s\", %d) = %d\n", msg, pos, ret));
   return ret;
 
@@ -309,24 +316,25 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
       msg, strlen (msg));
       } else { */
-  for(i=0; i<=strlen(msg); ++i) {
-    if (msg[i]!='\0' && msg[i]!='\n') 
-      {
-	tmp_buf[j]=msg[i];
-	j++;
-      }
-    else 
-      {
-	tmp_buf[j]='\0';
-	XDrawString (dpy, s->bar_window, s->normal_gc,
-		     defaults.bar_x_padding,
-		     defaults.bar_y_padding + defaults.font->max_bounds.ascent
-		     +  line_no * line_height,
-		     tmp_buf, strlen(tmp_buf));
-	j=0;
-	line_no++; 
-      }
-  }
+  for(i=0; i<=strlen(msg); ++i) 
+    {
+      if (msg[i]!='\0' && msg[i]!='\n') 
+	{
+	  tmp_buf[j]=msg[i];
+	  j++;
+	}
+      else 
+	{
+	  tmp_buf[j]='\0';
+	  XDrawString (dpy, s->bar_window, s->normal_gc,
+		       defaults.bar_x_padding,
+		       defaults.bar_y_padding + defaults.font->max_bounds.ascent
+		       +  line_no * line_height,
+		       tmp_buf, strlen(tmp_buf));
+	  j=0;
+	  line_no++; 
+	}
+    }
  
 
 
@@ -388,7 +396,7 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
       
       if (mark_end != strlen (msg))   	end -= defaults.bar_x_padding;
 
-/*       width = end - start; */
+      /*       width = end - start; */
       width = max_line_length(msg);
 
       PRINT_DEBUG (("start = %d, end = %d, width = %d\n", start, end, width));

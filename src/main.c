@@ -245,10 +245,11 @@ handler (Display *d, XErrorEvent *e)
 {
   char error_msg[100];
 
-  if (e->request_code == X_ChangeWindowAttributes && e->error_code == BadAccess) {
-    fprintf(stderr, "ratpoison: There can be only ONE.\n");
-    exit(EXIT_FAILURE);
-  }  
+  if (e->request_code == X_ChangeWindowAttributes && e->error_code == BadAccess) 
+    {
+      fprintf(stderr, "ratpoison: There can be only ONE.\n");
+      exit(EXIT_FAILURE);
+    }  
 
 #ifdef IGNORE_BADWINDOW
   return 0;
