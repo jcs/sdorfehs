@@ -1,5 +1,7 @@
 2001-02-10  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* Makefile.am (ratpoison_SOURCES): added messages.h
+
 	* actions.c (prev_window): display correct message when there is
 	no other window or there are no windows at all.
 	(next_window): display correct message when there is no other
