@@ -485,6 +485,8 @@ set_active_window (rp_window *win)
   maximize (win);
   unhide_window (win);
 
+  give_window_focus (win, last_win);
+
   /* Make sure the program bar is always on the top */
   update_window_names (win->scr);
 
