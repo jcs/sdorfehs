@@ -2578,7 +2578,10 @@ cmd_escape (int interactive, struct cmdarg **args)
   if (action != NULL && !strcmp (action->data, "meta"))
     {
       action->key = key->sym;
-      action->state = 0;
+      if (key->state != 0)
+	action->state = 0;
+      else
+	action-state = RP_CONTROL_MASK;
     }
 
   /* Remove the grab on the current prefix key */

@@ -1,3 +1,8 @@
+2005-01-30  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (cmd_escape): when the escape key doesn't have a
+	modifier give the meta key a modifier.
+
 2005-01-22  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/actions.h (argtype): add arg_RAW
