@@ -22,10 +22,16 @@
 #ifndef SPLIT_H
 #define SPLIT_H
 
-int h_split_window (rp_window *w);
-int v_split_window (rp_window *w);
-void remove_all_frames ();
-void remove_frame (rp_window *w);
+void h_split_frame (rp_window_frame *frame);
+void v_split_frame (rp_window_frame *frame);
+void remove_all_splits ();
+void remove_frame (rp_window_frame *frame);
 rp_window *find_window_for_frame (rp_window_frame *frame);
+rp_window_frame *find_windows_frame (rp_window *win);
+rp_window_frame *find_frame_next (rp_window_frame *frame);
+rp_window_frame *find_frame_prev (rp_window_frame *frame);
+rp_window *current_window ();
+void init_frame_list ();
+void set_active_frame (rp_window_frame *frame);
 
 #endif

@@ -48,11 +48,17 @@ new_window (XCreateWindowEvent *e)
   win = find_window (e->window);
 
   if (s && !win && e->window != s->key_window && e->window != s->bar_window 
-      && e->window != s->input_window)
+      && e->window != s->input_window && e->window != s->frame_window)
     {
       win = add_to_window_list (s, e->window);
       update_window_information (win);
     }
+}
+
+static void
+cleanup_frame (rp_window_frame *frame)
+{
+  frame->win = find_window_other ();
 }
 
 void 
@@ -68,6 +74,7 @@ unmap_notify (XEvent *ev)
 
   if (s && win)
     {
+      rp_window_frame *frame;
       long data[2] = { WithdrawnState, None };
 
       /* Give back the window number. the window will get another one,
@@ -78,52 +85,8 @@ unmap_notify (XEvent *ev)
 
       ignore_badwindow++;
 
-      if (win->frame)
-	{
-	  rp_window *new_window;
-
-	  PRINT_DEBUG ("unmapping framed window.\n");
-
-	  new_window = find_window_for_frame (win->frame);
-	  if (new_window)
-	    {
-	      PRINT_DEBUG ("Found a window to fit the frame.\n");
-
-	      new_window->frame = xmalloc (sizeof (rp_window_frame));
-	      memcpy (new_window->frame, win->frame, sizeof (rp_window_frame));
-	      maximize (new_window);
-	      XRaiseWindow (dpy, new_window->w);
-
-	      if (win == rp_current_window)
-		{
-		  set_active_window (new_window);
-		}
-	    }
-	  else
-	    {
-	      PRINT_DEBUG ("No window to fit the frame.\n");
-
-	      /* We coudn't find a window to occupy the frame, so get
-		 rid of it. */
-	      remove_frame (win);
-	      new_window = find_window_next_with_frame (rp_current_window);
-	      if (new_window)
-		{
-		  set_active_window (new_window);
-		}
-	      else
-		{
-		  set_active_window (find_window_other());
-		}
-	    }
-
-	  free (win->frame);
-	  win->frame = NULL;
-	}
-      else if (rp_current_window == win)
-	{
-	  cmd_other (NULL);
-	}
+      frame = find_windows_frame (win);
+      if (frame) cleanup_frame (frame);
 
       remove_from_list (win);
       append_to_list (win, rp_unmapped_window_sentinel);
@@ -135,6 +98,8 @@ unmap_notify (XEvent *ev)
 		      PropModeReplace, (unsigned char *)data, 2);
 
       XSync(dpy, False);
+
+      if (win == current_window()) cmd_other (NULL);
 
       ignore_badwindow--;
 
@@ -213,11 +178,15 @@ destroy_window (XDestroyWindowEvent *ev)
 
   if (win)
     {
-      if (win == rp_current_window)
+      rp_window_frame *frame;
+
+      frame = find_windows_frame (win);
+      if (frame) cleanup_frame (frame);
+
+      if (win == current_window())
 	{
 	  PRINT_DEBUG ("Destroying the current window.\n");
 
-	  rp_current_window = NULL;
 	  set_active_window (find_window_other ());
 	  unmanage (win);
 	}
@@ -409,11 +378,11 @@ key_press (XEvent *ev)
     }
   else
     { 
-      if (rp_current_window)
+      if (current_window())
 	{
 	  ignore_badwindow++;
-	  ev->xkey.window = rp_current_window->w;
-	  XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, ev);
+	  ev->xkey.window = current_window()->w;
+	  XSendEvent (dpy, current_window()->w, False, KeyPressMask, ev);
 	  XSync (dpy, False);
 	  ignore_badwindow--;
 	}
@@ -557,7 +526,7 @@ colormap_notify (XEvent *ev)
       XGetWindowAttributes (dpy, win->w, &attr);
       win->colormap = attr.colormap;
 
-      if (win == rp_current_window)
+      if (win == current_window())
 	{
 	  XInstallColormap (dpy, win->colormap);
 	}

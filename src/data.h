@@ -40,6 +40,9 @@ typedef struct rp_window_frame rp_window_frame;
 struct rp_window_frame
 {
   int x, y, width, height;
+  rp_window *win;
+
+  rp_window_frame *prev, *next;
 };
 
 
@@ -69,9 +72,6 @@ struct rp_window
   /* Saved mouse position */
   int mouse_x, mouse_y;
 
-  /* Frame for split screen */
-  rp_window_frame *frame;
-
   rp_window *next, *prev;  
 };
 
@@ -80,7 +80,7 @@ struct screen_info
   GC normal_gc;
   XFontStruct *font;		/* The font we want to use. */
   XWindowAttributes root_attr;
-  Window root, bar_window, key_window, input_window;
+  Window root, bar_window, key_window, input_window, frame_window;
   int bar_is_raised;
   int screen_num;		/* Our screen number as dictated my X */
   Colormap def_cmap;
@@ -121,9 +121,12 @@ extern rp_window *rp_mapped_window_sentinel;
    assigned to them and are not visible/active. */
 extern rp_window *rp_unmapped_window_sentinel;
 
-/* Pointer to the currently focused window. Points to an element in
-   the mapped window list. NULL if there are no mapped windows. */
-extern rp_window *rp_current_window;
+/* A list of frames that may or may not contain windows. There should
+   always be one in the list. */
+extern rp_window_frame *rp_window_frame_sentinel;
+
+/* Pointer to the currently focused frame. */
+extern rp_window_frame *rp_current_frame;
 
 extern screen_info *screens;
 extern int num_screens;

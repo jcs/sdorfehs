@@ -31,7 +31,9 @@ void last_window ();
 rp_window *find_window_in_list (Window w, rp_window *sentinel);
 rp_window *find_window (Window w);
 void maximize_current_window ();
-void set_active_window (rp_window *rp_w);
+void give_window_focus (rp_window *rp_w);
+void set_active_window (rp_window *win);
+void goto_window (rp_window *win);
 void set_current_window (rp_window *win);
 /* int goto_window_name (char *name); */
 rp_window *find_window_other ();

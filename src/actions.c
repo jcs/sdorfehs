@@ -1,5 +1,4 @@
-/* ratpoison actions
- * Copyright (C) 2000, 2001 Shawn Betts
+/* Copyright (C) 2000, 2001 Shawn Betts
  *
  * This file is part of ratpoison.
  *
@@ -326,7 +325,7 @@ cmd_generate (void *data)
   /*   ev1.xkey.send_event = */
   ev1.xkey.display = dpy;
   /*   ev1.xkey.root =  */
-  ev1.xkey.window = rp_current_window->w;
+  ev1.xkey.window = current_window()->w;
   /*   ev1.xkey.subwindow =  */
   /*   ev1.xkey.time = ev.xkey.time; */
   /*   ev1.xkey.x == */
@@ -337,7 +336,7 @@ cmd_generate (void *data)
   ev1.xkey.state = prefix_key.state;
   ev1.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
 
-  XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev1);
+  XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev1);
 
   /*   XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, 't'), True, 0); */
 
@@ -349,11 +348,19 @@ cmd_prev (void *data)
 {
   rp_window *w;
 
-  if (!rp_current_window)
-    message (MESSAGE_NO_MANAGED_WINDOWS);
-  else 
+  /* If the current frame is empty find the last accessed window and
+     put it in the frame */
+  if (!current_window())
     {
-      w = find_window_prev (rp_current_window);
+      set_active_window (find_window_other());
+      if (!current_window())
+	message (MESSAGE_NO_MANAGED_WINDOWS);
+
+      return;
+    }
+  else
+    {
+      w = find_window_prev (current_window());
 
       if (!w)
 	message (MESSAGE_NO_OTHER_WINDOW);
@@ -365,19 +372,13 @@ cmd_prev (void *data)
 void
 cmd_prev_frame (void *data)
 {
-  rp_window *w;
+  rp_window_frame *frame;
 
-  if (!rp_current_window)
-    message (MESSAGE_NO_MANAGED_WINDOWS);
-  else 
-    {
-      w = find_window_prev_with_frame (rp_current_window);
-
-      if (!w)
-	message (MESSAGE_NO_OTHER_WINDOW);
-      else
-	set_active_window (w);
-    }
+  frame = find_frame_prev (rp_current_frame);
+  if (!frame)
+    message (MESSAGE_NO_OTHER_WINDOW);
+  else
+    set_active_frame (frame);
 }
 
 void
@@ -385,11 +386,19 @@ cmd_next (void *data)
 {
   rp_window *w;
 
-  if (!rp_current_window)
-    message (MESSAGE_NO_MANAGED_WINDOWS);
+  /* If the current frame is empty find the last accessed window and
+     put it in the frame */
+  if (!current_window())
+    {
+      set_active_window (find_window_other());
+      if (!current_window())
+	message (MESSAGE_NO_MANAGED_WINDOWS);
+
+      return;
+    }
   else 
     {
-      w = find_window_next (rp_current_window);
+      w = find_window_next (current_window());
 
       if (!w)
 	message (MESSAGE_NO_OTHER_WINDOW);
@@ -401,19 +410,14 @@ cmd_next (void *data)
 void
 cmd_next_frame (void *data)
 {
-  rp_window *w;
+  rp_window_frame *frame;
 
-  if (!rp_current_window)
-    message (MESSAGE_NO_MANAGED_WINDOWS);
-  else 
-    {
-      w = find_window_next_with_frame (rp_current_window);
+  frame = find_frame_next (rp_current_frame);
+  if (!frame)
+    message (MESSAGE_NO_OTHER_WINDOW);
+  else
+    set_active_frame (frame);
 
-      if (!w)
-	message (MESSAGE_NO_OTHER_WINDOW);
-      else
-	set_active_window (w);
-    }
 }
 
 void 
@@ -462,13 +466,13 @@ cmd_select (void *data)
   if (strlen (str) > 0)
     {
       if ((w = find_window_name (str)))
-	set_active_window (w);
+	goto_window (w);
 
       /* try by number */
       if ((n = string_to_window_number (str)) >= 0)
 	{
 	  if ((w = find_window_number (n)))
-	    set_active_window (w);
+	    goto_window (w);
 	  else
 	    /* show the window list as feedback */
 	    show_bar (current_screen ());
@@ -477,7 +481,7 @@ cmd_select (void *data)
 	/* try by name */
 	{
 	  if ((w = find_window_name (str)))
-	    set_active_window (w);
+	    goto_window (w);
 	  else
 	    /* we need to format a string that includes the str */
 	    message (" no window by that name ");
@@ -492,7 +496,7 @@ cmd_rename (void *data)
 {
   char *winname;
   
-  if (rp_current_window == NULL) return;
+  if (current_window() == NULL) return;
 
   if (data == NULL)
     winname = get_input (MESSAGE_PROMPT_NEW_WINDOW_NAME);
@@ -501,15 +505,15 @@ cmd_rename (void *data)
 
   if (*winname)
     {
-      free (rp_current_window->name);
-      rp_current_window->name = xmalloc (sizeof (char) * strlen (winname) + 1);
+      free (current_window()->name);
+      current_window()->name = xmalloc (sizeof (char) * strlen (winname) + 1);
 
-      strcpy (rp_current_window->name, winname);
+      strcpy (current_window()->name, winname);
 
-      rp_current_window->named = 1;
+      current_window()->named = 1;
   
       /* Update the program bar. */
-      update_window_names (rp_current_window->scr);
+      update_window_names (current_window()->scr);
     }
 
   free (winname);
@@ -522,25 +526,25 @@ cmd_delete (void *data)
   XEvent ev;
   int status;
 
-  if (rp_current_window == NULL) return;
+  if (current_window() == NULL) return;
 
   ev.xclient.type = ClientMessage;
-  ev.xclient.window = rp_current_window->w;
+  ev.xclient.window = current_window()->w;
   ev.xclient.message_type = wm_protocols;
   ev.xclient.format = 32;
   ev.xclient.data.l[0] = wm_delete;
   ev.xclient.data.l[1] = CurrentTime;
 
-  status = XSendEvent(dpy, rp_current_window->w, False, 0, &ev);
+  status = XSendEvent(dpy, current_window()->w, False, 0, &ev);
   if (status == 0) fprintf(stderr, "ratpoison: delete window failed\n");
 }
 
 void 
 cmd_kill (void *data)
 {
-  if (rp_current_window == NULL) return;
+  if (current_window() == NULL) return;
 
-  XKillClient(dpy, rp_current_window->w);
+  XKillClient(dpy, current_window()->w);
 }
 
 void
@@ -736,9 +740,9 @@ cmd_abort (void *data)
 /*   XEvent ev; */
 /*   ev = *rp_current_event; */
 
-/*   ev.xkey.window = rp_current_window->w; */
+/*   ev.xkey.window = current_window()->w; */
 /*   ev.xkey.state = MODIFIER_PREFIX; */
-/*   XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev); */
+/*   XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev); */
 /*   XSync (dpy, False); */
 /* } */
 
@@ -746,7 +750,7 @@ cmd_abort (void *data)
 void
 cmd_maximize (void *data)
 {
-  force_maximize (rp_current_window);
+  force_maximize (current_window());
 }
 
 /* Reassign the prefix key. */
@@ -813,41 +817,35 @@ cmd_echo (void *data)
 void
 cmd_h_split (void *data)
 {
-  h_split_window (rp_current_window);
+  h_split_frame (find_windows_frame (current_window()));
 }
 
 void
 cmd_v_split (void *data)
 {
-  v_split_window (rp_current_window);
+  v_split_frame (find_windows_frame (current_window()));
 }
 
 void
 cmd_only (void *data)
 {
-  if (!rp_current_window) return;
+  if (!current_window()) return;
 
-  remove_all_frames();
-  maximize (rp_current_window);
+  remove_all_splits();
+  maximize (current_window());
 }
 
 void
 cmd_remove (void *data)
 {
-  rp_window *win;
+  rp_window_frame *frame;
 
-  if (!rp_current_window) return;
+  frame = find_frame_next (rp_current_frame);
 
-  remove_frame (rp_current_window);
-
-  win = find_window_next_with_frame (rp_current_window);
-  if (win)
+  if (frame)
     {
-      set_active_window (win);
-    }
-  else
-    {
-      set_active_window (find_window_other());
+      remove_frame (rp_current_frame);
+      set_active_frame (frame);
     }
 }
 

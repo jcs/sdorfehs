@@ -402,6 +402,7 @@ main (int argc, char *argv[])
 
   init_numbers ();
   init_window_list ();
+  init_frame_list ();
   initialize_default_keybindings ();
   init_modifier_map ();
 
@@ -498,6 +499,15 @@ init_screen (screen_info *s, int screen_num)
   s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 
   					 1, 1, 1, fg_color.pixel, bg_color.pixel);
   XSelectInput (dpy, s->input_window, KeyPressMask );
+
+  s->frame_window = XCreateSimpleWindow (dpy, s->root, 
+					 s->root_attr.width / 2 - 5, 
+					 s->root_attr.height / 2 - 5, 
+					 10, 10, 1,
+					 fg_color.pixel, bg_color.pixel);
+  XSelectInput (dpy, s->frame_window, KeyPressMask );
+  XMapRaised (dpy, s->frame_window);
+
 
   XSync (dpy, 0);
 

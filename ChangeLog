@@ -1,3 +1,67 @@
+2001-04-06  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/split.h (h_split_frame): renamed frome h_split_window
+	(v_split_frame): renamed frome v_split_window
+	(split_frame): renamed frome split_window
+	(remove_all_splits): renamed frome remove_all_frames
+	(find_windows_frame): new prototype
+	(find_frame_next): likewise
+	(find_frame_prev): likewise
+	(current_window): likewise
+	(init_frame_list): likewise
+	(set_active_frame): likewise
+	
+	* src/split.c (create_initial_frame): new function
+	(init_frame_list): likewise
+	(find_windows_frame): likewise
+	(find_frame_next): likewise
+	(find_frame_prev): likewise
+	(current_window): likewise
+	(update_frame_indicator): likewise
+	(set_active_frame): likewise
+	(split_frame): rename from split_window
+	(v_split_frame): rename from v_split_window
+	(h_split_frame): rename from h_split_window
+	(remove_all_splits): renamed frome remove_all_frames
+	(total_frame_area): traverses rp_window_frame list
+	(num_frames): likewise
+	(frame_overlaps): likewise
+	(remove_frame): likewise
+	(remove_frame): calls delete_frame_from_list
+
+	* src/manage.c (scanwins): skips the frame_window
+	(maximize_transient): finds the window's frame
+	(maximize_normal): likewise
+
+	* src/main.c (main): calls init_frame_list
+	(init_screen): create and map the frame_window
+
+	* src/list.c (give_window_focus): new function
+	(goto_window): likewise
+	(set_active_window): calls give_window_focus
+
+	* src/list.h (give_window_focus): new prototype
+	(goto_window): likewise
+
+	* src/events.c (new_window): the screen's frame_window is not
+	managed
+	(cleanup_frame): new function
+	(unmap_notify): calls cleanup_frame if window exists in a frame
+	(destroy_window): likewise
+
+	* src/data.h (struct screen_info): remove frame field
+	(struct rp_window_frame): new fields win, prev, next
+	(rp_window_frame_sentinel): new global
+
+	* src/actions.c (cmd_prev): jumps to last accessed window if
+	current frame is empty.
+	(cmd_next): likewise
+	(cmd_remove): nothing is done if only 1 frame exists
+
+	* src/data.h (struct screen_info): new field frame_window
+	(rp_current_frame): new global
+	(rp_current_window): removed. All dependant code updated.
+
 2001-04-04  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* src/actions.c: add :banish to user_commands.

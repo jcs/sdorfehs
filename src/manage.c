@@ -65,8 +65,8 @@ ungrab_prefix_key (Window w)
 screen_info*
 current_screen ()
 {
-  if (rp_current_window)
-    return rp_current_window->scr;
+  if (current_window())
+    return current_window()->scr;
   else
     return &screens[0];
 }
@@ -230,7 +230,10 @@ scanwins(screen_info *s)
   for (i = 0; i < nwins; i++) 
     {
       XGetWindowAttributes(dpy, wins[i], &attr);
-      if (wins[i] == s->bar_window || wins[i] == s->key_window || wins[i] == s->input_window) continue;
+      if (wins[i] == s->bar_window 
+	  || wins[i] == s->key_window 
+	  || wins[i] == s->input_window
+	  || wins[i] == s->frame_window) continue;
 
       if (attr.override_redirect != True && !unmanaged_window (wins[i]))
 	{
@@ -290,10 +293,13 @@ set_state (rp_window *win, int state)
 static void
 maximize_transient (rp_window *win)
 {
+  rp_window_frame *frame;
   int maxx, maxy;
 
   /* Set the window's border */
   win->border = WINDOW_BORDER_WIDTH;
+
+  frame = find_windows_frame (win);
 
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)
@@ -330,12 +336,12 @@ maximize_transient (rp_window *win)
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
 
   /* Fit the window inside its frame (if it has one) */
-  if (win->frame)
+  if (frame)
     {
-      win->x = win->frame->x - win->width / 2 
-	+ (win->frame->width - win->border * 2) / 2;
-      win->y = win->frame->y - win->height / 2
-	+ (win->frame->height - win->border * 2) / 2;
+      win->x = frame->x - win->width / 2 
+	+ (frame->width - win->border * 2) / 2;
+      win->y = frame->y - win->height / 2
+	+ (frame->height - win->border * 2) / 2;
     }
   else
     {
@@ -354,6 +360,7 @@ maximize_transient (rp_window *win)
 static void
 maximize_normal (rp_window *win)
 {
+  rp_window_frame *frame;
   int maxx, maxy;
 
   int off_x = 0;
@@ -361,6 +368,8 @@ maximize_normal (rp_window *win)
 
   /* Set the window's border */
   win->border = WINDOW_BORDER_WIDTH;
+
+  frame = find_windows_frame (win);
 
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)
@@ -377,15 +386,13 @@ maximize_normal (rp_window *win)
     }
 
   /* Fit the window inside its frame (if it has one) */
-  if (win->frame)
+  if (frame)
     {
       PRINT_DEBUG ("frame width=%d height=%d\n", 
-		   win->frame->width, win->frame->height);
+		   frame->width, frame->height);
 
-      if (maxx > win->frame->width) maxx = win->frame->width 
-				      - win->border * 2;
-      if (maxy > win->frame->height) maxy = win->frame->height 
-				       - win->border * 2;
+      if (maxx > frame->width) maxx = frame->width - win->border * 2;
+      if (maxy > frame->height) maxy = frame->height - win->border * 2;
     }
 
   /* Make sure we maximize to the nearest Resize Increment specified
@@ -411,10 +418,10 @@ maximize_normal (rp_window *win)
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
 
   /* Fit the window inside its frame (if it has one) */
-  if (win->frame)
+  if (frame)
     {
-      win->x = win->frame->x;
-      win->y = win->frame->y;
+      win->x = frame->x;
+      win->y = frame->y;
     }
   else
     {
@@ -431,7 +438,7 @@ maximize_normal (rp_window *win)
 void
 maximize (rp_window *win)
 {
-  if (!win) win = rp_current_window;
+  if (!win) win = current_window();
   if (!win) return;
 
   /* Handle maximizing transient windows differently */
@@ -455,7 +462,7 @@ maximize (rp_window *win)
 void
 force_maximize (rp_window *win)
 {
-  if (!win) win = rp_current_window;
+  if (!win) win = current_window();
   if (!win) return;
 
   maximize_normal(win);

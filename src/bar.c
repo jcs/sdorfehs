@@ -114,7 +114,7 @@ update_window_names (screen_info *s)
     {
       PRINT_DEBUG ("%d-%s\n", w->number, w->name);
 
-      if (w == rp_current_window)
+      if (w == current_window())
 	mark_start = strlen (sbuf_get (bar_buffer));
 
       sbuf_concat (bar_buffer, " ");
@@ -122,7 +122,7 @@ update_window_names (screen_info *s)
       sprintf (dbuf, "%d", w->number);
       sbuf_concat (bar_buffer, dbuf);
 
-      if (w == rp_current_window)
+      if (w == current_window())
 	sbuf_concat (bar_buffer, "*");
       else if (w == other_window)
 	sbuf_concat (bar_buffer, "+");
@@ -133,7 +133,7 @@ update_window_names (screen_info *s)
 
       sbuf_concat (bar_buffer, " ");
 
-      if (w == rp_current_window)
+      if (w == current_window())
 	mark_end = strlen (sbuf_get (bar_buffer));
     }
 

@@ -1,6 +1,7 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
-* Changes since 0.1.0
+* Changes since 0.1.1
+
 ** Split windows
 
 Well, the day is finally here. You can now split windows in
@@ -23,6 +24,8 @@ the border width for all windows.
 A new command, :banish, which will move the rat pointer out of harms
 way, has been added.  It is bound to 'C-t b' by default.  No more
 slapping your rat out of the way, as fun as that was.
+
+* Changes since 0.1.0
 
 ** Window list changes
 A '+' is now drawn between the window number and the window name for
