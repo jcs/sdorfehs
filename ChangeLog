@@ -1,3 +1,10 @@
+2001-12-09  Gergely Nagy  <algernon@debian.org>
+
+	* debian/changelog: Lets have a snapshot release
+	* debian/control: Changed Maintainer, and added an Uploaders field
+	* debian/ratpoison.examples: added the files in contrib/
+	* doc/Makefile.am (EXTRA_DIST): removed ratpoisonrc-mode.el
+
 2001-12-05  Ryan C Yeske  <rcyeske@sfu.ca>
 
 	* contrib/genrpbindings: Fix perl typos.  From Doug Kearns
