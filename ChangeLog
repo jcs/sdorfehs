@@ -2,6 +2,8 @@
 
 	* src/actions.c (cmd_escape): when the escape key doesn't have a
 	modifier give the meta key a modifier.
+	(cmd_undefinekey): call XSync after ungrabbing and grabbing all
+	keys.
 
 2005-01-22  Shawn Betts  <katia_dilkina@verizon.net>
 

@@ -927,6 +927,7 @@ cmd_undefinekey (int interactive, struct cmdarg **args)
   /* Update the grabbed keys. */
   if (map == find_keymap (TOP_KEYMAP))
     grab_keys_all_wins ();
+  XSync (dpy, False);
 
   if (ret)
     return ret;
