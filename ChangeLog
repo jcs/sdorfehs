@@ -1,3 +1,8 @@
+2001-04-12  shawn  <sabetts@badbox.secure.basis.org>
+
+	* src/main.c (main): calls XCloseDisplay before exitting after
+	sending a kill, restart, or command message.
+
 2001-04-10  Gergely Nagy  <algernon@debian.org>
 
 	* src/main.c (main): initialize command to NULL, silences an
