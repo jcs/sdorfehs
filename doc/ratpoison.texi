@@ -347,16 +347,16 @@ Set the font. @var{font} is a font string like @samp{9x15bold}.
 @item definputwidth @var{n}
 Set the width of the input window.
 
-@item defmaxsizepos @var{x} @var{y}
+@item defmaxsizegravity @var{g}
 Set the default alignment for windows with maxsize hints. See the
-@command{pos} command.
+@command{gravity} command.
 
 @item defpadding @var{left} @var{top} @var{right} @var{bottom}
 Set the padding around the edge of the screen.
 
-@item deftranspos @var{x} @var{y}
+@item deftransgravity @var{g}
 Set the default alignment for transient windows. See the
-@command{pos} command.
+@command{gravity} command.
 
 @item defwaitcursor @var{n}
 Set whether the rat cursor should change into a square when waiting
@@ -475,13 +475,15 @@ Kill all frames but the current one.
 This toggles between the current window and the last window. By
 default, this is bound to @kbd{C-t C-t}.
 
-@item pos @var{x} @var{y}
-Change the alignment of the current window. A normal window will
-default to aligning itself to the top-left corner of the screen, but
-it can also be aligned to, say, the bottom-right. Valid values for
-@var{x} are @samp{left}, @samp{center}, and @samp{right}. Valid values
-for @var{y} are @samp{top}, @samp{center}, @samp{bottom}. @var{x} and
-@var{y} can be abbreviated to the first letter.
+@item gravity @var{g}
+Change the gravity of the current window. A normal window will default
+to the top-left corner of the screen, but it can also be placed at the
+bottom-right corner of the screen. Valid values for @var{g} are the 8
+directions @samp{northwest}, @samp{north}, @samp{northeast},
+@samp{east}, @samp{southeast}, @samp{south}, @samp{southwest} and
+@samp{west}, clockwise from the top left corner. @samp{center} will
+center the window in the frame. @var{g} and can be abbreviated to one
+or two letters.
 
 @item prev
 This jumps you to the previous window in the window list. By default,
