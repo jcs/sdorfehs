@@ -5,7 +5,10 @@ ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 A '+' is now drawn between the window number and the window name for
 the last accessed window.
 
-
+** AltGr (XK_Mode_switch) support
+
+ratpoison now handles AltGr on all its input.
+
 * Changes Since 0.0.5
 ** C-t e removed
 
@@ -56,10 +59,10 @@ command.
 ** Command line
 An emulation of screen's colon command has been implemented.  This
 allows you to make wm commands by name.  The current command set
-includes: abort, next, prev, exec, number, select, colon, kill,
-delete, other, windows, title, clock, maximize, newwm, and version.
-To bring up a command line prompt, type C-:.  See the info or man page
-for details on the command set and its usage.
+includes: abort, next, prev, exec, select, colon, kill, delete, other,
+windows, title, clock, maximize, newwm, and version.  To bring up a
+command line prompt, type C-:.  See the info or man page for details
+on the command set and its usage.
 
 ** Keysym reading updates
 keystrokes are now handled far better. Shifted keystrokes work. More
@@ -98,7 +101,11 @@ All fixed length buffer sizes in window names that resulted in
 curious segfaults have been fixed.
 
 ** Themes support
+<<<<<<< NEWS
 There is still no theme support, despite what you might have heard.
+=======
+There is still no themes support, despite what you might have heard.
+>>>>>>> 1.13.2.2
 
 
 * Changes Singe 0.0.4
