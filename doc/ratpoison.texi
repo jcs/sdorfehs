@@ -860,7 +860,7 @@ key to bind and the command to run. For example, to bind @kbd{C-t R} to
 restart ratpoison:
 
 @example
-: bind R restart
+bind R restart
 @end example
 
 If no command is specified then bind works exactly like @command{unbind},
@@ -1210,7 +1210,7 @@ instance, if you frequently open emacs you may want to make an alias
 called @samp{emacs} that loads emacs. You would do it like this:
 
 @example
-: alias emacs exec emacs
+alias emacs exec emacs
 @end example
 
 An alias is treated exactly like a colon command in that you can call
