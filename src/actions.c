@@ -5029,10 +5029,6 @@ cmd_prompt (int interactive, struct cmdarg **args)
   cmdret *ret;
   char *query, *output, *prefix;
 
-  /* prompt has no use in interactive mode. So just silently fail. */
-  if (interactive)
-    return cmdret_new (NULL, RET_FAILURE);
-
   if (args[0] == NULL)
     output = get_input(MESSAGE_PROMPT_COMMAND, trivial_completions);
   else

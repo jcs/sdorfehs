@@ -1,3 +1,8 @@
+2005-02-06  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (cmd_prompt): allow prompt to be run
+	interactively.
+
 2005-02-04  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* configure.in: bump version to 1.4.0-CVS.
