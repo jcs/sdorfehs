@@ -81,8 +81,10 @@ This document explains how to use ratpoison.
 @menu
 * About::                       What is ratpoison?
 * Contacting::                  How do I contact the ratpoison developers?
+* General Use::                 How does this thing work??
 * Keystrokes::                  Key commands and functionality
 * Commands::                    Ratpoison commands
+* Startup file::                They forced me...at gun point!
 @end menu
 
 @node About, Contacting, Top, Top
@@ -91,18 +93,15 @@ This document explains how to use ratpoison.
 ratpoison is a simple Window Manager with no fat library dependencies,
 no fancy graphics, no window decorations, and no flashy wank. It is
 largely modelled after GNU Screen which has done wonders in virtual
-terminal market.
+
 
 All interaction with the window manager is done through
 keystrokes. ratpoison has a prefix map to minimize the key clobbering
 that cripples EMACS and other quality pieces of software.
 
-You'll also be pleased to hear that there is NO ratpoison.conf to
-configure. If you want to configure ratpoison, edit the source.
-
 ratpoison was written by Shawn Betts (@email{sabetts@@users.sourceforge.net}).
 
-@node Contacting, Keystrokes, About, Top
+@node Contacting, General Use, About, Top
 @chapter Contacting
 ratpoison is hosted on @url{sourceforge.net}. To see the latest
 developments in ratpoison go to
@@ -113,13 +112,38 @@ There is also a ratpoison mailing list:
 @email{ratpoison-devel@@lists.sourceforge.net}. For details on subscribing
 and for the list archives go to the ratpoison sourceforge.net project.
 
-@node Keystrokes, Commands, Contacting, Top
+@node General Use, Keystrokes, Contacting, Top
+@chapter General Use
+
+When ratpoison starts you should see an empty X server. To open an x
+terminal hit @kbd{C-t c}. You can now run shell commands as you would on
+any terminal. Notice the terminal maximized full screen. @kbd{C-t !}
+will run a single shell command and saves you the effort of opening a
+terminal.
+
+Once you have a couple X programs running, you'll want to navigate
+between windows. To see what windows are being managed hit @kbd{C-t
+w}. Each window has a number. You can jump to a window by hitting
+@kbd{C-t} followed by the window's number. This assumes the the window's
+number is one digit. You can also switch to a window by typing in part
+of its name. To do this hit @kbd{C-t A}.
+
+ratpoison allows you to cycle through the windows with @kbd{C-t n}
+and @kbd{C-t p}.
+
+And That concludes a brief introduction on how to use ratpoison. Notice
+how we didn't have to drag a single window, or click a single maximize
+button? Beautiful wasn't it? Felt fast? Cool? Its modern computing at
+its best boys and girls.
+
+
+@node Keystrokes, Commands, General Use, Top
 @chapter Keystrokes
 
 ratpoison is a very simple window manager. Each window is maximized and
-has no border decorations. The default keystrokes are listed in the next
-chapter, however, there are some which are bound to complex commands.
-These are listed below:
+has no border decorations. The default keystrokes are listed in this
+chapter. Not all commands are accessible by default by keys. A full list
+of ratpoison commands is in the next section.
 
 @table @kbd
 
@@ -134,11 +158,85 @@ once.
 Sometimes you need to send a C-t to the current window. This keystroke
 does just that.
 
+@item C-t C-t
+Switch to the last window.
+
 @item C-t :
 Enter a command line.
+
+@item C-t 1-9
+Switch to the numbered window.
+
+@item C-t A
+@item C-t C-A
+Rename the current window. The window's new name will prevail for the
+rest of its lifetime.
+
+@item C-t K
+@item C-t C-K
+Send a DestroyClient event to the current window. This will terminate
+the application without question.
+
+@item C-t n
+@item C-t C-n
+@item C-t Return
+@item C-t C-Return
+@item C-t Space
+@item C-t C-Space
+Go to next window.
+
+@item C-t p
+@item C-t C-p
+Go to previous window.
+
+@item C-t '
+@item C-t C-'
+Go to a window by name.
+
+@item C-t a
+@item C-t C-a
+Display the current time of day.
+
+@item C-t c
+@item C-t C-c
+Open a new X terminal.
+
+@item C-t :
+@item C-t C-:
+This allows you to execute a single ratpoison command.
+
+@item C-t e
+@item C-t C-e
+Run Emacs (you know you want to).
+
+@item C-t !
+Run a shell command.
+
+@item C-t C-!
+Run a shell command through an X terminal.
+
+@item C-t k
+@item C-t k
+Close the current window.
+
+@item C-t m
+@item C-t C-m
+Maximize the current window. Sometimes windows don't respond correctly
+to the initial maximize event and need some coaxing. This is a fancy way
+of saying there are still bugs in ratpoison. @kbd{C-t m} will force the
+current window to maximize.
+
+@item C-t v
+@item C-t C-v
+Display the version of ratpoison.
+
+@item C-t w
+@item C-t C-w
+Display the list of managed windows. The current window is highlighted.
+
 @end table
 
-@node Commands, , Keystrokes, Top
+@node Commands, Startup file, Keystrokes, Top
 @chapter Ratpoison commands
 
 Ratpoison can be controlled with commands (so called colon-commands).
@@ -150,9 +248,21 @@ The summary of available commands is listed below:
 This is a pretty useless command. By default, it is bound to
 @kbd{C-t g}, and its purpose is to abort other commands.
 
+@item bind @var{Key} @var{command}
+Bind a key to a ratpoison command. This command takes two arguments: the
+key to bind and the command to run. For example, to bind @kbd{C-t R} to
+restart ratpoison:
+
+@example
+: bind R exec ratpoison --restart
+@end example
+
 @item clock
 Show current time. Disappears after 5 seconds, like all other info bars.
 In the default setup, the @kbd{C-t a} keystroke is bound to this command.
+
+@item colon @var{command}
+Run a ratpoison command.
 
 @item delete
 This deletes the current window. You can access it with the @kbd{C-t k}
@@ -161,6 +271,9 @@ keystroke.
 @item escape @var{key}
 Set the prefix to to @var{key}. For example @samp{escape ^b} sets the
 prefix key to @key{C-b}.
+
+@item generate
+Send a @kbd{C-t} to the current window.
 
 @item exec @var{command}
 Execute a shell command. By default, @kbd{C-t !} does this.
@@ -181,12 +294,7 @@ and @kbd{C-t enter}.
 
 @item newwm @var{window-manager}
 This is a bad-bad command. It kills ratpoison and revives that
-ugly rodden! Yuck! Avoid!
-
-@item number @var{n}
-This jumps you to window @var{n} where @var{n} is the window number as
-shown in the Program Bar. You can do the same trick with
-@command{C-@var{n}} too.
+ugly rodent! Yuck! Avoid!
 
 @item other
 This toggles between the current window and the last window. By
@@ -196,8 +304,16 @@ default, this is bound to @kbd{C-t C-t}.
 This jumps you to the previous window in the window list. By default,
 this is bound to @kbd{C-t p}.
 
+@item select @var{n}
+This jumps you to window @var{n} where @var{n} is the window number as
+shown in the Program Bar. You can do the same trick with
+@command{C-@var{n}} too.
+
 @item select @var{window-name}
-Go to a window by name. A shourcut is @var{C-t '}.
+Go to a window by name. A shourcut is @kbd{C-t '}.
+
+@item source @var{file}
+Read a text file containing ratpoison commands.
 
 @item title @var{title}
 Rename the currently active window. This name will remain for the
@@ -219,5 +335,22 @@ After 5 seconds the Program Bar disappears.
 This command is bound to @kbd{C-t w}.
 
 @end table
+
+@node Startup file,  , Commands, Top
+@chapter Startup file
+
+Now you've probably read the web page, and you've no doubt dug up some
+old file I forgot about. You're probably wondering, ``say, didn't he say
+there was no configuration file to customize?''. Ok, ya got me. But lets
+be honest here: ratpoison is so pure and fast-acting, customization is
+barely worth the extra effort. In the off chance that you need to make
+ratpoison your own, we now support it. 
+
+On startup ratpoison looks for @file{~/.ratpoisonrc} and runs it through
+the command parser. This means any command you can bind a key to or run
+at the command prompt (@kbd{C-t :}) you can execute in this rc file.
+
+It adds 320 bytes to ratpoison on a glibc6-i386 machine. Its a little
+steep for a feature and we are attempting to squeeze the fat.
 
 @bye
