@@ -1,6 +1,9 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** new command "license"
+Display ratpoison's license. This is also bound to C-t V and C-t C-V.
+
 ** input history
 All input you type into ratpoison is stored as a history entry. Use
 C-p and C-n to cycle through it.
