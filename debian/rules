@@ -33,7 +33,7 @@ build-deb/$(DEB_HOST_ARCH)/config-stamp:
 			--infodir=/usr/share/info \
 			--mandir=/usr/share/man \
 			--with-xterm=x-terminal-emulator \
-			--disable-debug
+			--disable-debug \
 			--build=$(DEB_BUILD_GNU_TYPE) \
 			--host=$(DEB_HOST_GNU_TYPE)
 	touch $@
@@ -42,14 +42,14 @@ build-deb/$(DEB_HOST_ARCH)/config-stamp:
 build: config build-deb/$(DEB_HOST_ARCH)/build-stamp
 build-deb/$(DEB_HOST_ARCH)/build-stamp:
 	dh_testdir
-	-$(MAKE) -C build-deb/$(DEB_HOST_ARCH) all
+	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) all
 	touch $@
 
 # clean - remove build directories
 clean:
 	dh_testdir
 	dh_testroot
-	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) distclean
+	-$(MAKE) -C build-deb/$(DEB_HOST_ARCH) distclean
 	rm -Rf build-deb/$(DEB_HOST_ARCH)
 	@for m in $(shell dh_listpackages); do \
 		echo "dh_clean -p$$m -Pdebian/$(DEB_HOST_ARCH)/$$m" ;\
@@ -69,6 +69,7 @@ install: build
 	done
 	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) \
 		install DESTDIR=$(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison
+	rm -f $(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison/usr/share/doc/COPYING
 
 # these build the various packages
 ratpoison: install
