@@ -118,10 +118,15 @@ handler (Display *d, XErrorEvent *e)
 
   if (ignore_badwindow && e->error_code == BadWindow) return 0;
 
-  XGetErrorText (d, e->error_code, error_msg, sizeof (error_msg));
+  strcpy (error_msg, "ERROR: ");
+
+  XGetErrorText (d, e->error_code, error_msg + 7, sizeof (error_msg) - 7);
   fprintf (stderr, "ratpoison: %s!\n", error_msg);
 
-  exit (EXIT_FAILURE); 
+  marked_message (error_msg, 0, strlen (error_msg));
+
+/*   exit (EXIT_FAILURE);  */
+  return 0;
 }
 
 void

@@ -1,3 +1,13 @@
+2001-02-27  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* main.c (handler): Prepends error message with "ERROR: ".
+	Displays error in message bar. Returns 0.
+
+	* events.c (destroy_window): sets rp_current_window to NULL when
+	there are no more mapped windows.
+	(destroy_window): calls set_current_window and find_window_other
+	directly instead of cmd_other.
+ 
 2001-02-26  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* list.c (save_mouse_position): stores the mouse position relative

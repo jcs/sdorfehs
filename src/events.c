@@ -171,10 +171,16 @@ destroy_window (XDestroyWindowEvent *ev)
 	  
 	  unmanage (win);
 
-	  /* Switch to last viewed window */
-	  ignore_badwindow = 1;
-	  cmd_other (NULL);
-	  ignore_badwindow = 0;
+	  if (rp_mapped_window_sentinel->next == rp_mapped_window_sentinel
+	      && rp_mapped_window_sentinel->prev == rp_mapped_window_sentinel)
+	    {
+	      rp_current_window = NULL;
+	    }
+	  else
+	    {
+	      /* Switch to last viewed window */
+	      set_current_window( find_window_other() );
+	    }
 	}
       else
 	{
@@ -252,10 +258,10 @@ configure_request (XConfigureRequestEvent *e)
 	  need_resize = 1;
 	}
 
-      if (need_move && !need_resize)
-	{
+/*       if (need_move && !need_resize) */
+/* 	{ */
 	  send_configure (win);
-	}
+/* 	} */
 
       maximize (win);
 
@@ -360,9 +366,11 @@ key_press (XEvent *ev)
     {
       if (rp_current_window)
 	{
+	  ignore_badwindow = 1;
 	  ev->xkey.window = rp_current_window->w;
 	  XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, ev);
 	  XSync (dpy, False);
+	  ignore_badwindow = 0;
 	}
     }
 }
