@@ -174,6 +174,33 @@ configure_request (XConfigureRequestEvent *e)
     }
 }
 
+void
+delete_window ()
+{
+  XEvent ev;
+  int status;
+
+  if (rp_current_window == NULL) return;
+
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = rp_current_window->w;
+  ev.xclient.message_type = wm_protocols;
+  ev.xclient.format = 32;
+  ev.xclient.data.l[0] = wm_delete;
+  ev.xclient.data.l[1] = CurrentTime;
+
+  status = XSendEvent(dpy, rp_current_window->w, False, 0, &ev);
+  if (status == 0) fprintf(stderr, "ratpoison: XSendEvent failed\n");
+}
+
+void 
+kill_window ()
+{
+  if (rp_current_window == NULL) return;
+
+  XKillClient(dpy, rp_current_window->w);
+}
+
 static void
 client_msg (XClientMessageEvent *ev)
 {
@@ -232,6 +259,10 @@ handle_key (screen_info *s)
       break;
     case KEY_LASTWINDOW:
       last_window ();
+      break;
+    case KEY_DELETE:
+      if (ev.xkey.state & ShiftMask) kill_window ();
+      else delete_window ();
       break;
     default:
       fprintf (stderr, "Unknown key command %c", (char)XKeycodeToKeysym(dpy, ev.xkey.keycode, 0));
@@ -317,7 +348,7 @@ delegate_event (XEvent *ev)
     case UnmapNotify:
       unmap_notify (ev);
       printf ("UnmapNotify\n");
-      break;
+ break;
 
     case MotionNotify:
       printf ("MotionNotify\n");

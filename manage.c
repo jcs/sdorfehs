@@ -52,6 +52,8 @@ grab_keys (screen_info *s)
 	   GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_LASTWINDOW ), AnyModifier, s->key_window, True, 
 	   GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_DELETE ), AnyModifier, s->key_window, True, 
+	   GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREFIX ), AnyModifier, s->key_window, True, 
 	   GrabModeAsync, GrabModeAsync);
 }
