@@ -82,6 +82,7 @@ static user_command user_commands[] =
     {"startup_message",	cmd_startup_message, arg_STRING},
     {"link",		cmd_link,	arg_STRING},
     {"alias",		cmd_alias,	arg_STRING},
+    {"unalias",		cmd_unalias,	arg_STRING},
     {"prevscreen",	cmd_prevscreen,	arg_VOID},
     {"nextscreen",	cmd_nextscreen,	arg_VOID},
     /*@end (tag required for genrpbindings) */
@@ -875,17 +876,7 @@ command (int interactive, char *data)
 
   PRINT_DEBUG ("cmd==%s rest==%s\n", cmd, (char*)rest);
 
-  /* find the command */
-  for (uc = user_commands; uc->name; uc++)
-    {
-      if (!strcmp (cmd, uc->name))
-	{
-	  result = uc->func (interactive, rest);
-	  goto done;
-	}
-    }
-
-  /* Look for it in the aliases. */
+  /* Look for it in the aliases, first. */
   for (i=0; i<alias_list_last; i++)
     {
       if (!strcmp (cmd, alias_list[i].name))
@@ -906,6 +897,16 @@ command (int interactive, char *data)
 	  alias_recursive_depth--;
 
 	  sbuf_free (s);
+	  goto done;
+	}
+    }
+
+  /* If it wasn't an alias, maybe its a command. */
+  for (uc = user_commands; uc->name; uc++)
+    {
+      if (!strcmp (cmd, uc->name))
+	{
+	  result = uc->func (interactive, rest);
 	  goto done;
 	}
     }
@@ -2431,6 +2432,52 @@ cmd_alias (int interactive, void *data)
     }
 
   return NULL;
+}
+
+char *
+cmd_unalias (int interactive, void *data)
+{
+  char *name;
+  int index;
+  
+  if (data == NULL)
+    {
+      message (" unalias: One argument required ");
+      return NULL;
+    }
+
+  /* Parse out the arguments. */
+  name = (char *)data;
+
+  /* Are we updating an existing alias, or creating a new one? */
+  index = find_alias_index (name);
+  if (index >= 0)
+    {
+      char *tmp;
+
+      alias_list_last--;
+
+      /* Free the alias and put the last alias in the the space to
+	 keep alias_list from becoming sparse. This code must jump
+	 through some hoops to correctly handle the case when
+	 alias_list_last == index. */
+      tmp = alias_list[index].alias;
+      alias_list[index].alias = xstrdup (alias_list[alias_list_last].alias);
+      free (tmp);
+      free (alias_list[alias_list_last].alias);
+
+      /* Do the same for the name element. */
+      tmp = alias_list[index].name;
+      alias_list[index].name = xstrdup (alias_list[alias_list_last].name);
+      free (tmp);
+      free (alias_list[alias_list_last].name);
+    }
+  else
+    {
+      message (" unalias: alias not found ");
+    }
+
+  return NULL;  
 }
 
 char *
