@@ -98,20 +98,27 @@ map_request (XEvent *ev)
 
   if (s && win) 
     {
+      PRINT_DEBUG ("Map from a managable window\n");
+
       switch (win->state)
 	{
 	case STATE_UNMAPPED:
+	  PRINT_DEBUG ("Unmapped window\n");
 	  if (unmanaged_window (win->w))
 	    {
+	      PRINT_DEBUG ("Unmanaged Window\n");
 	      XMapRaised (dpy, win->w);
 	      break;
 	    }
 	  else
-	    manage (win, s);	/* fall through */
+	    {
+	      PRINT_DEBUG ("managed Window\n");
+	      manage (win, s);	/* fall through */
+	    }
 	case STATE_MAPPED:
+	  PRINT_DEBUG ("Mapped Window\n");
 	  XMapRaised (dpy, win->w);
-	  rp_current_window = win;
-	  set_active_window (rp_current_window);
+	  set_active_window (win);
 	}
     }
   else
@@ -212,8 +219,7 @@ configure_request (XConfigureRequestEvent *e)
 	{
 	  if (e->detail == Above)
 	    {
-	      rp_current_window = win;
-	      set_active_window (rp_current_window);
+	      set_active_window (win);
 	    }
 	  else if (e->detail == Below && win == rp_current_window) 
 	    {
@@ -361,10 +367,8 @@ property_notify (XEvent *ev)
 	{
 	case XA_WM_NAME:
 	  PRINT_DEBUG ("updating window name\n");
-	  if (update_window_name (win))
-	    {
-	      update_window_names (win->scr);
-	    }
+	  update_window_name (win);
+	  update_window_names (win->scr);
 	  break;
 
 	case XA_WM_NORMAL_HINTS:
@@ -379,6 +383,27 @@ property_notify (XEvent *ev)
 	}
     }
 }
+
+void
+colormap_notify (XEvent *ev)
+{
+  rp_window *win;
+
+  win = find_window (ev->xcolormap.window);
+
+  if (win != NULL)
+    {
+      XWindowAttributes attr;
+
+      XGetWindowAttributes (dpy, win->w, &attr);
+      win->colormap = attr.colormap;
+
+      if (win == rp_current_window)
+	{
+	  XInstallColormap (dpy, win->colormap);
+	}
+    }
+}	  
 
 /* Given an event, call the correct function to handle it. */
 void
@@ -407,6 +432,7 @@ delegate_event (XEvent *ev)
       break;
     case ColormapNotify:
       PRINT_DEBUG ("ColormapNotify\n");
+      colormap_notify (ev);
       break;
     case PropertyNotify:
       PRINT_DEBUG ("PropertyNotify\n");
