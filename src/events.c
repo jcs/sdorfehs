@@ -304,8 +304,8 @@ key_press (XEvent *ev)
 
   if (rat_visible)
     {
-      XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width, s->root_attr.height);
-/*        rat_visible = 0;  */
+      XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width - 2, s->root_attr.height - 2);
+      rat_visible = 0; 
     }
 
   if (!s) return;
@@ -350,10 +350,16 @@ property_notify (XEvent *ev)
 void
 rat_motion (XMotionEvent *ev)
 {
+  screen_info *s;  
+  s = find_screen (ev->root);
+  if (!s) return;
+
+  if (ev->x_root == s->root_attr.width - 2 && ev->y_root == s->root_attr.height - 2) return;
+
   if (!rat_visible)
     {
-      XWarpPointer (dpy, None, ev->root, 0, 0, 0, 0, rat_x, rat_y);
-      /*  rat_visible = 1; */
+      XWarpPointer (dpy, None, rp_current_window->w, 0, 0, 0, 0, rat_x, rat_y);
+      rat_visible = 1;
     }
 
   rat_x = ev->x_root;
