@@ -37,7 +37,7 @@ void give_window_focus (rp_window *win, rp_window *last_win);
 void set_active_window (rp_window *win);
 void goto_window (rp_window *win);
 void set_current_window (rp_window *win);
-void update_window_position (rp_window *win);
+void update_window_gravity (rp_window *win);
 char *window_name (rp_window *win);
 
 #if 0

@@ -336,29 +336,29 @@ client_msg (XClientMessageEvent *ev)
 {
   PRINT_DEBUG ("Received client message.\n");
 
-  if (ev->message_type == rp_restart)
-    {
-      PRINT_DEBUG ("Restarting\n");
-      clean_up (); 
-      execvp(myargv[0], myargv);
-    }
-  else if (ev->message_type == rp_kill)
-    {
-      PRINT_DEBUG ("Exiting\n");
-      clean_up ();
-      exit (EXIT_SUCCESS);
-    }
-  else if (ev->message_type == wm_change_state)
+  if (ev->message_type == wm_change_state)
     {
       rp_window *win;
+
+      PRINT_DEBUG ("WM_CHANGE_STATE\n")
 
       win = find_window (ev->window);
       if (win == NULL) return;
       if (ev->format == 32 && ev->data.l[0] == IconicState)
 	{
+	  /* FIXME: This means clients can hide themselves without the
+	     user's intervention. This is bad, but Emacs is the only
+	     program I know of that iconifies itself and this is
+	     generally from the user pressing C-z.  */
+	  PRINT_DEBUG ("Iconify Request.\n");
 	  if (win->state == NormalState)
 	    {
-	      /* TODO: Handle iconify events */
+	      rp_window *w = find_window_other();
+
+	      if (w)
+		set_active_window (w);
+	      else
+		blank_frame (rp_current_frame);
 	    }
 	}
       else
@@ -811,15 +811,15 @@ get_event (XEvent *ev)
 
   if (hup_signalled > 0)
     {
-      PRINT_DEBUG ("Restarting with a fresh plate.\n"); 
-      send_restart ();
+      clean_up (); 
+      execvp(myargv[0], myargv);
     }
 
   if (kill_signalled > 0)
     {
-      fprintf (stderr, "ratpoison: Agg! I've been SHOT!\n"); 
+      PRINT_DEBUG ("Exiting\n");
       clean_up ();
-      exit (EXIT_FAILURE);
+      exit (EXIT_SUCCESS);
     }
 
   /* Is there anything in the event qeue? */

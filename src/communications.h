@@ -22,8 +22,6 @@
 #ifndef _RATPOISON_COMMUNICATIONS_H
 #define _RATPOISON_COMMUNICATIONS_H 1
 
-void send_kill ();
-void send_restart ();
 int send_command (unsigned char *cmd);
 
 #endif /* ! _RATPOISON_COMMUNICATIONS_H */

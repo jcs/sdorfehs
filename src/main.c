@@ -52,8 +52,6 @@ Atom wm_delete;
 Atom wm_take_focus;
 Atom wm_colormaps;
 
-Atom rp_restart;
-Atom rp_kill;
 Atom rp_command;
 Atom rp_command_request;
 Atom rp_command_result;
@@ -82,8 +80,6 @@ int rp_honour_normal_map = 1;
 static struct option ratpoison_longopts[] = 
   { {"help", 	no_argument, 		0, 	'h'},
     {"version", no_argument, 		0, 	'v'},
-    {"restart", no_argument, 		0, 	'r'},
-    {"kill", 	no_argument, 		0, 	'k'},
     {"command", required_argument, 	0, 	'c'},
     {0, 	0, 			0, 	0} };
 
@@ -211,8 +207,6 @@ print_help ()
   printf ("Help for %s %s\n\n", PACKAGE, VERSION);
   printf ("-h, --help            Display this help screen\n");
   printf ("-v, --version         Display the version\n");
-  printf ("-r, --restart         Restart ratpoison\n");
-  printf ("-k, --kill            Kill ratpoison\n");
   printf ("-c, --command         Send ratpoison a colon-command\n\n");
 
   printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
@@ -356,15 +350,15 @@ show_welcome_message ()
 static void
 init_defaults ()
 {
-  defaults.win_pos     = TOP_LEFT;
-  defaults.trans_pos   = CENTER_CENTER;
-  defaults.maxsize_pos = CENTER_CENTER;
+  defaults.win_gravity     = NorthWestGravity;
+  defaults.trans_gravity   = CenterGravity;
+  defaults.maxsize_gravity = CenterGravity;
 
   defaults.input_window_size   = 200;
   defaults.window_border_width = 1;
   defaults.bar_x_padding       = 0;
   defaults.bar_y_padding       = 0;
-  defaults.bar_location        = TOP_RIGHT;
+  defaults.bar_location        = NorthEastGravity;
   defaults.bar_timeout 	       = 5;
 
   defaults.frame_indicator_timeout = 1;
@@ -386,6 +380,7 @@ init_defaults ()
   defaults.window_fmt = xstrdup ("%n%s%t");
 
   defaults.win_name = 0;
+  defaults.startup_message = 1;
 }
 
 int
@@ -393,8 +388,6 @@ main (int argc, char *argv[])
 {
   int i;
   int c;
-  int do_kill = 0;
-  int do_restart = 0;
   char **command = NULL;
   int cmd_count = 0;
 
@@ -415,12 +408,6 @@ main (int argc, char *argv[])
 	  break;
 	case 'v':
 	  print_version ();
-	  break;
-	case 'k':
-	  do_kill = 1;
-	  break;
-	case 'r':
-	  do_restart = 1;
 	  break;
 	case 'c':
 	  if (!command)
@@ -448,26 +435,10 @@ main (int argc, char *argv[])
     }
 
   /* Set ratpoison specific Atoms. */
-  rp_restart = XInternAtom (dpy, "RP_RESTART", False);
-  rp_kill = XInternAtom (dpy, "RP_KILL", False);
   rp_command = XInternAtom (dpy, "RP_COMMAND", False);
   rp_command_request = XInternAtom (dpy, "RP_COMMAND_REQUEST", False);
   rp_command_result = XInternAtom (dpy, "RP_COMMAND_RESULT", False);
 
-  if (do_kill)
-    {
-      send_kill ();
-      XSync (dpy, False);
-      XCloseDisplay (dpy);
-      return EXIT_SUCCESS;
-    }
-  if (do_restart)
-    {
-      send_restart ();
-      XSync (dpy, False);
-      XCloseDisplay (dpy);
-      return EXIT_SUCCESS;
-    }
   if (cmd_count > 0)
     {
       int i;
@@ -520,7 +491,8 @@ main (int argc, char *argv[])
   read_startup_files ();
 
   /* Indicate to the user that ratpoison has booted. */
-  show_welcome_message();
+  if (defaults.startup_message)
+    show_welcome_message();
 
   /* If no window has focus, give the key_window focus. */
   if (current_window() == NULL)

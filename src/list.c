@@ -56,14 +56,21 @@ free_window (rp_window *w)
 }
 
 void
-update_window_position (rp_window *win)
+update_window_gravity (rp_window *win)
 {
-  if (win->transient)
-    win->position = defaults.trans_pos;
-  else if (win->hints->flags & PMaxSize)
-    win->position = defaults.maxsize_pos;
-  else
-    win->position = defaults.win_pos;
+/*   if (win->hints->win_gravity == ForgetGravity) */
+/*     { */
+      if (win->transient)
+	win->gravity = defaults.trans_gravity;
+      else if (win->hints->flags & PMaxSize)
+	win->gravity = defaults.maxsize_gravity;
+      else
+	win->gravity = defaults.win_gravity;
+/*     } */
+/*   else */
+/*     { */
+/*       win->gravity = win->hints->win_gravity; */
+/*     } */
 }
 
 char *
@@ -118,7 +125,7 @@ add_to_window_list (screen_info *s, Window w)
   new_window->transient = XGetTransientForHint (dpy, new_window->w, &new_window->transient_for);
   PRINT_DEBUG ("transient %d\n", new_window->transient);
 
-  update_window_position (new_window);
+  update_window_gravity (new_window);
 
   get_mouse_root_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
 

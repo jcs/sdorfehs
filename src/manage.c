@@ -263,7 +263,7 @@ update_window_information (rp_window *win)
   /* Transient status */
   win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);  
 
-  update_window_position (win);
+  update_window_gravity (win);
 }
 
 void
@@ -370,41 +370,41 @@ move_window (rp_window *win)
     return;
 
   /* X coord. */
-  switch (win->position)
+  switch (win->gravity)
     {
-    case TOP_LEFT:
-    case CENTER_LEFT:
-    case BOTTOM_LEFT:
+    case NorthWestGravity:
+    case WestGravity:
+    case SouthWestGravity:
       win->x = win->frame->x;
       break;
-    case TOP_CENTER:
-    case BOTTOM_CENTER:
-    case CENTER_CENTER:
+    case NorthGravity:
+    case CenterGravity:
+    case SouthGravity:
       win->x = win->frame->x + (win->frame->width - win->border * 2) / 2 - win->width / 2;
       break;
-    case TOP_RIGHT:
-    case CENTER_RIGHT:
-    case BOTTOM_RIGHT:
+    case NorthEastGravity:
+    case EastGravity:
+    case SouthEastGravity:
       win->x = win->frame->x + win->frame->width - win->width - win->border;
       break;
     }
 
   /* Y coord. */
-  switch (win->position)
+  switch (win->gravity)
     {
-    case TOP_LEFT:
-    case TOP_CENTER:
-    case TOP_RIGHT:
+    case NorthEastGravity:
+    case NorthGravity:
+    case NorthWestGravity:
       win->y = win->frame->y;
       break;
-    case CENTER_LEFT:
-    case CENTER_CENTER:
-    case CENTER_RIGHT:
+    case EastGravity:
+    case CenterGravity:
+    case WestGravity:
       win->y = win->frame->y + (win->frame->height - win->border * 2) / 2 - win->height / 2;
       break;
-    case BOTTOM_LEFT:
-    case BOTTOM_CENTER:
-    case BOTTOM_RIGHT:
+    case SouthEastGravity:
+    case SouthGravity:
+    case SouthWestGravity:
       win->y = win->frame->y + win->frame->height - win->height - win->border;
       break;
     }

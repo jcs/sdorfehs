@@ -83,8 +83,8 @@ show_bar (screen_info *s)
 int
 bar_x (screen_info *s, int width)
 {
-  if (defaults.bar_location == BOTTOM_RIGHT
-      || defaults.bar_location == TOP_RIGHT)
+  if (defaults.bar_location == SouthEastGravity
+      || defaults.bar_location == NorthEastGravity)
     return s->root_attr.width - width - 2;
   else
     return 0;
@@ -93,8 +93,8 @@ bar_x (screen_info *s, int width)
 int
 bar_y (screen_info *s)
 {
-  if (defaults.bar_location == TOP_LEFT
-      || defaults.bar_location == TOP_RIGHT ) 
+  if (defaults.bar_location == NorthWestGravity
+      || defaults.bar_location == NorthEastGravity ) 
     return 0;
   else
     return s->root_attr.height - (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2) - 2;

@@ -43,20 +43,6 @@ struct rp_window_frame
   rp_window_frame *prev, *next;
 };
 
-
-/* Possible positions for a window. */
-#define TOP_LEFT      0
-#define TOP_CENTER    1
-#define TOP_RIGHT     2
-
-#define CENTER_LEFT   3
-#define CENTER_CENTER 4
-#define CENTER_RIGHT  5
-
-#define BOTTOM_LEFT   6
-#define BOTTOM_CENTER 7
-#define BOTTOM_RIGHT  8
-
 struct rp_window
 {
   screen_info *scr;
@@ -88,9 +74,9 @@ struct rp_window
   /* Saved mouse position */
   int mouse_x, mouse_y;
 
-  /* The alignment of the window. To what side or corner should the
-     window stick to. */
-  int position;
+  /* The alignment of the window. Decides to what side or corner the
+     window sticks to. */
+  int gravity;
 
   /* A window can be visible inside a frame but not the frame's
      current window. This keeps track of what frame the window was
@@ -130,9 +116,9 @@ struct rp_defaults
 {
   /* Default positions for new normal windows, transient windows, and
      normal windows with maxsize hints. */
-  int win_pos;
-  int trans_pos;
-  int maxsize_pos;
+  int win_gravity;
+  int trans_gravity;
+  int maxsize_gravity;
 
   int input_window_size;
   int window_border_width;
@@ -157,6 +143,8 @@ struct rp_defaults
 
   /* Which name to use: wm_name, res_name, res_class. */
   int win_name;
+
+  int startup_message;
 };
 
 extern struct rp_defaults defaults;
@@ -195,8 +183,6 @@ extern int num_screens;
 extern XEvent rp_current_event;
 
 extern Display *dpy;
-extern Atom rp_restart;
-extern Atom rp_kill;
 extern Atom rp_command;
 extern Atom rp_command_request;
 extern Atom rp_command_result;

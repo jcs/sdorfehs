@@ -583,3 +583,79 @@ show_frame_indicator ()
 
   alarm (defaults.frame_indicator_timeout);
 }
+
+rp_window_frame *
+find_frame_up (rp_window_frame *frame)
+{
+  rp_window_frame *cur;
+
+  for (cur = rp_window_frame_sentinel->next; 
+       cur != rp_window_frame_sentinel; 
+       cur = cur->next)
+    {
+      if (frame->y == cur->y + cur->height)
+	{
+	  if (frame->x >= cur->x && frame->x < cur->x + cur->width)
+	    return cur;
+	}
+    }
+
+  return NULL;
+}
+
+rp_window_frame *
+find_frame_down (rp_window_frame *frame)
+{
+  rp_window_frame *cur;
+
+  for (cur = rp_window_frame_sentinel->next; 
+       cur != rp_window_frame_sentinel; 
+       cur = cur->next)
+    {
+      if (frame->y + frame->height == cur->y)
+	{
+	  if (frame->x >= cur->x && frame->x < cur->x + cur->width)
+	    return cur;
+	}
+    }
+
+  return NULL;
+}
+
+rp_window_frame *
+find_frame_left (rp_window_frame *frame)
+{
+  rp_window_frame *cur;
+
+  for (cur = rp_window_frame_sentinel->next; 
+       cur != rp_window_frame_sentinel; 
+       cur = cur->next)
+    {
+      if (frame->x == cur->x + cur->width)
+	{
+	  if (frame->y >= cur->y && frame->y < cur->y + cur->height)
+	    return cur;
+	}
+    }
+
+  return NULL;
+}
+
+rp_window_frame *
+find_frame_right (rp_window_frame *frame)
+{
+  rp_window_frame *cur;
+
+  for (cur = rp_window_frame_sentinel->next; 
+       cur != rp_window_frame_sentinel; 
+       cur = cur->next)
+    {
+      if (frame->x + frame->width == cur->x)
+	{
+	  if (frame->y >= cur->y && frame->y < cur->y + cur->height)
+	    return cur;
+	}
+    }
+
+  return NULL;
+}

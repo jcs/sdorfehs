@@ -1,3 +1,83 @@
+2001-09-21  shawn  <sabetts@vcn.bc.ca>
+
+	* src/split.h (find_frame_up): new prototype
+	(find_frame_down): likewise
+	(find_frame_left): likewise
+	(find_frame_right): likewise
+
+	* src/split.c (find_frame_up): new function
+	(find_frame_down): likewise
+	(find_frame_left): likewise
+	(find_frame_right): likewise
+
+	* src/manage.c (move_window): use x11 gravity constants to denote
+	gravity.
+
+	* src/main.c (ratpoison_longopts): remove --kill and
+	--restart. Dependant code updated.
+	(init_defaults): use x11 gravity constants to denote gravity.
+	(main): only display the startup message if
+	defaults.startup_message is on.
+
+	* src/list.c (update_window_gravity): rename from
+	update_window_position. dependant code updated
+
+	* src/events.c (client_msg): don't test for restart or kill client
+	messages.
+	(client_msg): properly handle iconify requests.
+	(get_event): kill and restart the process here.
+
+	* src/data.h (TOP_LEFT): remove define
+	(TOP_CENTER): likewise
+	(TOP_RIGHT): likewise
+	(CENTER_LEFT): likewise
+	(CENTER_CENTER): likewise
+	(CENTER_RIGHT): likewise
+	(BOTTOM_LEFT): likewise
+	(BOTTOM_CENTER): likewise
+	(BOTTOM_RIGHT): likewise
+	(struct rp_window): rename field to position to gravity.
+	(struct rp_defaults): rename win_pos to win_gravity, trans_pos to
+	trans_gravity and maxsize_pos to maxsize_gravity.
+	(rp_restart): remove global variable
+	(rp_kill): likewise
+
+	* src/communications.h (send_kill): remove prototype
+	(send_restart): likewise
+
+	* src/communications.c (send_restart): remove function. obsolete.
+	(send_kill): likewise
+
+	* src/bar.c (bar_x): Use X11 gravity constants to denote location.
+	(bar_y): likewise
+
+	* src/actions.h (cmd_focusup): new prototype
+	(cmd_focusdown): likewise
+	(cmd_focusleft): likewise
+	(cmd_focusright): likewise
+	(cmd_startup_message): likewise
+	(cmd_restart): likewise
+
+	* src/actions.c (cmd_quit): just set the kill_signalled variable.
+	(parse_wingravity): use compass directions to describe the gravity
+	(parse_wingravity): renamed from parse_winpos. dependant code
+	updated.
+	(cmd_gravity): renamed from cmd_pos. dependant code updated.
+	(cmd_defwingravity): renamed from cmd_defwinpos. dependant code
+	updated.
+	(cmd_deftransgravity): renamed from cmd_deftranspos. dependant
+	code updated.
+	(cmd_defmaxsizegravity): renamed from cmd_defmaxsizepos. dependant
+	code updated.
+	(cmd_focusup): new function
+	(cmd_focusdown): likewise
+	(cmd_focusleft): likewise
+	(cmd_focusright): likewise
+	(cmd_restart): likewise
+	(cmd_startup_message): likewise
+	(user_commands): new commands "focusup" "focusdown" "focusright"
+	"focusleft" "startup_message" "restart".
+
 2001-09-18  shawn  <sabetts@vcn.bc.ca>
 
 	* src/list.c (window_name): make sure the default window name is

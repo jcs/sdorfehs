@@ -27,48 +27,8 @@
 
 #include "ratpoison.h"
 
-void
-send_restart ()
-{
-  XEvent ev;
-  int status;
-
-  ev.xclient.type = ClientMessage;
-  ev.xclient.window = DefaultRootWindow (dpy);
-  ev.xclient.message_type = rp_restart;
-  ev.xclient.format = 32;
-  ev.xclient.data.l[0] = rp_restart;
-  ev.xclient.data.l[1] = CurrentTime;
-
-  status = XSendEvent (dpy, DefaultRootWindow (dpy), False, SubstructureRedirectMask, &ev); 
-  if (status == 0)
-    {
-      PRINT_ERROR ("failed to send restart event\n");
-    }
-}
-
-void
-send_kill ()
-{
-  XEvent ev;
-  int status;
-
-  ev.xclient.type = ClientMessage;
-  ev.xclient.window = DefaultRootWindow (dpy);
-  ev.xclient.message_type = rp_kill;
-  ev.xclient.format = 32;
-  ev.xclient.data.l[0] = rp_kill;
-  ev.xclient.data.l[1] = CurrentTime;
-
-  status = XSendEvent (dpy, DefaultRootWindow (dpy), False, SubstructureRedirectMask, &ev); 
-  if (status == 0)
-    {
-      PRINT_ERROR ("failed to send kill event\n");
-    }
-}
 
 /* Sending commands to ratpoison */
-
 static void
 recieve_command_result (Window w)
 {

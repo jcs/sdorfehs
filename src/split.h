@@ -39,4 +39,9 @@ void blank_frame (rp_window_frame *frame);
 void show_frame_indicator ();
 void hide_frame_indicator ();
 
+rp_window_frame *find_frame_right (rp_window_frame *frame);
+rp_window_frame *find_frame_left (rp_window_frame *frame);
+rp_window_frame *find_frame_down (rp_window_frame *frame);
+rp_window_frame *find_frame_up (rp_window_frame *frame);
+
 #endif

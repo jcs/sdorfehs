@@ -42,6 +42,10 @@ static user_command user_commands[] =
     {"escape",          cmd_escape,     arg_STRING},
     {"exec", 		cmd_exec, 	arg_STRING},
     {"focus",		cmd_next_frame,	arg_VOID},
+    {"focusup",		cmd_focusup,	arg_VOID},
+    {"focusdown",	cmd_focusdown,	arg_VOID},
+    {"focusleft",	cmd_focusleft,	arg_VOID},
+    {"focusright",	cmd_focusright,	arg_VOID},
     {"meta",		cmd_meta,	arg_STRING},
     {"help",		cmd_help,	arg_VOID},
     {"hsplit",		cmd_h_split,	arg_VOID},
@@ -52,7 +56,7 @@ static user_command user_commands[] =
     {"number", 		cmd_number, 	arg_STRING},
     {"only",            cmd_only,       arg_VOID},
     {"other", 		cmd_other, 	arg_VOID},
-    {"pos",		cmd_pos, 	arg_STRING},
+    {"gravity",		cmd_gravity, 	arg_STRING},
     {"prev", 		cmd_prev, 	arg_VOID},
     {"quit",		cmd_quit,	arg_VOID},
     {"remove",          cmd_remove,     arg_VOID},
@@ -70,22 +74,24 @@ static user_command user_commands[] =
     {"unsetenv",	cmd_unsetenv,	arg_STRING},
     {"info",		cmd_info,	arg_VOID},
     {"lastmsg",		cmd_lastmsg,	arg_VOID},
+    {"restart",		cmd_restart,	arg_VOID},
+    {"startup_message",	cmd_startup_message, arg_STRING},
 
     /* Commands to set default behavior. */
-    {"defbarloc",	cmd_defbarloc, 		arg_STRING},
-    {"msgwait",		cmd_msgwait,	 	arg_STRING},
-    {"defborder", 	cmd_defborder, 		arg_STRING},
-    {"deffont", 	cmd_deffont, 		arg_STRING},
-    {"definputwidth",	cmd_definputwidth,	arg_STRING},
-    {"defmaxsizepos",	cmd_defmaxsizepos, 	arg_STRING},
-    {"defpadding", 	cmd_defpadding, 	arg_STRING},
-    {"deftranspos",	cmd_deftranspos,	arg_STRING},
-    {"defwaitcursor",	cmd_defwaitcursor,	arg_STRING},
-    {"defwinfmt", 	cmd_defwinfmt, 		arg_STRING},
-    {"defwinname", 	cmd_defwinname,		arg_STRING},
-    {"defwinpos",	cmd_defwinpos, 		arg_STRING},
-    {"deffgcolor",	cmd_deffgcolor,		arg_STRING},
-    {"defbgcolor",	cmd_defbgcolor,		arg_STRING},
+    {"defbarloc",		cmd_defbarloc, 		arg_STRING},
+    {"msgwait",			cmd_msgwait,	 	arg_STRING},
+    {"defborder", 		cmd_defborder, 		arg_STRING},
+    {"deffont", 		cmd_deffont, 		arg_STRING},
+    {"definputwidth",		cmd_definputwidth,	arg_STRING},
+    {"defmaxsizegravity",	cmd_defmaxsizegravity, 	arg_STRING},
+    {"defpadding", 		cmd_defpadding, 	arg_STRING},
+    {"deftransgravity",		cmd_deftransgravity,	arg_STRING},
+    {"defwaitcursor",		cmd_defwaitcursor,	arg_STRING},
+    {"defwinfmt", 		cmd_defwinfmt, 		arg_STRING},
+    {"defwinname", 		cmd_defwinname,		arg_STRING},
+    {"defwingravity",		cmd_defwingravity,	arg_STRING},
+    {"deffgcolor",		cmd_deffgcolor,		arg_STRING},
+    {"defbgcolor",		cmd_defbgcolor,		arg_STRING},
 
     /* Commands to help debug ratpoison. */
 #ifdef DEBUG
@@ -917,16 +923,10 @@ cmd_newwm(int interactive, void *data)
   return NULL;
 }
 
-/* Quit ratpoison. Thanks to 
-"Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
 char *
 cmd_quit(int interactive, void *data)
 {
-  PRINT_DEBUG ("Exiting\n");
-  clean_up ();
-  exit (EXIT_SUCCESS);
-
-  /* Never gets here. */
+  kill_signalled = 1;
   return NULL;
 }
 
@@ -1309,85 +1309,41 @@ cmd_rudeness (int interactive, void *data)
 }
 
 static int
-parse_winpos (char *data)
+parse_wingravity (char *data)
 {
-  int ret = 0;
-  char *x, *y;
+  int ret = -1;
 
-  x = xmalloc (strlen (data) + 1);
-  y = xmalloc (strlen (data) + 1);
-
-  if (sscanf (data, "%s %s", x , y) < 2)
-    {
-      message (" pos: Two arguments needed ");
-      free (x);
-      free (y);
-      return -3;
-    }
-
-  PRINT_DEBUG ("%s %s\n", x, y);
-
-  switch (y[0])
-    {
-    case 't':
-    case 'T':
-      ret = TOP_LEFT;
-      break;
-
-    case 'c':
-    case 'C':
-      ret = CENTER_LEFT;
-      break;
-
-    case 'b':
-    case 'B':
-      ret = BOTTOM_LEFT;
-      break;
-
-    default:
-      ret = -1;
-      goto done;
-      break;
-    }
-
-  switch (x[0])
-    {
-    case 'l':
-    case 'L':
-      break;
-
-    case 'c':
-    case 'C':
-      ret += TOP_CENTER;
-      break;
-
-    case 'r':
-    case 'R':
-      ret += TOP_RIGHT;
-      break;
-
-    default:
-      ret = -2;
-      goto done;
-      break;
-    }
-
- done:
-  free (x);
-  free (y);
+  if (!strcasecmp (data, "northwest") || !strcasecmp (data, "nw"))
+    ret = NorthWestGravity;
+  if (!strcasecmp (data, "north") || !strcasecmp (data, "n"))
+    ret = NorthGravity;
+  if (!strcasecmp (data, "northeast") || !strcasecmp (data, "ne"))
+    ret = NorthEastGravity;
+  if (!strcasecmp (data, "west") || !strcasecmp (data, "w"))
+    ret = WestGravity;
+  if (!strcasecmp (data, "center") || !strcasecmp (data, "c"))
+    ret = CenterGravity;
+  if (!strcasecmp (data, "East") || !strcasecmp (data, "e"))
+    ret = EastGravity;
+  if (!strcasecmp (data, "southwest") || !strcasecmp (data, "sw"))
+    ret = SouthWestGravity;
+  if (!strcasecmp (data, "South") || !strcasecmp (data, "s"))
+    ret = SouthGravity;
+  if (!strcasecmp (data, "southeast") || !strcasecmp (data, "se"))
+    ret = SouthEastGravity;
 
   return ret;
 }
 
 char *
-cmd_pos (int interactive, void *data)
+cmd_gravity (int interactive, void *data)
 {
-  int pos;
+  int gravity;
   rp_window *win;
 
   if (data == NULL) 
     {
-      message (" pos: Two arguments needed ");
+      message (" gravity: Two arguments needed ");
       return NULL;
     }
 
@@ -1395,13 +1351,13 @@ cmd_pos (int interactive, void *data)
 
   win = current_window();
   
-  if ((pos = parse_winpos (data)) < 0)
+  if ((gravity = parse_wingravity (data)) < 0)
     {
-      message (" pos: Unknown position ");
+      message (" gravity: Unknown gravity ");
     }
   else
     {
-      win->position = pos;
+      win->gravity = gravity;
       maximize (win);
     }
 
@@ -1409,69 +1365,69 @@ cmd_pos (int interactive, void *data)
 }
 
 char *
-cmd_defwinpos (int interactive, void *data)
+cmd_defwingravity (int interactive, void *data)
 {
-  int pos;
+  int gravity;
 
   if (data == NULL) 
     {
-      message (" defwinpos: Two arguments needed ");
+      message (" defwingravity: Two arguments needed ");
       return NULL;
     }
 
-  if ((pos = parse_winpos (data)) < 0)
+  if ((gravity = parse_wingravity (data)) < 0)
     {
-      message (" defwinpos: Unknown position ");
+      message (" defwingravity: Unknown gravity ");
     }
   else
     {
-      defaults.win_pos = pos;
+      defaults.win_gravity = gravity;
     }
 
   return NULL;
 }
 
 char *
-cmd_deftranspos (int interactive, void *data)
+cmd_deftransgravity (int interactive, void *data)
 {
-  int pos;
+  int gravity;
 
   if (data == NULL) 
     {
-      message (" deftranspos: Two arguments needed ");
+      message (" deftransgravity: Two arguments needed ");
       return NULL;
     }
 
-  if ((pos = parse_winpos (data)) < 0)
+  if ((gravity = parse_wingravity (data)) < 0)
     {
-      message (" pos: Unknown position ");
+      message (" gravity: Unknown gravity ");
     }
   else
     {
-      defaults.trans_pos = pos;
+      defaults.trans_gravity = gravity;
     }
 
   return NULL;
 }
 
 char *
-cmd_defmaxsizepos (int interactive, void *data)
+cmd_defmaxsizegravity (int interactive, void *data)
 {
-  int pos;
+  int gravity;
 
   if (data == NULL) 
     {
-      message (" defmaxsizepos: Two arguments needed ");
+      message (" defmaxsizegravity: Two arguments needed ");
       return NULL;
     }
 
-  if ((pos = parse_winpos (data)) < 0)
+  if ((gravity = parse_wingravity (data)) < 0)
     {
-      message (" defmaxsizepos: Unknown position ");
+      message (" defmaxsizegravity: Unknown gravity ");
     }
   else
     {
-      defaults.maxsize_pos = pos;
+      defaults.maxsize_gravity = gravity;
     }
 
   return NULL;
@@ -1512,16 +1468,16 @@ cmd_defbarloc (int interactive, void *data)
   switch (loc)
     {
     case 0:
-      defaults.bar_location = TOP_LEFT;
+      defaults.bar_location = NorthWestGravity;
       break;
     case 1:
-      defaults.bar_location = TOP_RIGHT;
+      defaults.bar_location = NorthEastGravity;
       break;
     case 2:
-      defaults.bar_location = BOTTOM_RIGHT;
+      defaults.bar_location = SouthEastGravity;
       break;
     case 3:
-      defaults.bar_location = BOTTOM_LEFT;
+      defaults.bar_location = SouthWestGravity;
       break;
 
     default:
@@ -1895,5 +1851,75 @@ char *
 cmd_lastmsg (int interactive, void *data)
 {
   show_last_message();
+  return NULL;
+}
+
+char *
+cmd_focusup (int interactive, void *data)
+{
+  rp_window_frame *frame;
+
+  if ((frame = find_frame_up (rp_current_frame)))
+    set_active_frame (frame);
+
+  return NULL;
+}
+
+char *
+cmd_focusdown (int interactive, void *data)
+{
+  rp_window_frame *frame;
+
+  if ((frame = find_frame_down (rp_current_frame)))
+    set_active_frame (frame);
+
+  return NULL;
+}
+
+char *
+cmd_focusleft (int interactive, void *data)
+{
+  rp_window_frame *frame;
+
+  if ((frame = find_frame_left (rp_current_frame)))
+    set_active_frame (frame);
+
+  return NULL;
+}
+
+char *
+cmd_focusright (int interactive, void *data)
+{
+  rp_window_frame *frame;
+
+  if ((frame = find_frame_right (rp_current_frame)))
+    set_active_frame (frame);
+
+  return NULL;
+}
+
+char *
+cmd_restart (int interactive, void *data)
+{
+  hup_signalled = 1;
+  return NULL;
+}
+
+char *
+cmd_startup_message (int interactive, void *data)
+{
+  if (data == NULL)
+    {
+      message (" startup_message; One argument is required ");
+      return NULL;
+    }
+
+  if (!strcasecmp (data, "on"))
+    defaults.startup_message = 1;
+  else if (!strcasecmp (data, "off"))
+    defaults.startup_message = 0;
+  else
+    message (" startup_message; Invalid argument ");
+
   return NULL;
 }

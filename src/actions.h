@@ -75,10 +75,10 @@ char * cmd_quit(int interactive, void *data);
 char * cmd_number (int interactive, void *data);
 char * cmd_rudeness (int interactive, void *data);
 char * cmd_unbind (int interactive, void *data);
-char * cmd_pos (int interactive, void *data);
-char * cmd_defwinpos (int interactive, void *data);
-char * cmd_deftranspos (int interactive, void *data);
-char * cmd_defmaxsizepos (int interactive, void *data);
+char * cmd_gravity (int interactive, void *data);
+char * cmd_defwingravity (int interactive, void *data);
+char * cmd_deftransgravity (int interactive, void *data);
+char * cmd_defmaxsizegravity (int interactive, void *data);
 char * cmd_msgwait (int interactive, void *data);
 char * cmd_defbarloc (int interactive, void *data);
 char * cmd_deffont (int interactive, void *data);
@@ -95,6 +95,12 @@ char * cmd_chdir (int interactive, void *data);
 char * cmd_unsetenv (int interactive, void *data);
 char * cmd_info (int interactive, void *data);
 char * cmd_lastmsg (int interactive, void *data);
+char * cmd_focusup (int interactive, void *data);
+char * cmd_focusdown (int interactive, void *data);
+char * cmd_focusleft (int interactive, void *data);
+char * cmd_focusright (int interactive, void *data);
+char * cmd_restart (int interactive, void *data);
+char * cmd_startup_message (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 

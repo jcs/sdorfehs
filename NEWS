@@ -1,6 +1,12 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** Remove command line options --kill and --restart
+Use -c quit and -c restart instead.
+
+** New command restart
+Restart ratpoison.
+
 ** New command lastmsg
 Display the last message.
 
