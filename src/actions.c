@@ -30,37 +30,81 @@
 #define S Mod3Mask		/* Super */
 #define H Mod4Mask		/* Hyper */
 
+/* rp_key_prefix key_prefix[] = */
+/*   { {XK_t, C, "main-prefix"}, */
+/*     {0,0,NULL} }; */
+
+static screen_info*
+get_screen ()
+{
+  if (rp_current_window)
+    return rp_current_window->scr;
+  else
+    return &screens[0];
+}
+
+
 rp_action key_actions[] = 
   { {XK_t, 		C, 	"other",  	command}, 
-    {XK_t, 		0, 	0, 		generate_prefix},
-    {XK_g, 		C, 	"abort",	command},
-    {XK_c, 		0, 	"exec xterm", 	command},
-    {XK_e, 		0, 	"exec emacs", 	command},
-    {XK_p, 		0, 	"prev", 	command},  
-    {XK_n, 		0,	"next", 	command}, 
-    {XK_space, 		0, 	"next", 	command},
-    {XK_Return,		0,	"next",		command},
-    {XK_colon, 		0, 	"colon",	command},
-    {XK_exclam, 	0, 	"exec", 	command},
-    {XK_w, 		0, 	"windows",	command},
-    {XK_K, 		0, 	"kill", 	command},    
-    {XK_k, 		0, 	"delete", 	command},  
-    {XK_quoteright, 	0,     	"select", 	command},
-    {XK_A, 		0, 	"title", 	command},
-    {XK_a, 		0, 	"clock", 	command},
-    {XK_0, 		0, 	"number 0", 	command},
-    {XK_1, 		0, 	"number 1", 	command},
-    {XK_2, 		0, 	"number 2", 	command},
-    {XK_3, 		0, 	"number 3", 	command},
-    {XK_4, 		0, 	"number 4", 	command},
-    {XK_5, 		0, 	"number 5", 	command},
-    {XK_6, 		0, 	"number 6", 	command},
-    {XK_7, 		0, 	"number 7", 	command},
-    {XK_8, 		0, 	"number 8", 	command},
-    {XK_9, 		0, 	"number 9", 	command},
-    {XK_m, 		0, 	"maximize", 	command},
-    {XK_v, 		0, 	"version", 	command},
-    {0, 		0, 	0, 		0 } };
+    {XK_t, 		0, 	"generate",	command},
+
+/*     {XK_Escape,		M,	"generate",	        command}, */
+
+    {XK_g, 		C, 	"abort",		command},
+
+    {XK_0, 		0, 	"number 0", 		command},
+    {XK_0, 		C, 	"number 0", 		command},
+    {XK_1, 		0, 	"number 1", 		command},
+    {XK_1, 		C, 	"number 1", 		command},
+    {XK_2, 		0, 	"number 2", 		command},
+    {XK_2, 		C, 	"number 2", 		command},
+    {XK_3, 		0, 	"number 3", 		command},
+    {XK_3, 		C, 	"number 3", 		command},
+    {XK_4, 		0, 	"number 4", 		command},
+    {XK_4, 		C, 	"number 4", 		command},
+    {XK_5, 		0, 	"number 5", 		command},
+    {XK_5, 		C, 	"number 5", 		command},
+    {XK_6, 		0, 	"number 6", 		command},
+    {XK_6, 		C, 	"number 6", 		command},
+    {XK_7, 		0, 	"number 7", 		command},
+    {XK_7, 		C, 	"number 7", 		command},
+    {XK_8, 		0, 	"number 8", 		command},
+    {XK_8, 		C, 	"number 8", 		command},
+    {XK_9, 		0, 	"number 9", 		command},
+    {XK_9, 		C, 	"number 9", 		command},
+    {XK_A, 		0, 	"title", 		command},
+    {XK_A, 		C, 	"title", 		command},
+    {XK_K, 		0, 	"kill", 		command},    
+    {XK_K, 		C, 	"kill", 		command},    
+    {XK_Return,		0,	"next",			command},
+    {XK_Return,		C,	"next",			command},
+    {XK_a, 		0, 	"clock", 		command},
+    {XK_a, 		C, 	"clock", 		command},
+    {XK_c, 		0, 	"exec " TERM_PROG, 	command},
+    {XK_c, 		C, 	"exec " TERM_PROG, 	command},
+    {XK_colon, 		0, 	"colon",		command},
+    {XK_colon, 		C, 	"colon",		command},
+    {XK_e, 		0, 	"exec emacs", 		command},
+    {XK_e, 		C, 	"exec emacs", 		command},
+    {XK_exclam, 	0, 	"exec", 		command},
+    {XK_exclam, 	C, 	"exec", 		command},
+    {XK_k, 		0, 	"delete", 		command},  
+    {XK_k, 		C, 	"delete", 		command},  
+    {XK_m, 		0, 	"maximize", 		command},
+    {XK_m, 		C, 	"maximize", 		command},
+    {XK_n, 		0,	"next", 		command}, 
+    {XK_n, 		C,	"next", 		command}, 
+    {XK_p, 		0, 	"prev", 		command},   
+    {XK_p, 		C, 	"prev", 		command},   
+    {XK_quoteright, 	0,     	"select", 		command},
+    {XK_quoteright, 	C,     	"select", 		command},
+    {XK_space, 		0, 	"next", 		command},
+    {XK_space, 		C, 	"next", 		command},
+    {XK_v, 		0, 	"version", 		command},
+    {XK_v, 		C, 	"version", 		command},
+    {XK_w, 		0, 	"windows",		command},
+    {XK_w, 		C, 	"windows",		command},
+    {0, 		0, 	0, 			0 } };
 
 user_command user_commands[] = 
   { {"abort",		abort_keypress,		arg_VOID},
@@ -78,8 +122,57 @@ user_command user_commands[] =
     {"clock", 		show_clock, 		arg_VOID},
     {"maximize", 	maximize, 		arg_VOID},
     {"newwm",		switch_to,		arg_STRING},
+    {"generate",	generate_key_event,	arg_STRING},
     {"version",		show_version,		arg_VOID},
     {0,			0,			0} };
+
+
+void
+generate_key_event (void *data)
+{
+  XEvent ev1, ev;
+  ev = *rp_current_event;
+
+  fprintf (stderr, "type==%d\n", ev.xkey.type);
+  fprintf (stderr, "serial==%ld\n", ev.xkey.serial);
+  fprintf (stderr, "send_event==%d\n", ev.xkey.send_event);
+  fprintf (stderr, "display=%p\n", ev.xkey.display);
+/*   fprintf (stderr, "root==%x  ???\n", ev.xkey.root); */
+/*   fprintf (stderr, "window==%x  ???\n", ev.xkey.window); */
+/*   fprintf (stderr, "subwindow==%x  ???\n", ev.xkey.subwindow); */
+  fprintf (stderr, "time==%ld\n", ev.xkey.time);
+  fprintf (stderr, "x==%d  y==%d\n", ev.xkey.x, ev.xkey.y);
+  fprintf (stderr, "x_root==%d  y_root==%d\n", ev.xkey.x_root, ev.xkey.y_root);
+  fprintf (stderr, "state==%d\n", ev.xkey.state);
+  fprintf (stderr, "keycode==%d\n", ev.xkey.keycode);
+  fprintf (stderr, "same_screen=%d\n", ev.xkey.same_screen);
+
+  /* I am not sure which of the following fields I have to fill in or
+     what to fill them in with (rcy) I wouldnt be suprised if this
+     breaks in some cases.  */
+
+  ev1.xkey.type = KeyPress;
+/*   ev1.xkey.serial =  */
+/*   ev1.xkey.send_event = */
+  ev1.xkey.display = dpy;
+/*   ev1.xkey.root =  */
+  ev1.xkey.window = rp_current_window->w;
+/*   ev1.xkey.subwindow =  */
+/*   ev1.xkey.time = ev.xkey.time; */
+/*   ev1.xkey.x == */
+/*   ev1.xkey.y == */
+/*   ev1.xkey.x_root == */
+/*   ev1.xkey.y_root == */
+
+  ev1.xkey.state = 0;
+  ev1.xkey.keycode = XKeysymToKeycode (dpy, 's');
+
+  XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev1);
+
+/*   XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, 't'), True, 0); */
+
+  XSync (dpy, False);
+}
 
 void
 prev_window (void *data)
@@ -225,15 +318,6 @@ kill_window (void *data)
   if (rp_current_window == NULL) return;
 
   XKillClient(dpy, rp_current_window->w);
-}
-
-static screen_info*
-get_screen ()
-{
-  if (rp_current_window)
-    return rp_current_window->scr;
-  else
-    return &screens[0];
 }
 
 void
