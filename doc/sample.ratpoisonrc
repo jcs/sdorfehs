@@ -1,6 +1,8 @@
 # This is a sample .ratpoisonrc file
+# Copyright (C) 2003-2004 Shawn Betts
 #
-# $Id: sample.ratpoisonrc,v 1.7 2004/10/05 20:04:11 sabetts Exp $
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
 
 # Set the prefix key to that of screen's default
 escape C-a
