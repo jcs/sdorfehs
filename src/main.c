@@ -257,10 +257,10 @@ main (int argc, char *argv[])
   init_numbers ();
   init_window_list ();
 
-  font = XLoadQueryFont (dpy, FONT_NAME);
+  font = XLoadQueryFont (dpy, FONT);
   if (font == NULL)
     {
-      fprintf (stderr, "ratpoison: Cannot load font %s.\n", FONT_NAME);
+      fprintf (stderr, "ratpoison: Cannot load font %s.\n", FONT);
       exit (EXIT_FAILURE);
     }
 
@@ -299,14 +299,14 @@ init_screen (screen_info *s, int screen_num)
   XGetWindowAttributes (dpy, s->root, &s->root_attr);
 
   /* Get our program bar colors */
-  if (!XAllocNamedColor (dpy, s->def_cmap, BAR_FG_COLOR, &fg_color, &junk))
+  if (!XAllocNamedColor (dpy, s->def_cmap, FOREGROUND, &fg_color, &junk))
     {
-      fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_FG_COLOR);
+      fprintf (stderr, "ratpoison: Unknown color '%s'\n", FOREGROUND);
     }
 
-  if (!XAllocNamedColor (dpy, s->def_cmap, BAR_BG_COLOR, &bg_color, &junk))
+  if (!XAllocNamedColor (dpy, s->def_cmap, BACKGROUND, &bg_color, &junk))
     {
-      fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_BG_COLOR);
+      fprintf (stderr, "ratpoison: Unknown color '%s'\n", BACKGROUND);
     }
 
 /*   if (!XAllocNamedColor (dpy, s->def_cmap, BAR_BOLD_COLOR, &bold_color, &junk)) */
