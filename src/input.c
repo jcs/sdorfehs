@@ -39,6 +39,7 @@ x11_mask_to_rp_mask (unsigned int mask)
 
   PRINT_DEBUG (("x11 mask = %x\n", mask));
 
+  result |= mask & ShiftMask ? RP_SHIFT_MASK:0;
   result |= mask & ControlMask ? RP_CONTROL_MASK:0;
   result |= mask & rp_modifier_info.meta_mod_mask ? RP_META_MASK:0;
   result |= mask & rp_modifier_info.alt_mod_mask ? RP_ALT_MASK:0;
@@ -60,6 +61,7 @@ rp_mask_to_x11_mask (unsigned int mask)
 
   PRINT_DEBUG (("rp mask = %x\n", mask));
 
+  result |= mask & RP_SHIFT_MASK ? ShiftMask:0;
   result |= mask & RP_CONTROL_MASK ? ControlMask:0;
   result |= mask & RP_META_MASK ? rp_modifier_info.meta_mod_mask:0;
   result |= mask & RP_ALT_MASK ? rp_modifier_info.alt_mod_mask:0;
@@ -172,7 +174,9 @@ keysym_to_keycode_mod (KeySym keysym, KeyCode *code, unsigned int *mod)
   *code = XKeysymToKeycode (dpy, keysym);
   lower = XKeycodeToKeysym (dpy, *code, 0);
   upper = XKeycodeToKeysym (dpy, *code, 1);
-  if (upper == keysym)
+  /* If you need to press shift to get the keysym, add the shift
+     mask. */
+  if (upper == keysym && lower != keysym)
     *mod = ShiftMask;
 }
 
@@ -183,7 +187,6 @@ grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
 {
   unsigned int mod_list[8];
   int i;
-  KeySym upper, lower;
   KeyCode keycode;
   unsigned int mod;
       
@@ -223,11 +226,12 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
 
   name = sbuf_new (0);
 
+  if (modifier & RP_SHIFT_MASK) sbuf_concat (name, "S-");
   if (modifier & RP_CONTROL_MASK) sbuf_concat (name, "C-");
   if (modifier & RP_META_MASK) sbuf_concat (name, "M-");
   if (modifier & RP_ALT_MASK) sbuf_concat (name, "A-");
   if (modifier & RP_HYPER_MASK) sbuf_concat (name, "H-");
-  if (modifier & RP_SUPER_MASK) sbuf_concat (name, "S-");
+  if (modifier & RP_SUPER_MASK) sbuf_concat (name, "s-");
     
   /* On solaris machines (perhaps other machines as well) this call
      can return NULL. In this case use the "NULL" string. */
@@ -255,6 +259,8 @@ int
 cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_name, int len, int ignore_bad_mods)
 {
   int nbytes;
+  int shift = 0;
+  KeySym lower, upper;
  
   if (ignore_bad_mods)
     {
@@ -271,12 +277,24 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
     keysym_name[nbytes] = '\0';
   }
 
+  /* Find out if XLookupString gobbled the shift modifier */
+  if (ev->state & ShiftMask)
+    {
+      lower = XKeycodeToKeysym (dpy, ev->keycode, 0);
+      upper = XKeycodeToKeysym (dpy, ev->keycode, 1);
+      /* If the keysym isn't affected by the shift key, then keep the
+	 shift modifier. */
+      if (lower == upper)
+	shift = ShiftMask;
+    }
+
   *mod = ev->state;
   *mod &= (rp_modifier_info.meta_mod_mask
 	   | rp_modifier_info.alt_mod_mask
 	   | rp_modifier_info.hyper_mod_mask
 	   | rp_modifier_info.super_mod_mask
-	   | ControlMask );
+	   | ControlMask
+	   | shift);
 
   return nbytes;
 }

@@ -1,5 +1,19 @@
 2004-05-19  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/input.c (rp_mask_to_x11_mask): handle the shift modifier
+	(x11_mask_to_rp_mask): likewise
+	(keysym_to_keycode_mod): Make sure lower != keysym before adding
+	the shift mask.
+	(keysym_to_string): handle the shift modifier. use 's' for super
+	instead of 'S'
+	(cook_keycode): keep the shift modifier if XLookupString didn't
+	gobble it.
+
+	* src/data.h (RP_SHIFT_MASK): new define
+
+	* src/actions.c (parse_keydesc): parse the shift modifier change
+	super to 's' from 'S'.
+
 	* src/window.c (format_window_name): add %f format option
 
 2004-05-05  Shawn Betts  <sabetts@vcn.bc.ca>

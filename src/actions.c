@@ -620,6 +620,10 @@ parse_keydesc (char *s)
 		}
 	      else if (!strcmp (token, "S"))
 		{
+		  p->state |= RP_SHIFT_MASK;
+		}
+	      else if (!strcmp (token, "s"))
+		{
 		  p->state |= RP_SUPER_MASK;
 		}
 	      else if (!strcmp (token, "H"))

@@ -261,11 +261,12 @@ struct rp_child_info
 /* These defines should be used to specify the modifier mask for keys
    and they are translated into the X11 modifier mask when the time
    comes to compare modifier masks. */
-#define RP_CONTROL_MASK 1
-#define RP_META_MASK 	2
-#define RP_ALT_MASK 	4
-#define RP_SUPER_MASK 	8
-#define RP_HYPER_MASK 	16
+#define RP_SHIFT_MASK   1
+#define RP_CONTROL_MASK 2
+#define RP_META_MASK 	4
+#define RP_ALT_MASK 	8
+#define RP_SUPER_MASK 	16
+#define RP_HYPER_MASK 	32
 
 struct modifier_info
 {

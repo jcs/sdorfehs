@@ -794,6 +794,34 @@ Interactive control of ratpoison is done entirely through
 keystrokes. This chapter explains how keystrokes are stored and
 manipulated.
 
+ratpoison uses the Emacs style key notation. A combination of
+modifiers and one non-modifier key combine to invoke an action. The
+syntax is one or more modifiers seperated with dashes followed by a
+dash and the non-modifier key name. For instance, holding down
+control, shift, and super then pressing the spacebar would be
+described as:
+
+@example
+S-C-s-space
+@end example
+
+The following is a list of modifiers ratpoison accepts:
+
+@table @asis
+@item S
+Shift modifier
+@item C
+Control modifier
+@item M
+Meta modifier
+@item A
+Alt modifier
+@item H
+Hyper modifier
+@item s
+Super modifier
+@end table
+
 @menu
 * Key Maps::                    
 * Default Key Bindings::        
