@@ -5,6 +5,8 @@
 	(user_commands): added "xterm"
 	(key_actions): added C-t C-! binding for "xterm"
 
+	* messages.h (MESSAGE_PROMPT_XTERM_COMMAND): new message
+
 2001-02-14  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* actions.h (generate_key_event): added prototype
