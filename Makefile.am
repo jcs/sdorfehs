@@ -1,2 +1,57 @@
+## Process this file with automake to produce Makefile.in
+## Copyright (C) 2000, 2001 Shawn Betts <sabetts@users.sourceforge.net>
+##
+## This file is part of ratpoison.
+##
+## ratpoison is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## ratpoison is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+##
+## $Id: Makefile.am,v 1.2 2001/02/15 19:52:38 algernon Exp $
 
-SUBDIRS = doc src
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+
+CLEANFILES		= *~ gmon.out
+MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 \
+			config.guess config.h.in config.sub configure \
+			install-sh missing mkinstalldirs stamp-h.in
+
+SUBDIRS			= doc man src
+
+docdir			= $(datadir)/doc/$(PACKAGE)
+doc_DATA		= AUTHORS COPYING ChangeLog NEWS README
+
+debian_FILES		= debian/changelog debian/control debian/copyright \
+			debian/ratpoison.dirs debian/ratpoison.doc-base \
+			debian/ratpoison.docs debian/ratpoison.info \
+			debian/ratpoison.menu debian/ratpoison.watch \
+			debian/ratpoison.wm debian/rules
+
+EXTRA_DIST		= $(doc_DATA) $(debian_FILES)
+
+dist-hook:
+	chmod -R go-w $(distdir)
+
+bin-dist strip-bin-dist: all
+	-rm -rf $(PACKAGE)-$(VERSION).bin.$(host_triplet)
+	$(MAKE) $(subst strip-,-strip,install$(subst bin-dist,,$@)) \
+		prefix=`pwd`/$(PACKAGE)-$(VERSION).bin.$(host_triplet)/$(prefix)
+	$(TAR) chof - $(PACKAGE)-$(VERSION).bin.$(host_triplet) \
+		 | GZIP=$(GZIP_ENV) gzip -c > $(PACKAGE)-$(VERSION).bin.$(host_triplet).tar.gz
+	-rm -rf $(PACKAGE)-$(VERSION).bin.$(host_triplet)
+
+sense:
+	@echo 42
+
+.PHONY: bin-dist strip-bin-dist dist-hook sense
