@@ -1,5 +1,8 @@
 2003-05-27  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/editor.c (input_line_free): free the completions structure
+	in line.
+
 	* configure.in: add a check for libhistory.
 
 	* src/editor.c (saved_command): new local global

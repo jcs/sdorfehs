@@ -99,7 +99,7 @@ input_line_new (char *prompt, char *preinput, completion_fn fn)
 void
 input_line_free (rp_input_line *line)
 {
-/*   completions_free (line->compl); */
+  completions_free (line->compl);
   free (line->buffer);
   free (line);
 }
