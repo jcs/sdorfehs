@@ -340,7 +340,7 @@ Set the default alignment for windows with maxsize hints. See the
 @item defpadding @var{left} @var{top} @var{right} @var{bottom}
 Set the padding around the edge of the screen.
 
-@item deftranspos @var{}
+@item deftranspos @var{x} @var{y}
 Set the default alignment for transient windows. See the
 @command{pos} command.
 
@@ -357,19 +357,14 @@ characters:
 @table @samp
 @item N
 The window number
-
 @item -
 Window status (current window, last window, etc)
-
 @item W
 Window Name
-
 @item w
 Window res name
-
 @item c
 Window res class
-
 @item n
 X11 Window ID
 @end table
