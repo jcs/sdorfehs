@@ -81,7 +81,7 @@ struct rp_action
   int key;
   int state;
   void *data;			/* misc data to be passed to the function */
-  void (*func)(void *);
+/*   void (*func)(void *); */
 };
 
 extern  rp_window *rp_window_head, *rp_window_tail;

@@ -33,76 +33,93 @@
 #define S Mod3Mask		/* Super */
 #define H Mod4Mask		/* Hyper */
 
-/* rp_key_prefix key_prefix[] = */
-/*   { {XK_t, C, "main-prefix"}, */
-/*     {0,0,NULL} }; */
+rp_action *key_actions;
+int key_actions_last;
+int key_actions_table_size;
 
-rp_action key_actions[] = 
-  { {XK_t, 		C, 	"other",  	command}, 
-    {XK_t, 		0, 	"generate",	command},
+char *
+find_keybinding (int keysym, int state)
+{
+  int i;
+  for (i = 0; i < key_actions_last; i++)
+    {
+      if (key_actions[i].key == keysym 
+	  && key_actions[i].state == state)
+	return strdup(key_actions[i].data);
+    }
+  return NULL;
+}
 
-/*     {XK_Escape,		M,	"generate",	        command}, */
+static void
+add_keybinding (int keysym, int state, char *cmd)
+{
+  if (key_actions_last >= key_actions_table_size)
+    {
+      /* double the key table size */
+      key_actions_table_size *= 2;
+      key_actions = (rp_action*) realloc (key_actions, sizeof (rp_action) * key_actions_table_size);
+      fprintf (stderr, "realloc()ed key_table %d\n", key_actions_table_size);
+    }
 
-    {XK_g, 		C, 	"abort",		command},
+  key_actions[key_actions_last].key = keysym;
+  key_actions[key_actions_last].state = state;
+  key_actions[key_actions_last].data = cmd;
 
-    {XK_0, 		0, 	"select 0", 		command},
-    {XK_1, 		0, 	"select 1", 		command},
-    {XK_2, 		0, 	"select 2", 		command},
-    {XK_3, 		0, 	"select 3", 		command},
-    {XK_4, 		0, 	"select 4", 		command},
-    {XK_5, 		0, 	"select 5", 		command},
-    {XK_6, 		0, 	"select 6", 		command},
-    {XK_7, 		0, 	"select 7", 		command},
-    {XK_8, 		0, 	"select 8", 		command},
-    {XK_9, 		0, 	"select 9", 		command},
+  ++key_actions_last;
+}
 
-    {XK_A, 		0, 	"title", 		command},
-    {XK_A, 		C, 	"title", 		command},
+void
+initialize_default_keybindings (void)
+{
+  key_actions_table_size = 1;
+  key_actions = (rp_action*) malloc (sizeof (rp_action) * key_actions_table_size);
+  key_actions_last = 0;
 
-    {XK_K, 		0, 	"kill", 		command},
-    {XK_K, 		C, 	"kill", 		command},
-
-    {XK_Return,		0,	"next",			command},
-    {XK_Return,		C,	"next",			command},
-
-    {XK_a, 		0, 	"clock", 		command},
-    {XK_a, 		C, 	"clock", 		command},
-
-    {XK_c, 		0, 	"exec " TERM_PROG, 	command},
-    {XK_c, 		C, 	"exec " TERM_PROG, 	command},
-
-    {XK_colon, 		0, 	"colon",		command},
-
-    {XK_e, 		0, 	"exec " EMACS_PROG, 	command},
-    {XK_e, 		C, 	"exec " EMACS_PROG,	command},
-
-    {XK_exclam, 	0, 	"exec", 		command},
-    {XK_exclam, 	C, 	"colon exec " TERM_PROG " -e ", 	command},
-
-    {XK_k, 		0, 	"delete", 		command},
-    {XK_k, 		C, 	"delete", 		command},
-
-    {XK_m, 		0, 	"maximize", 		command},
-    {XK_m, 		C, 	"maximize", 		command},
-
-    {XK_n, 		0,	"next", 		command},
-    {XK_n, 		C,	"next", 		command},
-
-    {XK_p, 		0, 	"prev", 		command},
-    {XK_p, 		C, 	"prev", 		command},
-
-    {XK_quoteright, 	0,     	"select", 		command},
-    {XK_quoteright, 	C,     	"select", 		command},
-
-    {XK_space, 		0, 	"next", 		command},
-    {XK_space, 		C, 	"next", 		command},
-
-    {XK_v, 		0, 	"version", 		command},
-    {XK_v, 		C, 	"version", 		command},
-
-    {XK_w, 		0, 	"windows",		command},
-    {XK_w, 		C, 	"windows",		command},
-    {0, 		0, 	0, 			0 } };
+  add_keybinding (XK_t, C, "other");
+  add_keybinding (XK_t, 0, "generate");
+  add_keybinding (XK_g, C, "abort");
+  add_keybinding (XK_0, 0, "select 0");
+  add_keybinding (XK_1, 0, "select 1");
+  add_keybinding (XK_2, 0, "select 2");
+  add_keybinding (XK_3, 0, "select 3");
+  add_keybinding (XK_4, 0, "select 4");
+  add_keybinding (XK_5, 0, "select 5");
+  add_keybinding (XK_6, 0, "select 6");
+  add_keybinding (XK_7, 0, "select 7");
+  add_keybinding (XK_8, 0, "select 8");
+  add_keybinding (XK_9, 0, "select 9");
+  add_keybinding (XK_A, 0, "title");
+  add_keybinding (XK_A, C, "title");
+  add_keybinding (XK_K, 0, "kill");
+  add_keybinding (XK_K, C, "kill");
+  add_keybinding (XK_Return, 0, "next");
+  add_keybinding (XK_Return, C,	"next");
+  add_keybinding (XK_a, 0, "clock");
+  add_keybinding (XK_a, C, "clock");
+  add_keybinding (XK_c, 0, "exec " TERM_PROG);
+  add_keybinding (XK_c, C, "exec " TERM_PROG);
+  add_keybinding (XK_colon, 0, "colon");
+  add_keybinding (XK_e, 0, "exec " EMACS_PROG);
+  add_keybinding (XK_e, C, "exec " EMACS_PROG);
+  add_keybinding (XK_exclam, 0, "exec");
+  add_keybinding (XK_exclam, C, "colon exec " TERM_PROG " -e ");
+  add_keybinding (XK_k, 0, "delete");
+  add_keybinding (XK_k, C, "delete");
+  add_keybinding (XK_m, 0, "maximize");
+  add_keybinding (XK_m, C, "maximize");
+  add_keybinding (XK_n, 0, "next");
+  add_keybinding (XK_n, C, "next");
+  add_keybinding (XK_p, 0, "prev");
+  add_keybinding (XK_p, C, "prev");
+  add_keybinding (XK_quoteright, 0, "select");
+  add_keybinding (XK_quoteright, C, "select");
+  add_keybinding (XK_space, 0, "next");
+  add_keybinding (XK_space, C, "next");
+  add_keybinding (XK_v, 0, "version");
+  add_keybinding (XK_v, C, "version");
+  add_keybinding (XK_w, 0, "windows");
+  add_keybinding (XK_w, C, "windows");
+}
 
 user_command user_commands[] = 
   { {"abort",		cmd_abort,		arg_VOID},
@@ -372,7 +389,7 @@ cmd_version (void *data)
 }
 
 void 
-command (void *data)
+command (char *data)
 {
   char *cmd, *rest;
   char *input;

@@ -287,7 +287,7 @@ handle_key (screen_info *s)
 {
   char *keysym_name;
   char *msg;
-  const rp_action *i;
+  char *cmd;
   int revert;			
   Window fwin;			/* Window currently in focus */
   KeySym keysym;		/* Key pressed */
@@ -304,38 +304,31 @@ handle_key (screen_info *s)
 
   read_key (&keysym, &mod);
 
-  for (i = key_actions; i->key != 0; i++)
+  if ((cmd = find_keybinding (keysym, mod)))
     {
-      if (keysym == i->key)
+      XSetInputFocus (dpy, fwin, revert, CurrentTime);
+      command (cmd);
+    }
+  else
+    {
+      keysym_name = keysym_to_string (keysym, mod);
+      msg = (char *) malloc ( strlen ( keysym_name ) + 20 );
+      if ( msg == NULL )
 	{
-	  if (mod == i->state)
-	    {
-	      /* Revert focus back to the current window before
-		 executing the command. */
-	      XSetInputFocus (dpy, fwin, revert, CurrentTime);
-	      (*i->func)(i->data);
-	      return;
-	    }
+	  PRINT_ERROR ("Out of memory\n");
+	  exit (EXIT_FAILURE);
 	}
+      snprintf (msg, strlen (keysym_name) + 13, "%s unbound key!", keysym_name);
+      free (keysym_name);
+
+      PRINT_DEBUG ("%s\n", msg);
+
+      /* No key match, notify user. */
+      XSetInputFocus (dpy, fwin, revert, CurrentTime);
+      message (msg);
+
+      free (msg);
     }
-
-  keysym_name = keysym_to_string (keysym, mod);
-  msg = (char *) malloc ( strlen ( keysym_name ) + 20 );
-  if ( msg == NULL )
-    {
-      PRINT_ERROR ("Out of memory\n");
-      exit (EXIT_FAILURE);
-    }
-  snprintf (msg, strlen (keysym_name) + 13, "%s unbound key!", keysym_name);
-  free (keysym_name);
-
-  PRINT_DEBUG ("%s\n", msg);
-
-  /* No key match, notify user. */
-  XSetInputFocus (dpy, fwin, revert, CurrentTime);
-  message (msg);
-
-  free (msg);
 }
 
 void

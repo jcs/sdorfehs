@@ -279,6 +279,8 @@ main (int argc, char *argv[])
       init_screen (&screens[i], i);
     }
 
+  initialize_default_keybindings ();
+
   /* Set an initial window as active. */
   set_active_window (rp_window_head);
   

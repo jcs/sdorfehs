@@ -39,7 +39,7 @@ user_command
 
 void bye(void *dummy);
 void spawn(void *data);
-void command (void *data);
+void command (char *data);
 void maximize (void *data);
 
 void cmd_newwm(void *which);
@@ -62,6 +62,7 @@ void cmd_unimplemented (void *data);
 
 /* void cmd_xterm (void *data); */
 
-extern rp_action key_actions[];
+void initialize_default_keybindings (void);
+char *find_keybinding (int keysym, int state);
 
 #endif /* ! _RATPOISON_ACTIONS_H */

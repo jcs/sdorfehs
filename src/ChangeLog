@@ -1,5 +1,15 @@
 2001-02-19  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* events.c (handle_key): Call find_keybinding() instead of looping
+	through keytable here.
+
+	* main.c (main): Call initialize_default_keybindings.
+
+	* actions.c (find_keybinding): Added.
+	(add_keybinding): Added.
+	(initialize_default_keybindings): Added.  Do not use static table
+	of keybindings.  Instead call add_keybinding() for each key.
+
 	* Makefile.am (ratpoison_SOURCES): add themes.h
 
 	* main.c (FONT_NAME): Rename to FONT
