@@ -1102,6 +1102,9 @@ cmd_time (int interactive, void *data)
 /* Assign a new number to a window ala screen's number command. Thanks
    to Martin Samuelsson <cosis@lysator.liu.se> for the original
    patch. */
+/* FIXME: this function breaks ratpoison because now all frame and
+   window references are based on numbers, and this code doesn't
+   update the number references after changing the number. */
 char *
 cmd_number (int interactive, void *data)
 {
