@@ -1,12 +1,14 @@
 ;;; ratpoison.el --- ratpoison support for Emacs
-
+;;
+;; Copyright (C) 2003 Gergely Nagy, Shawn Betts, Jay Belanger
+;;
 ;; Authors: Gergely Nagy <algernon@debian.org>,
 ;;          Shawn Betts <sabetts@users.sourceforge.net>,
 ;;          Jay Belanger <belanger@truman.edu>,
 ;; Maintainer: Gergely Nagy <algernon@debian.org>
 ;; Version: 0.2
 ;; Keywords: faces, ratpoison, X
-;; CVS Id: $Id: ratpoison.el,v 1.3 2004/09/27 23:23:52 sabetts Exp $
+;; CVS Id: $Id: ratpoison.el,v 1.4 2004/12/02 00:33:22 sabetts Exp $
 ;; Last updated: <2001/10/05 17:58:38 algernon>
 
 ;; This file is NOT part of GNU Emacs.

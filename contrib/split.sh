@@ -1,5 +1,10 @@
 #!/bin/sh
-
+#
+# Copyright (C) 2003 Shawn Betts
+#
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+#
 # Split the current frame into 16 little frames. This is an example of
 # how to script ratpoison.
 

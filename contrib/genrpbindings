@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
 # genrpbindings -- generate ratpoison bindings for various languages
 #
-# Ryan Yeske <rcyeske@sfu.ca>
-# Tue Dec  4 16:15:53 PST 2001
+# Copyright (C) 2003-2004 Ryan Yeske, Doug Kearns, Shawn Betts
 #
 # currently generates bindings for:
-# * Perl       (Ratpoison.pm)
-# * Emacs Lisp (ratpoison-cmd.el)
-# * Ruby       (ratpoison.rb) [Doug Kearns <djkea2@mugc.its.monash.edu.au>]
+# * Perl        (Ratpoison.pm)       Ryan Yeske <rcyeske@sfu.ca>
+# * Emacs Lisp  (ratpoison-cmd.el)   Ryan Yeske <rcyeske@sfu.ca>
+# * Ruby        (ratpoison.rb)       Doug Kearns <djkea2@mugc.its.monash.edu.au>
+# * Common Lisp (ratpoison.lisp)     Shawn Betts <sabetts@vcn.bc.ca>
 # add more languages!
 #
 # Bindings are just very thin wrappers, no argument checking is done.
