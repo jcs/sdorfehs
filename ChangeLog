@@ -1,3 +1,28 @@
+2003-08-29  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/window.c (give_window_focus): use set_rp_window_focus.
+
+	* src/split.c (set_active_frame): use set_window_focus.
+	(blank_frame): likewise
+
+	* src/main.c (main): use set_window_focus.
+
+	* src/input.c (get_more_input): use set_window_focus
+
+	* src/globals.h (set_window_focus): new prototype
+	(set_rp_window_focus): likewise
+
+	* src/events.c (handle_key): use set_window_focus.
+
+	* src/actions.c (cmd_resize): use set_window_focus.
+	(cmd_license): likewise
+	(cmd_help): likewise
+	(cmd_tmpwm): likewise
+	(cmd_fselect): likewise
+
+	* src/globals.c (set_rp_window_focus): new function
+	(set_window_focus): likewise
+
 2003-08-24  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/window.c (goto_window): don't do anything if the window is

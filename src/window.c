@@ -345,8 +345,7 @@ give_window_focus (rp_window *win, rp_window *last_win)
 
   /* Finally, give the window focus */
   rp_current_screen = win->scr->screen_num;
-  XSetInputFocus (dpy, win->w, 
-		  RevertToPointerRoot, CurrentTime);
+  set_rp_window_focus (win);
 
   XSync (dpy, False);
 }

@@ -136,4 +136,7 @@ extern struct list_head rp_switch_group_hook;
 
 extern struct rp_hook_db_entry rp_hook_db[];
 
+void set_rp_window_focus (rp_window *win);
+void set_window_focus (Window window);
+
 #endif

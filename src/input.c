@@ -397,7 +397,7 @@ get_more_input (char *prompt, char *preinput,
   update_input_window (s, line);
 
   XGetInputFocus (dpy, &fwin, &revert);
-  XSetInputFocus (dpy, s->input_window, RevertToPointerRoot, CurrentTime);
+  set_window_focus (s->input_window);
   /* XSync (dpy, False); */
 
   for (;;)
@@ -437,7 +437,7 @@ get_more_input (char *prompt, char *preinput,
   /* Clean up our line structure */
   input_line_free (line);
 
-  XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
+  set_window_focus (fwin);
   XUnmapWindow (dpy, s->input_window);
 
   return final_input;

@@ -81,3 +81,18 @@ struct rp_hook_db_entry rp_hook_db[]=
    {"switchgroup", 	&rp_switch_group_hook},
    {NULL, NULL}};
 				   
+void
+set_rp_window_focus (rp_window *win)
+{
+  PRINT_DEBUG (("Giving focus to '%s'\n", window_name (win)));
+  XSetInputFocus (dpy, win->w, 
+		  RevertToPointerRoot, CurrentTime);
+}
+
+void
+set_window_focus (Window window)
+{
+  PRINT_DEBUG (("Giving focus to %ld\n", window));
+  XSetInputFocus (dpy, window, 
+		  RevertToPointerRoot, CurrentTime);
+}

@@ -640,8 +640,7 @@ main (int argc, char *argv[])
 
   /* If no window has focus, give the key_window focus. */
   if (current_window() == NULL)
-    XSetInputFocus (dpy, current_screen()->key_window, 
-		    RevertToPointerRoot, CurrentTime);
+    set_window_focus (current_screen()->key_window);
 
   listen_for_events ();
 

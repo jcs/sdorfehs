@@ -384,7 +384,7 @@ handle_key (rp_screen *s)
   alarm_signalled = 0;
 
   XGetInputFocus (dpy, &fwin, &revert);
-  XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
+  set_window_focus (s->key_window);
 
   /* Change the mouse icon to indicate to the user we are waiting for
      more keystrokes */
@@ -399,7 +399,7 @@ handle_key (rp_screen *s)
 
   read_key (&keysym, &mod, NULL, 0);
 
-  XSetInputFocus (dpy, fwin, revert, CurrentTime);
+  set_window_focus (fwin);
   if (rat_grabbed)
     ungrab_rat();
 

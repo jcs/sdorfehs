@@ -1577,7 +1577,7 @@ cmd_resize (int interactive, char *data)
       if (num_frames (s) < 2) return NULL;
 
       XGetInputFocus (dpy, &fwin, &revert);
-      XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
+      set_window_focus (s->key_window);
 
       /* Save the frameset in case the user aborts. */
       bk = screen_copy_frameset (s);
@@ -1623,7 +1623,7 @@ cmd_resize (int interactive, char *data)
       free (bk);
 
       hide_frame_indicator ();
-      XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
+      set_window_focus (fwin);
     }
   else
     {
@@ -1731,7 +1731,7 @@ cmd_license (int interactive, char *data)
   XMapRaised (dpy, s->help_window);
 
   XGetInputFocus (dpy, &fwin, &revert);
-  XSetInputFocus (dpy, s->help_window, RevertToPointerRoot, CurrentTime);
+  set_window_focus (s->help_window);
 
   /* Find the longest line. */
   for(i=0; license_text[i]; i++)
@@ -1762,7 +1762,7 @@ cmd_license (int interactive, char *data)
   /* Wait for a key press. */
   XMaskEvent (dpy, KeyPressMask, &ev);
   XUnmapWindow (dpy, s->help_window);
-  XSetInputFocus (dpy, fwin, revert, CurrentTime);
+  set_window_focus (fwin);
 
   /* The help window overlaps the bar, so redraw it. */
   if (current_screen()->bar_is_raised)
@@ -1790,7 +1790,7 @@ cmd_help (int interactive, char *data)
       XMapRaised (dpy, s->help_window);
 
       XGetInputFocus (dpy, &fwin, &revert);
-      XSetInputFocus (dpy, s->help_window, RevertToPointerRoot, CurrentTime);
+      set_window_focus (s->help_window);
 
       XDrawString (dpy, s->help_window, s->normal_gc,
                    10, y + defaults.font->max_bounds.ascent,
@@ -1877,7 +1877,7 @@ cmd_help (int interactive, char *data)
 
       XMaskEvent (dpy, KeyPressMask, &ev);
       XUnmapWindow (dpy, s->help_window);
-      XSetInputFocus (dpy, fwin, revert, CurrentTime);
+      set_window_focus (fwin);
 
       /* The help window overlaps the bar, so redraw it. */
       if (current_screen()->bar_is_raised)
@@ -3151,8 +3151,7 @@ cmd_tmpwm (int interactive, char *data)
 
   /* If no window has focus, give the key_window focus. */
   if (current_window() == NULL)
-    XSetInputFocus (dpy, current_screen()->key_window, 
-		    RevertToPointerRoot, CurrentTime);
+    set_window_focus (current_screen()->key_window);
 
   /* And we're back in ratpoison. */
   return NULL;
@@ -3241,9 +3240,9 @@ cmd_fselect (int interactive, char *data)
 
       /* Read a key. */
       XGetInputFocus (dpy, &fwin, &revert);
-      XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
+      set_window_focus (s->key_window);
       read_key (&c, &mod, NULL, 0);
-      XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
+      set_window_focus (fwin);
 
       /* Destroy our number windows and free the array. */
       for (i=0; i<num_frames (s); i++)

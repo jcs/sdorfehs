@@ -859,8 +859,7 @@ set_active_frame (rp_frame *frame)
      focus. */
   if(frame->win_number == EMPTY)
     {
-      XSetInputFocus (dpy, s->key_window,
-		      RevertToPointerRoot, CurrentTime);
+      set_window_focus (s->key_window);
     }
 }
 
@@ -883,8 +882,7 @@ blank_frame (rp_frame *frame)
   update_bar (s);
 
   /* Give the key window focus. */
-  XSetInputFocus (dpy, current_screen()->key_window,
-		  RevertToPointerRoot, CurrentTime);
+  set_window_focus (current_screen()->key_window);
 }
 
 void
