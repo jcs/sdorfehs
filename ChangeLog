@@ -1,3 +1,8 @@
+2003-11-16  Ryan Yeske  <rcyeske@vcn.bc.ca>
+
+	* contrib/rpshowall.sh: Added file.  From Florian Cramer
+	<cantsin@zedat.fu-berlin.de>
+
 2003-11-02  Thien-Thi Nguyen  <ttn@glug.org>
 	
 	* AUTHORS: Add self.
