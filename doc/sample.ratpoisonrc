@@ -1,6 +1,6 @@
 # This is a sample .ratpoisonrc file
 #
-# $Id: sample.ratpoisonrc,v 1.6 2003/09/10 22:25:32 sabetts Exp $
+# $Id: sample.ratpoisonrc,v 1.7 2004/10/05 20:04:11 sabetts Exp $
 
 # Set the prefix key to that of screen's default
 escape C-a
@@ -40,7 +40,7 @@ bind M-3 exec ratpoison -c "frestore `ratpoison -c 'getenv fs3'`"
 
 # Here's a hack from John Meacham:
 
-bind a exec ratpoison -d :0.0 -c "echo `date +'%r - %A %n    %D - %B'`  `cal | tail +2 | sed -e 's/^Su/\n\n Su/' -e 's/.*/ & /' -e \"s/\ $(date +%e)\ /\<$(date +%e)\>/\"`"
+bind a exec ratpoison -d :0.0 -c "echo `date +'%r - %A %n    %D - %B'`  `cal | tail -n +2 | sed -e 's/^Su/\n\n Su/' -e 's/.*/ & /' -e \"s/\ $(date +%e)\ /\<$(date +%e)\>/\"`"
 
 # it produces output like the following in the message window, very handy:
 #         +-----------------------+

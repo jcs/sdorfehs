@@ -276,7 +276,7 @@ void
 print_version ()
 {
   printf ("%s %s\n", PACKAGE, VERSION);
-  printf ("Copyright (C) 2000, 2001 Shawn Betts\n\n");
+  printf ("Copyright (C) 2000-2004 Shawn Betts\n\n");
 
   exit (EXIT_SUCCESS);
 }  
