@@ -739,6 +739,7 @@ passed as an argument.
 Delete a group. @var{group} is optional. If it is not specified
 ratpoison will attempt to delete the current group. Only empty groups
 can be deleted. To empty a group see @command{gmerge}.
+@end deffn
 
 @deffn Command getenv @var{env}
 Display the value of the environment variable, @var{env}.
