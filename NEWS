@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** New command setenv
+Use this to set environment variables for all programs run from
+ratpoison thereafter.
+
 ** Command defbartimeout renamed to msgwait
 This was done to better mirror screen commands.
 
