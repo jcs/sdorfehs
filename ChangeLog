@@ -1,5 +1,8 @@
 2003-08-10  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/editor.c (editor_enter): return EDIT_ABORT if there was an
+	error with the history retrieval.
+
 	* src/bar.c (get_mark_box): take the bar padding into account when
 	calculate the top of the highlight bar.
 	(prepare_bar): just use height for the height of the window.

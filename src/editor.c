@@ -67,7 +67,6 @@ static edit_binding edit_bindings[] =
      {{XK_k, 		RP_CONTROL_MASK},       editor_kill_line},
      {{XK_u, 		RP_CONTROL_MASK},       editor_backward_kill_line},
      {{XK_y, 		RP_CONTROL_MASK},  	editor_paste_selection},
-     {{XK_Insert, 	0},          		editor_paste_selection},
      {{XK_p, 		RP_CONTROL_MASK},       editor_history_previous},
      {{XK_Up, 		0},              	editor_history_previous},
      {{XK_n, 		RP_CONTROL_MASK},       editor_history_next},
@@ -424,7 +423,7 @@ editor_enter (rp_input_line *line)
     {
       marked_message_printf (0, 0, " %s ", expansion);
       free (expansion);
-      line->buffer = NULL;
+      return EDIT_ABORT;
     }
   else /* result == 0 || result == 1 */
     { 
