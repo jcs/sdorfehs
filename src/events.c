@@ -816,6 +816,14 @@ get_event (XEvent *ev)
       exit (EXIT_SUCCESS);
     }
 
+  /* Report any X11 errors that have occurred. */
+  if (rp_error_msg)
+    {
+      marked_message_printf (0, 6, "ERROR: %s", rp_error_msg);
+      free (rp_error_msg);
+      rp_error_msg = NULL;
+    }
+
   /* Is there anything in the event qeue? */
   if (QLength (dpy) > 0)
     {

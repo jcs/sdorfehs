@@ -1,3 +1,14 @@
+2001-12-21  shawn  <sabetts@vcn.bc.ca>
+
+	* src/data.h (rp_error_msg): new global extern
+
+	* src/main.c (rp_error_msg): new global variable
+
+	* src/events.c (get_event): If there is an X11 error message to
+	print, print it.
+
+	* src/main.c (handler): record the error in rp_error_msg
+
 2001-12-20  shawn  <sabetts@vcn.bc.ca>
 
 	* src/manage.c (maximize_transient): always honour the current

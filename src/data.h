@@ -252,4 +252,7 @@ extern int rp_honour_normal_raise;
 extern int rp_honour_transient_map;
 extern int rp_honour_normal_map;
 
+/* Keep track of X11 error messages. */
+extern char *rp_error_msg;
+
 #endif /* _RATPOISON_DATA_H */

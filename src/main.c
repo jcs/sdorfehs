@@ -77,6 +77,8 @@ int rp_honour_normal_raise = 1;
 int rp_honour_transient_map = 1;
 int rp_honour_normal_map = 1;
 
+char *rp_error_msg = NULL;
+
 /* Command line options */
 static struct option ratpoison_longopts[] = 
   { {"help", 	no_argument, 		0, 	'h'},
@@ -152,14 +154,15 @@ handler (Display *d, XErrorEvent *e)
 
   if (ignore_badwindow && e->error_code == BadWindow) return 0;
 
-  strcpy (error_msg, "ERROR: ");
-
   XGetErrorText (d, e->error_code, error_msg + 7, sizeof (error_msg) - 7);
-  fprintf (stderr, "ratpoison: %s!\n", error_msg);
+  fprintf (stderr, "ratpoison: ERROR: %s!\n", error_msg);
 
-  //  marked_message (error_msg, 0, strlen (error_msg));
+  /* If there is already an error to report, replace it with this new
+     one. */
+  if (rp_error_msg) 
+    free (rp_error_msg);
+  rp_error_msg = xstrdup (error_msg);
 
-/*   exit (EXIT_FAILURE);  */
   return 0;
 }
 
