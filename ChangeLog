@@ -1,3 +1,19 @@
+2004-04-23  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/data.h (struct rp_defaults): new members, font_string,
+	fgcolor_string, bgcolor_string.
+
+	* src/actions.c (set_font): return defaults.font_string when data is NULL
+	(set_fgcolor): likewise for fgcolor_string
+	(set_bgcolor): likewise for bgcolor_string
+
+	* src/manage.c (ungrab_top_level_keys): properly grab capital letters.
+
+	* src/main.c (init_defaults): init fgcolor_string, bgcolor_string, and font_string
+
+	* src/input.c (grab_key): change keysym type to KeySym. convert
+	keysym to keycode. All callers updated.
+
 2004-04-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_set): if non-interactive and no arguments are

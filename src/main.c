@@ -483,6 +483,10 @@ init_defaults ()
       fprintf (stderr, "ratpoison: Cannot load font %s.\n", "9x15bold");
       exit (EXIT_FAILURE);
     }
+  defaults.font_string = xstrdup ("9x15bold");
+
+  defaults.fgcolor_string = xstrdup ("black");
+  defaults.bgcolor_string = xstrdup ("white");
 
   defaults.wait_for_key_cursor = 1;
 

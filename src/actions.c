@@ -2340,9 +2340,8 @@ set_font (char *data)
 {
   XFontStruct *font;
 
-  /* FIXME: return a useful string. */
   if (data == NULL)
-    return xstrdup ("dummy");
+    return xstrdup (defaults.font_string);
 
   font = XLoadQueryFont (dpy, data);
   if (font == NULL)
@@ -2355,6 +2354,9 @@ set_font (char *data)
   XFreeFont (dpy, defaults.font);
   defaults.font = font;
   update_all_gcs();
+
+  free (defaults.font_string);
+  defaults.font_string = xstrdup (data);
 
   return NULL;
 }
@@ -2559,9 +2561,8 @@ set_fgcolor (char *data)
   int i;
   XColor color, junk;
 
-  /* FIXME: return a meaningful string. */
   if (data == NULL)
-    return xstrdup ("dummy");
+    return xstrdup (defaults.fgcolor_string);
 
   for (i=0; i<num_screens; i++)
     {
@@ -2577,6 +2578,9 @@ set_fgcolor (char *data)
       XSetWindowBorder (dpy, screens[i].input_window, color.pixel);
       XSetWindowBorder (dpy, screens[i].frame_window, color.pixel);
       XSetWindowBorder (dpy, screens[i].help_window, color.pixel);
+
+      free (defaults.fgcolor_string);
+      defaults.fgcolor_string = xstrdup (data);
     }
 
   return NULL;
@@ -2588,9 +2592,8 @@ set_bgcolor (char *data)
   int i;
   XColor color, junk;
 
-  /* FIXME: return a meaningful string. */
   if (data == NULL)
-    return xstrdup ("dummy");
+    return xstrdup (defaults.bgcolor_string);
 
   for (i=0; i<num_screens; i++)
     {
@@ -2606,6 +2609,9 @@ set_bgcolor (char *data)
       XSetWindowBackground (dpy, screens[i].input_window, color.pixel);
       XSetWindowBackground (dpy, screens[i].frame_window, color.pixel);
       XSetWindowBackground (dpy, screens[i].help_window, color.pixel);
+
+      free (defaults.bgcolor_string);
+      defaults.bgcolor_string = xstrdup (data);
     }
 
   return NULL;

@@ -30,7 +30,7 @@ int read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int le
 unsigned int x11_mask_to_rp_mask (unsigned int mask);
 unsigned int rp_mask_to_x11_mask (unsigned int mask);
 void update_modifier_map ();
-void grab_key (int keycode, unsigned int modifiers, Window grab_window);
+void grab_key (KeySym keysym, unsigned int modifiers, Window grab_window);
 
 void ring_bell ();
 

@@ -122,7 +122,7 @@ grab_top_level_keys (Window w)
   for (i=0; i<map->actions_last; i++)
     {
       PRINT_DEBUG(("%d\n", i));
-      grab_key (XKeysymToKeycode (dpy, map->actions[i].key), map->actions[i].state, w);
+      grab_key (map->actions[i].key, map->actions[i].state, w);
     }
 #endif
 }
@@ -130,10 +130,11 @@ grab_top_level_keys (Window w)
 void
 ungrab_top_level_keys (Window w)
 {
-#ifdef HIDE_MOUSE
-#else
-  rp_keymap *map = find_keymap (TOP_KEYMAP);
+  KeySym keysym, upper, lower;
+  rp_keymap *map;
   int i;
+
+  map = find_keymap (TOP_KEYMAP);
 
   if (map == NULL)
     {
@@ -141,12 +142,16 @@ ungrab_top_level_keys (Window w)
       return;
     }
 
+  /* Make sure we ungrab the right sym. */
+
   for (i=0; i<map->actions_last; i++)
     {
       PRINT_DEBUG(("%d\n", i));
-      XUngrabKey(dpy, XKeysymToKeycode (dpy, map->actions[i].key), AnyModifier, w);
+      keysym = map->actions[i].key;
+      XConvertCase (keysym, &lower, &upper);
+      keysym = lower;
+      XUngrabKey(dpy, XKeysymToKeycode (dpy, keysym), AnyModifier, w);
     }
-#endif
 }
 
 void

@@ -164,13 +164,25 @@ update_modifier_map ()
 /* Grab the key while ignoring annoying modifier keys including
    caps lock, num lock, and scroll lock. */
 void
-grab_key (int keycode, unsigned int modifiers, Window grab_window)
+grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
 {
+  int keycode;
   unsigned int mod_list[8];
   int i;
-
+  KeySym upper, lower;
+      
   /* Convert to a modifier mask that X Windows will understand. */
   modifiers = rp_mask_to_x11_mask (modifiers);
+
+  /* Make sure we grab the right sym. */
+  XConvertCase (keysym, &lower, &upper);
+  PRINT_DEBUG(("%ld %ld %ld", keysym, lower, upper));
+  if (keysym != upper || keysym != lower)
+    {
+      if (keysym == upper)
+	modifiers |= ShiftMask;
+      keysym = lower;
+    }
 
   /* Create a list of all possible combinations of ignored
      modifiers. Assumes there are only 3 ignored modifiers. */
@@ -182,6 +194,8 @@ grab_key (int keycode, unsigned int modifiers, Window grab_window)
   mod_list[5] = mod_list[1] | mod_list[4];
   mod_list[6] = mod_list[2] | mod_list[4];
   mod_list[7] = mod_list[1] | mod_list[2] | mod_list[4];
+
+  keycode = XKeysymToKeycode (dpy, keysym);
 
   /* Grab every combination of ignored modifiers. */
   for (i=0; i<8; i++)

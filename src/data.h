@@ -213,6 +213,10 @@ struct rp_defaults
   int padding_bottom;
 
   XFontStruct *font;
+  char *font_string;
+
+  char *fgcolor_string;
+  char *bgcolor_string;
 
   int wait_for_key_cursor;
 
