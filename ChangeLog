@@ -1,3 +1,7 @@
+2003-11-01  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/input.c (cook_keycode): null terminate the string.
+
 2003-10-24  Ryan Yeske  <rcyeske@vcn.bc.ca>
 
 	* contrib/ratpoison.el: Added requires.

@@ -242,7 +242,13 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
 		     | rp_modifier_info.scroll_lock_mask);
     }
 
+  if (len > 0) len--;
   nbytes =  XLookupString (ev, keysym_name, len, keysym, NULL);
+
+  /* Null terminate the string (not all X servers do it for us). */
+  if (keysym_name) {
+    keysym_name[nbytes] = '\0';
+  }
 
   *mod = ev->state;
   *mod &= (rp_modifier_info.meta_mod_mask
