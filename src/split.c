@@ -25,9 +25,6 @@
 
 #include "ratpoison.h"
 
-rp_window_frame *rp_window_frame_sentinel;
-rp_window_frame *rp_current_frame;
-
 static void
 update_last_access (rp_window_frame *frame)
 {
@@ -48,6 +45,26 @@ set_frames_window (rp_window_frame *frame, rp_window *win)
     win->frame = frame;
 
   return last_win;
+}
+
+static screen_info *
+frames_screen (rp_window_frame *frame)
+{
+  int i;
+  rp_window_frame *cur;
+
+  for (i=0; i<num_screens; i++)
+    for (cur = screens[i].rp_window_frame_sentinel->next; 
+	 cur !=screens[i]. rp_window_frame_sentinel; 
+	 cur = cur->next)
+      {
+	if (frame == cur)
+	  return &screens[i];
+      }
+
+  /* This SHOULD be impossible to get to. FIXME: It'll crash higher up if we
+     return NULL. */
+  return NULL;
 }
 
 void
@@ -77,54 +94,64 @@ delete_frame_from_list (rp_window_frame *frame)
 static void
 maximize_frame (rp_window_frame *frame)
 {
+  screen_info *s = frames_screen (frame);
+
   frame->x = defaults.padding_left;
   frame->y = defaults.padding_top;
 
-  /* FIXME: what about multiple screens? */
-  frame->width = DisplayWidth (dpy, 0) - defaults.padding_right - defaults.padding_left;
-  frame->height = DisplayHeight (dpy, 0) - defaults.padding_bottom - defaults.padding_top;
+  frame->width = DisplayWidth (dpy, s->screen_num) - defaults.padding_right - defaults.padding_left;
+  frame->height = DisplayHeight (dpy, s->screen_num) - defaults.padding_bottom - defaults.padding_top;
 }
 
 /* Create a full screen frame */
 static void
-create_initial_frame ()
+create_initial_frame (screen_info *screen)
 {
-  rp_current_frame = xmalloc (sizeof (rp_window_frame));
+  screen->rp_current_frame = xmalloc (sizeof (rp_window_frame));
 
-  update_last_access (rp_current_frame);
+  update_last_access (screen->rp_current_frame);
 
-  rp_window_frame_sentinel->next = rp_current_frame;
-  rp_window_frame_sentinel->prev = rp_current_frame;
-  rp_current_frame->next = rp_window_frame_sentinel;
-  rp_current_frame->prev = rp_window_frame_sentinel;
+  screen->rp_window_frame_sentinel->next = screen->rp_current_frame;
+  screen->rp_window_frame_sentinel->prev = screen->rp_current_frame;
+  screen->rp_current_frame->next = screen->rp_window_frame_sentinel;
+  screen->rp_current_frame->prev = screen->rp_window_frame_sentinel;
 
-  maximize_frame (rp_current_frame);
+  maximize_frame (screen->rp_current_frame);
 
-  set_frames_window (rp_current_frame, NULL);
+  set_frames_window (screen->rp_current_frame, NULL);
 }
 
 void
-init_frame_list ()
+init_frame_lists ()
 {
-  rp_window_frame_sentinel = xmalloc (sizeof (rp_window_frame));
+  int i;
 
-  rp_window_frame_sentinel->next = rp_window_frame_sentinel;
-  rp_window_frame_sentinel->prev = rp_window_frame_sentinel;
+  for (i=0; i<num_screens; i++)
+    init_frame_list (&screens[i]);
+}
 
-  create_initial_frame();
+void
+init_frame_list (screen_info *screen)
+{
+  screen->rp_window_frame_sentinel = xmalloc (sizeof (rp_window_frame));
+
+  screen->rp_window_frame_sentinel->next = screen->rp_window_frame_sentinel;
+  screen->rp_window_frame_sentinel->prev = screen->rp_window_frame_sentinel;
+
+  create_initial_frame(screen);
 }
 
 rp_window_frame *
-find_last_frame ()
+find_last_frame (screen_info *s)
 {
   rp_window_frame *cur, *last = NULL;
   int last_access = -1;
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel;
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel;
        cur = cur->next)
     {
-      if (cur != rp_current_frame
+      if (cur != s->rp_current_frame
 	  && cur->last_access > last_access)
 	{
 	  last_access = cur->last_access;
@@ -139,10 +166,13 @@ find_last_frame ()
 rp_window_frame *
 find_windows_frame (rp_window *win)
 {
+  screen_info *s;
   rp_window_frame *cur;
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel;
+  s = win->scr;
+
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel;
        cur = cur->next)
     {
       if (cur->win == win) return cur;
@@ -159,7 +189,7 @@ find_frame_next (rp_window_frame *frame)
   if (frame == NULL) return NULL;
 
   cur = frame;
-  if (cur->next == rp_window_frame_sentinel)
+  if (cur->next == frames_screen (frame)->rp_window_frame_sentinel)
     {
       cur = cur->next;
       if (cur->next == frame) return NULL;
@@ -176,7 +206,7 @@ find_frame_prev (rp_window_frame *frame)
   if (frame == NULL) return NULL;
 
   cur = frame;
-  if (cur->prev == rp_window_frame_sentinel)
+  if (cur->prev == frames_screen (frame)->rp_window_frame_sentinel)
     {
       cur = cur->prev;
       if (cur->prev == frame) return NULL;
@@ -188,10 +218,7 @@ find_frame_prev (rp_window_frame *frame)
 rp_window *
 current_window ()
 {
-  if (rp_current_frame) return rp_current_frame->win;
-
-  PRINT_ERROR ("BUG: There should always be a current frame\n");
-  return NULL;
+  return screens[rp_current_screen].rp_current_frame->win;
 }
 
 static int
@@ -217,6 +244,7 @@ window_fits_in_frame (rp_window *win, rp_window_frame *frame)
 rp_window *
 find_window_for_frame (rp_window_frame *frame)
 {
+  screen_info *s = frames_screen (frame);
   int last_access = 0;
   rp_window *most_recent = NULL;
   rp_window *cur;
@@ -225,7 +253,8 @@ find_window_for_frame (rp_window_frame *frame)
        cur != rp_mapped_window_sentinel; 
        cur = cur->next)
     {
-      if (cur != current_window() 
+      if (cur->scr == s
+	  && cur != current_window() 
 	  && !find_windows_frame (cur)
 	  && cur->last_access >= last_access
 	  && window_fits_in_frame (cur, frame)
@@ -244,8 +273,11 @@ find_window_for_frame (rp_window_frame *frame)
 static void
 split_frame (rp_window_frame *frame, int way)
 {
+  screen_info *s;
   rp_window *win;
   rp_window_frame *new_frame;
+
+  s = frames_screen (frame);
 
   new_frame = xmalloc (sizeof (rp_window_frame));
 
@@ -254,10 +286,10 @@ split_frame (rp_window_frame *frame, int way)
   update_last_access (new_frame);
 
   /* append the new frame to the list */
-  new_frame->prev = rp_window_frame_sentinel->prev;
-  rp_window_frame_sentinel->prev->next = new_frame;
-  rp_window_frame_sentinel->prev = new_frame;
-  new_frame->next = rp_window_frame_sentinel;
+  new_frame->prev = s->rp_window_frame_sentinel->prev;
+  s->rp_window_frame_sentinel->prev->next = new_frame;
+  s->rp_window_frame_sentinel->prev = new_frame;
+  new_frame->next = s->rp_window_frame_sentinel;
 
   set_frames_window (new_frame, NULL);
 
@@ -325,18 +357,19 @@ h_split_frame (rp_window_frame *frame)
 void
 remove_all_splits ()
 {
+  screen_info *s = &screens[rp_current_screen];
   rp_window *cur_window;
   rp_window_frame *frame, *cur_frame;
   rp_window *win;
 
   cur_window = current_window();
-  cur_frame  = rp_current_frame;
+  cur_frame  = s->rp_current_frame;
 
-  while (rp_window_frame_sentinel->next != rp_window_frame_sentinel)
+  while (s->rp_window_frame_sentinel->next != s->rp_window_frame_sentinel)
     {
-      frame = rp_window_frame_sentinel->next;
+      frame = s->rp_window_frame_sentinel->next;
       delete_frame_from_list (frame);
-      if (frame != rp_current_frame)
+      if (frame != s->rp_current_frame)
 	{
 	  for (win = rp_mapped_window_sentinel->next;
 	       win != rp_mapped_window_sentinel;
@@ -349,7 +382,7 @@ remove_all_splits ()
       free (frame);
     }
 
-  create_initial_frame ();
+  create_initial_frame (s);
   
   /* Maximize all the windows that were in the current frame. */
   for (win = rp_mapped_window_sentinel->next;
@@ -358,12 +391,12 @@ remove_all_splits ()
     {
       if (win->frame == cur_frame)
 	{
-	  set_frames_window (rp_current_frame, win);
+	  set_frames_window (win->scr->rp_current_frame, win);
 	  maximize (win);
 	}
     }
 
-  set_frames_window (rp_current_frame, cur_window);
+  set_frames_window (s->rp_current_frame, cur_window);
 }
 
 static int
@@ -395,13 +428,13 @@ frame_is_right (rp_window_frame *src, rp_window_frame *frame)
 }
 
 static int
-total_frame_area ()
+total_frame_area (screen_info *s)
 {
   int area = 0;
   rp_window_frame *cur;
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel; 
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel; 
        cur = cur->next)
     {
       area += cur->width * cur->height;
@@ -411,13 +444,13 @@ total_frame_area ()
 }
 
 static int
-num_frames ()
+num_frames (screen_info *s)
 {
  int count = 0;
  rp_window_frame *cur;
 
- for (cur = rp_window_frame_sentinel->next; 
-      cur != rp_window_frame_sentinel; 
+ for (cur = s->rp_window_frame_sentinel->next; 
+      cur != s->rp_window_frame_sentinel; 
       cur = cur->next)
    {
      count++;
@@ -444,10 +477,13 @@ frames_overlap (rp_window_frame *f1, rp_window_frame *f2)
 static int
 frame_overlaps (rp_window_frame *frame)
 {
+  screen_info *s;
   rp_window_frame *cur;
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel; 
+  s = frames_screen (frame);
+
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel; 
        cur = cur->next)
     {
       if (cur != frame && frames_overlap (cur, frame))
@@ -461,20 +497,23 @@ frame_overlaps (rp_window_frame *frame)
 void
 remove_frame (rp_window_frame *frame)
 {
+  screen_info *s;
   int area;
   rp_window_frame *cur;
 
   if (frame == NULL) return;
 
-  area = total_frame_area();
+  s = frames_screen (frame);
+
+  area = total_frame_area(s);
   PRINT_DEBUG ("Total Area: %d\n", area);
 
   delete_frame_from_list (frame);
   hide_window (frame->win);
   hide_others (frame->win);
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel; 
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel; 
        cur = cur->next)
     {
       rp_window_frame tmp_frame;
@@ -501,7 +540,7 @@ remove_frame (rp_window_frame *frame)
 	}
 
       PRINT_DEBUG ("Attempting vertical Frame y=%d height=%d\n", cur->y, cur->height);
-      PRINT_DEBUG ("New Total Area: %d\n", total_frame_area());
+      PRINT_DEBUG ("New Total Area: %d\n", total_frame_area(s));
 
       /* If the area is bigger than before, the frame takes up too
 	 much space. If the current frame and the deleted frame DON'T
@@ -510,7 +549,7 @@ remove_frame (rp_window_frame *frame)
 	 deleted window. If any active frames overlap, it could have
 	 taken up the right amount of space, overlaps with the deleted
 	 frame but obviously didn't fit. */
-      if (total_frame_area() > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
+      if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
 	{
 	  PRINT_DEBUG ("Didn't fit vertically\n");
 
@@ -535,10 +574,10 @@ remove_frame (rp_window_frame *frame)
 	}
 
       PRINT_DEBUG ("Attempting horizontal Frame x=%d width=%d\n", cur->x, cur->width);
-      PRINT_DEBUG ("New Total Area: %d\n", total_frame_area());
+      PRINT_DEBUG ("New Total Area: %d\n", total_frame_area(s));
 
       /* Same test as the vertical test, above. */
-      if (total_frame_area() > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
+      if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
 	{
 	  PRINT_DEBUG ("Didn't fit horizontally\n");
 
@@ -574,13 +613,14 @@ remove_frame (rp_window_frame *frame)
 void
 set_active_frame (rp_window_frame *frame)
 {
-  rp_window_frame *old = rp_current_frame;
+  screen_info *s = frames_screen (frame);
+  rp_window_frame *old = s->rp_current_frame;
 
-  give_window_focus (frame->win, rp_current_frame->win);
+  give_window_focus (frame->win, s->rp_current_frame->win);
   update_last_access (frame);
-  rp_current_frame = frame;
+  s->rp_current_frame = frame;
 
-  if (old != rp_current_frame && num_frames() > 1)
+  if (old != s->rp_current_frame && num_frames(s) > 1)
     {
       show_frame_indicator();
     }
@@ -589,7 +629,7 @@ set_active_frame (rp_window_frame *frame)
      focus. */
   if( !frame->win )
     {
-      XSetInputFocus (dpy, current_screen()->key_window, 
+      XSetInputFocus (dpy, s->key_window, 
 		      RevertToPointerRoot, CurrentTime);
     }  
 }
@@ -625,8 +665,10 @@ show_frame_indicator ()
   height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
   XMoveResizeWindow (dpy, current_screen()->frame_window,
-		     rp_current_frame->x + rp_current_frame->width / 2 - width / 2, 
-		     rp_current_frame->y + rp_current_frame->height / 2 - height / 2,
+		     current_screen()->rp_current_frame->x
+		     + current_screen()->rp_current_frame->width / 2 - width / 2, 
+		     current_screen()->rp_current_frame->y
+		     + current_screen()->rp_current_frame->height / 2 - height / 2,
 		     width, height);
 
   XMapRaised (dpy, current_screen()->frame_window);
@@ -644,10 +686,11 @@ show_frame_indicator ()
 rp_window_frame *
 find_frame_up (rp_window_frame *frame)
 {
+  screen_info *s = frames_screen (frame);
   rp_window_frame *cur;
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel; 
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel; 
        cur = cur->next)
     {
       if (frame->y == cur->y + cur->height)
@@ -663,10 +706,11 @@ find_frame_up (rp_window_frame *frame)
 rp_window_frame *
 find_frame_down (rp_window_frame *frame)
 {
+  screen_info *s = frames_screen (frame);
   rp_window_frame *cur;
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel; 
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel; 
        cur = cur->next)
     {
       if (frame->y + frame->height == cur->y)
@@ -682,10 +726,11 @@ find_frame_down (rp_window_frame *frame)
 rp_window_frame *
 find_frame_left (rp_window_frame *frame)
 {
+  screen_info *s = frames_screen (frame);
   rp_window_frame *cur;
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel; 
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel; 
        cur = cur->next)
     {
       if (frame->x == cur->x + cur->width)
@@ -701,10 +746,11 @@ find_frame_left (rp_window_frame *frame)
 rp_window_frame *
 find_frame_right (rp_window_frame *frame)
 {
+  screen_info *s = frames_screen (frame);
   rp_window_frame *cur;
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel; 
+  for (cur = s->rp_window_frame_sentinel->next; 
+       cur != s->rp_window_frame_sentinel; 
        cur = cur->next)
     {
       if (frame->x + frame->width == cur->x)

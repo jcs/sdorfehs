@@ -121,7 +121,7 @@ unmap_notify (XEvent *ev)
 	 window. */
       frame = find_windows_frame (win);
       if (frame) cleanup_frame (frame);
-      if (frame == rp_current_frame) set_active_frame (frame);
+      if (frame == win->scr->rp_current_frame) set_active_frame (frame);
 
       withdraw_window (win);
       break;
@@ -208,7 +208,7 @@ destroy_window (XDestroyWindowEvent *ev)
      case... */
   frame = find_windows_frame (win);
   if (frame) cleanup_frame (frame);
-  if (frame == rp_current_frame) set_active_frame (frame);
+  if (frame == win->scr->rp_current_frame) set_active_frame (frame);
 
   unmanage (win);
 
@@ -354,7 +354,7 @@ client_msg (XClientMessageEvent *ev)
 	      if (w)
 		set_active_window (w);
 	      else
-		blank_frame (rp_current_frame);
+		blank_frame (win->scr->rp_current_frame);
 	    }
 	}
       else
@@ -411,11 +411,11 @@ handle_key (screen_info *s)
     }
 
   read_key (&keysym, &mod, NULL, 0);
+  XSetInputFocus (dpy, fwin, revert, CurrentTime);
 
   if ((key_action = find_keybinding (keysym, x11_mask_to_rp_mask (mod))))
     {
       char *result;
-      XSetInputFocus (dpy, fwin, revert, CurrentTime);
       result = command (1, key_action->data);
       
       /* Gobble the result. */
@@ -425,8 +425,6 @@ handle_key (screen_info *s)
   else
     {
       /* No key match, notify user. */
-      XSetInputFocus (dpy, fwin, revert, CurrentTime);
-
       keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
       marked_message_printf (0, 0, " %s unbound key ", keysym_name);
       free (keysym_name);

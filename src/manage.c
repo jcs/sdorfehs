@@ -64,10 +64,7 @@ ungrab_prefix_key (Window w)
 screen_info*
 current_screen ()
 {
-  if (current_window())
-    return current_window()->scr;
-  else
-    return &screens[0];
+  return &screens[rp_current_screen];
 }
 
 void

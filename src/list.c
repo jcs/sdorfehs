@@ -177,7 +177,7 @@ find_window (Window w)
 void
 set_current_window (rp_window *win)
 {
-  set_frames_window (rp_current_frame, win);
+  set_frames_window (current_screen()->rp_current_frame, win);
 }
 
 void
@@ -452,6 +452,7 @@ give_window_focus (rp_window *win, rp_window *last_win)
   XInstallColormap (dpy, win->colormap);
 
   /* Finally, give the window focus */
+  rp_current_screen = win->scr->screen_num;
   XSetInputFocus (dpy, win->w, 
 		  RevertToPointerRoot, CurrentTime);
 
@@ -570,7 +571,7 @@ set_active_window (rp_window *win)
 
   if (win == NULL) return;
 
-  last_win = set_frames_window (rp_current_frame, win);
+  last_win = set_frames_window (win->scr->rp_current_frame, win);
 
   if (last_win) PRINT_DEBUG ("last window: %s\n", window_name (last_win));
   PRINT_DEBUG ("new window: %s\n", window_name (win));

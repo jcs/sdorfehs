@@ -600,7 +600,7 @@ cmd_prev_frame (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  frame = find_frame_prev (rp_current_frame);
+  frame = find_frame_prev (current_screen()->rp_current_frame);
   if (!frame)
     message (MESSAGE_NO_OTHER_WINDOW);
   else
@@ -642,7 +642,7 @@ cmd_next_frame (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  frame = find_frame_next (rp_current_frame);
+  frame = find_frame_next (current_screen()->rp_current_frame);
   if (!frame)
     message (MESSAGE_NO_OTHER_FRAME);
   else
@@ -704,7 +704,7 @@ cmd_select (int interactive, void *data)
     {
       if (strlen (str) == 1 && str[0] == '-')
 	{
-	  blank_frame (rp_current_frame);
+	  blank_frame (current_screen()->rp_current_frame);
 	}
 /*       else if ((w = find_window_name (str))) */
 /* 	{ */
@@ -912,17 +912,15 @@ void
 spawn(void *data)
 {
   char *cmd = data;
-  /*
-   * ugly dance to avoid leaving zombies.  Could use SIGCHLD,
-   * but it's not very portable.
-   */
+  /* Ugly dance to avoid leaving zombies.  Could use SIGCHLD, but it's
+     not very portable. */
   if (fork() == 0) 
     {
       if (fork() == 0) 
 	{
 	  /* Some process setup to make sure the spawned process runs
 	     in its own session. */
-	  putenv(DisplayString(dpy));
+	  putenv(current_screen()->display_string);
 #ifdef HAVE_SETSID
 	  setsid();
 #endif
@@ -958,7 +956,7 @@ cmd_newwm(int interactive, void *data)
 
   PRINT_DEBUG ("Switching to %s\n", prog);
 
-  putenv(DisplayString(dpy));   
+  putenv(current_screen()->display_string);
   execlp(prog, prog, 0);
 
   PRINT_ERROR ("exec %s ", prog);
@@ -1165,14 +1163,14 @@ cmd_echo (int interactive, void *data)
 char *
 cmd_h_split (int interactive, void *data)
 {
-  h_split_frame (rp_current_frame);
+  h_split_frame (current_screen()->rp_current_frame);
   return NULL;
 }
 
 char *
 cmd_v_split (int interactive, void *data)
 {
-  v_split_frame (rp_current_frame);
+  v_split_frame (current_screen()->rp_current_frame);
   return NULL;
 }
 
@@ -1190,11 +1188,11 @@ cmd_remove (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  frame = find_frame_next (rp_current_frame);
+  frame = find_frame_next (current_screen()->rp_current_frame);
 
   if (frame)
     {
-      remove_frame (rp_current_frame);
+      remove_frame (current_screen()->rp_current_frame);
       set_active_frame (frame);
     }
 
@@ -1604,8 +1602,8 @@ cmd_defpadding (int interactive, void *data)
 
   /* Resize the frames to make sure they are not too big and not too
      small. */
-  for (frame = rp_window_frame_sentinel->next; 
-       frame != rp_window_frame_sentinel;
+  for (frame = current_screen()->rp_window_frame_sentinel->next; 
+       frame != current_screen()->rp_window_frame_sentinel;
        frame = frame->next)
     {
       int bk_pos, bk_len;
@@ -1942,7 +1940,7 @@ cmd_focusup (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_up (rp_current_frame)))
+  if ((frame = find_frame_up (current_screen()->rp_current_frame)))
     set_active_frame (frame);
 
   return NULL;
@@ -1953,7 +1951,7 @@ cmd_focusdown (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_down (rp_current_frame)))
+  if ((frame = find_frame_down (current_screen()->rp_current_frame)))
     set_active_frame (frame);
 
   return NULL;
@@ -1964,7 +1962,7 @@ cmd_focusleft (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_left (rp_current_frame)))
+  if ((frame = find_frame_left (current_screen()->rp_current_frame)))
     set_active_frame (frame);
 
   return NULL;
@@ -1975,7 +1973,7 @@ cmd_focusright (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_right (rp_current_frame)))
+  if ((frame = find_frame_right (current_screen()->rp_current_frame)))
     set_active_frame (frame);
 
   return NULL;

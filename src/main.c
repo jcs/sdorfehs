@@ -56,6 +56,7 @@ Atom rp_command;
 Atom rp_command_request;
 Atom rp_command_result;
 
+int rp_current_screen;
 screen_info *screens;
 int num_screens;
 Display *dpy;
@@ -156,7 +157,7 @@ handler (Display *d, XErrorEvent *e)
   XGetErrorText (d, e->error_code, error_msg + 7, sizeof (error_msg) - 7);
   fprintf (stderr, "ratpoison: %s!\n", error_msg);
 
-  marked_message (error_msg, 0, strlen (error_msg));
+  //  marked_message (error_msg, 0, strlen (error_msg));
 
 /*   exit (EXIT_FAILURE);  */
   return 0;
@@ -472,20 +473,27 @@ main (int argc, char *argv[])
   /* Setup ratpoison's internal structures */
   init_defaults();
   init_numbers ();
-  init_window_list ();
-  init_frame_list ();
-  update_modifier_map ();
-  initialize_default_keybindings ();
-
-  num_screens = ScreenCount (dpy);
-  screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
-
-  PRINT_DEBUG ("%d screens.\n", num_screens);
 
   /* Initialize the screens */
+  num_screens = ScreenCount (dpy);
+  screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
+  PRINT_DEBUG ("%d screens.\n", num_screens);
+
   for (i=0; i<num_screens; i++)
     {
       init_screen (&screens[i], i);
+    }
+
+  init_window_list ();
+  init_frame_lists ();
+  update_modifier_map ();
+  initialize_default_keybindings ();
+
+  /* Scan for windows */
+  rp_current_screen = 0;
+  for (i=0; i<num_screens; i++)
+    {
+      scanwins (&screens[i]);
     }
 
   read_startup_files ();
@@ -522,6 +530,18 @@ init_screen (screen_info *s, int screen_num)
                PropertyChangeMask | ColormapChangeMask
                | SubstructureRedirectMask | SubstructureNotifyMask );
   XSync (dpy, False);
+
+  /* Build the display string for each screen */
+  s->display_string = xmalloc (strlen(DisplayString (dpy)) + 21);
+  sprintf (s->display_string, "DISPLAY=%s", DisplayString (dpy));
+  if (strrchr (DisplayString (dpy), ':'))
+    {
+      char *dot;
+
+      dot = strrchr(s->display_string, '.');
+      if (dot)
+	sprintf(dot, ".%i", screen_num);
+    }
 
   s->screen_num = screen_num;
   s->root = RootWindow (dpy, screen_num);
@@ -573,8 +593,6 @@ init_screen (screen_info *s, int screen_num)
   XSelectInput (dpy, s->help_window, KeyPressMask);
 
   XSync (dpy, 0);
-
-  scanwins (s);
 }
 
 void

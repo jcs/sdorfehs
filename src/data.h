@@ -99,6 +99,16 @@ struct screen_info
   Colormap def_cmap;
   Cursor rat;
   unsigned long fg_color, bg_color; /* The pixel color. */
+
+  char *display_string;
+
+  /* A list of frames that may or may not contain windows. There should
+     always be one in the list. */
+  rp_window_frame *rp_window_frame_sentinel;
+
+  /* Pointer to the currently focused frame. One for each screen so
+     when you switch screens the focus doesn't get frobbed. */
+  rp_window_frame *rp_current_frame;
 };
 
 struct rp_action
@@ -173,13 +183,7 @@ extern rp_window *rp_mapped_window_sentinel;
    assigned to them and are not visible/active. */
 extern rp_window *rp_unmapped_window_sentinel;
 
-/* A list of frames that may or may not contain windows. There should
-   always be one in the list. */
-extern rp_window_frame *rp_window_frame_sentinel;
-
-/* Pointer to the currently focused frame. */
-extern rp_window_frame *rp_current_frame;
-
+extern int rp_current_screen;
 extern screen_info *screens;
 extern int num_screens;
 
@@ -189,7 +193,6 @@ extern Display *dpy;
 extern Atom rp_command;
 extern Atom rp_command_request;
 extern Atom rp_command_result;
-
 
 extern Atom wm_state;
 extern Atom wm_change_state;

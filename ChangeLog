@@ -1,3 +1,41 @@
+2001-12-08  shawn  <sabetts@vcn.bc.ca>
+
+	* src/events.c (handle_key): revert the focus immediately after
+	reading the key.
+
+	* src/list.c (give_window_focus): update rp_current_frame when
+	setting the window focus.
+
+	* src/main.c (main): scan for windows in a seperate pass after
+	initializing the screen structures.
+	(init_screen): build a display string for each screen.
+	(init_screen): remove the call to scanwins.
+
+	* src/manage.c (current_screen): return the current screen using
+	rp_current_screen.
+
+	* src/split.h (init_frame_lists): new function
+
+	* src/split.c (rp_window_frame_sentinel): remove.
+	(rp_current_frame): remove.
+	(frames_screen): new function
+	(maximize_frame): use the frame's screen to find out the width and
+	height of the display.
+	(create_initial_frame): take a pointer to a screen_info as an
+	argument.
+	(init_frame_lists): new function
+	(init_frame_list): take a pointer to a screen_info as an argument.
+	(find_last_frame): take a pointer to a screen_info as an argument.
+
+	* src/actions.c (spawn): Set the DISPLAY environment variable to
+	point to the current screen.
+
+	* src/data.h (struct screen_info): add display_string,
+	rp_window_frame_sentinel, rp_current_frame.
+	(rp_current_screen): new global
+	(rp_current_frame): Remove. Dependant code uses
+	screen_info.rp_current_frame.
+
 2001-12-09  Gergely Nagy  <algernon@debian.org>
 
 	* debian/changelog: Lets have a snapshot release
