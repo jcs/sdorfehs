@@ -1,3 +1,13 @@
+2003-11-24  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/main.c (ratpoison_longopts): add "file"
+	(ratpoison_opts): add f: option
+	(print_help): print help for --file option
+	(read_startup_files): take an alternative rc file as an argument
+	and use it if it is non-NULL.
+	(main): parse the --file option. pass alt_rcfile to
+	read_startup_files.
+
 2003-11-22  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* contrib/Makefile.am (pkgdata_DATA): add rpshowall.sh

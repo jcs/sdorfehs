@@ -1,5 +1,9 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes since 1.3.0-rc1
+** new command-line option --file
+Used to specify an alternate configuration file.
+
 * Changes since 1.3.0-beta3
 ** new configure option --disable-history
 

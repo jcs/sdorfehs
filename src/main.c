@@ -54,9 +54,10 @@ static struct option ratpoison_longopts[] =
     {"command", 	required_argument, 	0, 	'c'},
     {"display", 	required_argument, 	0, 	'd'},
     {"screen",  	required_argument,      0,      's'},
+    {"file",  		required_argument,      0,      'f'},
     {0, 		0, 			0, 	0} };
 
-static char ratpoison_opts[] = "hvic:d:s:";
+static char ratpoison_opts[] = "hvic:d:s:f:";
 
 void
 fatal (const char *msg)
@@ -291,7 +292,8 @@ print_help ()
   printf ("-d, --display <dpy>   Set the X display to use\n");
   printf ("-s, --screen <num>    Only use the specified screen\n");
   printf ("-c, --command <cmd>   Send ratpoison a colon-command\n");
-  printf ("-i, --interactive     Execute commands in interactive mode\n\n");
+  printf ("-i, --interactive     Execute commands in interactive mode\n");
+  printf ("-f, --file <file>     Specify an alternative configuration file\n\n");
 
   printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
 
@@ -363,44 +365,54 @@ read_rc_file (FILE *file)
 }
 
 static void
-read_startup_files ()
+read_startup_files (char *alt_rcfile)
 {
   char *homedir;
-  FILE *fileptr;
+  FILE *fileptr = NULL;
 
-  /* first check $HOME/.ratpoisonrc and if that does not exist then try
-     /etc/ratpoisonrc */
-
-  homedir = getenv ("HOME");
-  if (!homedir)
+  if (alt_rcfile)
     {
-      PRINT_ERROR (("ratpoison: $HOME not set!?\n"));
+      if ((fileptr = fopen (alt_rcfile, "r")) == NULL)
+	{
+	  /* we probably don't need to report this, its not an error */
+	  PRINT_DEBUG (("ratpoison: could not open %s\n", alt_rcfile));
+	}
     }
   else
     {
-      char *filename = (char*)xmalloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
-      sprintf (filename, "%s/.ratpoisonrc", homedir);
+      /* first check $HOME/.ratpoisonrc and if that does not exist then try
+	 /etc/ratpoisonrc */
+
+      homedir = getenv ("HOME");
+      if (!homedir)
+	{
+	  PRINT_ERROR (("ratpoison: $HOME not set!?\n"));
+	}
+      else
+	{
+	  char *filename = (char*)xmalloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
+	  sprintf (filename, "%s/.ratpoisonrc", homedir);
       
-      if ((fileptr = fopen (filename, "r")) == NULL)
-	{
-	  /* we probably don't need to report this, its not an error */
-	  PRINT_DEBUG (("ratpoison: could not open %s\n", filename));
-
-	  if ((fileptr = fopen ("/etc/ratpoisonrc", "r")) == NULL)
+	  if ((fileptr = fopen (filename, "r")) == NULL)
 	    {
-	      /* neither is this */
-	      PRINT_DEBUG (("ratpoison: could not open /etc/ratpoisonrc\n"));
+	      /* we probably don't need to report this, its not an error */
+	      PRINT_DEBUG (("ratpoison: could not open %s\n", filename));
+
+	      if ((fileptr = fopen ("/etc/ratpoisonrc", "r")) == NULL)
+		{
+		  /* neither is this */
+		  PRINT_DEBUG (("ratpoison: could not open /etc/ratpoisonrc\n"));
+		}
 	    }
+	  free (filename);
 	}
+    }
 
-      if (fileptr)
-	{
-	  set_close_on_exec(fileptr);
-	  read_rc_file (fileptr);
-	  fclose (fileptr);
-	}
-
-      free (filename);
+  if (fileptr)
+    {
+      set_close_on_exec(fileptr);
+      read_rc_file (fileptr);
+      fclose (fileptr);
     }
 }
 
@@ -497,6 +509,7 @@ main (int argc, char *argv[])
   int screen_num = 0;
   char *display = NULL;
   unsigned char interactive = 0;
+  char *alt_rcfile = NULL;
 
   myargv = argv;
 
@@ -539,6 +552,9 @@ main (int argc, char *argv[])
 	  break;
 	case 'i':
 	  interactive = 1;
+	  break;
+	case 'f':
+	  alt_rcfile = xstrdup (optarg);
 	  break;
 	  
 	default:
@@ -653,7 +669,9 @@ main (int argc, char *argv[])
 	}
     }
 
-  read_startup_files ();
+  read_startup_files (alt_rcfile);
+  if (alt_rcfile)
+    free (alt_rcfile);
 
   /* Indicate to the user that ratpoison has booted. */
   if (defaults.startup_message)
