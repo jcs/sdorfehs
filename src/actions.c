@@ -3291,6 +3291,10 @@ cmd_gmerge (int interactive, char *data)
 
   g = find_group (data);
 
-  groups_merge (g, rp_current_group);
+  if (g)
+    groups_merge (g, rp_current_group);
+  else
+    message (" gmerge: Cannot find group ");
+
   return NULL;
 }

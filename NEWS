@@ -1,6 +1,9 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.2.0-beta5
+** New commands gnewbg, gselect, groups, gmove, and gmerge
+These commands allow further manipulation of window groups.
+
 ** shell commands return status
 If a command the user executed (with the exec command) returns with a
 non-zero exit status, the command and exit status are reported in a

@@ -1,5 +1,8 @@
 2003-05-25  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/actions.c (cmd_gmerge): show a message if the group
+	specified by the user could not be found.
+
 	* src/window.c: do not include ctype.h
 
 	* src/ratpoison.h (str_comp): new prototype
