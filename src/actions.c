@@ -2128,50 +2128,11 @@ cmd_defbgcolor (int interactive, void *data)
   return NULL;
 }
 
-#if !defined(HAVE_SETENV) || !defined(setenv)
-/* For systems, such as Solaris, where setenv is not implemented
- * in libc */
-/* FIXME: overwrite has no effect in this implementation! */
-int
-setenv (const char *name, const char *value, int overwrite)
-{
-  char *tmp;
-  int i;
-
-  tmp = (char *)malloc (strlen(name) + strlen(value) + 2);
-  strcpy(tmp, name);
-  strcat(tmp, "=");
-  strcat(tmp, value);
-
-  i = putenv(tmp);
-
-  free(tmp);
-
-  return i;
-}
-#endif
-
-#ifndef HAVE_UNSETENV
-/* For systems which lack unsetenv (eg, Solaris) */
-void
-unsetenv (const char *name)
-{
-  char *tmp;
-
-  tmp = (char *)malloc (strlen(name) + 2);
-  strcpy (tmp, name);
-  strcat (tmp, "=");
-
-  putenv(tmp);
-
-  free(tmp);
-}
-#endif
-
 char *
 cmd_setenv (int interactive, void *data)
 {
-  char *var, *string;
+  char *name, *value;
+  struct sbuf *env;
 
   if (data == NULL)
     {
@@ -2180,20 +2141,36 @@ cmd_setenv (int interactive, void *data)
     }
 
   /* Get the 2 arguments. */
-  var = xmalloc (strlen (data) + 1);
-  string = xmalloc (strlen (data) + 1);
-  if (sscanf (data, "%s %s", var, string) < 2)
+  name = xmalloc (strlen (data) + 1);
+  value = xmalloc (strlen (data) + 1);
+  if (sscanf (data, "%s %s", name, value) < 2)
     {
       message (" setenv: Two arguments required ");
-      free (var);
-      free (string);
+      free (name);
+      free (value);
       return NULL;
     }
 
-  setenv (var, string, 1);
+  /* Setup the environment string. */
+  env = sbuf_new(0);
+  sbuf_concat (env, name);
+  sbuf_concat (env, "=");
+  sbuf_concat (env, value);
+  free (name);
+  free (value);
+  
+  /* Stick it in the environment. */
+  PRINT_DEBUG("%s\n", sbuf_get(env));
+  putenv (sbuf_get (env));
 
-  free (var);
-  free (string);
+  /* According to the docs, the actual string is placed in the
+     environment, not the data the string points to. This means
+     modifying the string (or freeing it) directly changes the
+     environment. So, don't free the environment string, just the sbuf
+     data structure. */
+  env->data = NULL;
+  sbuf_free (env);
+
   return NULL;
 }
 
@@ -2210,7 +2187,7 @@ cmd_getenv (int interactive, void *data)
       return NULL;
     }
 
-  /* Get the 2 arguments. */
+  /* Get the argument. */
   var = xmalloc (strlen (data) + 1);
   if (sscanf (data, "%s", var) < 1)
     {
@@ -2263,7 +2240,8 @@ cmd_unsetenv (int interactive, void *data)
       return NULL;
     }
 
-  unsetenv ((char *)data);
+  /* Remove all instances of the env. var. */
+  putenv ((char *)data);
 
   return NULL;
 }

@@ -1,3 +1,13 @@
+2002-12-11  Shawn  <sabetts@sfu.ca>
+
+	* configure.in (AC_CHECK_FUNCS): Add check for putenv, remove
+	check for setenv and unsetenv.
+
+	* src/actions.c (setenv): remove function
+	(unsetenv): likewise
+	(cmd_setenv): use putenv instead of setenv.
+	(cmd_unsetenv): likewise
+
 2002-12-09  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/actions.c (spawn): only add DISPLAY to the environment if it
