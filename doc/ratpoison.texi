@@ -83,14 +83,11 @@ This document explains how to use ratpoison.
 * Contacting::                  How do I contact the ratpoison developers?
 * Concepts::                    Window manipulation concepts
 * General Use::                 How does this thing work??
-* Splitting The Screen::        When you want to see more than one window
+* Splitting Frames::            When you want to see more than one window
 * Keystrokes::                  Key commands and functionality
 * Commands::                    ratpoison commands
 * Command Line Arguments::      ratpoison command-line actions
 * Startup file::                They threatened me...with violence!
-
-
-
 
 @end menu
 
@@ -124,13 +121,16 @@ There is a #ratpoison irc channel on irc.openprojects.net.
 @node Concepts, General Use, Contacting, Top
 @chapter Concepts
 
-ratpoison is a @dfn{paned} window manager. Instead of allowing windows
-to have arbitary shapes at arbitary locations on the screen, the
-display is divided into panes like a real window. The panes are called
-@dfn{frames}, and windows are placed in them, maximised. ratpoison
-starts with one frame, which can be split into an arbitary number of
-smaller ones. You can move among them, making different ones the
-current. For more information, see @ref{Splitting The Screen}.
+ratpoison uses the concept of @dfn{panes} to place and size
+windows. Instead of allowing windows to have arbitary shapes at
+arbitary locations on the screen, the display is divided into panes,
+the same way a physical window might contain several pieces of glass
+seperated by wood. In ratpoison, the panes are called @dfn{frames},
+and windows are placed in them, maximised. ratpoison starts with one
+frame, which can be split into an arbitary number of smaller
+ones. Each frame can be split in half either horizontally or
+vertically. You can move among them, making different ones the
+current. For more information, see @ref{Splitting Frames}.
 
 Each frame has at most one window associated with it, which is visible
 in that frame. If you select a window that is associated with a frame,
@@ -152,7 +152,7 @@ window, it is useful to be able to see the document you are searching
 as well as the search window. For this reason transient windows appear
 overtop (according to their gravity) of the previously focused window.
 
-@node General Use, Splitting The Screen, Concepts, Top
+@node General Use, Splitting Frames, Concepts, Top
 @chapter General Use
 
 When ratpoison starts you should see an empty X server. To open an x
@@ -176,17 +176,17 @@ how we didn't have to drag a single window, or click a single maximize
 button? Beautiful wasn't it? Felt fast? Cool? Its modern computing at
 its best boys and girls.
 
-@node Splitting The Screen, Keystrokes, General Use, Top
-@chapter Splitting The Screen
+@node  Splitting Frames, Keystrokes, General Use, Top
+@chapter Splitting Frames
 Sometimes you may want to see two or more windows at the same
-time. ratpoison allows you to split the screen into frames. Each frame
-can then contain 1 window. To split the current frame horizontally use
-@kbd{C-t s}. To split the current frame vertically use @kbd{C-t S}. If
-you have enough windows, you'll notice that the new frame will find a
-window for itself. You can now use the normal navigation commands to
-switch windows in the frame. Note, however, that if you switch by name
-or number to a window that is already in another frame, you'll switch
-to that frame.
+time. ratpoison allows you to split the display into frames (see
+@ref{Concepts}). Each frame can then contain 1 window. To split the
+current frame horizontally use @kbd{C-t s}. To split the current frame
+vertically use @kbd{C-t S}. If you have enough windows, you'll notice
+that the new frame will find a window for itself. You can now use the
+normal navigation commands to switch windows in the frame. Note,
+however, that if you switch by name or number to a window that is
+already in another frame, you'll switch to that frame.
 
 Before too long, you'll probably want to switch to another frame. Use
 @kbd{C-t tab} to cycle through the frames. If you want to remove a
@@ -198,7 +198,7 @@ Finally, when you've had enough of the splitting and you just want
 good ol' full screen ratpoison press @kbd{C-t Q} to remove all splits
 and leave you with the current window full screen.
 
-@node Keystrokes, Commands, Splitting The Screen, Top
+@node Keystrokes, Commands, Splitting Frames, Top
 @chapter Keystrokes
 
 ratpoison is a very simple window manager. Each window is maximized and
