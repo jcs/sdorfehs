@@ -44,15 +44,33 @@ struct rp_window_frame
 };
 
 
+/* Possible positions for a window. */
+#define TOP_LEFT      0
+#define TOP_CENTER    1
+#define TOP_RIGHT     2
+
+#define CENTER_LEFT   3
+#define CENTER_CENTER 4
+#define CENTER_RIGHT  5
+
+#define BOTTOM_LEFT   6
+#define BOTTOM_CENTER 7
+#define BOTTOM_RIGHT  8
+
 struct rp_window
 {
   screen_info *scr;
   Window w;
   int number;
-  char *name;
   int state;
   int last_access;		
   int named;
+  
+  /* Window name hints. */
+  char *user_name;
+  char *wm_name;
+  char *res_name;
+  char *res_class;
 
   /* Dimensions */
   int x, y, width, height, border;
@@ -70,6 +88,10 @@ struct rp_window
   /* Saved mouse position */
   int mouse_x, mouse_y;
 
+  /* The alignment of the window. To what side or corner should the
+     window stick to. */
+  int position;
+
   /* A window can be visible inside a frame but not the frame's
      current window. This keeps track of what frame the window was
      mapped into. */
@@ -81,13 +103,13 @@ struct rp_window
 struct screen_info
 {
   GC normal_gc;
-  XFontStruct *font;		/* The font we want to use. */
   XWindowAttributes root_attr;
   Window root, bar_window, key_window, input_window, frame_window, help_window;
   int bar_is_raised;
   int screen_num;		/* Our screen number as dictated my X */
   Colormap def_cmap;
   Cursor rat;
+  unsigned long fg_color, bg_color; /* The pixel color. */
 };
 
 struct rp_action
@@ -103,6 +125,41 @@ struct rp_key
   KeySym sym;
   unsigned int state;
 };
+
+struct rp_defaults
+{
+  /* Default positions for new normal windows, transient windows, and
+     normal windows with maxsize hints. */
+  int win_pos;
+  int trans_pos;
+  int maxsize_pos;
+
+  int input_window_size;
+  int window_border_width;
+
+  int bar_x_padding;
+  int bar_y_padding;
+  int bar_location;
+  int bar_timeout;
+  
+  int frame_indicator_timeout;
+
+  int padding_left;
+  int padding_right;
+  int padding_top;
+  int padding_bottom;
+
+  XFontStruct *font;
+
+  int wait_for_key_cursor;
+
+  char *window_fmt;
+
+  /* Which name to use: wm_name, res_name, res_class. */
+  int win_name;
+};
+
+extern struct rp_defaults defaults;
 
 /* The prefix key also known as the command character under screen. */
 extern struct rp_key prefix_key;

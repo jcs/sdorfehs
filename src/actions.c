@@ -30,6 +30,84 @@ static rp_action *key_actions;
 static int key_actions_last;
 static int key_actions_table_size;
 
+static user_command user_commands[] = 
+  { {"abort",		cmd_abort,	arg_VOID},
+    {"banish",          cmd_banish,     arg_VOID},
+    {"bind",		cmd_bind,	arg_VOID},
+    {"clock", 		cmd_clock, 	arg_VOID},
+    {"colon",	 	cmd_colon,	arg_STRING},
+    {"curframe",        cmd_curframe,   arg_VOID},
+    {"delete", 		cmd_delete, 	arg_VOID},
+    {"echo", 		cmd_echo, 	arg_STRING},
+    {"escape",          cmd_escape,     arg_STRING},
+    {"exec", 		cmd_exec, 	arg_STRING},
+    {"focus",		cmd_next_frame,	arg_VOID},
+    {"generate",	cmd_generate,	arg_STRING},	/* rename to stuff */
+    {"help",		cmd_help,	arg_VOID},
+    {"hsplit",		cmd_h_split,	arg_VOID},
+    {"kill", 		cmd_kill, 	arg_VOID},
+    {"maximize", 	cmd_maximize,	arg_VOID},
+    {"newwm",		cmd_newwm,	arg_STRING},
+    {"next", 		cmd_next, 	arg_VOID},
+    {"number", 		cmd_number, 	arg_STRING},
+    {"only",            cmd_only,       arg_VOID},
+    {"other", 		cmd_other, 	arg_VOID},
+    {"pos",		cmd_pos, 	arg_STRING},
+    {"prev", 		cmd_prev, 	arg_VOID},
+    {"quit",		cmd_quit,	arg_VOID},
+    {"remove",          cmd_remove,     arg_VOID},
+    {"rudeness",	cmd_rudeness,	arg_STRING},
+    {"select", 		cmd_select,	arg_STRING},
+    {"source",		cmd_source,	arg_STRING},
+    {"split",		cmd_h_split,	arg_VOID},
+    {"title", 		cmd_rename, 	arg_STRING},
+    {"unbind",		cmd_unbind,	arg_STRING},
+    {"version",		cmd_version,	arg_VOID},
+    {"vsplit",		cmd_v_split,	arg_VOID},
+    {"windows", 	cmd_windows, 	arg_VOID},
+
+    /* Commands to set default behavior. */
+    {"defbarloc",	cmd_defbarloc, 		arg_STRING},
+    {"defbartimeout",	cmd_defbartimeout, 	arg_STRING},
+    {"defborder", 	cmd_defborder, 		arg_STRING},
+    {"deffont", 	cmd_deffont, 		arg_STRING},
+    {"definputwidth",	cmd_definputwidth,	arg_STRING},
+    {"defmaxsizepos",	cmd_defmaxsizepos, 	arg_STRING},
+    {"defpadding", 	cmd_defpadding, 	arg_STRING},
+    {"deftranspos",	cmd_deftranspos,	arg_STRING},
+    {"defwaitcursor",	cmd_defwaitcursor,	arg_STRING},
+    {"defwinfmt", 	cmd_defwinfmt, 		arg_STRING},
+    {"defwinname", 	cmd_defwinname,		arg_STRING},
+    {"defwinpos",	cmd_defwinpos, 		arg_STRING},
+
+    /* Commands to help debug ratpoison. */
+#ifdef DEBUG
+#endif
+
+    /* the following screen commands may or may not be able to be
+       implemented.  See the screen documentation for what should be
+       emulated with these commands */
+#if 0
+    {"hardcopy",	cmd_unimplemented,	arg_VOID},
+    {"lastmsg",		cmd_unimplemented,	arg_VOID},
+    {"license",		cmd_unimplemented,	arg_VOID},
+    {"lockscreen",	cmd_unimplemented,	arg_VOID},
+    {"meta",		cmd_unimplemented,	arg_VOID},
+    {"msgminwait",	cmd_unimplemented,	arg_VOID},
+    {"msgwait",		cmd_unimplemented,	arg_VOID},
+    {"nethack",		cmd_unimplemented,	arg_VOID},
+    {"redisplay",	cmd_unimplemented,	arg_VOID},
+    {"screen",		cmd_unimplemented,	arg_VOID},
+    {"setenv",		cmd_unimplemented,	arg_VOID},
+    {"shell",		cmd_unimplemented,	arg_VOID},
+    {"shelltitle",	cmd_unimplemented,	arg_VOID},
+    {"sleep",		cmd_unimplemented,	arg_VOID},
+    {"sorendition",	cmd_unimplemented,	arg_VOID},
+    {"startup_message",	cmd_unimplemented,	arg_VOID},
+    {"stuff", 		cmd_unimplemented, 	arg_VOID},
+#endif
+    {0,			0,		0} };
+
 rp_action*
 find_keybinding_by_action (char *action)
 {
@@ -183,65 +261,6 @@ initialize_default_keybindings (void)
   add_keybinding (XK_f, ControlMask, "curframe");
   add_keybinding (XK_question, 0, "help");
 }
-
-user_command user_commands[] = 
-  { {"abort",		cmd_abort,	arg_VOID},
-    {"next", 		cmd_next, 	arg_VOID},
-    {"prev", 		cmd_prev, 	arg_VOID},
-    {"exec", 		cmd_exec, 	arg_STRING},
-    {"select", 		cmd_select,	arg_STRING},
-    {"colon",	 	cmd_colon,	arg_STRING},
-    {"kill", 		cmd_kill, 	arg_VOID},
-    {"delete", 		cmd_delete, 	arg_VOID},
-    {"other", 		cmd_other, 	arg_VOID},
-    {"windows", 	cmd_windows, 	arg_VOID},
-    {"title", 		cmd_rename, 	arg_STRING},
-    {"clock", 		cmd_clock, 	arg_VOID},
-    {"maximize", 	cmd_maximize,	arg_VOID},
-    {"newwm",		cmd_newwm,	arg_STRING},
-    {"generate",	cmd_generate,	arg_STRING},	/* rename to stuff */
-    {"version",		cmd_version,	arg_VOID},
-    {"bind",		cmd_bind,	arg_VOID},
-    {"unbind",		cmd_unbind,	arg_STRING},
-    {"source",		cmd_source,	arg_STRING},
-    {"escape",          cmd_escape,     arg_STRING},
-    {"echo", 		cmd_echo, 	arg_STRING},
-    {"split",		cmd_h_split,	arg_VOID},
-    {"hsplit",		cmd_h_split,	arg_VOID},
-    {"vsplit",		cmd_v_split,	arg_VOID},
-    {"focus",		cmd_next_frame,	arg_VOID},
-    {"only",            cmd_only,       arg_VOID},
-    {"remove",          cmd_remove,     arg_VOID},
-    {"banish",          cmd_banish,     arg_VOID},
-    {"curframe",        cmd_curframe,   arg_VOID},
-    {"help",		cmd_help,	arg_VOID},
-    {"quit",		cmd_quit,	arg_VOID},
-    {"number", 		cmd_number, 	arg_STRING},
-    {"rudeness",	cmd_rudeness,	arg_STRING},
-
-    /* the following screen commands may or may not be able to be
-       implemented.  See the screen documentation for what should be
-       emulated with these commands */
-#if 0
-    {"stuff", 		cmd_unimplemented, 	arg_VOID},
-    {"hardcopy",	cmd_unimplemented,	arg_VOID},
-    {"lastmsg",		cmd_unimplemented,	arg_VOID},
-    {"license",		cmd_unimplemented,	arg_VOID},
-    {"lockscreen",	cmd_unimplemented,	arg_VOID},
-    {"meta",		cmd_unimplemented,	arg_VOID},
-    {"msgwait",		cmd_unimplemented,	arg_VOID},
-    {"msgminwait",	cmd_unimplemented,	arg_VOID},
-    {"nethack",		cmd_unimplemented,	arg_VOID},
-    {"redisplay",	cmd_unimplemented,	arg_VOID},
-    {"screen",		cmd_unimplemented,	arg_VOID},
-    {"setenv",		cmd_unimplemented,	arg_VOID},
-    {"shell",		cmd_unimplemented,	arg_VOID},
-    {"shelltitle",	cmd_unimplemented,	arg_VOID},
-    {"sleep",		cmd_unimplemented,	arg_VOID},
-    {"sorendition",	cmd_unimplemented,	arg_VOID},
-    {"startup_message",	cmd_unimplemented,	arg_VOID},
-#endif
-    {0,			0,		0} };
 
 /* return a KeySym from a string that contains either a hex value or
    an X keysym description */
@@ -680,10 +699,10 @@ cmd_rename (int interactive, void *data)
 
   if (*winname)
     {
-      free (current_window()->name);
-      current_window()->name = xmalloc (sizeof (char) * strlen (winname) + 1);
+      free (current_window()->user_name);
+      current_window()->user_name = xmalloc (sizeof (char) * strlen (winname) + 1);
 
-      strcpy (current_window()->name, winname);
+      strcpy (current_window()->user_name, winname);
 
       current_window()->named = 1;
   
@@ -987,7 +1006,7 @@ cmd_windows (int interactive, void *data)
   else
     {
       window_list = sbuf_new (0);
-      get_window_list ("\n", window_list, &dummy, &dummy);
+      get_window_list (defaults.window_fmt, "\n", window_list, &dummy, &dummy);
       tmp = sbuf_get (window_list);
       free (window_list);
 
@@ -1153,23 +1172,23 @@ cmd_help (int interactive, void *data)
   XSetInputFocus (dpy, s->help_window, RevertToPointerRoot, CurrentTime);
 
   XDrawString (dpy, s->help_window, s->normal_gc,
-	       10, y + s->font->max_bounds.ascent,
+	       10, y + defaults.font->max_bounds.ascent,
 	       "ratpoison key bindings", strlen ("ratpoison key bindings"));
 
-  y += FONT_HEIGHT (s->font) * 2;
+  y += FONT_HEIGHT (defaults.font) * 2;
 
   XDrawString (dpy, s->help_window, s->normal_gc,
-	       10, y + s->font->max_bounds.ascent,
+	       10, y + defaults.font->max_bounds.ascent,
 	       "Command key: ", strlen ("Command key: "));
 
   keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
   XDrawString (dpy, s->help_window, s->normal_gc,
-	       10 + XTextWidth (s->font, "Command key: ", strlen ("Command key: ")),
-	       y + s->font->max_bounds.ascent,
+	       10 + XTextWidth (defaults.font, "Command key: ", strlen ("Command key: ")),
+	       y + defaults.font->max_bounds.ascent,
 	       keysym_name, strlen (keysym_name));
   free (keysym_name);
 
-  y += FONT_HEIGHT (s->font) * 2;
+  y += FONT_HEIGHT (defaults.font) * 2;
   
   i = 0;
   old_i = 0;
@@ -1180,12 +1199,12 @@ cmd_help (int interactive, void *data)
 	  keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
 
 	  XDrawString (dpy, s->help_window, s->normal_gc,
-		       x, y + s->font->max_bounds.ascent,
+		       x, y + defaults.font->max_bounds.ascent,
 		       keysym_name, strlen (keysym_name));
 
-	  if (XTextWidth (s->font, keysym_name, strlen (keysym_name)) > max_width)
+	  if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
 	    {
-	      max_width = XTextWidth (s->font, keysym_name, strlen (keysym_name));
+	      max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
 	    }
 
 	  free (keysym_name);
@@ -1193,16 +1212,16 @@ cmd_help (int interactive, void *data)
       else
 	{
 	  XDrawString (dpy, s->help_window, s->normal_gc,
-		       x, y + s->font->max_bounds.ascent,
+		       x, y + defaults.font->max_bounds.ascent,
 		       key_actions[i].data, strlen (key_actions[i].data));
 
-	  if (XTextWidth (s->font, key_actions[i].data, strlen (key_actions[i].data)) > max_width)
+	  if (XTextWidth (defaults.font, key_actions[i].data, strlen (key_actions[i].data)) > max_width)
 	    {
-	      max_width = XTextWidth (s->font, key_actions[i].data, strlen (key_actions[i].data));
+	      max_width = XTextWidth (defaults.font, key_actions[i].data, strlen (key_actions[i].data));
 	    }
 	}
 
-      y += FONT_HEIGHT (s->font);
+      y += FONT_HEIGHT (defaults.font);
       if (y > s->root_attr.height)
 	{
 	  if (drawing_keys)
@@ -1219,7 +1238,7 @@ cmd_help (int interactive, void *data)
 	    }
 
 	  max_width = 0;
-	  y = FONT_HEIGHT (s->font) * 4;
+	  y = FONT_HEIGHT (defaults.font) * 4;
 	}
       else
 	{
@@ -1228,7 +1247,7 @@ cmd_help (int interactive, void *data)
 	    {
 	      x += max_width + 10;
 	      drawing_keys = 0;
-	      y = FONT_HEIGHT (s->font) * 4;
+	      y = FONT_HEIGHT (defaults.font) * 4;
 	      i = old_i;
 	      max_width = 0;
 	    }
@@ -1265,4 +1284,364 @@ cmd_rudeness (int interactive, void *data)
   rp_honour_normal_map = num & 8;
 
   return NULL;
+}
+
+static int
+parse_winpos (char *data)
+{
+  int ret = 0;
+  char *x, *y;
+
+  x = xmalloc (strlen (data) + 1);
+  y = xmalloc (strlen (data) + 1);
+
+  if (sscanf (data, "%s %s", x , y) < 2)
+    {
+      message (" pos: Two arguments needed ");
+      free (x);
+      free (y);
+      return -3;
+    }
+
+  PRINT_DEBUG ("%s %s\n", x, y);
+
+  switch (y[0])
+    {
+    case 't':
+    case 'T':
+      ret = TOP_LEFT;
+      break;
+
+    case 'c':
+    case 'C':
+      ret = CENTER_LEFT;
+      break;
+
+    case 'b':
+    case 'B':
+      ret = BOTTOM_LEFT;
+      break;
+
+    default:
+      ret = -1;
+      goto done;
+      break;
+    }
+
+  switch (x[0])
+    {
+    case 'l':
+    case 'L':
+      break;
+
+    case 'c':
+    case 'C':
+      ret += TOP_CENTER;
+      break;
+
+    case 'r':
+    case 'R':
+      ret += TOP_RIGHT;
+      break;
+
+    default:
+      ret = -2;
+      goto done;
+      break;
+    }
+
+ done:
+  free (x);
+  free (y);
+
+  return ret;
+}
+
+char *
+cmd_pos (int interactive, void *data)
+{
+  int pos;
+  rp_window *win;
+
+  if (current_window() == NULL) return NULL;
+  if (data == NULL) 
+    {
+      message (" pos: Two arguments needed ");
+      return NULL;
+    }
+
+  win = current_window();
+  
+  if ((pos = parse_winpos (data)) < 0)
+    {
+      message (" pos: Unknown position ");
+    }
+  else
+    {
+      win->position = pos;
+      maximize (win);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defwinpos (int interactive, void *data)
+{
+  int pos;
+
+  if ((pos = parse_winpos (data)) < 0)
+    {
+      message (" pos: Unknown position ");
+    }
+  else
+    {
+      defaults.win_pos = pos;
+    }
+
+  return NULL;
+}
+
+char *
+cmd_deftranspos (int interactive, void *data)
+{
+  int pos;
+
+  if ((pos = parse_winpos (data)) < 0)
+    {
+      message (" pos: Unknown position ");
+    }
+  else
+    {
+      defaults.trans_pos = pos;
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defmaxsizepos (int interactive, void *data)
+{
+  int pos;
+
+  if ((pos = parse_winpos (data)) < 0)
+    {
+      message (" pos: Unknown position ");
+    }
+  else
+    {
+      defaults.maxsize_pos = pos;
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defbartimeout (int interactive, void *data)
+{
+  if (data == NULL) return NULL;
+
+  if (sscanf (data, "%d", &defaults.bar_timeout) < 1)
+    {
+      message (" defbartimeout: One argument required ");
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defbarloc (int interactive, void *data)
+{
+  int loc;
+
+  if (data == NULL) return NULL;
+
+  if (sscanf (data, "%d", &loc) < 1)
+    {
+      message (" defbarloc: One argument required ");
+      return NULL;
+    }
+
+  switch (loc)
+    {
+    case 0:
+      defaults.bar_location = TOP_LEFT;
+      break;
+    case 1:
+      defaults.bar_location = TOP_RIGHT;
+      break;
+    case 2:
+      defaults.bar_location = BOTTOM_RIGHT;
+      break;
+    case 3:
+      defaults.bar_location = BOTTOM_LEFT;
+      break;
+
+    default:
+      message (" defbarloc: Unknown location ");
+      break;
+    }
+
+  return NULL;
+}
+
+char *
+cmd_deffont (int interactive, void *data)
+{
+  XFontStruct *font;
+
+  if (data == NULL) return NULL;
+
+  font = XLoadQueryFont (dpy, (char *)data);
+  if (font == NULL)
+    {
+      message (" deffont: Unknown font ");
+      return NULL;
+    }
+
+  /* Save the font as the default. */
+  XFreeFont (dpy, defaults.font);
+  defaults.font = font;
+
+  return NULL;
+}
+
+char *
+cmd_defpadding (int interactive, void *data)
+{
+  rp_window_frame *frame;
+  int l, t, r, b;
+
+  if (data == NULL) 
+    {
+      message (" defpadding: Four arguments required ");
+      return NULL;
+    }
+
+  if (sscanf (data, "%d %d %d %d", &l, &t, &r, &b) < 4)
+    {
+      message (" defpadding: Four arguments required ");
+      return NULL;
+    }
+
+  /* Resize the frames to make sure they are not too big and not too
+     small. */
+  for (frame = rp_window_frame_sentinel->next; 
+       frame != rp_window_frame_sentinel;
+       frame = frame->next)
+    {
+      int bk_pos, bk_len;
+
+      /* Resize horizontally. */
+      bk_pos = frame->x;
+      bk_len = frame->width;
+
+      if (frame->x == defaults.padding_left)
+	{
+	  frame->x = l;
+	  frame->width += bk_pos - l;
+	}
+
+      if (bk_pos + bk_len == current_screen()->root_attr.width - defaults.padding_right)
+	frame->width = current_screen()->root_attr.width - r - frame->x;
+
+      /* Resize vertically. */
+      bk_pos = frame->y;
+      bk_len = frame->height;
+
+      if (frame->y == defaults.padding_top)
+	{
+	  frame->y = t;
+	  frame->height += bk_pos - t;
+	}
+
+      if (bk_pos + bk_len == current_screen()->root_attr.height - defaults.padding_bottom)
+	frame->height = current_screen()->root_attr.height - b - frame->y;
+
+      maximize_all_windows_in_frame (frame);
+    }
+
+  defaults.padding_left   = l;
+  defaults.padding_right  = r;
+  defaults.padding_top 	  = t;
+  defaults.padding_bottom = b;
+
+  return NULL;
+}
+
+char *
+cmd_defborder (int interactive, void *data)
+{
+  rp_window *win;
+
+  if (data == NULL) return NULL;
+
+  if (sscanf (data, "%d", &defaults.window_border_width) < 1)
+    {
+      message (" defborder: One argument required ");
+    }
+
+  /* Update all the visible windows. */
+  for (win = rp_mapped_window_sentinel->next; 
+       win != rp_mapped_window_sentinel; 
+       win = win->next)
+    {
+      if (win->frame)
+	maximize (win);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_definputwidth (int interactive, void *data)
+{
+  if (data == NULL 
+      || sscanf (data, "%d", &defaults.input_window_size) < 1)
+    {
+      message (" definputwidth: One argument required ");
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defwaitcursor (int interactive, void *data)
+{
+  if (data == NULL 
+      || sscanf (data, "%d", &defaults.wait_for_key_cursor) < 1)
+    {
+      message (" defwaitforkey: One argument required ");
+    }
+
+  return NULL;    
+}
+
+char *
+cmd_defwinfmt (int interactive, void *data)
+{
+  if (data == NULL) return NULL;
+
+  free (defaults.window_fmt);
+  defaults.window_fmt = strdup (data);
+
+  if (defaults.window_fmt == NULL)
+    {
+      PRINT_ERROR ("Not enough memory\n");
+      exit (EXIT_FAILURE);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defwinname (int interactive, void *data)
+{
+  if (data == NULL 
+      || sscanf (data, "%d", &defaults.win_name) < 1)
+    {
+      message (" defwinname: One argument required ");
+    }
+
+  return NULL;      
 }

@@ -64,7 +64,7 @@ show_bar (screen_info *s)
       update_window_names (s);
   
       /* Set an alarm to auto-hide the bar BAR_TIMEOUT seconds later */
-      alarm (BAR_TIMEOUT);
+      alarm (defaults.bar_timeout);
       alarm_signalled = 0;
       return 1;
     }
@@ -78,15 +78,21 @@ show_bar (screen_info *s)
 int
 bar_x (screen_info *s, int width)
 {
-  if (BAR_LOCATION >= 2) return s->root_attr.width - width - 2;
-  else return 0;
+  if (defaults.bar_location == BOTTOM_RIGHT
+      || defaults.bar_location == TOP_RIGHT)
+    return s->root_attr.width - width - 2;
+  else
+    return 0;
 }
 
 int
 bar_y (screen_info *s)
 {
-  if (BAR_LOCATION % 2) return 0;
-  else return s->root_attr.height - (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2) - 2;
+  if (defaults.bar_location == TOP_LEFT
+      || defaults.bar_location == TOP_RIGHT ) 
+    return 0;
+  else
+    return s->root_attr.height - (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2) - 2;
 }
 
 void
@@ -102,7 +108,7 @@ update_window_names (screen_info *s)
   if (bar_buffer == NULL)
     bar_buffer = sbuf_new (0);
 
-  get_window_list (NULL, bar_buffer, &mark_start, &mark_end);
+  get_window_list (defaults.window_fmt, NULL, bar_buffer, &mark_start, &mark_end);
 
   marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
 }
@@ -141,8 +147,8 @@ marked_message (char *msg, int mark_start, int mark_end)
   unsigned long mask;
   screen_info *s = current_screen ();
 
-  int width = BAR_X_PADDING * 2 + XTextWidth (s->font, msg, strlen (msg));
-  int height = (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2);
+  int width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
+  int height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
   PRINT_DEBUG ("%s\n", msg);
 
@@ -154,7 +160,7 @@ marked_message (char *msg, int mark_start, int mark_end)
     }
 
   /* Reset the alarm to auto-hide the bar in BAR_TIMEOUT seconds. */
-  alarm (BAR_TIMEOUT);
+  alarm (defaults.bar_timeout);
   alarm_signalled = 0;
 
   XMoveResizeWindow (dpy, s->bar_window, 
@@ -166,8 +172,8 @@ marked_message (char *msg, int mark_start, int mark_end)
   XRaiseWindow (dpy, s->bar_window);
 
   XDrawString (dpy, s->bar_window, s->normal_gc, 
-	       BAR_X_PADDING, 
-	       BAR_Y_PADDING + s->font->max_bounds.ascent,
+	       defaults.bar_x_padding, 
+	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
 	       msg, strlen (msg));
 
 
@@ -198,8 +204,8 @@ marked_message (char *msg, int mark_start, int mark_end)
       int start;
       int end;
 
-      start = XTextWidth (s->font, msg, mark_start) + BAR_X_PADDING;
-      end = XTextWidth (s->font, msg + mark_start, mark_end - mark_start) + BAR_X_PADDING;
+      start = XTextWidth (defaults.font, msg, mark_start) + defaults.bar_x_padding;
+      end = XTextWidth (defaults.font, msg + mark_start, mark_end - mark_start) + defaults.bar_x_padding;
 
       PRINT_DEBUG ("%d %d strlen(%d)==> %d %d\n", mark_start, mark_end, strlen(msg), start, end);
 

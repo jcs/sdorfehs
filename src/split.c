@@ -68,12 +68,12 @@ delete_frame_from_list (rp_window_frame *frame)
 static void
 maximize_frame (rp_window_frame *frame)
 {
-  frame->x = PADDING_LEFT;
-  frame->y = PADDING_TOP;
+  frame->x = defaults.padding_left;
+  frame->y = defaults.padding_top;
 
   /* FIXME: what about multiple screens? */
-  frame->width = DisplayWidth (dpy, 0) - PADDING_RIGHT - PADDING_LEFT;
-  frame->height = DisplayHeight (dpy, 0) - PADDING_BOTTOM - PADDING_TOP;
+  frame->width = DisplayWidth (dpy, 0) - defaults.padding_right - defaults.padding_left;
+  frame->height = DisplayHeight (dpy, 0) - defaults.padding_bottom - defaults.padding_top;
 }
 
 /* Create a full screen frame */
@@ -560,8 +560,8 @@ show_frame_indicator ()
   screen_info *s = current_screen ();
   int width, height;
 
-  width = BAR_X_PADDING * 2 + XTextWidth (s->font, FRAME_STRING, strlen (FRAME_STRING));
-  height = (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2);
+  width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, MESSAGE_FRAME_STRING, strlen (MESSAGE_FRAME_STRING));
+  height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
   XMoveResizeWindow (dpy, current_screen()->frame_window,
 		     rp_current_frame->x + rp_current_frame->width / 2 - width / 2, 
@@ -572,9 +572,9 @@ show_frame_indicator ()
 
   XClearWindow (dpy, s->frame_window);
   XDrawString (dpy, s->frame_window, s->normal_gc, 
-	       BAR_X_PADDING, 
-	       BAR_Y_PADDING + s->font->max_bounds.ascent,
-	       FRAME_STRING, strlen (FRAME_STRING));
+	       defaults.bar_x_padding, 
+	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+	       MESSAGE_FRAME_STRING, strlen (MESSAGE_FRAME_STRING));
 
-  alarm (FRAME_INDICATOR_TIMEOUT);
+  alarm (defaults.frame_indicator_timeout);
 }

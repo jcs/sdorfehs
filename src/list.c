@@ -45,12 +45,52 @@ free_window (rp_window *w)
 {
   if (w == NULL) return;
 
-  free (w->name);
+  free (w->user_name);
+  free (w->res_name);
+  free (w->res_class);
+  free (w->wm_name);
+
   XFree (w->hints);
   
   free (w);
 }
 
+void
+update_window_position (rp_window *win)
+{
+  if (win->transient)
+    win->position = defaults.trans_pos;
+  else if (win->hints->flags & PMaxSize)
+    win->position = defaults.maxsize_pos;
+  else
+    win->position = defaults.win_pos;
+}
+
+char *
+window_name (rp_window *win)
+{
+  if (win == NULL) return NULL;
+
+  if (win->named)
+    return win->user_name;
+
+  switch (defaults.win_name)
+    {
+    case 0:
+      return win->wm_name;
+
+    case 1:
+      return win->res_name;
+      
+    case 2:
+      return win->res_class;
+
+    default:
+      return win->wm_name;
+    }
+
+  return NULL;
+}
 
 /* Allocate a new window and add it to the list of managed windows */
 rp_window *
@@ -72,13 +112,18 @@ add_to_window_list (screen_info *s, Window w)
   new_window->transient = XGetTransientForHint (dpy, new_window->w, &new_window->transient_for);
   PRINT_DEBUG ("transient %d\n", new_window->transient);
 
+  update_window_position (new_window);
+
   get_mouse_root_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
 
   XSelectInput (dpy, new_window->w, WIN_EVENTS);
 
-  new_window->name = xmalloc (strlen ("Unnamed") + 1);
+  new_window->user_name = xmalloc (strlen ("Unnamed") + 1);
 
-  strcpy (new_window->name, "Unnamed");
+  strcpy (new_window->user_name, "Unnamed");
+  new_window->wm_name = NULL;
+  new_window->res_name = NULL;
+  new_window->res_class = NULL;
 
   /* Add the window to the end of the unmapped list. */
   append_to_list (new_window, rp_unmapped_window_sentinel);
@@ -177,7 +222,7 @@ find_window_name (char *name)
 /*       if (w->state == STATE_UNMAPPED)  */
 /* 	continue; */
 
-      if (str_comp (name, w->name, strlen (name))) 
+      if (str_comp (name, window_name (w), strlen (name))) 
 	return w;
     }
 
@@ -514,8 +559,8 @@ set_active_window (rp_window *win)
 
   last_win = set_frames_window (rp_current_frame, win);
 
-  if (last_win) PRINT_DEBUG ("last window: %s\n", last_win->name);
-  PRINT_DEBUG ("new window: %s\n", win->name);
+  if (last_win) PRINT_DEBUG ("last window: %s\n", window_name (last_win));
+  PRINT_DEBUG ("new window: %s\n", window_name (win));
 
   /* Make sure the window comes up full screen */
   maximize (win);
@@ -560,18 +605,78 @@ goto_window (rp_window *win)
 void
 print_window_information (rp_window *win)
 {
-  marked_message_printf (0, 0, MESSAGE_WINDOW_INFORMATION, win->number, win->name);
+  marked_message_printf (0, 0, MESSAGE_WINDOW_INFORMATION, 
+			 win->number, window_name (win));
+}
+
+/* format options
+   N - Window number
+   - - Window status (current window, last window, etc)
+   W - Window Name
+   w - Window res name
+   c - Window res class
+   n - X11 Window ID
+   
+ */
+static void
+format_window_name (char *fmt, rp_window *win, rp_window *other_win, 
+		    struct sbuf *buffer)
+{
+  char dbuf[10];
+
+  for(; *fmt; fmt++)
+    {
+      switch (*fmt)
+	{
+	case 'N':
+	  snprintf (dbuf, 10, "%d", win->number);
+	  sbuf_concat (buffer, dbuf);
+	  break;
+
+	case '-':
+	  if (win == current_window())
+	    sbuf_concat (buffer, "*");
+	  else if (win == other_win)
+	    sbuf_concat (buffer, "+");
+	  else
+	    sbuf_concat (buffer, "-");
+	  break;
+
+	case 'W':
+	  sbuf_concat (buffer, window_name (win));
+	  break;
+
+	case 'w':
+	  sbuf_concat (buffer, win->res_name);
+	  break;
+
+	case 'c':
+	  sbuf_concat (buffer, win->res_class);
+	  break;
+
+	case 'n':
+	  snprintf (dbuf, 9, "%ld", (unsigned long)win->w);
+	  sbuf_concat (buffer, dbuf);
+	  break;
+
+	default:
+	  dbuf[0] = *fmt;
+	  dbuf[1] = 0;
+	  sbuf_concat (buffer, dbuf);
+	  break;
+	}
+    }
 }
 
 /* get the window list and store it in buffer delimiting each window
    with delim. mark_start and mark_end will be filled with the text
    positions for the start and end of the current window. */
 void
-get_window_list (char *delim, struct sbuf *buffer, int *mark_start, int *mark_end)
+get_window_list (char *fmt, char *delim, struct sbuf *buffer, 
+		 int *mark_start, int *mark_end)
 {
   rp_window *w;
   rp_window *other_window;
-  char dbuf[10];
 
   if (buffer == NULL) return;
 
@@ -582,7 +687,7 @@ get_window_list (char *delim, struct sbuf *buffer, int *mark_start, int *mark_en
        w != rp_mapped_window_sentinel; 
        w = w->next)
     {
-      PRINT_DEBUG ("%d-%s\n", w->number, w->name);
+      PRINT_DEBUG ("%d-%s\n", w->number, window_name (w));
 
       if (w == current_window())
 	*mark_start = strlen (sbuf_get (buffer));
@@ -592,17 +697,7 @@ get_window_list (char *delim, struct sbuf *buffer, int *mark_start, int *mark_en
       if (!delim)
 	sbuf_concat (buffer, " ");
 
-      sprintf (dbuf, "%d", w->number);
-      sbuf_concat (buffer, dbuf);
-
-      if (w == current_window())
-	sbuf_concat (buffer, "*");
-      else if (w == other_window)
-	sbuf_concat (buffer, "+");
-      else
-	sbuf_concat (buffer, "-");
-
-      sbuf_concat (buffer, w->name);
+      format_window_name (fmt, w, other_window, buffer);
 
       /* A hack, pad the window with a space at the beginning and end
          if there is no delimiter. */

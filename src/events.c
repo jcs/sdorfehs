@@ -112,11 +112,11 @@ unmap_notify (XEvent *ev)
   switch (win->state)
     {
     case IconicState:
-      PRINT_DEBUG ("Withdrawing iconized window '%s'\n", win->name);
+      PRINT_DEBUG ("Withdrawing iconized window '%s'\n", window_name (win));
       if (ev->xunmap.send_event) withdraw_window (win);
       break;
     case NormalState:
-      PRINT_DEBUG ("Withdrawing normal window '%s'\n", win->name);
+      PRINT_DEBUG ("Withdrawing normal window '%s'\n", window_name (win));
       /* If the window was inside a frame, fill the frame with another
 	 window. */
       frame = find_windows_frame (win);
@@ -182,10 +182,10 @@ map_request (XEvent *ev)
 	    {
 	      if (win->transient)
 		marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT, 
-				       win->number, win->name);
+				       win->number, window_name (win));
 	      else
 		marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
-				       win->number, win->name);
+				       win->number, window_name (win));
 	    }
 	}
       break;
@@ -223,7 +223,7 @@ configure_notify (XConfigureEvent *e)
   win = find_window (e->window);
   if (win)
     {
-      PRINT_DEBUG ("'%s' window notify: %d %d %d %d %d\n", win->name,
+      PRINT_DEBUG ("'%s' window notify: %d %d %d %d %d\n", window_name (win),
 		   e->x, e->y, e->width, e->height, e->border_width);
     }
 }
@@ -269,10 +269,10 @@ configure_request (XConfigureRequestEvent *e)
 		    {
 		      if (win->transient)
 			marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT,
-					       win->number, win->name);
+					       win->number, window_name (win));
 		      else
 			marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
-					       win->number, win->name);
+					       win->number, window_name (win));
 		    }
 		}
 	      else
@@ -285,7 +285,7 @@ configure_request (XConfigureRequestEvent *e)
 	  PRINT_DEBUG("request CWStackMode %d\n", e->detail);
 	}
 
-      PRINT_DEBUG ("'%s' window size: %d %d %d %d %d\n", win->name,
+      PRINT_DEBUG ("'%s' window size: %d %d %d %d %d\n", window_name (win),
 		   win->x, win->y, win->width, win->height, win->border);
 
       if (e->value_mask & CWBorderWidth)
@@ -368,7 +368,6 @@ client_msg (XClientMessageEvent *ev)
     }
 }
 
-#ifdef USE_WAITFORKEY_CURSOR
 static void
 grab_rat ()
 {
@@ -376,15 +375,12 @@ grab_rat ()
 		GrabModeAsync, GrabModeAsync, 
 		None, current_screen()->rat, CurrentTime);
 }
-#endif
 
-#ifdef USE_WAITFORKEY_CURSOR
 static void
 ungrab_rat ()
 {
   XUngrabPointer (dpy, CurrentTime);
 }
-#endif
 
 static void
 handle_key (screen_info *s)
@@ -395,11 +391,12 @@ handle_key (screen_info *s)
   Window fwin;			/* Window currently in focus */
   KeySym keysym;		/* Key pressed */
   unsigned int mod;		/* Modifiers */
+  int rat_grabbed = 0;
 
   PRINT_DEBUG ("handling key...\n");
 
   /* All functions hide the program bar and the frame indicator. */
-  if (BAR_TIMEOUT > 0) hide_bar (s);
+  if (defaults.bar_timeout > 0) hide_bar (s);
   hide_frame_indicator();
 
   /* Disable any alarm that was going to go off. */
@@ -411,9 +408,11 @@ handle_key (screen_info *s)
 
   /* Change the mouse icon to indicate to the user we are waiting for
      more keystrokes */
-#ifdef USE_WAITFORKEY_CURSOR
-  grab_rat();
-#endif
+  if (defaults.wait_for_key_cursor)
+    {
+      grab_rat();
+      rat_grabbed = 1;
+    }
 
   read_key (&keysym, &mod, NULL, 0);
 
@@ -437,9 +436,8 @@ handle_key (screen_info *s)
       free (keysym_name);
     }
 
-#ifdef USE_WAITFORKEY_CURSOR
-  ungrab_rat();
-#endif
+  if (rat_grabbed)
+    ungrab_rat();
 }
 
 static void

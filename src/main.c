@@ -62,9 +62,9 @@ screen_info *screens;
 int num_screens;
 Display *dpy;
 
-int ignore_badwindow = 0;
+struct rp_defaults defaults;
 
-static XFontStruct *font;
+int ignore_badwindow = 0;
 
 char **myargv;
 
@@ -345,6 +345,46 @@ show_welcome_message ()
   free (prefix);
 }
 
+static void
+init_defaults ()
+{
+  defaults.win_pos     = TOP_LEFT;
+  defaults.trans_pos   = CENTER_CENTER;
+  defaults.maxsize_pos = CENTER_CENTER;
+
+  defaults.input_window_size   = 200;
+  defaults.window_border_width = 1;
+  defaults.bar_x_padding       = 0;
+  defaults.bar_y_padding       = 0;
+  defaults.bar_location        = TOP_RIGHT;
+  defaults.bar_timeout 	       = 5;
+
+  defaults.frame_indicator_timeout = 1;
+
+  defaults.padding_left   = 0;
+  defaults.padding_right  = 0;
+  defaults.padding_top 	  = 0;
+  defaults.padding_bottom = 0;
+
+  defaults.font = XLoadQueryFont (dpy, "9x15bold");
+  if (defaults.font == NULL)
+    {
+      fprintf (stderr, "ratpoison: Cannot load font %s.\n", "9x15bold");
+      exit (EXIT_FAILURE);
+    }
+
+  defaults.wait_for_key_cursor = 1;
+
+  defaults.window_fmt = strdup ("N-W");
+  if (defaults.window_fmt == NULL)
+    {
+      PRINT_ERROR ("Not enough memory\n");
+      exit (EXIT_FAILURE);
+    }
+
+  defaults.win_name = 0;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -440,18 +480,12 @@ main (int argc, char *argv[])
   set_sig_handler (SIGHUP, hup_handler);
 
   /* Setup ratpoison's internal structures */
+  init_defaults();
   init_numbers ();
   init_window_list ();
   init_frame_list ();
   update_modifier_map ();
   initialize_default_keybindings ();
-
-  font = XLoadQueryFont (dpy, FONT);
-  if (font == NULL)
-    {
-      fprintf (stderr, "ratpoison: Cannot load font %s.\n", FONT);
-      exit (EXIT_FAILURE);
-    }
 
   num_screens = ScreenCount (dpy);
   screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
@@ -483,8 +517,6 @@ init_rat_cursor (screen_info *s)
 static void
 init_screen (screen_info *s, int screen_num)
 {
-  XColor fg_color, bg_color,/*  bold_color, */ junk;
-
   /* Select on some events on the root window, if this fails, then
      there is already a WM running and the X Error handler will catch
      it, terminating ratpoison. */
@@ -497,29 +529,20 @@ init_screen (screen_info *s, int screen_num)
   s->screen_num = screen_num;
   s->root = RootWindow (dpy, screen_num);
   s->def_cmap = DefaultColormap (dpy, screen_num);
-  s->font = font;
   XGetWindowAttributes (dpy, s->root, &s->root_attr);
   
   init_rat_cursor (s);
 
-  /* Get our program bar colors */
-  if (!XAllocNamedColor (dpy, s->def_cmap, FOREGROUND, &fg_color, &junk))
-    {
-      fprintf (stderr, "ratpoison: Unknown color '%s'\n", FOREGROUND);
-    }
-
-  if (!XAllocNamedColor (dpy, s->def_cmap, BACKGROUND, &bg_color, &junk))
-    {
-      fprintf (stderr, "ratpoison: Unknown color '%s'\n", BACKGROUND);
-    }
+  s->fg_color = BlackPixel (dpy, s->screen_num);
+  s->bg_color = WhitePixel (dpy, s->screen_num);
 
   /* Setup the GC for drawing the font. */
-  gv.foreground = fg_color.pixel;
-  gv.background = bg_color.pixel;
+  gv.foreground = s->fg_color;
+  gv.background = s->bg_color;
   gv.function = GXcopy;
   gv.line_width = 1;
   gv.subwindow_mode = IncludeInferiors;
-  gv.font = font->fid;
+  gv.font = defaults.font->fid;
   s->normal_gc = XCreateGC(dpy, s->root, 
 			   GCForeground | GCBackground | GCFunction 
 			   | GCLineWidth | GCSubwindowMode | GCFont, 
@@ -528,28 +551,28 @@ init_screen (screen_info *s, int screen_num)
   /* Create the program bar window. */
   s->bar_is_raised = 0;
   s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0,
-				       1, 1, 1, fg_color.pixel, bg_color.pixel);
+				       1, 1, 1, s->fg_color, s->bg_color);
   XSelectInput (dpy, s->bar_window, StructureNotifyMask);
 
   /* Setup the window that will recieve all keystrokes once the prefix
      key has been pressed. */
-  s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, WhitePixel (dpy, 0), BlackPixel (dpy, 0));
+  s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, WhitePixel (dpy, s->screen_num), BlackPixel (dpy, s->screen_num));
   XSelectInput (dpy, s->key_window, KeyPressMask );
   XMapWindow (dpy, s->key_window);
 
   /* Create the input window. */
   s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 
-  					 1, 1, 1, fg_color.pixel, bg_color.pixel);
+  					 1, 1, 1, s->fg_color, s->bg_color);
   XSelectInput (dpy, s->input_window, KeyPressMask );
 
   /* Create the frame indicator window */
   s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, 1, 
-					 fg_color.pixel, bg_color.pixel);
+					 s->fg_color, s->bg_color);
   XSelectInput (dpy, s->frame_window, KeyPressMask );
 
   /* Create the help window */
   s->help_window = XCreateSimpleWindow (dpy, s->root, 0, 0, s->root_attr.width,
-					s->root_attr.height, 1, fg_color.pixel, bg_color.pixel);
+					s->root_attr.height, 1, s->fg_color, s->bg_color);
   XSelectInput (dpy, s->help_window, KeyPressMask);
 
   XSync (dpy, 0);
@@ -589,7 +612,7 @@ clean_up ()
       XFreeGC (dpy, screens[i].normal_gc);
     }
 
-  XFreeFont (dpy, font);
+  XFreeFont (dpy, defaults.font);
 
   XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
   XCloseDisplay (dpy);

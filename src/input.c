@@ -284,31 +284,31 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
 static void
 update_input_window (screen_info *s, char *prompt, char *input, int input_len)
 {
-  int 	prompt_width = XTextWidth (s->font, prompt, strlen (prompt));
-  int 	input_width  = XTextWidth (s->font, input, input_len);
+  int 	prompt_width = XTextWidth (defaults.font, prompt, strlen (prompt));
+  int 	input_width  = XTextWidth (defaults.font, input, input_len);
   int 	width;
 
-  width = BAR_X_PADDING * 2 + prompt_width + input_width;
+  width = defaults.bar_x_padding * 2 + prompt_width + input_width;
 
-  if (width < INPUT_WINDOW_SIZE + prompt_width)
+  if (width < defaults.input_window_size + prompt_width)
     {
-      width = INPUT_WINDOW_SIZE + prompt_width;
+      width = defaults.input_window_size + prompt_width;
     }
 
   XMoveResizeWindow (dpy, s->input_window, 
 		     bar_x (s, width), bar_y (s), width,
-		     (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2));
+		     (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2));
 
   XClearWindow (dpy, s->input_window);
 
   XDrawString (dpy, s->input_window, s->normal_gc, 
-	       BAR_X_PADDING, 
-	       BAR_Y_PADDING + s->font->max_bounds.ascent, prompt, 
+	       defaults.bar_x_padding, 
+	       defaults.bar_y_padding + defaults.font->max_bounds.ascent, prompt, 
 	       strlen (prompt));
 
   XDrawString (dpy, s->input_window, s->normal_gc, 
-	       BAR_X_PADDING + prompt_width,
-	       BAR_Y_PADDING + s->font->max_bounds.ascent, input, 
+	       defaults.bar_x_padding + prompt_width,
+	       defaults.bar_y_padding + defaults.font->max_bounds.ascent, input, 
 	       input_len);
 }
 

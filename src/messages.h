@@ -24,24 +24,25 @@
 
 #include "config.h"
 
-#define MESSAGE_NO_OTHER_WINDOW " No other window "
-#define MESSAGE_NO_OTHER_FRAME " No other frame "
-#define MESSAGE_NO_MANAGED_WINDOWS " No managed windows "
-#define MESSAGE_UNKNOWN_COMMAND ": unknown command '%s' "
-#define MESSAGE_WINDOW_INFORMATION " This is window %d (%s) "
+#define MESSAGE_NO_OTHER_WINDOW 	" No other window "
+#define MESSAGE_NO_OTHER_FRAME 		" No other frame "
+#define MESSAGE_NO_MANAGED_WINDOWS 	" No managed windows "
+#define MESSAGE_UNKNOWN_COMMAND 	": unknown command '%s' "
+#define MESSAGE_WINDOW_INFORMATION 	" This is window %d (%s) "
 
 #define MESSAGE_RAISE_TRANSIENT " Raise request from transient window %d (%s) "
-#define MESSAGE_RAISE_WINDOW " Raise request from window %d (%s) "
-#define MESSAGE_MAP_TRANSIENT " New transient window %d (%s) "
-#define MESSAGE_MAP_WINDOW " New window %d (%s) "
+#define MESSAGE_RAISE_WINDOW 	" Raise request from window %d (%s) "
+#define MESSAGE_MAP_TRANSIENT 	" New transient window %d (%s) "
+#define MESSAGE_MAP_WINDOW 	" New window %d (%s) "
 
 #define MESSAGE_PROMPT_SWITCH_TO_WINDOW " Switch to window: "
-#define MESSAGE_PROMPT_NEW_WINDOW_NAME " Set window's title to: "
-#define MESSAGE_PROMPT_SHELL_COMMAND "/bin/sh -c "
-#define MESSAGE_PROMPT_COMMAND ":"
-#define MESSAGE_PROMPT_SWITCH_WM " Switch to wm: "
-#define MESSAGE_PROMPT_XTERM_COMMAND MESSAGE_PROMPT_SHELL_COMMAND TERM_PROG " -e "
+#define MESSAGE_PROMPT_NEW_WINDOW_NAME 	" Set window's title to: "
+#define MESSAGE_PROMPT_SHELL_COMMAND 	"/bin/sh -c "
+#define MESSAGE_PROMPT_COMMAND 		":"
+#define MESSAGE_PROMPT_SWITCH_WM 	" Switch to wm: "
+#define MESSAGE_PROMPT_XTERM_COMMAND 	MESSAGE_PROMPT_SHELL_COMMAND TERM_PROG " -e "
 
-#define MESSAGE_WELCOME " Welcome to ratpoison! Hit `%s %s' for help. "
+#define MESSAGE_WELCOME 	" Welcome to ratpoison! Hit `%s %s' for help. "
+#define MESSAGE_FRAME_STRING 	"Current Frame"
 
 #endif /* ! _RATPOISON_MESSAGES_H */

@@ -37,6 +37,8 @@ void give_window_focus (rp_window *win, rp_window *last_win);
 void set_active_window (rp_window *win);
 void goto_window (rp_window *win);
 void set_current_window (rp_window *win);
+void update_window_position (rp_window *win);
+char *window_name (rp_window *win);
 
 #if 0
 void unhide_transient_for (rp_window *win);
@@ -61,6 +63,7 @@ void insert_into_list (rp_window *win, rp_window *sentinel);
 void remove_from_list (rp_window *win);
 
 void print_window_information (rp_window *win);
-void get_window_list (char *delim, struct sbuf *buffer, int *mark_start, int *mark_end);
+void get_window_list (char *fmt, char *delim, struct sbuf *buffer, 
+		      int *mark_start, int *mark_end);
 
 #endif /* ! _RATPOISON_LIST_H */

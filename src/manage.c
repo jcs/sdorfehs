@@ -84,8 +84,8 @@ update_normal_hints (rp_window *win)
 }
 		     
 
-char *
-get_window_name (Window w)
+static char *
+get_wmname (Window w)
 {
   char *name;
   XTextProperty text;
@@ -107,19 +107,85 @@ get_window_name (Window w)
   if (list_len > 0)
     {
       name = xmalloc (strlen (name_list[0]) + 1);
-
       strcpy (name, name_list[0]);
-
-      /* Its our responsibility to free this. */ 
-      XFreeStringList (name_list);
-
-      return name;
+    }
+  else
+    {
+      name = NULL;
     }
 
   /* Its our responsibility to free this. */ 
   XFreeStringList (name_list);
 
-  return NULL;
+  return name;
+}
+
+static XClassHint *
+get_class_hints (Window w)
+{
+  XClassHint *class;
+
+  class = XAllocClassHint();
+
+  if (class == NULL)
+    {
+      PRINT_ERROR ("Not enough memory for WM_CLASS structure.\n");
+      exit (EXIT_FAILURE);
+    }
+
+  XGetClassHint (dpy, w, class);
+
+  return class;
+}
+
+static char *
+get_res_name (Window w)
+{
+  XClassHint *class;
+  char *name;
+
+  class = get_class_hints (w);
+
+  if (class->res_name)
+    {
+      name = (char *)xmalloc (strlen (class->res_name) + 1);
+      strcpy (name, class->res_name);
+    }
+  else
+    {
+      name = NULL;
+    }
+
+  XFree (class->res_name);
+  XFree (class->res_class);
+  XFree (class);
+
+  return name;
+}
+
+static char *
+get_res_class (Window w)
+{
+  XClassHint *class;
+  char *name;
+
+  class = get_class_hints (w);
+
+  if (class->res_class)
+    {
+      name = (char *)xmalloc (strlen (class->res_class) + 1);
+      strcpy (name, class->res_class);
+    }
+  else
+    {
+      name = NULL;
+    }
+
+  XFree (class->res_name);
+  XFree (class->res_class);
+  XFree (class);
+
+  return name;
 }
 
 /* Reget the WM_NAME property for the window and update its name. */
@@ -127,24 +193,30 @@ int
 update_window_name (rp_window *win)
 {
   char *newstr;
-  char *loc;
 
   /* Don't overwrite the window name if the user specified one. */
-  if (win->named) return 0;
+/*   if (win->named) return 0; */
 
-  newstr = get_window_name (win->w);
+  newstr = get_wmname (win->w);
   if (newstr != NULL)
     {
-      free (win->name);
-      win->name = newstr;
+      free (win->wm_name);
+      win->wm_name = newstr;
     }
 
-  /* A bit of a hack. If there's a : in the string, crop the
-     string off there. This is mostly brought on by netscape's
-     disgusting tendency to put its current URL in the WMName!!
-     arg! */
-  loc = strchr (win->name, ':');
-  if (loc) loc[0] = '\0';
+  newstr = get_res_class (win->w);
+  if (newstr != NULL)
+    {
+      free (win->res_class);
+      win->res_class = newstr;
+    }
+
+  newstr = get_res_name (win->w);
+  if (newstr != NULL)
+    {
+      free (win->res_name);
+      win->res_name = newstr;
+    }
 
   return 1;
 }
@@ -190,6 +262,8 @@ update_window_information (rp_window *win)
 
   /* Transient status */
   win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);  
+
+  update_window_position (win);
 }
 
 void
@@ -261,7 +335,7 @@ unmanaged_window (Window w)
 
   for (i = 0; unmanaged_window_list[i]; i++) 
     {
-      wname = get_window_name (w);
+      wname = get_wmname (w);
       if (!wname)
 	return 0;
       if (!strcmp (unmanaged_window_list[i], wname))
@@ -289,6 +363,53 @@ set_state (rp_window *win, int state)
 		   PropModeReplace, (unsigned char *)data, 2);
 }
 
+static void
+move_window (rp_window *win)
+{
+  if (win->frame == NULL) 
+    return;
+
+  /* X coord. */
+  switch (win->position)
+    {
+    case TOP_LEFT:
+    case CENTER_LEFT:
+    case BOTTOM_LEFT:
+      win->x = win->frame->x;
+      break;
+    case TOP_CENTER:
+    case BOTTOM_CENTER:
+    case CENTER_CENTER:
+      win->x = win->frame->x + (win->frame->width - win->border * 2) / 2 - win->width / 2;
+      break;
+    case TOP_RIGHT:
+    case CENTER_RIGHT:
+    case BOTTOM_RIGHT:
+      win->x = win->frame->x + win->frame->width - win->width - win->border;
+      break;
+    }
+
+  /* Y coord. */
+  switch (win->position)
+    {
+    case TOP_LEFT:
+    case TOP_CENTER:
+    case TOP_RIGHT:
+      win->y = win->frame->y;
+      break;
+    case CENTER_LEFT:
+    case CENTER_CENTER:
+    case CENTER_RIGHT:
+      win->y = win->frame->y + (win->frame->height - win->border * 2) / 2 - win->height / 2;
+      break;
+    case BOTTOM_LEFT:
+    case BOTTOM_CENTER:
+    case BOTTOM_RIGHT:
+      win->y = win->frame->y + win->frame->height - win->height - win->border;
+      break;
+    }
+}
+
 /* Set a transient window's x,y,width,height fields to maximize the
    window. */
 static void
@@ -297,8 +418,12 @@ maximize_transient (rp_window *win)
   rp_window_frame *frame;
   int maxx, maxy;
 
+  /* We can't maximize a window if it has no frame. */
+  if (win->frame == NULL)
+    return;
+
   /* Set the window's border */
-  win->border = WINDOW_BORDER_WIDTH;
+  win->border = defaults.window_border_width;
 
   frame = win->frame;
 
@@ -336,22 +461,6 @@ maximize_transient (rp_window *win)
 
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
 
-  /* Fit the window inside its frame (if it has one) */
-  if (frame)
-    {
-      win->x = frame->x - win->width / 2 
-	+ (frame->width - win->border * 2) / 2;
-      win->y = frame->y - win->height / 2
-	+ (frame->height - win->border * 2) / 2;
-    }
-  else
-    {
-      win->x = PADDING_LEFT - win->width / 2 
-	+ (win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT - win->border * 2) / 2;
-      win->y = PADDING_TOP - win->height / 2 
-	+ (win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM - win->border * 2) / 2;
-    }
-
   win->width = maxx;
   win->height = maxy;
 }
@@ -363,11 +472,13 @@ maximize_normal (rp_window *win)
 {
   rp_window_frame *frame;
   int maxx, maxy;
-  int off_x = 0;
-  int off_y = 0;
+
+  /* We can't maximize a window if it has no frame. */
+  if (win->frame == NULL)
+    return;
 
   /* Set the window's border */
-  win->border = WINDOW_BORDER_WIDTH;
+  win->border = defaults.window_border_width;
 
   frame = win->frame;
 
@@ -379,10 +490,8 @@ maximize_normal (rp_window *win)
     }
   else
     {
-      maxx = win->scr->root_attr.width 
-	- PADDING_LEFT - PADDING_RIGHT - win->border * 2;
-      maxy = win->scr->root_attr.height 
-	- PADDING_TOP - PADDING_BOTTOM - win->border * 2;
+      maxx = frame->width - win->border * 2;
+      maxy = frame->height - win->border * 2;
     }
 
   /* Fit the window inside its frame (if it has one) */
@@ -416,26 +525,6 @@ maximize_normal (rp_window *win)
     }
 
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
- 
-#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
-  if (win->hints->flags & PMaxSize && frame)
-    {
-      off_x = (frame->width - win->border * 2) / 2 - maxx / 2;
-      off_y = (frame->height - win->border * 2) / 2 - maxy / 2;
-    }
-#endif
-
-  /* Fit the window inside its frame (if it has one) */
-  if (frame)
-    {
-      win->x = frame->x + off_x;
-      win->y = frame->y + off_y;
-    }
-  else
-    {
-      win->x = PADDING_LEFT + off_x;
-      win->y = PADDING_TOP + off_y;
-    }
 
   win->width = maxx;
   win->height = maxy;
@@ -459,6 +548,9 @@ maximize (rp_window *win)
       maximize_normal (win);
     }
 
+  /* Reposition the window. */
+  move_window (win);
+
   /* Actually do the maximizing */
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);
@@ -475,8 +567,20 @@ force_maximize (rp_window *win)
 
   maximize_normal(win);
 
-  /* Actually do the maximizing */
-  XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width+1, win->height+1);
+  /* Reposition the window. */
+  move_window (win);
+
+  if (win->hints->flags & PResizeInc)
+    {
+      XMoveResizeWindow (dpy, win->w, win->x, win->y,
+			 win->width + win->hints->width_inc, 
+			 win->height + win->hints->height_inc);
+    }
+  else
+    {
+      XResizeWindow (dpy, win->w, win->width + 1, win->height + 1);
+    }
+
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);
   XSync (dpy, False);
@@ -486,7 +590,7 @@ force_maximize (rp_window *win)
 void
 map_window (rp_window *win)
 {
-  PRINT_DEBUG ("Mapping the unmapped window %s\n", win->name);
+  PRINT_DEBUG ("Mapping the unmapped window %s\n", window_name (win));
 
   /* Fill in the necessary data about the window */
   update_window_information (win);
@@ -512,10 +616,10 @@ map_window (rp_window *win)
     {
       if (win->transient)
 	marked_message_printf (0, 0, MESSAGE_MAP_TRANSIENT, 
-			       win->number, win->name);
+			       win->number, window_name (win));
       else
 	marked_message_printf (0, 0, MESSAGE_MAP_WINDOW,
-			       win->number, win->name);
+			       win->number, window_name (win));
     }
 }
 
@@ -570,7 +674,7 @@ withdraw_window (rp_window *win)
 {
   if (win == NULL) return;
 
-  PRINT_DEBUG ("withdraw_window on '%s'\n", win->name);
+  PRINT_DEBUG ("withdraw_window on '%s'\n", window_name (win));
 
   /* Give back the window number. the window will get another one,
      if it is remapped. */

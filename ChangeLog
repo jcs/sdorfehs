@@ -1,3 +1,107 @@
+2001-09-08  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/list.h (update_window_position): new prototype
+	(window_name): new prototype
+	(get_window_list): update prototype
+
+	* src/events.c (grab_rat): Don't wrap in an #ifdef
+	(ungrab_rat): likewise
+	(handle_key): record if the rat is grabbed and only ungrab it at
+	the end if it was first grabbed.
+
+	* src/actions.h (cmd_pos): new prototype
+	(cmd_defwinpos): new prototype
+	(cmd_deftranspos): new prototype
+	(cmd_defmaxsizepos): new prototype
+	(cmd_defbartimeout): new prototype
+	(cmd_defbarloc): new prototype
+	(cmd_deffont): new prototype
+	(cmd_defpadding): new prototype
+	(cmd_defborder): new prototype
+	(cmd_definputwidth): new prototype
+	(cmd_defwaitcursor): new prototype
+	(cmd_defwinfmt): new prototype
+	(cmd_defwinname): new prototype
+
+	* src/messages.h (MESSAGE_FRAME_STRING): new message
+
+	* src/manage.c (get_wmname): renamed from get_window_name
+	(get_class_hints): new function
+	(get_res_name): likewise
+	(get_res_class): likewise
+	(update_window_name): update the window's wm_name, res_name, and
+	res_class fields.
+	(update_window_name): calls functions get_wmname, get_res_name,
+	get_res_class.
+	(update_window_name): Don't crop the window name.
+	(update_window_information): call update_window_position.
+	(move_window): new function
+	(maximize_transient): only set the window's width and height
+	fields.
+	(maximize_normal): likewise
+	(maximize): call move_window
+	(force_maximize): likewise
+	(force_maximize): if the window has resize hints, resize it 1
+	resize unit.
+
+	* src/main.c: new global variable, defaults.  remove static
+	variable, font, and move to defaults. Dependant code updated.
+	(init_defaults): new function
+	(main): call init_defaults.
+	(init_screen): initialize the screen's fg_color to black and
+	bg_color to white.
+
+	* src/list.c (free_window): free the fields user_name, res_name,
+	res_class, and wm_name.
+	(update_window_position): new function
+	(window_name): new function. Code accessing a window's name uses
+	this function. All code updated.
+	(add_to_window_list): call update_window_position
+	(add_to_window_list): initialize wm_name, res_name, and res_class
+	for the new window.
+	(format_window_name): new function
+	(get_window_list): Add parameter fmt. All callers updated.
+	(get_window_list): call format_window_name.
+
+	* src/conf.h: move Configuration variables to the global variable,
+	defaults. Dependant code updated.
+
+	* src/data.h (TOP_LEFT): new define
+	(TOP_CENTER): likewise
+	(TOP_RIGHT): likewise
+	(CENTER_LEFT): likewise
+	(CENTER_CENTER): likewise
+	(CENTER_RIGHT): likewise
+	(BOTTOM_LEFT): likewise
+	(BOTTOM_CENTER): likewise
+	(BOTTOM_RIGHT): likewise
+	(struct rp_window): new fields user_name, wm_name, res_name,
+	res_class, position.
+	(struct rp_window): remove field name. Replaced with
+	user_name. Dependant code updated.
+	(struct screen_info): remove field font. dependant code updated.
+	(struct screen_info): new fields fg_color, bg_color.
+	(struct rp_defaults): new struct
+	(defaults): new global
+
+	* src/actions.c (parse_winpos): new function
+	(cmd_pos): likewise
+	(cmd_defwinpos): likewise
+	(cmd_deftranspos): likewise
+	(cmd_defmaxsizepos): likewise
+	(cmd_defbartimeout): likewise
+	(cmd_defbarloc): likewise
+	(cmd_deffont): likewise
+	(cmd_defpadding): likewise
+	(cmd_defborder): likewise
+	(cmd_definputwidth): likewise
+	(cmd_defwaitcursor): likewise
+	(cmd_defwinfmt): likewise
+	(cmd_defwinname): likewise
+	(user_commands): New commands defbarloc, defbartimeout, defborder,
+	deffont, defintputwidth, defmaxsizepos, defpadding, deftranspos,
+	defwaitcursor, defwinfmt, defwinname, defwinpos.
+
 2001-09-06  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* configure.in: Use AC_CHECK_FUNCS to check for getopt and

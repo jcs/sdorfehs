@@ -1,5 +1,28 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes since 1.0.0
+** conf.h compile-time customizations moved
+They are now accessible through the def* suite of commands.
+
+** Window alignment
+Windows can now be aligned so they stick to the top-left corner of the
+screen, the center of the screen, the bottom-right, etc. Use the `pos'
+command. There is a customizable default setting for each of the three
+'kinds' of windows: `defwinpos' for normal windows, `deftranspos' for
+transient windows, and `defmaxsizepos' for normal windows with
+maximimum size hints.
+
+** Window format string
+The format of the list of windows dumped by the `windows' command is
+now customizable with `defwinfmt'.
+
+** Different Window naming schemes
+Windows now have 3 resources that can be used as their default name:
+the WMNAME hint which generally contains transient information such as
+what file is currently open, the res_name from the WMCLASS hint, or
+the res_class the WMCLASS hint. This affects commands like `select'
+which search for a window by name.
+
 * Changes since 0.1.1
 
 ** new conf.h customization MAXSIZE_WINDOWS_ARE_TRANSIENTS

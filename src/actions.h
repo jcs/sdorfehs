@@ -75,6 +75,19 @@ char * cmd_quit(int interactive, void *data);
 char * cmd_number (int interactive, void *data);
 char * cmd_rudeness (int interactive, void *data);
 char * cmd_unbind (int interactive, void *data);
+char * cmd_pos (int interactive, void *data);
+char * cmd_defwinpos (int interactive, void *data);
+char * cmd_deftranspos (int interactive, void *data);
+char * cmd_defmaxsizepos (int interactive, void *data);
+char * cmd_defbartimeout (int interactive, void *data);
+char * cmd_defbarloc (int interactive, void *data);
+char * cmd_deffont (int interactive, void *data);
+char * cmd_defpadding (int interactive, void *data);
+char * cmd_defborder (int interactive, void *data);
+char * cmd_definputwidth (int interactive, void *data);
+char * cmd_defwaitcursor (int interactive, void *data);
+char * cmd_defwinfmt (int interactive, void *data);
+char * cmd_defwinname (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 
