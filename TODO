@@ -7,6 +7,11 @@ ryan
 ** general argument parsing strategy
 ryan
 
+** return the current setting for the def* command suite
+When in non-interactive mode, so scripts that need to change them can
+change them back when they're done.
+
+
 * implement these screen commands (see the screen info for documentation):
 command ???
 hardcopy (screenshot)
@@ -26,3 +31,4 @@ sleep
 sorendition
 startup_message
 stuff ???
+
