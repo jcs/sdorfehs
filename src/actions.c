@@ -145,7 +145,7 @@ user_command user_commands[] =
     {"windows", 	cmd_windows, 		arg_VOID},
     {"title", 		cmd_rename, 		arg_STRING},
     {"clock", 		cmd_clock, 		arg_VOID},
-    {"maximize", 	force_maximize,		arg_VOID},
+    {"maximize", 	cmd_maximize,		arg_VOID},
     {"newwm",		cmd_newwm,		arg_STRING},
     {"generate",	cmd_generate,		arg_STRING}, /* rename to stuff */
     {"version",		cmd_version,		arg_VOID},
@@ -684,145 +684,9 @@ cmd_abort (void *data)
 /*   XSync (dpy, False); */
 /* } */
 
-/* Set a transient window's x,y,width,height fields to maximize the
-   window. */
-static void
-maximize_transient (rp_window *win)
-{
-  int maxx, maxy;
-
-  /* Honour the window's maximum size */
-  if (win->hints->flags & PMaxSize)
-    {
-      maxx = win->hints->max_width;
-      maxy = win->hints->max_height;
-    }
-  else
-    {
-      maxx = win->width;
-      maxy = win->height;
-
-      /* Make sure we maximize to the nearest Resize Increment specified
-	 by the window */
-      if (win->hints->flags & PResizeInc)
-	{
-	  int amount;
-
-	  amount = maxx - win->width;
-	  amount -= amount % win->hints->width_inc;
-	  PRINT_DEBUG ("amount x: %d\n", amount);
-	  maxx = amount + win->width;
-
-	  amount = maxy - win->height;
-	  amount -= amount % win->hints->height_inc;
-	  PRINT_DEBUG ("amount y: %d\n", amount);
-	  maxy = amount + win->height;
-	}
-    }
-
-  PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
-
-  win->x = PADDING_LEFT - win->width / 2 + (win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT) / 2;;
-  win->y = PADDING_TOP - win->height / 2 + (win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM) / 2;;
-  win->width = maxx;
-  win->height = maxy;
-}
-
-/* set a good standard window's x,y,width,height fields to maximize
-   the window. */
-static void
-maximize_normal (rp_window *win)
-{
-  int maxx, maxy;
-
-  int off_x = 0;
-  int off_y = 0;
-
-  /* Honour the window's maximum size */
-  if (win->hints->flags & PMaxSize)
-    {
-      maxx = win->hints->max_width;
-      maxy = win->hints->max_height;
-      
-      /* centre the non-maximized window */
-/*       off_x = ((win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT) - win->hints->max_width) / 2; */
-/*       off_y = ((win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM) - win->hints->max_height) / 2; */
-    }
-  else
-    {
-      maxx = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
-      maxy = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
-
-      /* Make sure we maximize to the nearest Resize Increment specified
-	 by the window */
-      if (win->hints->flags & PResizeInc)
-	{
-	  int amount;
-
-	  amount = maxx - win->width;
-	  amount -= amount % win->hints->width_inc;
-	  PRINT_DEBUG ("amount x: %d\n", amount);
-	  maxx = amount + win->width;
-
-	  amount = maxy - win->height;
-	  amount -= amount % win->hints->height_inc;
-	  PRINT_DEBUG ("amount y: %d\n", amount);
-	  maxy = amount + win->height;
-	}
-    }
-
-  PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
-
-  win->x = PADDING_LEFT + off_x;
-  win->y = PADDING_TOP + off_y;
-  win->width = maxx;
-  win->height = maxy;
-}
-
-/* Maximize the current window if data = 0, otherwise assume it is a
-   pointer to a window that should be maximized */
+/* Maximize the current window. */
 void
-maximize (void *data)
+cmd_maximize (void *data)
 {
-  rp_window *win = (rp_window *)data;
-
-  if (!win) win = rp_current_window;
-  if (!win) return;
-
-  /* Handle maximizing transient windows differently */
-  if (win->transient) 
-    {
-      maximize_transient (win);
-    }
-  else
-    {
-      maximize_normal (win);
-    }
-
-  /* Actually do the maximizing */
-  XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
-
-  /* I don't think this should be here, but it doesn't seem to hurt. */
-  send_configure (win);
-
-  XSync (dpy, False);
-}
-
-/* Maximize the current window but don't treat transient windows
-   differently. */
-void
-force_maximize (void *data)
-{
-  rp_window *win = (rp_window *)data;
-
-  if (!win) win = rp_current_window;
-  if (!win) return;
-
-  maximize_normal(win);
-
-  /* Actually do the maximizing */
-  XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width+1, win->height+1);
-  XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
-
-  XSync (dpy, False);
+  force_maximize (rp_current_window);
 }

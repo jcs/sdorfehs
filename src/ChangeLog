@@ -1,5 +1,14 @@
 2001-02-27  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* actions.c: "maximize" user command calls cmd_maximize
+
+	* manage.c (force_maximize): moved from actions.c
+	(maximize): likewise
+	(maximize_normal): likewise
+	(maximize_transient): likewise
+
+	* actions.c (cmd_maximize): New function
+
 	* main.c (handler): Prepends error message with "ERROR: ".
 	Displays error in message bar. Returns 0.
 

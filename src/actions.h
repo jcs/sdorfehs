@@ -40,8 +40,6 @@ user_command
 void bye(void *dummy);
 void spawn(void *data);
 void command (char *data);
-void maximize (void *data);
-void force_maximize (void *data);
 
 void cmd_newwm(void *which);
 void cmd_generate (void *data);
@@ -62,6 +60,7 @@ void cmd_version (void *data);
 void cmd_unimplemented (void *data);
 void cmd_bind (void* data);
 void cmd_source (void* data);
+void cmd_maximize (void *data);
 
 /* void cmd_xterm (void *data); */
 

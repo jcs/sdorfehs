@@ -35,4 +35,7 @@ void rename_current_window ();
 void send_configure (rp_window *win);
 void set_state (rp_window *win, int state);
 
+void maximize (rp_window *win);
+void force_maximize (rp_window *win);
+
 #endif /* ! _RATPOISION_MANAGE_H */
