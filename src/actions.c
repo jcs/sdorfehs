@@ -38,30 +38,37 @@ rp_action key_actions[] = { {KEY_PREFIX, 0, 0, generate_prefix},
 void
 prev_window (void *data)
 {
-  if (rp_current_window != NULL)
+  rp_window *new_win = (rp_window *)data;
+
+  if (new_win == NULL) new_win = rp_current_window;
+  if (new_win != NULL)
     {
-      set_current_window (rp_current_window->prev);
-      if (rp_current_window == NULL) 
+      new_win = new_win->prev;
+      if (new_win == NULL) 
 	{
-	  rp_current_window = rp_window_tail;
+	  new_win = rp_window_tail;
 	}
-      if (rp_current_window->state == STATE_UNMAPPED) prev_window (NULL);
-      set_active_window (rp_current_window);
+      if (new_win->state == STATE_UNMAPPED) prev_window (new_win);
+      set_active_window (new_win);
     }
 }
+
 
 void
 next_window (void *data)
 {
-  if (rp_current_window != NULL)
+  rp_window *new_win = (rp_window *)data;
+
+  if (new_win == NULL) new_win = rp_current_window;
+  if (new_win != NULL)
     {
-      rp_current_window = rp_current_window->next;
-      if (rp_current_window == NULL) 
+      new_win = new_win->next;
+      if (new_win == NULL) 
 	{
-	  rp_current_window = rp_window_head;
+	  new_win = rp_window_head;
 	}
-      if (rp_current_window->state == STATE_UNMAPPED) next_window (NULL);
-      set_active_window (rp_current_window);
+      if (new_win->state == STATE_UNMAPPED) next_window (new_win);
+      set_active_window (new_win);
     }
 }
 
@@ -71,8 +78,7 @@ last_window (void *data)
 {
   rp_window *oldwin = rp_current_window;
 
-  rp_current_window = find_last_accessed_window ();
-  set_active_window (rp_current_window);
+  set_active_window (find_last_accessed_window ());
 
   if (rp_current_window == oldwin)
     {
@@ -234,8 +240,7 @@ goto_window_number (int n)
       return;
     }
 
-  rp_current_window = win;
-  set_active_window (rp_current_window);
+  set_active_window (win);
 }
 
 void
