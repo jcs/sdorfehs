@@ -579,3 +579,64 @@ print_window_information (rp_window *win)
 
   return;
 }
+
+/* get the window list and store it in buffer delimiting each window
+   with delim. mark_start and mark_end will be filled with the text
+   positions for the start and end of the current window. */
+void
+get_window_list (char *delim, struct sbuf *buffer, int *mark_start, int *mark_end)
+{
+  rp_window *w;
+  rp_window *other_window;
+  char dbuf[10];
+
+  if (buffer == NULL) return;
+
+  sbuf_clear (buffer);
+  other_window = find_window_other ();
+
+  for (w = rp_mapped_window_sentinel->next; 
+       w != rp_mapped_window_sentinel; 
+       w = w->next)
+    {
+      PRINT_DEBUG ("%d-%s\n", w->number, w->name);
+
+      if (w == current_window())
+	*mark_start = strlen (sbuf_get (buffer));
+
+      /* A hack, pad the window with a space at the beginning and end
+         if there is no delimiter. */
+      if (!delim)
+	sbuf_concat (buffer, " ");
+
+      sprintf (dbuf, "%d", w->number);
+      sbuf_concat (buffer, dbuf);
+
+      if (w == current_window())
+	sbuf_concat (buffer, "*");
+      else if (w == other_window)
+	sbuf_concat (buffer, "+");
+      else
+	sbuf_concat (buffer, "-");
+
+      sbuf_concat (buffer, w->name);
+
+      /* A hack, pad the window with a space at the beginning and end
+         if there is no delimiter. */
+      if (!delim)
+	sbuf_concat (buffer, " ");
+
+      /* Only put the delimiter between the windows, and not after the the last
+         window. */
+      if (delim && w->next != rp_mapped_window_sentinel)
+	sbuf_concat (buffer, delim);
+
+      if (w == current_window())
+	*mark_end = strlen (sbuf_get (buffer));
+    }
+
+  if (!strcmp (sbuf_get (buffer), ""))
+    {
+      sbuf_copy (buffer, MESSAGE_NO_MANAGED_WINDOWS);
+    }
+}

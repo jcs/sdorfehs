@@ -243,7 +243,14 @@ read_rc_file (FILE *file)
 
 	  /* do it */
 	  if (*line != '#')
-	    command (line);
+	    {
+	      char *result;
+	      result = command (0, line);
+
+	      /* Gobble the result. */
+	      if (result)
+		free (result);
+	    }
 
 	  *line = '\0';
 	}

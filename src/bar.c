@@ -91,10 +91,6 @@ void
 update_window_names (screen_info *s)
 {
   static struct sbuf *bar_buffer = NULL;
-  rp_window *w;
-  rp_window *other_window;
-
-  char dbuf[10];
 
   int mark_start = 0;
   int mark_end = 0;
@@ -104,43 +100,7 @@ update_window_names (screen_info *s)
   if (bar_buffer == NULL)
     bar_buffer = sbuf_new (0);
 
-  sbuf_clear (bar_buffer);
-
-  other_window = find_window_other ();
-
-  for (w = rp_mapped_window_sentinel->next; 
-       w != rp_mapped_window_sentinel; 
-       w = w->next)
-    {
-      PRINT_DEBUG ("%d-%s\n", w->number, w->name);
-
-      if (w == current_window())
-	mark_start = strlen (sbuf_get (bar_buffer));
-
-      sbuf_concat (bar_buffer, " ");
-
-      sprintf (dbuf, "%d", w->number);
-      sbuf_concat (bar_buffer, dbuf);
-
-      if (w == current_window())
-	sbuf_concat (bar_buffer, "*");
-      else if (w == other_window)
-	sbuf_concat (bar_buffer, "+");
-      else
-	sbuf_concat (bar_buffer, "-");
-
-      sbuf_concat (bar_buffer, w->name);
-
-      sbuf_concat (bar_buffer, " ");
-
-      if (w == current_window())
-	mark_end = strlen (sbuf_get (bar_buffer));
-    }
-
-  if (!strcmp (sbuf_get (bar_buffer), ""))
-    {
-      sbuf_copy (bar_buffer, MESSAGE_NO_MANAGED_WINDOWS);
-    }
+  get_window_list (NULL, bar_buffer, &mark_start, &mark_end);
 
   marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
 }

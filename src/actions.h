@@ -33,46 +33,46 @@ struct
 user_command
 {
   char *name;
-  void (*func)(void *);
+  char * (*func)(int, void *);
   int argtype;
 };
 
 void spawn(void *data);
-void command (char *data);
+char * command (int interactive, char *data);
 
-void cmd_newwm(void *which);
-void cmd_generate (void *data);
-void cmd_abort (void *data);
-void cmd_exec (void *data);
-void cmd_colon (void *data);
-void cmd_kill (void *data);
-void cmd_delete (void *data);
-void cmd_rename (void *data);
-void cmd_select (void *data);
-void cmd_last (void *data);
-void cmd_next (void *data);
-void cmd_next_frame (void *data);
-void cmd_prev (void *data);
-void cmd_prev_frame (void *data);
-void cmd_windows (void *data);
-void cmd_other (void *data);
-void cmd_clock (void *data);
-void cmd_version (void *data);
-void cmd_unimplemented (void *data);
-void cmd_bind (void* data);
-void cmd_source (void* data);
-void cmd_maximize (void *data);
-void cmd_escape (void *data);
-void cmd_echo (void *data);
-void cmd_h_split (void *data);
-void cmd_v_split (void *data);
-void cmd_only (void *data);
-void cmd_remove (void *data);
-void cmd_banish (void *data);
-void cmd_curframe (void *data);
-void cmd_help (void *data);
-void cmd_quit(void *data);
-void cmd_number (void *data);
+char * cmd_newwm(int interactive, void *which);
+char * cmd_generate (int interactive, void *data);
+char * cmd_abort (int interactive, void *data);
+char * cmd_exec (int interactive, void *data);
+char * cmd_colon (int interactive, void *data);
+char * cmd_kill (int interactive, void *data);
+char * cmd_delete (int interactive, void *data);
+char * cmd_rename (int interactive, void *data);
+char * cmd_select (int interactive, void *data);
+char * cmd_last (int interactive, void *data);
+char * cmd_next (int interactive, void *data);
+char * cmd_next_frame (int interactive, void *data);
+char * cmd_prev (int interactive, void *data);
+char * cmd_prev_frame (int interactive, void *data);
+char * cmd_windows (int interactive, void *data);
+char * cmd_other (int interactive, void *data);
+char * cmd_clock (int interactive, void *data);
+char * cmd_version (int interactive, void *data);
+char * cmd_unimplemented (int interactive, void *data);
+char * cmd_bind (int interactive, void* data);
+char * cmd_source (int interactive, void* data);
+char * cmd_maximize (int interactive, void *data);
+char * cmd_escape (int interactive, void *data);
+char * cmd_echo (int interactive, void *data);
+char * cmd_h_split (int interactive, void *data);
+char * cmd_v_split (int interactive, void *data);
+char * cmd_only (int interactive, void *data);
+char * cmd_remove (int interactive, void *data);
+char * cmd_banish (int interactive, void *data);
+char * cmd_curframe (int interactive, void *data);
+char * cmd_help (int interactive, void *data);
+char * cmd_quit(int interactive, void *data);
+char * cmd_number (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 

@@ -89,7 +89,7 @@ recieve_command_result (Window w)
 			  True, XA_STRING, &type_ret, &format_ret, &nitems, 
 			  &bytes_after, &result) == Success)
     {
-      if (result)
+      if (result && strlen (result))
 	{
 	  printf ("%s\n", result);
 	}

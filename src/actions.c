@@ -290,8 +290,8 @@ parse_keydesc (char *keydesc)
     return p;
 }
 
-void
-cmd_bind (void *data)
+char *
+cmd_bind (int interactive, void *data)
 {
   char *keydesc;
   char *cmd;
@@ -299,7 +299,7 @@ cmd_bind (void *data)
   if (!data)
     {
       message (" bind: at least one argument required ");
-      return;
+      return NULL;
     }
 
   keydesc = (char*) xmalloc (strlen (data + 1));
@@ -335,16 +335,20 @@ cmd_bind (void *data)
     }
 
   free (keydesc);
+
+  return NULL;
 }
 
-void
-cmd_unimplemented (void *data)
+char *
+cmd_unimplemented (int interactive, void *data)
 {
   marked_message (" FIXME:  unimplemented command ",0,8);
+
+  return NULL;
 }
 
-void
-cmd_source (void *data)
+char *
+cmd_source (int interactive, void *data)
 {
   FILE *fileptr;
 
@@ -355,15 +359,17 @@ cmd_source (void *data)
       read_rc_file (fileptr);
       fclose (fileptr);
     }
+
+  return NULL;
 }
 
-void
-cmd_generate (void *data)
+char *
+cmd_generate (int interactive, void *data)
 {
   XEvent ev1, ev;
   ev = rp_current_event;
 
-  if (current_window() == NULL) return;
+  if (current_window() == NULL) return NULL;
 
   PRINT_DEBUG ("type==%d\n", ev.xkey.type);
   PRINT_DEBUG ("serial==%ld\n", ev.xkey.serial);
@@ -404,10 +410,12 @@ cmd_generate (void *data)
   /*   XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, 't'), True, 0); */
 
   XSync (dpy, False);
+
+  return NULL;
 }
 
-void
-cmd_prev (void *data)
+char *
+cmd_prev (int interactive, void *data)
 {
   rp_window *w;
 
@@ -419,7 +427,7 @@ cmd_prev (void *data)
       if (!current_window())
 	message (MESSAGE_NO_MANAGED_WINDOWS);
 
-      return;
+      return NULL;
     }
   else
     {
@@ -430,10 +438,12 @@ cmd_prev (void *data)
       else
 	set_active_window (w);
     }
+
+  return NULL;
 }
 
-void
-cmd_prev_frame (void *data)
+char *
+cmd_prev_frame (int interactive, void *data)
 {
   rp_window_frame *frame;
 
@@ -442,10 +452,12 @@ cmd_prev_frame (void *data)
     message (MESSAGE_NO_OTHER_WINDOW);
   else
     set_active_frame (frame);
+
+  return NULL;
 }
 
-void
-cmd_next (void *data)
+char *
+cmd_next (int interactive, void *data)
 {
   rp_window *w;
 
@@ -457,7 +469,7 @@ cmd_next (void *data)
       if (!current_window())
 	message (MESSAGE_NO_MANAGED_WINDOWS);
 
-      return;
+      return NULL;
     }
   else 
     {
@@ -468,10 +480,12 @@ cmd_next (void *data)
       else
 	set_active_window (w);
     }
+
+  return NULL;
 }
 
-void
-cmd_next_frame (void *data)
+char *
+cmd_next_frame (int interactive, void *data)
 {
   rp_window_frame *frame;
 
@@ -481,10 +495,11 @@ cmd_next_frame (void *data)
   else
     set_active_frame (frame);
 
+  return NULL;
 }
 
-void 
-cmd_other (void *data)
+char *
+cmd_other (int interactive, void *data)
 {
   rp_window *w;
 
@@ -494,6 +509,8 @@ cmd_other (void *data)
     message (MESSAGE_NO_OTHER_WINDOW);
   else
     set_active_window (w);
+
+  return NULL;
 }
 
 static int
@@ -513,8 +530,8 @@ string_to_window_number (char *str)
 }
 
 /* switch to window number or name */
-void
-cmd_select (void *data)
+char *
+cmd_select (int interactive, void *data)
 {
   char *str;
   int n;
@@ -557,14 +574,16 @@ cmd_select (void *data)
     }
 
   free (str);
+
+  return NULL;
 }
 
-void
-cmd_rename (void *data)
+char *
+cmd_rename (int interactive, void *data)
 {
   char *winname;
   
-  if (current_window() == NULL) return;
+  if (current_window() == NULL) return NULL;
 
   if (data == NULL)
     winname = get_input (MESSAGE_PROMPT_NEW_WINDOW_NAME);
@@ -585,16 +604,18 @@ cmd_rename (void *data)
     }
 
   free (winname);
+
+  return NULL;
 }
 
 
-void
-cmd_delete (void *data)
+char *
+cmd_delete (int interactive, void *data)
 {
   XEvent ev;
   int status;
 
-  if (current_window() == NULL) return;
+  if (current_window() == NULL) return NULL;
 
   ev.xclient.type = ClientMessage;
   ev.xclient.window = current_window()->w;
@@ -605,25 +626,31 @@ cmd_delete (void *data)
 
   status = XSendEvent(dpy, current_window()->w, False, 0, &ev);
   if (status == 0) fprintf(stderr, "ratpoison: delete window failed\n");
+
+  return NULL;
 }
 
-void 
-cmd_kill (void *data)
+char *
+cmd_kill (int interactive, void *data)
 {
-  if (current_window() == NULL) return;
+  if (current_window() == NULL) return NULL;
 
   XKillClient(dpy, current_window()->w);
+
+  return NULL;
 }
 
-void
-cmd_version (void *data)
+char *
+cmd_version (int interactive, void *data)
 {
   message (" " PACKAGE " " VERSION " ");
+  return NULL;
 }
 
-void 
-command (char *data)
+char *
+command (int interactive, char *data)
 {
+  char *result = NULL;
   char *cmd, *rest;
   char *input;
 
@@ -631,7 +658,7 @@ command (char *data)
   struct sbuf *buf = NULL;
   
   if (data == NULL)
-    return;
+    return NULL;
 
   /* get a writable copy for strtok() */
   input = strdup ((char *) data);
@@ -650,7 +677,7 @@ command (char *data)
     {
       if (!strcmp (cmd, uc->name))
 	{
-	  uc->func (rest);
+	  result = uc->func (interactive, rest);
 	  goto done;
 	}
     }
@@ -668,11 +695,14 @@ command (char *data)
 
  done:
   free (input);
+  
+  return result;
 }
 
-void
-cmd_colon (void *data)
+char *
+cmd_colon (int interactive, void *data)
 {
+  char *result;
   char *input;
 
   if (data == NULL)
@@ -680,13 +710,19 @@ cmd_colon (void *data)
   else
     input = get_more_input (MESSAGE_PROMPT_COMMAND, data);
 
-  command (input);
+  result = command (1, input);
+
+  /* Gobble the result. */
+  if (result)
+    free (result);
   
   free (input);
+
+  return NULL;
 }
 
-void
-cmd_exec (void *data)
+char *
+cmd_exec (int interactive, void *data)
 {
   char *cmd;
 
@@ -698,6 +734,8 @@ cmd_exec (void *data)
   spawn (cmd);
 
   free (cmd);
+
+  return NULL;
 }
 
 
@@ -727,8 +765,8 @@ spawn(void *data)
 
 /* Switch to a different Window Manager. Thanks to 
 "Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
-void
-cmd_newwm(void *data)
+char *
+cmd_newwm(int interactive, void *data)
 {
   char *prog;
 
@@ -746,23 +784,28 @@ cmd_newwm(void *data)
   perror(" failed");
 
   free (prog);
+
+  return NULL;
 }
 
 /* Quit ratpoison. Thanks to 
 "Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
-void
-cmd_quit(void *data)
+char *
+cmd_quit(int interactive, void *data)
 {
   PRINT_DEBUG ("Exiting\n");
   clean_up ();
   exit (EXIT_SUCCESS);
+
+  /* Never gets here. */
+  return NULL;
 }
 
 /* Show the current time on the bar. Thanks to Martin Samuelsson
    <cosis@lysator.liu.se> for the patch. Thanks to Jonathan Walther
    <krooger@debian.org> for making it pretty. */
-void
-cmd_clock (void *data)
+char *
+cmd_clock (int interactive, void *data)
 {
   char *msg, *tmp;
   time_t timep;
@@ -775,24 +818,26 @@ cmd_clock (void *data)
 
   message (msg);
   free (msg);
+  
+  return NULL;
 }
 
 /* Assign a new number to a window ala screen's number command. Thanks
    to Martin Samuelsson <cosis@lysator.liu.se> for the original
    patch. */
-void
-cmd_number (void *data)
+char *
+cmd_number (int interactive, void *data)
 {
   int old_number, new_number;
   rp_window *other_win;
   char *str;
   
-  if (current_window() == NULL) return;
+  if (current_window() == NULL) return NULL;
 
   if (data == NULL)
     {
       print_window_information (current_window());
-      return;
+      return NULL;
     }
   else
     {
@@ -829,23 +874,41 @@ cmd_number (void *data)
     }
 
   free (str);
+
+  return NULL;
 }
 
 /* Toggle the display of the program bar */
-void
-cmd_windows (void *data)
+char *
+cmd_windows (int interactive, void *data)
 {
+  struct sbuf *window_list = NULL;
+  char *tmp;
+  int dummy;
   screen_info *s;
 
-  s = current_screen ();
+  if (interactive)
+    {
+      s = current_screen ();
+      if (!hide_bar (s)) show_bar (s);
+      
+      return NULL;
+    }
+  else
+    {
+      window_list = sbuf_new (0);
+      get_window_list ("\n", window_list, &dummy, &dummy);
+      tmp = sbuf_get (window_list);
+      free (window_list);
 
-  if (!hide_bar (s)) show_bar (s);
+      return tmp;
+    }
 }
 
-
-void
-cmd_abort (void *data)
+char *
+cmd_abort (int interactive, void *data)
 {
+  return NULL;
 }  
 
 /* Send the current window the prefix key event */
@@ -862,15 +925,17 @@ cmd_abort (void *data)
 /* } */
 
 /* Maximize the current window. */
-void
-cmd_maximize (void *data)
+char *
+cmd_maximize (int interactive, void *data)
 {
   force_maximize (current_window());
+  
+  return NULL;
 }
 
 /* Reassign the prefix key. */
-void
-cmd_escape (void *data)
+char *
+cmd_escape (int interactive, void *data)
 {
   rp_window *cur;
   struct rp_key *key;
@@ -920,36 +985,43 @@ cmd_escape (void *data)
     {
       message (" escape: could not parse key description ");
     }
+
+  return NULL;
 }
 
 /* User accessible call to display the passed in string. */
-void
-cmd_echo (void *data)
+char *
+cmd_echo (int interactive, void *data)
 {
   if (data) message ((char *)data);
+  return NULL;
 }
 
-void
-cmd_h_split (void *data)
+char *
+cmd_h_split (int interactive, void *data)
 {
   h_split_frame (rp_current_frame);
+  return NULL;
 }
 
-void
-cmd_v_split (void *data)
+char *
+cmd_v_split (int interactive, void *data)
 {
   v_split_frame (rp_current_frame);
+  return NULL;
 }
 
-void
-cmd_only (void *data)
+char *
+cmd_only (int interactive, void *data)
 {
   remove_all_splits();
   maximize (current_window());
+
+  return NULL;
 }
 
-void
-cmd_remove (void *data)
+char *
+cmd_remove (int interactive, void *data)
 {
   rp_window_frame *frame;
 
@@ -960,27 +1032,31 @@ cmd_remove (void *data)
       remove_frame (rp_current_frame);
       set_active_frame (frame);
     }
+
+  return NULL;
 }
 
 /* banish the rat pointer */
-void
-cmd_banish (void *data)
+char *
+cmd_banish (int interactive, void *data)
 {
   screen_info *s;
 
   s = current_screen ();
 
   XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width - 2, s->root_attr.height - 2); 
+  return NULL;
 }
 
-void
-cmd_curframe (void *data)
+char *
+cmd_curframe (int interactive, void *data)
 {
   show_frame_indicator();
+  return NULL;
 }
 
-void
-cmd_help (void *data)
+char *
+cmd_help (int interactive, void *data)
 {
   screen_info *s = current_screen();
   XEvent ev;
@@ -1049,4 +1125,6 @@ cmd_help (void *data)
   XMaskEvent (dpy, KeyPressMask, &ev);
   XUnmapWindow (dpy, s->help_window);
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
+
+  return NULL;
 }

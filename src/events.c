@@ -372,8 +372,13 @@ handle_key (screen_info *s)
 
   if ((key_action = find_keybinding (keysym, mod)))
     {
+      char *result;
       XSetInputFocus (dpy, fwin, revert, CurrentTime);
-      command (key_action->data);
+      result = command (1, key_action->data);
+      
+      /* Gobble the result. */
+      if (result)
+	free (result);
     }
   else
     {
@@ -436,9 +441,10 @@ key_press (XEvent *ev)
    text. This text is passed back using the RP_COMMAND_RESULT
    Atom. The client will wait for this property change so something
    must be returned. */
-static void
+static char *
 execute_remote_command (Window w)
 {
+  char *result = NULL;
   Atom type_ret;
   int format_ret;
   unsigned long nitems;
@@ -458,7 +464,7 @@ execute_remote_command (Window w)
       if (req)
 	{
 	  PRINT_DEBUG ("command: %s\n", req);
-	  command (req);
+	  result = command (0, req);
 	}
       XFree (req);
     }
@@ -466,6 +472,8 @@ execute_remote_command (Window w)
     {
       PRINT_DEBUG ("Couldn't get RP_COMMAND Property\n");
     }
+
+  return result;
 }
 
 /* Command requests are posted as a property change using the
@@ -476,6 +484,7 @@ execute_remote_command (Window w)
 static void
 receive_command ()
 {
+  char *result;
   Atom type_ret;
   int format_ret;
   unsigned long nitems;
@@ -497,9 +506,18 @@ receive_command ()
 	      w = *(Window *)prop_return;
 	      XFree (prop_return);
 
-	      execute_remote_command (w);
-	      XChangeProperty (dpy, w, rp_command_result, XA_STRING,
-			       8, PropModeReplace, "Success", 8);
+	      result = execute_remote_command (w);
+	      if (result)
+		{
+		  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+				   8, PropModeReplace, result, strlen (result));
+		  free (result);
+		}
+	      else
+		{
+		  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+				   8, PropModeReplace, NULL, 0);
+		}
 	    }
 	  else
 	    {

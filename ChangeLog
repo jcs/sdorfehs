@@ -1,5 +1,28 @@
 2001-08-18  Shawn  <sabetts@hotdog>
 
+	* src/main.c (read_rc_file): free the command's result string.
+
+	* src/list.h (get_window_list): new prototype
+
+	* src/list.c (get_window_list): new function
+
+	* src/events.c (handle_key): free the command's result string.
+	(receive_command): send the command's result string if there is
+	one, otherwise send NULL.
+
+	* src/communications.c (recieve_command_result): only print the
+	result if the string is not empty.
+
+	* src/bar.c (update_window_names): calls get_window_list.
+
+	* src/actions.c (cmd_windows): return a list of the windows when
+	called non-interactively.
+	(cmd_colon): free the command result.
+
+	* src/actions.c: command functions have been changed to return a
+	result string and take a parameter that tells the function if it
+	was called interactively or not. All callers updated.
+	
 	* src/split.c (split_frame): unhide transient_for windows as well
 	as the active window.
 	(remove_all_splits): hide transient_for windows as well as the

@@ -22,6 +22,8 @@
 #ifndef _RATPOISON_LIST_H
 #define _RATPOISON_LIST_H 1
 
+#include "sbuf.h"
+
 void free_window (rp_window *w);
 rp_window *add_to_window_list (screen_info *s, Window w);
 void init_window_list ();
@@ -55,5 +57,6 @@ void insert_into_list (rp_window *win, rp_window *sentinel);
 void remove_from_list (rp_window *win);
 
 void print_window_information (rp_window *win);
+void get_window_list (char *delim, struct sbuf *buffer, int *mark_start, int *mark_end);
 
 #endif /* ! _RATPOISON_LIST_H */
