@@ -1,5 +1,7 @@
 2001-09-09  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/conf.h (MAXSIZE_WINDOWS_ARE_TRANSIENTS): defined
+
 	* src/split.c (set_active_frame): give the key_window focus when
 	no window has focus.
 	(blank_frame): give the key_window focus.

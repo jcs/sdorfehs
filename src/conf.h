@@ -32,6 +32,10 @@
 #define INPUT_ABORT_KEY      XK_g
 #define INPUT_ABORT_MODIFIER ControlMask
 
+/* Treat windows with maxsize hints as if they were a transient window
+   (don't hide the windows underneath, and center them) */
+#define MAXSIZE_WINDOWS_ARE_TRANSIENTS
+
 /* Pressing a key sends the mouse to the bottom right corner. This
    doesn't work very well yet. */
 /* #define HIDE_MOUSE  */
