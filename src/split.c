@@ -363,13 +363,13 @@ remove_all_splits ()
 {
   struct list_head *tmp, *iter;
   screen_info *s = &screens[rp_current_screen];
-  rp_window_frame *frame = NULL;
-  rp_window *win = NULL;
+  rp_window_frame *frame;
+  rp_window *win;
 
   /* Hide all the windows not in the current frame. */
   list_for_each_entry (win, &rp_mapped_window, node)
     {
-      if (win->frame == frame)
+      if (win->frame != s->rp_current_frame)
 	hide_window (win);
     }
 

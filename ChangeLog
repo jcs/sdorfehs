@@ -1,5 +1,8 @@
 2003-02-23  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/split.c (remove_all_splits): fix bug hiding windows not in
+	the current frame.
+
 	* src/split.h (cleanup_frame): new protoype
 
 	* src/manage.c (scanwins): added better debugging output
