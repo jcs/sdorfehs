@@ -41,6 +41,10 @@
 #define WIN_NAME_RES_CLASS 	1
 #define WIN_NAME_RES_NAME 	2
 
+/* Possible directions to traverse the completions list. */
+#define COMPLETION_NEXT		0
+#define COMPLETION_PREVIOUS 	1
+
 /* The list of groups. */
 extern struct list_head rp_groups;
 

@@ -28,11 +28,12 @@ static edit_status editor_no_action (rp_input_line *line);
 static edit_status editor_enter (rp_input_line *line);
 static edit_status editor_history_previous (rp_input_line *line);
 static edit_status editor_history_next (rp_input_line *line);
-static edit_status editor_complete (rp_input_line *line);
 static edit_status editor_backward_kill_line (rp_input_line *line);
+static edit_status editor_complete_prev (rp_input_line *line);
+static edit_status editor_complete_next (rp_input_line *line);
 
 /* default edit action */
-edit_status editor_insert (rp_input_line *line, char *keysym_buf);
+static edit_status editor_insert (rp_input_line *line, char *keysym_buf);
 
 
 static char *saved_command = NULL;
@@ -73,7 +74,8 @@ static edit_binding edit_bindings[] =
      {{XK_Down, 	0},            		editor_history_next},
      {{XK_Return, 	0},          		editor_enter},
      {{XK_KP_Enter, 	0},        		editor_enter},
-     {{XK_Tab,		0},        		editor_complete},
+     {{XK_Tab,		0},        		editor_complete_next},
+     {{XK_ISO_Left_Tab,	0},        		editor_complete_prev},
      { {0, 		0},                	0} };
 
 rp_input_line *
@@ -549,7 +551,7 @@ editor_paste_selection (rp_input_line *line)
 }
 
 static edit_status
-editor_complete (rp_input_line *line)
+editor_complete (rp_input_line *line, int direction)
 {
   char *tmp;
   char *s;
@@ -562,7 +564,7 @@ editor_complete (rp_input_line *line)
 
   /* We don't need to free s because it's a string from the completion
      list. */
-  s = completions_next_completion (line->compl, tmp);
+  s = completions_complete (line->compl, tmp, direction);
   free (tmp);
 
   if (s == NULL)
@@ -573,4 +575,16 @@ editor_complete (rp_input_line *line)
   editor_insert (line, s);
 
   return EDIT_COMPLETE;
+}
+
+static edit_status
+editor_complete_next (rp_input_line *line)
+{
+  return editor_complete (line, COMPLETION_NEXT);
+}
+
+static edit_status
+editor_complete_prev (rp_input_line *line)
+{
+  return editor_complete (line, COMPLETION_PREVIOUS);
 }

@@ -1,3 +1,32 @@
+2003-05-28  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/globals.h (COMPLETION_NEXT): new define
+	(COMPLETION_PREVIOUS): likewise
+
+	* src/editor.c (editor_complete): remove prototype
+	(editor_complete_prev): new prototype
+	(editor_complete_next): likewise
+	(editor_insert): make it a static function. update prototype
+	(edit_bindings): add editor_complete_prev. replace editor_complete
+	with editor_complete_next.
+	(editor_complete): call completions_complete
+	(editor_complete_next): new function
+	(editor_complete_prev): likewise
+
+	* src/completions.h (completions_next_completion): remove prototype
+	(completions_update): likewise
+	(completions_assign): likewise
+	(completions_complete): new prototype
+
+	* src/completions.c (completions_assign): make it a static
+	function
+	(completions_update): likewise
+	(completions_prev_match): new function
+	(completions_next_match): likewise
+	(completions_complete): renamed from
+	completions_next_completion. call completions_next_match and
+	completions_prev_match.
+
 2003-05-27  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/completions.c (completions_next_completion): check

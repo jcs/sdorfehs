@@ -37,7 +37,7 @@ completions_free (rp_completions *c)
     free (c->partial);
 }
 
-void
+static void
 completions_assign (rp_completions *c, struct list_head *new_list)
 {
   struct sbuf *cur;
@@ -58,7 +58,7 @@ completions_assign (rp_completions *c, struct list_head *new_list)
   list_first (c->last_match, &c->completion_list, node);
 }
 
-void
+static void
 completions_update (rp_completions *c, char *partial)
 {
   struct list_head *new_list;
@@ -76,30 +76,33 @@ completions_update (rp_completions *c, char *partial)
   free (new_list);
 }
 
-/* Return a completed string that starts with partial. */
-char *
-completions_next_completion (rp_completions *c, char *partial)
+static char *
+completions_prev_match (rp_completions *c)
 {
   struct sbuf *cur;
 
-  if (c->virgin)
+  /* search forward from our last match through the list looking for
+     another match. */
+  for (cur = list_prev_entry (c->last_match, &c->completion_list, node);
+       cur != c->last_match;
+       cur = list_prev_entry (cur, &c->completion_list, node))
     {
-      completions_update (c, partial);
-      
-      /* Since it's never been completed on and c->last_match points
-	 to the first element of the list which may be a match. So
-	 check it. FIXME: This is a bit of a hack. */
-      if (c->last_match == NULL)
-	return NULL;
-
-      if (str_comp (sbuf_get (c->last_match), c->partial, strlen (c->partial)))
-	return sbuf_get (c->last_match);
+      if (str_comp (sbuf_get (cur), c->partial, strlen (c->partial)))
+	{
+	  /* We found a match so update our last_match pointer and
+	     return the string. */
+	  c->last_match = cur;
+	  return sbuf_get (cur);
+	}
     }
 
-  if (c->last_match == NULL)
-    return NULL;
+  return NULL;
+}
 
-  /*  */
+static char *
+completions_next_match (rp_completions *c)
+{
+  struct sbuf *cur;
 
   /* search forward from our last match through the list looking for
      another match. */
@@ -117,4 +120,33 @@ completions_next_completion (rp_completions *c, char *partial)
     }
 
   return NULL;
+}
+
+/* Return a completed string that starts with partial. */
+char *
+completions_complete (rp_completions *c, char *partial, int direction)
+{
+  if (c->virgin)
+    {
+      completions_update (c, partial);
+      
+      /* Since it's never been completed on and c->last_match points
+	 to the first element of the list which may be a match. So
+	 check it. FIXME: This is a bit of a hack. */
+      if (c->last_match == NULL)
+	return NULL;
+
+      if (str_comp (sbuf_get (c->last_match), c->partial, strlen (c->partial)))
+	return sbuf_get (c->last_match);
+    }
+
+  if (c->last_match == NULL)
+    return NULL;
+
+  /* Depending on the direction, find our "next" match. */
+  if (direction == COMPLETION_NEXT)
+    return completions_next_match (c);
+
+  /* Otherwise get the previous match */
+  return completions_prev_match (c);
 }
