@@ -32,6 +32,7 @@
 typedef struct rp_window rp_window;
 typedef struct rp_screen rp_screen;
 typedef struct rp_action rp_action;
+typedef struct rp_keymap rp_keymap;
 typedef struct rp_frame rp_frame;
 typedef struct rp_child_info rp_child_info;
 typedef struct rp_group rp_group;
@@ -164,6 +165,17 @@ struct rp_action
   unsigned int state;
   void *data;			/* misc data to be passed to the function */
 /*   void (*func)(void *); */
+};
+
+struct rp_keymap
+{
+  char *name;
+  rp_action *actions;
+  int actions_last;
+  int actions_size;
+
+  /* This structure can be part of a list. */
+  struct list_head node;
 };
 
 struct rp_key

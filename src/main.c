@@ -399,11 +399,14 @@ show_welcome_message ()
 {
   rp_action *help_action;
   char *prefix, *help;
+  rp_keymap *map;
   
   prefix = keysym_to_string (prefix_key.sym, prefix_key.state);
 
+  map = find_keymap (ROOT_KEYMAP); 
+
   /* Find the help key binding. */
-  help_action = find_keybinding_by_action ("help");
+  help_action = find_keybinding_by_action ("help " ROOT_KEYMAP, map);
   if (help_action)
     help = keysym_to_string (help_action->key, help_action->state);
   else
@@ -770,7 +773,7 @@ clean_up ()
 
   history_save ();
 
-  free_keybindings ();
+  free_keymaps ();
   free_aliases ();
   free_bar ();
   free_groups ();

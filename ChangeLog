@@ -1,3 +1,50 @@
+2003-09-02  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/main.c (show_welcome_message): search the root keymap for
+	the help binding.
+	(clean_up): call free_keymaps and not free_keybindings.
+
+	* src/events.c (handle_key): call cmd_readkey to hand actually
+	reading a key from the keyboard.
+
+	* src/data.h (typedef rp_keymap): new typedef
+	(struct rp_keymap): new struct
+
+	* src/conf.h (ROOT_KEYMAP): new define
+
+	* src/actions.h (cmd_readkey): new prototype
+	(cmd_newkmap): likewise
+	(cmd_delkmap): likewise
+	(cmd_definekey): likewise
+	(find_keymap): likewise
+	(keymap_free): likewise
+	(free_keymaps): likewise
+
+	* src/actions.c (rp_keymaps): new global.  remove globals
+	key_actions, key_actions_last, and key_actions_table_size.
+	(user_commands): remove bind and unbind. New commands readkey,
+	newkmap, delkmap, and definekey.
+	(find_keybinding_by_action): take a rp_keymap argument and operate
+	on it. All callers updated.
+	(find_keybinding): likewise
+	(find_command_by_keydesc): likewise
+	(resolve_command_from_keydesc): likewise
+	(add_keybinding): likewise
+	(remove_keybinding): likewise
+	(cmd_definekey): new function
+	(cmd_newkmap): likewise
+	(cmd_delkmap): likewise
+	(keymap_new): likewise
+	(keymap_free): likewise
+	(find_keymap): likewise
+	(free_keymaps): likewise
+	(cmd_bind): remove function. Prototype removed.
+	(cmd_unbind): likewise
+	(initialize_default_keybindings): add aliases for unbind and bind.
+	(ungrab_rat): moved from events.c
+	(grab_rat): likewise
+
+
 2003-08-30  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/input.c (get_more_input): use XGrabKeyboard and XUngrabKeyboard

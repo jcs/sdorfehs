@@ -136,11 +136,18 @@ char *cmd_verbexec (int interactive, char *data);
 char *cmd_version (int interactive, char *data);
 char *cmd_warp(int interactive, char *data);
 char *cmd_windows (int interactive, char *data);
+char *cmd_readkey (int interactive, char *data);
+char *cmd_newkmap (int interactive, char *data);
+char *cmd_delkmap (int interactive, char *data);
+char *cmd_definekey (int interactive, char *data);
 
+rp_keymap *find_keymap (char *name);
 void initialize_default_keybindings (void);
-void free_keybindings ();
+void keymap_free (rp_keymap *map);
 void free_aliases ();
-rp_action* find_keybinding (KeySym keysym, int state);
-rp_action* find_keybinding_by_action (char *action);
+void free_keymaps ();
+rp_action* find_keybinding (KeySym keysym, int state, rp_keymap *map);
+rp_action* find_keybinding_by_action (char *action, rp_keymap *map);
+
 
 #endif /* ! _RATPOISON_ACTIONS_H */

@@ -29,15 +29,13 @@
 #include "ratpoison.h"
 
 
-static rp_action *key_actions;
-static int key_actions_last;
-static int key_actions_table_size;
+/* rp_keymaps is ratpoison's list of keymaps. */
+LIST_HEAD(rp_keymaps);
 
 static user_command user_commands[] = 
   { /*@begin (tag required for genrpbindings) */
     {"abort",		cmd_abort,		arg_VOID},
     {"banish",          cmd_banish,     	arg_VOID},
-    {"bind",		cmd_bind,		arg_VOID},
     {"time", 		cmd_time, 		arg_VOID},
     {"colon",	 	cmd_colon,		arg_STRING},
     {"curframe",        cmd_curframe,   	arg_VOID},
@@ -71,7 +69,6 @@ static user_command user_commands[] =
     {"source",		cmd_source,		arg_STRING},
     {"split",		cmd_h_split,		arg_STRING},
     {"title", 		cmd_rename, 		arg_STRING},
-    {"unbind",		cmd_unbind,		arg_STRING},
     {"version",		cmd_version,		arg_VOID},
     {"vsplit",		cmd_v_split,		arg_STRING},
     {"windows", 	cmd_windows, 		arg_VOID},
@@ -110,6 +107,10 @@ static user_command user_commands[] =
     {"addhook",         cmd_addhook,            arg_STRING},
     {"remhook",         cmd_remhook,            arg_STRING},
     {"listhook",        cmd_listhook,           arg_STRING},
+    {"readkey",          cmd_readkey,             arg_STRING},
+    {"newkmap",          cmd_newkmap,             arg_STRING},
+    {"delkmap",          cmd_delkmap,             arg_STRING},
+    {"definekey",          cmd_definekey,             arg_STRING},
 
     /* Commands to set default behavior. */
     {"defbargravity",		cmd_defbargravity,	arg_STRING},
@@ -158,15 +159,15 @@ static int alias_list_size;
 static int alias_list_last;
 
 rp_action*
-find_keybinding_by_action (char *action)
+find_keybinding_by_action (char *action, rp_keymap *map)
 {
   int i;
 
-  for (i=0; i<key_actions_last; i++)
+  for (i=0; i<map->actions_last; i++)
     {
-      if (!strcmp (key_actions[i].data, action))
+      if (!strcmp (map->actions[i].data, action))
 	{
-	  return &key_actions[i];
+	  return &map->actions[i];
 	}
     }
 
@@ -174,31 +175,31 @@ find_keybinding_by_action (char *action)
 }
 
 rp_action*
-find_keybinding (KeySym keysym, int state)
+find_keybinding (KeySym keysym, int state, rp_keymap *map)
 {
   int i;
-  for (i = 0; i < key_actions_last; i++)
+  for (i = 0; i < map->actions_last; i++)
     {
-      if (key_actions[i].key == keysym 
-	  && key_actions[i].state == state)
-	return &key_actions[i];
+      if (map->actions[i].key == keysym 
+	  && map->actions[i].state == state)
+	return &map->actions[i];
     }
   return NULL;
 }
 
 static char *
-find_command_by_keydesc (char *desc)
+find_command_by_keydesc (char *desc, rp_keymap *map)
 {
   int i = 0;
   char *keysym_name;
 
-  while (i < key_actions_last)
+  while (i < map->actions_last)
     {
-      keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
+      keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
       if (!strcmp (keysym_name, desc))
         {
           free (keysym_name);
-          return key_actions[i].data;
+          return map->actions[i].data;
         }
       free (keysym_name);
       i++;
@@ -208,11 +209,11 @@ find_command_by_keydesc (char *desc)
 }
 
 static char *
-resolve_command_from_keydesc (char *desc, int depth)
+resolve_command_from_keydesc (char *desc, int depth, rp_keymap *map)
 {
   char *cmd, *command;
 
-  command = find_command_by_keydesc (desc);
+  command = find_command_by_keydesc (desc, map);
   if (!command)
     return NULL;
 
@@ -221,29 +222,28 @@ resolve_command_from_keydesc (char *desc, int depth)
     /* it is not */
     return command;
 
-  cmd = resolve_command_from_keydesc (&command[5], depth + 1);
+  cmd = resolve_command_from_keydesc (&command[5], depth + 1, map);
   return (cmd != NULL) ? cmd : command;
 }
 
 
 static void
-add_keybinding (KeySym keysym, int state, char *cmd)
+add_keybinding (KeySym keysym, int state, char *cmd, rp_keymap *map)
 {
-  if (key_actions_last >= key_actions_table_size)
+  if (map->actions_last >= map->actions_size)
     {
       /* double the key table size */
-      key_actions_table_size *= 2;
-      key_actions = (rp_action*) xrealloc (key_actions, sizeof (rp_action) * key_actions_table_size);
-      PRINT_DEBUG (("realloc()ed key_table %d\n", key_actions_table_size));
+      map->actions_size *= 2;
+      map->actions = (rp_action*) xrealloc (map->actions, sizeof (rp_action) * map->actions_size);
+      PRINT_DEBUG (("realloc()ed key_table %d\n", map->actions_size));
     }
 
-  key_actions[key_actions_last].key = keysym;
-  key_actions[key_actions_last].state = state;
-  key_actions[key_actions_last].data = xstrdup (cmd); /* free this on
-							 shutdown, or
-							 re/unbinding */
+  map->actions[map->actions_last].key = keysym;
+  map->actions[map->actions_last].state = state;
+  /* free this on shutdown, or re/unbinding */
+  map->actions[map->actions_last].data = xstrdup (cmd); 
 
-  ++key_actions_last;
+  map->actions_last++;
 }
 
 static void
@@ -256,14 +256,14 @@ replace_keybinding (rp_action *key_action, char *newcmd)
 }
 
 static int
-remove_keybinding (KeySym keysym, int state)
+remove_keybinding (KeySym keysym, int state, rp_keymap *map)
 {
   int i;
   int found = -1;
 
-  for (i=0; i<key_actions_last; i++)
+  for (i=0; i<map->actions_last; i++)
     {
-      if (key_actions[i].key == keysym && key_actions[i].state == state)
+      if (map->actions[i].key == keysym && map->actions[i].state == state)
 	{
 	  found = i;
 	  break;
@@ -272,11 +272,11 @@ remove_keybinding (KeySym keysym, int state)
 
   if (found >= 0)
     {
-      free (key_actions[found].data);
+      free (map->actions[found].data);
 
-      memmove (&key_actions[found], &key_actions[found+1], 
-	       sizeof (rp_action) * (key_actions_last - found - 1));
-      key_actions_last--;
+      memmove (&map->actions[found], &map->actions[found+1], 
+	       sizeof (rp_action) * (map->actions_last - found - 1));
+      map->actions_last--;
       
       return 1;
     }
@@ -284,12 +284,87 @@ remove_keybinding (KeySym keysym, int state)
   return 0;
 }
 
+rp_keymap *
+keymap_new (char *name)
+{
+  rp_keymap *map;
+
+  /* All keymaps must have a name. */
+  if (name == NULL) 
+    return NULL;
+
+  map = xmalloc (sizeof (rp_keymap));
+  map->name = xstrdup (name);
+  map->actions_size = 1;
+  map->actions = (rp_action*) xmalloc (sizeof (rp_action) * map->actions_size);
+  map->actions_last = 0;
+
+  return map;
+}
+
+rp_keymap *
+find_keymap (char *name)
+{
+  rp_keymap *cur;
+
+  list_for_each_entry (cur, &rp_keymaps, node)
+    {
+      if (!strcmp (name, cur->name))
+	{
+	  return cur;
+	}
+    }
+
+  return NULL;
+}
+
+/* Search the alias table for a match. If a match is found, return its
+   index into the table. Otherwise return -1. */
+static int
+find_alias_index (char *name)
+{
+  int i;
+
+  for (i=0; i<alias_list_last; i++)
+    if (!strcmp (name, alias_list[i].name))
+      return i;
+
+  return -1;
+}
+
+static void
+add_alias (char *name, char *alias)
+{
+  int index;
+
+  /* Are we updating an existing alias, or creating a new one? */
+  index = find_alias_index (name);
+  if (index >= 0)
+    {
+      free (alias_list[index].alias);
+      alias_list[index].alias = xstrdup (alias);
+    }
+  else
+    {
+      if (alias_list_last >= alias_list_size)
+	{
+	  alias_list_size *= 2;
+	  alias_list = xrealloc (alias_list, sizeof (alias_t) * alias_list_size);
+	}
+
+      alias_list[alias_list_last].name = xstrdup (name);
+      alias_list[alias_list_last].alias = xstrdup (alias);
+      alias_list_last++;
+    }
+}
+
 void
 initialize_default_keybindings (void)
 {
-  key_actions_table_size = 1;
-  key_actions = (rp_action*) xmalloc (sizeof (rp_action) * key_actions_table_size);
-  key_actions_last = 0;
+  rp_keymap *map;
+
+  map = keymap_new (ROOT_KEYMAP);
+  list_add (&map->node, &rp_keymaps);
 
   /* Initialive the alias list. */
   alias_list_size = 5;
@@ -299,86 +374,106 @@ initialize_default_keybindings (void)
   prefix_key.sym = KEY_PREFIX;
   prefix_key.state = MODIFIER_PREFIX;
 
-  add_keybinding (prefix_key.sym, prefix_key.state, "other");
-  add_keybinding (prefix_key.sym, 0, "meta");
-  add_keybinding (XK_g, RP_CONTROL_MASK, "abort");
-  add_keybinding (XK_0, 0, "select 0");
-  add_keybinding (XK_1, 0, "select 1");
-  add_keybinding (XK_2, 0, "select 2");
-  add_keybinding (XK_3, 0, "select 3");
-  add_keybinding (XK_4, 0, "select 4");
-  add_keybinding (XK_5, 0, "select 5");
-  add_keybinding (XK_6, 0, "select 6");
-  add_keybinding (XK_7, 0, "select 7");
-  add_keybinding (XK_8, 0, "select 8");
-  add_keybinding (XK_9, 0, "select 9");
-  add_keybinding (XK_minus, 0, "select -");
-  add_keybinding (XK_A, 0, "title");
-  add_keybinding (XK_A, RP_CONTROL_MASK, "title");
-  add_keybinding (XK_K, 0, "kill");
-  add_keybinding (XK_K, RP_CONTROL_MASK, "kill");
-  add_keybinding (XK_Return, 0, "next");
-  add_keybinding (XK_Return, RP_CONTROL_MASK,	"next");
-  add_keybinding (XK_a, 0, "time");
-  add_keybinding (XK_a, RP_CONTROL_MASK, "time");
-  add_keybinding (XK_b, 0, "banish");
-  add_keybinding (XK_b, RP_CONTROL_MASK, "banish");
-  add_keybinding (XK_c, 0, "exec " TERM_PROG);
-  add_keybinding (XK_c, RP_CONTROL_MASK, "exec " TERM_PROG);
-  add_keybinding (XK_colon, 0, "colon");
-  add_keybinding (XK_exclam, 0, "exec");
-  add_keybinding (XK_exclam, RP_CONTROL_MASK, "colon exec " TERM_PROG " -e ");
-  add_keybinding (XK_i, 0, "info");
-  add_keybinding (XK_i, RP_CONTROL_MASK, "info");
-  add_keybinding (XK_k, 0, "delete");
-  add_keybinding (XK_k, RP_CONTROL_MASK, "delete");
-  add_keybinding (XK_l, 0, "redisplay");
-  add_keybinding (XK_l, RP_CONTROL_MASK, "redisplay");
-  add_keybinding (XK_m, 0, "lastmsg");
-  add_keybinding (XK_m, RP_CONTROL_MASK, "lastmsg");
-  add_keybinding (XK_n, 0, "next");
-  add_keybinding (XK_n, RP_CONTROL_MASK, "next");
-  add_keybinding (XK_p, 0, "prev");
-  add_keybinding (XK_p, RP_CONTROL_MASK, "prev");
-  add_keybinding (XK_quoteright, 0, "select");
-  add_keybinding (XK_quoteright, RP_CONTROL_MASK, "select");
-  add_keybinding (XK_space, 0, "next");
-  add_keybinding (XK_space, RP_CONTROL_MASK, "next");
-  add_keybinding (XK_v, 0, "version");
-  add_keybinding (XK_v, RP_CONTROL_MASK, "version");
-  add_keybinding (XK_V, 0, "license");
-  add_keybinding (XK_V, RP_CONTROL_MASK, "license");
-  add_keybinding (XK_w, 0, "windows");
-  add_keybinding (XK_w, RP_CONTROL_MASK, "windows");
-  add_keybinding (XK_s, 0, "split");
-  add_keybinding (XK_s, RP_CONTROL_MASK, "split");
-  add_keybinding (XK_S, 0, "vsplit");
-  add_keybinding (XK_S, RP_CONTROL_MASK, "vsplit");
-  add_keybinding (XK_Tab, 0, "focus");
-  add_keybinding (XK_Tab, RP_META_MASK, "focuslast");
-  add_keybinding (XK_Q, 0, "only");
-  add_keybinding (XK_R, 0, "remove");
-  add_keybinding (XK_f, 0, "fselect");
-  add_keybinding (XK_f, RP_CONTROL_MASK, "fselect");
-  add_keybinding (XK_F, 0, "curframe");
-  add_keybinding (XK_r, 0, "resize");
-  add_keybinding (XK_r, RP_CONTROL_MASK, "resize");
-  add_keybinding (XK_question, 0, "help");
+  add_keybinding (prefix_key.sym, prefix_key.state, "other", map);
+  add_keybinding (prefix_key.sym, 0, "meta", map);
+  add_keybinding (XK_g, RP_CONTROL_MASK, "abort", map);
+  add_keybinding (XK_0, 0, "select 0", map);
+  add_keybinding (XK_1, 0, "select 1", map);
+  add_keybinding (XK_2, 0, "select 2", map);
+  add_keybinding (XK_3, 0, "select 3", map);
+  add_keybinding (XK_4, 0, "select 4", map);
+  add_keybinding (XK_5, 0, "select 5", map);
+  add_keybinding (XK_6, 0, "select 6", map);
+  add_keybinding (XK_7, 0, "select 7", map);
+  add_keybinding (XK_8, 0, "select 8", map);
+  add_keybinding (XK_9, 0, "select 9", map);
+  add_keybinding (XK_minus, 0, "select -", map);
+  add_keybinding (XK_A, 0, "title", map);
+  add_keybinding (XK_A, RP_CONTROL_MASK, "title", map);
+  add_keybinding (XK_K, 0, "kill", map);
+  add_keybinding (XK_K, RP_CONTROL_MASK, "kill", map);
+  add_keybinding (XK_Return, 0, "next", map);
+  add_keybinding (XK_Return, RP_CONTROL_MASK,	"next", map);
+  add_keybinding (XK_a, 0, "time", map);
+  add_keybinding (XK_a, RP_CONTROL_MASK, "time", map);
+  add_keybinding (XK_b, 0, "banish", map);
+  add_keybinding (XK_b, RP_CONTROL_MASK, "banish", map);
+  add_keybinding (XK_c, 0, "exec " TERM_PROG, map);
+  add_keybinding (XK_c, RP_CONTROL_MASK, "exec " TERM_PROG, map);
+  add_keybinding (XK_colon, 0, "colon", map);
+  add_keybinding (XK_exclam, 0, "exec", map);
+  add_keybinding (XK_exclam, RP_CONTROL_MASK, "colon exec " TERM_PROG " -e ", map);
+  add_keybinding (XK_i, 0, "info", map);
+  add_keybinding (XK_i, RP_CONTROL_MASK, "info", map);
+  add_keybinding (XK_k, 0, "delete", map);
+  add_keybinding (XK_k, RP_CONTROL_MASK, "delete", map);
+  add_keybinding (XK_l, 0, "redisplay", map);
+  add_keybinding (XK_l, RP_CONTROL_MASK, "redisplay", map);
+  add_keybinding (XK_m, 0, "lastmsg", map);
+  add_keybinding (XK_m, RP_CONTROL_MASK, "lastmsg", map);
+  add_keybinding (XK_n, 0, "next", map);
+  add_keybinding (XK_n, RP_CONTROL_MASK, "next", map);
+  add_keybinding (XK_p, 0, "prev", map);
+  add_keybinding (XK_p, RP_CONTROL_MASK, "prev", map);
+  add_keybinding (XK_quoteright, 0, "select", map);
+  add_keybinding (XK_quoteright, RP_CONTROL_MASK, "select", map);
+  add_keybinding (XK_space, 0, "next", map);
+  add_keybinding (XK_space, RP_CONTROL_MASK, "next", map);
+  add_keybinding (XK_v, 0, "version", map);
+  add_keybinding (XK_v, RP_CONTROL_MASK, "version", map);
+  add_keybinding (XK_V, 0, "license", map);
+  add_keybinding (XK_V, RP_CONTROL_MASK, "license", map);
+  add_keybinding (XK_w, 0, "windows", map);
+  add_keybinding (XK_w, RP_CONTROL_MASK, "windows", map);
+  add_keybinding (XK_s, 0, "split", map);
+  add_keybinding (XK_s, RP_CONTROL_MASK, "split", map);
+  add_keybinding (XK_S, 0, "vsplit", map);
+  add_keybinding (XK_S, RP_CONTROL_MASK, "vsplit", map);
+  add_keybinding (XK_Tab, 0, "focus", map);
+  add_keybinding (XK_Tab, RP_META_MASK, "focuslast", map);
+  add_keybinding (XK_Q, 0, "only", map);
+  add_keybinding (XK_R, 0, "remove", map);
+  add_keybinding (XK_f, 0, "fselect", map);
+  add_keybinding (XK_f, RP_CONTROL_MASK, "fselect", map);
+  add_keybinding (XK_F, 0, "curframe", map);
+  add_keybinding (XK_r, 0, "resize", map);
+  add_keybinding (XK_r, RP_CONTROL_MASK, "resize", map);
+  add_keybinding (XK_question, 0, "help " ROOT_KEYMAP, map);
+
+  add_alias ("unbind", "definekey default");
+  add_alias ("bind", "definekey default");
 }
 
 void
-free_keybindings ()
+keymap_free (rp_keymap *map)
 {
   int i;
 
   /* Free the data in the actions. */
-  for (i=0; i<key_actions_last; i++)
+  for (i=0; i<map->actions_last; i++)
     {
-      free (key_actions[i].data);
+      free (map->actions[i].data);
     }
 
-  /* Free the actions list. */
-  free (key_actions);
+  /* Free the map data. */
+  free (map->actions);
+  free (map->name);
+
+  /* ...and the map itself. */
+  free (map);
+}
+
+void
+free_keymaps ()
+{
+  rp_keymap *cur;
+  struct list_head *tmp, *iter;
+
+  list_for_each_safe_entry (cur, iter, tmp, &rp_keymaps, node)
+    {
+      list_del (&cur->node);
+      keymap_free (cur);
+    }
 }
 
 void
@@ -523,87 +618,105 @@ cmd_clrunmanaged (int interactive, char *data)
 }
 
 char *
-cmd_bind (int interactive, char *data)
+cmd_definekey (int interactive, char *data)
 {
-  char *keydesc;
-  char *cmd;
-
-  if (!data)
-    {
-      message (" bind: at least one argument required ");
-      return NULL;
-    }
-
-  keydesc = (char*) xmalloc (strlen (data) + 1);
-  sscanf (data, "%s", keydesc);
-  cmd = data + strlen (keydesc);
-
-  /* Gobble remaining whitespace before command starts */
-  while (*cmd == ' ')
-    {
-      cmd++;
-    }
-  
-  if (!keydesc)
-    message (" bind: at least one argument required ");
-  else
-    {
-      if (!cmd || !*cmd)
-	{
-	  /* If no comand is specified, then unbind the key. */
-	  cmd_unbind (interactive, keydesc);
-	}
-      else
-	{
-	  struct rp_key *key = parse_keydesc (keydesc);
-	  
-	  if (key)
-	    {
-	      rp_action *key_action;
-
-	      if ((key_action = find_keybinding (key->sym, key->state)))
-		replace_keybinding (key_action, cmd);
-	      else
-		add_keybinding (key->sym, key->state, cmd);
-	    }
-	  else
-	    marked_message_printf (0, 0, " bind: unknown key '%s' ", keydesc);
-	}
-    }
-
-  free (keydesc);
-
-  return NULL;
-}
-
-char *
-cmd_unbind (int interactive, char *data)
-{
+  rp_keymap *map;
   struct rp_key *key;
+  char *cmd;
   char *keydesc;
+  char *token, *tmp;
 
   if (!data)
     {
-      message (" unbind: one argument required ");
+      message (" definekey: at least two arguments required ");
       return NULL;
     }
 
-  keydesc = (char*) xmalloc (strlen (data) + 1);
-  sscanf (data, "%s", keydesc);
+  /* Make a copy of the input. */
+/*   tmp = xstrdup (data); */
+  tmp = xmalloc (strlen (data) + 1);
+  strcpy (tmp, data);
+
+  /* Read the keymap */
+  token = strtok (tmp, " ");
+  map = find_keymap (token);
+
+  /* Make sure the keymap exists */
+  if (map == NULL)
+    {
+      marked_message_printf (0, 0, " definekey: keymap '%s' not found ", token);
+      free (tmp);
+      return NULL;
+    }
+
+  /* Read the key description */
+  token = strtok (NULL, " ");
+
+  if (!token)
+    {
+      message (" definekey: at least two arguments required ");
+      free (tmp);
+      return NULL;
+    }
+
+  keydesc = xstrdup (token);
+
+  /* Read the command. */
+  token = strtok (NULL, "");
+  if (token)
+    cmd = xstrdup (token);
+  else
+    cmd = NULL;
+
+  free (tmp);
+
+  /* Parse the key description. Do this after the above strtok,
+     because parse_keydesc uses strtok. */
   key = parse_keydesc (keydesc);
 
-  if (key)
+  if (key == NULL)
     {
-      if (!remove_keybinding (key->sym, key->state))
-	marked_message_printf (0, 0, " unbind: unbound key '%s' ", keydesc);
+      marked_message_printf (0, 0, " definekey: unknown key '%s' ", keydesc);
+      free (keydesc);
+      if (cmd)
+	free (cmd);
+      return NULL;
+    }
+
+  /* Gobble remaining whitespace before command starts */
+  if (cmd)
+    {
+      tmp = cmd;
+      while (*cmd == ' ')
+	{
+	  cmd++;
+	}
+      /* Do a little dance to make sure we don't leak. */
+      cmd = xstrdup (cmd);
+      free (tmp);
+    }
+
+  if (!cmd || !*cmd)
+    {
+      /* If no comand is specified, then unbind the key. */
+      if (!remove_keybinding (key->sym, key->state, map))
+	marked_message_printf (0, 0, " definekey: key '%s' is not bound ", keydesc);
     }
   else
     {
-      marked_message_printf (0, 0, " unbind: unknown key '%s' ", keydesc);
+      rp_action *key_action;
+
+      if ((key_action = find_keybinding (key->sym, key->state, map)))
+	replace_keybinding (key_action, cmd);
+      else
+	add_keybinding (key->sym, key->state, cmd, map);
     }
 
   free (keydesc);
-  return NULL;
+  if (cmd)
+    free (cmd);
+
+  return NULL;  
 }
 
 char *
@@ -1392,13 +1505,15 @@ cmd_escape (int interactive, char *data)
   rp_window *cur;
   struct rp_key *key;
   rp_action *action;
+  rp_keymap *map;
 
+  map = find_keymap (ROOT_KEYMAP);
   key = parse_keydesc (data);
 
   if (key)
     {
       /* Update the "other" keybinding */
-      action = find_keybinding(prefix_key.sym, prefix_key.state);
+      action = find_keybinding(prefix_key.sym, prefix_key.state, map);
       if (action != NULL && !strcmp (action->data, "other"))
 	{
 	  action->key = key->sym;
@@ -1406,7 +1521,7 @@ cmd_escape (int interactive, char *data)
 	}
 
       /* Update the "meta" keybinding */
-      action = find_keybinding(prefix_key.sym, 0);
+      action = find_keybinding(prefix_key.sym, 0, map);
       if (action != NULL && !strcmp (action->data, "meta"))
 	{
 	  action->key = key->sym;
@@ -1770,7 +1885,24 @@ cmd_license (int interactive, char *data)
 char *
 cmd_help (int interactive, char *data)
 {
-  if (interactive) 
+  rp_keymap *map;
+
+  if (data == NULL)
+    {
+      message (" help: One argument required ");
+      return NULL;
+    }
+
+  map = find_keymap (data);
+  if (map == NULL)
+    {
+      marked_message_printf (0, 0, " help: keymap '%s' not found ", data);
+      return NULL;
+    }
+
+
+
+  if (interactive)
     {
       rp_screen *s = current_screen();
       XEvent ev;
@@ -1802,70 +1934,70 @@ cmd_help (int interactive, char *data)
       free (keysym_name);
 
       y += FONT_HEIGHT (defaults.font) * 2;
-      
+
       i = 0;
       old_i = 0;
-      while (i<key_actions_last || drawing_keys)
-        {
-          if (drawing_keys)
-            {
-              keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
+      while (i<map->actions_last || drawing_keys)
+	{
+	  if (drawing_keys)
+	    {
+	      keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
 
-              XDrawString (dpy, s->help_window, s->normal_gc,
-            	       x, y + defaults.font->max_bounds.ascent,
-            	       keysym_name, strlen (keysym_name));
+	      XDrawString (dpy, s->help_window, s->normal_gc,
+			   x, y + defaults.font->max_bounds.ascent,
+			   keysym_name, strlen (keysym_name));
 
-              if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
-                max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
+	      if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
+		max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
 
-              free (keysym_name);
-            }
-          else
-            {
-              XDrawString (dpy, s->help_window, s->normal_gc,
-            	       x, y + defaults.font->max_bounds.ascent,
-            	       key_actions[i].data, strlen (key_actions[i].data));
+	      free (keysym_name);
+	    }
+	  else
+	    {
+	      XDrawString (dpy, s->help_window, s->normal_gc,
+			   x, y + defaults.font->max_bounds.ascent,
+			   map->actions[i].data, strlen (map->actions[i].data));
 
-              if (XTextWidth (defaults.font, key_actions[i].data, strlen (key_actions[i].data)) > max_width)
-                {
-                  max_width = XTextWidth (defaults.font, key_actions[i].data, strlen (key_actions[i].data));
-                }
-            }
+	      if (XTextWidth (defaults.font, map->actions[i].data, strlen (map->actions[i].data)) > max_width)
+		{
+		  max_width = XTextWidth (defaults.font, map->actions[i].data, strlen (map->actions[i].data));
+		}
+	    }
 
-          y += FONT_HEIGHT (defaults.font);
-          /* Make sure the next line fits entirely within the window. */
-          if (y + FONT_HEIGHT (defaults.font) >= s->root_attr.height)
-            {
-              if (drawing_keys)
-                {
-                  x += max_width + 10;
-                  drawing_keys = 0;
-                  i = old_i;
-                }
-              else
-                {
-                  x += max_width + 20;
-                  drawing_keys = 1;
-                  i++;
-                  old_i = i;
-                }
+	  y += FONT_HEIGHT (defaults.font);
+	  /* Make sure the next line fits entirely within the window. */
+	  if (y + FONT_HEIGHT (defaults.font) >= s->root_attr.height)
+	    {
+	      if (drawing_keys)
+		{
+		  x += max_width + 10;
+		  drawing_keys = 0;
+		  i = old_i;
+		}
+	      else
+		{
+		  x += max_width + 20;
+		  drawing_keys = 1;
+		  i++;
+		  old_i = i;
+		}
 
-              max_width = 0;
-              y = FONT_HEIGHT (defaults.font) * 4;
-            }
-          else
-            {
-              i++;
-              if (i >= key_actions_last && drawing_keys)
-                {
-                  x += max_width + 10;
-                  drawing_keys = 0;
-                  y = FONT_HEIGHT (defaults.font) * 4;
-                  i = old_i;
-                  max_width = 0;
-                }
-            }
-        }
+	      max_width = 0;
+	      y = FONT_HEIGHT (defaults.font) * 4;
+	    }
+	  else
+	    {
+	      i++;
+	      if (i >= map->actions_last && drawing_keys)
+		{
+		  x += max_width + 10;
+		  drawing_keys = 0;
+		  y = FONT_HEIGHT (defaults.font) * 4;
+		  i = old_i;
+		  max_width = 0;
+		}
+	    }
+	}
 
       XMaskEvent (dpy, KeyPressMask, &ev);
       XUngrabKeyboard (dpy, CurrentTime);
@@ -1886,22 +2018,24 @@ cmd_help (int interactive, char *data)
 
       help_list = sbuf_new (0);
 
-      for (i = 0; i < key_actions_last; i++)
-        {
-          keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
-          sbuf_concat (help_list, keysym_name);
-          free (keysym_name);
-          sbuf_concat (help_list, " ");
-          sbuf_concat (help_list, key_actions[i].data);
-          if (i < key_actions_last - 1)
-            sbuf_concat (help_list, "\n");
-        }
+      for (i = 0; i < map->actions_last; i++)
+	{
+	  keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
+	  sbuf_concat (help_list, keysym_name);
+	  free (keysym_name);
+	  sbuf_concat (help_list, " ");
+	  sbuf_concat (help_list, map->actions[i].data);
+	  if (i < map->actions_last - 1)
+	    sbuf_concat (help_list, "\n");
+	}
 
       tmp = sbuf_get (help_list);
       free (help_list);
 
       return tmp;
     }
+
+  return NULL;
 }
 
 char *
@@ -2723,14 +2857,14 @@ cmd_focuslast (int interactive, char *data)
 char *
 cmd_link (int interactive, char *data)
 {
-  char *cmd = NULL;
+/*   char *cmd = NULL; */
 
-  if (!data)
-    return NULL;
+/*   if (!data) */
+/*     return NULL; */
 
-  cmd = resolve_command_from_keydesc (data, 0);
-  if (cmd)
-    return command (interactive, cmd);
+/*   cmd = resolve_command_from_keydesc (data, 0); */
+/*   if (cmd) */
+/*     return command (interactive, cmd); */
 
   return NULL;
 }
@@ -2764,25 +2898,10 @@ cmd_defbarpadding (int interactive, char *data)
   return NULL;
 }
 
-/* Search the alias table for a match. If a match is found, return its
-   index into the table. Otherwise return -1. */
-static int
-find_alias_index (char *name)
-{
-  int i;
-
-  for (i=0; i<alias_list_last; i++)
-    if (!strcmp (name, alias_list[i].name))
-      return i;
-
-  return -1;
-}
-
 char *
 cmd_alias (int interactive, char *data)
 {
   char *name, *alias;
-  int index;
   
   if (data == NULL)
     {
@@ -2800,25 +2919,8 @@ cmd_alias (int interactive, char *data)
       return NULL;
     }
 
-  /* Are we updating an existing alias, or creating a new one? */
-  index = find_alias_index (name);
-  if (index >= 0)
-    {
-      free (alias_list[index].alias);
-      alias_list[index].alias = xstrdup (alias);
-    }
-  else
-    {
-      if (alias_list_last >= alias_list_size)
-	{
-	  alias_list_size *= 2;
-	  alias_list = xrealloc (alias_list, sizeof (alias_t) * alias_list_size);
-	}
-
-      alias_list[alias_list_last].name = xstrdup (name);
-      alias_list[alias_list_last].alias = xstrdup (alias);
-      alias_list_last++;
-    }
+  /* Add or update the alias. */
+  add_alias (name, alias);
 
   return NULL;
 }
@@ -3839,3 +3941,129 @@ cmd_gdelete (int interactive, char *data)
   return NULL;
 }
 
+static void
+grab_rat ()
+{
+  XGrabPointer (dpy, current_screen()->root, True, 0, 
+		GrabModeAsync, GrabModeAsync, 
+		None, current_screen()->rat, CurrentTime);
+}
+
+static void
+ungrab_rat ()
+{
+  XUngrabPointer (dpy, CurrentTime);
+}
+
+char *
+cmd_readkey (int interactive, char *data)
+{
+  char *keysym_name;
+  rp_action *key_action;
+  KeySym keysym;		/* Key pressed */
+  unsigned int mod;		/* Modifiers */
+  int rat_grabbed = 0;
+  rp_keymap *map;
+
+  if (data == NULL)
+    {
+      message (" readkey: keymap expected ");
+      return NULL;
+    }
+
+  map = find_keymap (data);
+  if (map == NULL)
+    {
+      marked_message_printf (0, 0, " readkey: Unknown keymap '%s' ", data);
+      return NULL;
+    }
+
+  XGrabKeyboard (dpy, current_screen()->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
+
+  /* Change the mouse icon to indicate to the user we are waiting for
+     more keystrokes */
+  if (defaults.wait_for_key_cursor)
+    {
+      grab_rat();
+      rat_grabbed = 1;
+    }
+
+  read_key (&keysym, &mod, NULL, 0);
+  XUngrabKeyboard (dpy, CurrentTime);
+
+  if (rat_grabbed)
+    ungrab_rat();
+
+  if ((key_action = find_keybinding (keysym, x11_mask_to_rp_mask (mod), map)))
+    {
+      char *result;
+      result = command (1, key_action->data);
+      
+      /* Gobble the result. */
+      if (result)
+	free (result);
+    }
+  else
+    {
+      /* No key match, notify user. */
+      keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
+      marked_message_printf (0, 0, " %s unbound key ", keysym_name);
+      free (keysym_name);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_newkmap (int interactive, char *data)
+{
+  rp_keymap *map;
+
+  if (data == NULL)
+    {
+      message (" newkmap: one argument required ");
+      return NULL;
+    }
+
+  map = find_keymap (data);
+  if (map)
+    {
+      marked_message_printf (0, 0, " newkmap: '%s' already exists ", data);
+      return NULL;
+    }
+
+  map = keymap_new (data);
+  list_add_tail (&map->node, &rp_keymaps);
+
+  return NULL;
+}
+
+char *
+cmd_delkmap (int interactive, char *data)
+{
+   rp_keymap *map;
+
+  if (data == NULL)
+    {
+      message (" delkmap: one argument required ");
+      return NULL;
+    }
+
+  if (!strcmp (data, ROOT_KEYMAP))
+    {
+      message (" delkmap: Cannot delete '" ROOT_KEYMAP "' keymap ");
+      return NULL;
+    }
+
+  map = find_keymap (data);
+  if (map == NULL)
+    {
+      marked_message_printf (0, 0,  " delkmap: Unknown keymap '%s' ", data);
+      return NULL;
+    }
+
+  list_del (&map->node);
+  keymap_free (map);
+
+  return NULL;
+}

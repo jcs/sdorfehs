@@ -109,4 +109,7 @@
 /* Use a visual bell in the input window */
 #define VISUAL_BELL 1
 
+/* The name of the root keymap */
+#define ROOT_KEYMAP "root"
+
 #endif /* !_ _RATPOISON_CONF_H */

@@ -349,28 +349,8 @@ client_msg (XClientMessageEvent *ev)
 }
 
 static void
-grab_rat ()
-{
-  XGrabPointer (dpy, current_screen()->root, True, 0, 
-		GrabModeAsync, GrabModeAsync, 
-		None, current_screen()->rat, CurrentTime);
-}
-
-static void
-ungrab_rat ()
-{
-  XUngrabPointer (dpy, CurrentTime);
-}
-
-static void
 handle_key (rp_screen *s)
 {
-  char *keysym_name;
-  rp_action *key_action;
-  KeySym keysym;		/* Key pressed */
-  unsigned int mod;		/* Modifiers */
-  int rat_grabbed = 0;
-
   PRINT_DEBUG (("handling key...\n"));
 
   /* All functions hide the program bar and the frame indicator. */
@@ -381,41 +361,12 @@ handle_key (rp_screen *s)
   alarm (0);
   alarm_signalled = 0;
 
-  XGrabKeyboard (dpy, s->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
-
-  /* Change the mouse icon to indicate to the user we are waiting for
-     more keystrokes */
-  if (defaults.wait_for_key_cursor)
-    {
-      grab_rat();
-      rat_grabbed = 1;
-    }
-
   /* Call the prefix hook. */
   hook_run (&rp_prefix_hook);
 
-  read_key (&keysym, &mod, NULL, 0);
-  XUngrabKeyboard (dpy, CurrentTime);
-
-  if (rat_grabbed)
-    ungrab_rat();
-
-  if ((key_action = find_keybinding (keysym, x11_mask_to_rp_mask (mod))))
-    {
-      char *result;
-      result = command (1, key_action->data);
-      
-      /* Gobble the result. */
-      if (result)
-	free (result);
-    }
-  else
-    {
-      /* No key match, notify user. */
-      keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
-      marked_message_printf (0, 0, " %s unbound key ", keysym_name);
-      free (keysym_name);
-    }
+  /* Read a key and execute the command associated with it on the
+     default keymap. */
+  cmd_readkey (1, ROOT_KEYMAP);
 }
 
 static void
