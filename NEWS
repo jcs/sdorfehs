@@ -1,6 +1,32 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes Since 0.0.5
+** Sorted window list
+
+The window list is now sorted by number.
+
+** Resizing input window
+
+The size of the input window can be customized in conf.h by setting
+INPUT_WINDOW_SIZE. It also dynamically resizes to accommodate the user
+input.
+
+** Pointer location
+
+The pointer location is saved on a per window basis. When ratpoison
+switches to a window it restores the pointer location to its location
+the last time that window had focus.
+
+** Auto quit ratpoison
+
+When the auto close feature is enabled, ratpoison will exit when the
+last managed window is closed. This feature can be turned on by
+uncommenting the line:
+
+//#define AUTO_CLOSE
+
+in conf.h
+
 ** Improved shell command
 The 'exec' command now calls execl ("/bin/sh", "sh", "-c", cmd, 0)
 where cmd is your shell command.  In short, you can now make shell
