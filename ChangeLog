@@ -1,8 +1,17 @@
 2005-01-22  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/actions.h (argtype): add arg_RAW
+
 	* src/actions.c (init_user_commands): make unmanage'd argument
 	optional when called non-interactively.
 	(init_user_commands): "title" accepts 1 argument.
+	(init_user_commands): "echo" and "putsel" take a raw argument.
+	(read_arg): parse arg_RAW
+	(parse_args): take a raw argument. gobble whitespace when we've
+	hit nargs and raw is false. callers updated.
+	(command): don't gobble whitespace after reading the command. set
+	nargs when the argtype is arg_RAW, too.
+	(cmd_set): set nargs when the argtype is arg_RAW, too.
 
 2005-01-20  Shawn Betts  <katia_dilkina@verizon.net>
 

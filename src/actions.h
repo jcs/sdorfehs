@@ -33,7 +33,7 @@ typedef struct user_command user_command;
 enum argtype { arg_REST, arg_NUMBER, arg_STRING, arg_FRAME, 
 	       arg_WINDOW, arg_COMMAND, arg_SHELLCMD,
                arg_KEYMAP, arg_KEY, arg_GRAVITY, arg_GROUP, 
-	       arg_HOOK, arg_VARIABLE };
+	       arg_HOOK, arg_VARIABLE, arg_RAW};
 
 union arg_union {
     rp_frame *frame;

@@ -176,7 +176,7 @@ init_user_commands()
   add_command ("delkmap",	cmd_delkmap,	1, 1, 1,
 	       "Keymap: ", arg_KEYMAP);
   add_command ("echo",		cmd_echo,	1, 1, 1,
-	       "Echo: ", arg_REST);
+	       "Echo: ", arg_RAW);
   add_command ("escape",	cmd_escape,	1, 1, 1,
 	       "Key: ", arg_KEY);
   add_command ("exec",		cmd_exec,	1, 1, 1, 
@@ -318,7 +318,7 @@ init_user_commands()
   add_command ("sfdump",	cmd_sfdump,	0, 0, 0);
   add_command ("undo",		cmd_undo,	0, 0, 0);
   add_command ("putsel",	cmd_putsel,	1, 1, 1,
-	       "Text: ", arg_REST);
+	       "Text: ", arg_RAW);
   add_command ("getsel",	cmd_getsel,	0, 0, 0);
   /*@end (tag required for genrpbindings) */
 
@@ -1964,6 +1964,7 @@ read_arg (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
     {
     case arg_STRING:
     case arg_REST:
+    case arg_RAW:
       ret = read_string (spec, s, trivial_completions, arg);
       break;
     case arg_KEYMAP:
@@ -2060,9 +2061,11 @@ fill_in_missing_args (struct user_command *cmd, struct list_head *list, struct l
 
 /* Stick a list of sbuf's in list. if nargs >= 0 then only parse nargs
    arguments and and the rest of the string to the list. Return 0 on
-   success. non-zero on failure. */
+   success. non-zero on failure. When raw is true, then when we hit
+   nargs, we should keep any whitespace at the beginning. When false,
+   gobble the whitespace. */
 static cmdret *
-parse_args (char *str, struct list_head *list, int nargs)
+parse_args (char *str, struct list_head *list, int nargs, int raw)
 {
   cmdret *ret = NULL;
   char *i;
@@ -2084,8 +2087,13 @@ parse_args (char *str, struct list_head *list, int nargs)
       if (nargs >= 0 && parsed_args >= nargs)
 	{
 	  struct sbuf *s = sbuf_new(0);
-	  sbuf_concat(s, i);
-	  list_add_tail (&s->node, list);
+	  if (!raw)
+	    while (*i && *i == ' ') i++;
+	  if (*i)
+	    {
+	      sbuf_concat(s, i);
+	      list_add_tail (&s->node, list);
+	    }
 	  len = 0;
 	  break;
 	}
@@ -2230,16 +2238,6 @@ command (int interactive, char *data)
 
   rest = strtok (NULL, "\0");
 
-  /* Gobble whitespace */
-  if (rest)
-    {
-      while (*rest == ' ')
-	rest++;
-      /* If rest is empty, then we have no argument. */
-      if (*rest == '\0')
-	rest = NULL;
-    }
-
   PRINT_DEBUG (("cmd==%s rest==%s\n", cmd, rest));
 
   /* Look for it in the aliases, first. */
@@ -2284,14 +2282,15 @@ command (int interactive, char *data)
 	  /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
 	  for (i=0; i<uc->num_args; i++)
 	    if (uc->args[i].type == arg_REST
-		|| uc->args[i].type == arg_SHELLCMD)
+		|| uc->args[i].type == arg_SHELLCMD
+		|| uc->args[i].type == arg_RAW)
 	      {
 		nargs = i;
 		break;
 	      }
 
 	  /* Parse the arguments and call the function. */
-	  result = parse_args (rest, &head, nargs);
+	  result = parse_args (rest, &head, nargs, uc->args[nargs].type == arg_RAW);
 	  if (result)
 	    goto free_lists;
 	  
@@ -4719,7 +4718,8 @@ cmd_set (int interactive, struct cmdarg **args)
       /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
       for (i=0; i<ARG(0,variable)->nargs; i++)
 	if (ARG(0,variable)->args[i].type == arg_REST
-	    || ARG(0,variable)->args[i].type == arg_SHELLCMD)
+	    || ARG(0,variable)->args[i].type == arg_SHELLCMD
+	    || ARG(0,variable)->args[i].type == arg_RAW)
 	  {
 	    nargs = i;
 	    break;
@@ -4730,7 +4730,7 @@ cmd_set (int interactive, struct cmdarg **args)
 	input = xstrdup (args[1]->string);
       else
 	input = xstrdup ("");
-      result = parse_args (input, &head, nargs);
+      result = parse_args (input, &head, nargs, ARG(0,variable)->args[i].type == arg_RAW);
       free (input);
 
       if (result)
