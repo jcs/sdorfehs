@@ -41,6 +41,10 @@
 /* Quit ratpoison when there are no more managed windows. */
 /* #define AUTO_CLOSE */
 
+/* Treat windows with maxsize hints as if they were a transient window
+   (don't hide the windows underneath, and center them) */
+#define MAXSIZE_WINDOWS_ARE_TRANSIENTS
+
 /* The minimum size of the input window */
 #define INPUT_WINDOW_SIZE 200
 

@@ -2,6 +2,10 @@ ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 0.1.1
 
+** new conf.h customization MAXSIZE_WINDOWS_ARE_TRANSIENTS
+determines whether windows with maxsize hints are treated like
+transient windows.
+
 ** The frame indicator
 The frame indicator only appears when the current frame is blank and
 there is more than one frame (ie when there are splits).

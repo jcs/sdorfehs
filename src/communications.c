@@ -106,7 +106,7 @@ send_command (unsigned char *cmd)
   w = XCreateSimpleWindow (dpy, DefaultRootWindow (dpy),
 			   0, 0, 1, 1, 0, 0, 0);
 
-  // Select first to avoid race condition
+  /* Select first to avoid race condition */
   XSelectInput (dpy, w, PropertyChangeMask);
 
   XChangeProperty (dpy, w, rp_command, XA_STRING,

@@ -1,3 +1,54 @@
+2001-08-27  Shawn  <sabetts@hotdog>
+
+	* src/messages.h (MESSAGE_RAISE_TRANSIENT): new message
+	(MESSAGE_RAISE_WINDOW): likewise
+	(MESSAGE_MAP_TRANSIENT): likewise
+	(MESSAGE_MAP_WINDOW): likewise
+
+	* src/manage.c (update_window_information): update the
+	transient-ness of the window.
+	(maximize_normal)[MAXSIZE_WINDOWS_ARE_TRANSIENTS]: center the
+	window.
+	(map_window): use the appropriate define in messages.h to notify
+	the user about the new window.
+
+	* src/list.h: remove prototypes unhide_transient_for,
+	is_transient_ancestor, hide_transient_for,
+	hide_transient_for_between from compilation.
+
+	* src/list.c (unhide_transient_for): remove from compilation
+	(hide_transient_for_between): likewise
+	(hide_transient_for): likewise
+	(is_transient_ancestor): likewise
+	(set_active_window)[[MAXSIZE_WINDOWS_ARE_TRANSIENTS]: Don't hide the
+	other windows if the window has a max size hint.
+	(print_window_information): use marked_message_printf
+
+	* src/events.c (cleanup_frame): restructure
+	(cleanup_frame)[MAXSIZE_WINDOWS_ARE_TRANSIENTS]: Don't hide the
+	other windows if the window has a max size hint.
+	(unmap_notify): don't try to locate the event's screen.
+	(unmap_notify): if the window wasn't found, return immediately.
+	(map_request): restructure. reword debugging output
+	(map_request): use the appropriate define in messages.h to notify
+	the user about window raise requests.
+	(configure_request): likewise
+	(property_notify): Handle the transient_for notify.
+
+	* src/conf.h (MAXSIZE_WINDOWS_ARE_TRANSIENTS): new customization
+
+	* src/bar.c (show_bar): map and raise the window
+	(marked_message): likewise
+	(marked_message): crop the mark_end and mark_start to the
+	boundaries of the message.
+	(marked_message): calculate the end of the marked part of the
+	message correctly.
+
+	* src/actions.c (cmd_delete): use PRINT_DEBUG for debug messages.
+	(command): use marked_message_printf
+	(cmd_echo): likewise
+	(cmd_rudeness): pad messages with spaces.
+
 2001-08-26  Shawn  <sabetts@hotdog>
 
 	* src/events.c (configure_request): make sure the window is iconic

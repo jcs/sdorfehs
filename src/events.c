@@ -44,14 +44,18 @@ new_window (XCreateWindowEvent *e)
   rp_window *win;
   screen_info *s;
 
-  if (e->override_redirect) return;
+  if (e->override_redirect)
+    return;
 
   s = find_screen (e->parent);
-
   win = find_window (e->window);
 
-  if (s && !win && e->window != s->key_window && e->window != s->bar_window 
-      && e->window != s->input_window && e->window != s->frame_window && e->window != s->help_window)
+  if (s && win == NULL
+      && e->window != s->key_window 
+      && e->window != s->bar_window 
+      && e->window != s->input_window 
+      && e->window != s->frame_window 
+      && e->window != s->help_window)
     {
       win = add_to_window_list (s, e->window);
       update_window_information (win);
@@ -61,179 +65,152 @@ new_window (XCreateWindowEvent *e)
 static void
 cleanup_frame (rp_window_frame *frame)
 {
+  rp_window *last_win;
   rp_window *win;
 
   win = find_window_other ();
-  if (win)
+  if (win == NULL)
     {
-      rp_window *last_win;
-      last_win = set_frames_window (frame, win);
-
-      maximize (win);
-//        unhide_transient_for (win);
-      unhide_window (win);
-
-      if (!win->transient)
-	{
-	  hide_others(win);
-	}
-
-//        if (is_transient_ancestor (last_win, win))
-//  	{
-//  	  hide_transient_for_between (last_win, win);
-//  	}
-//        else if (last_win->transient && win->transient &&
-//  	       last_win->transient_for == win->transient_for)
-//  	{
-//  	  /* Both last_win and win have the same transient_for so we
-//               don't need to hide anything more */
-//  	}
-//        else
-//  	{
-//  	  hide_transient_for (last_win);
-//  	}
-    }
-  else
-    {
-//        hide_transient_for (frame->win);
       set_frames_window (frame, NULL);
+      return;
     }
+
+  last_win = set_frames_window (frame, win);
+
+  maximize (win);
+  unhide_window (win);
+
+
+#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
+  if (!win->transient
+      && !(win->hints->flags & PMaxSize 
+	   && win->hints->max_width < win->scr->root_attr.width
+	   && win->hints->max_height < win->scr->root_attr.height))
+#else
+  if (!win->transient)
+#endif
+    hide_others (win);
 }
 
 static void 
 unmap_notify (XEvent *ev)
 {
-  screen_info *s;
+  rp_window_frame *frame;
   rp_window *win;
 
   /* ignore SubstructureNotify unmaps. */
-  if(ev->xunmap.event != ev->xunmap.window 
-     && ev->xunmap.send_event != True) return;
-
-  s = find_screen (ev->xunmap.event);
+  if(ev->xunmap.event != ev->xunmap.window
+     && ev->xunmap.send_event != True)
+    return;
 
   /* FIXME: Should we only look in the mapped window list? */
   win = find_window_in_list (ev->xunmap.window, rp_mapped_window_sentinel);
 
-  if (s && win)
+  if (win == NULL)
+    return;
+
+  switch (win->state)
     {
-      rp_window_frame *frame;
+    case IconicState:
+      PRINT_DEBUG ("Withdrawing iconized window '%s'\n", win->name);
+      if (ev->xunmap.send_event) withdraw_window (win);
+      break;
+    case NormalState:
+      PRINT_DEBUG ("Withdrawing normal window '%s'\n", win->name);
+      /* If the window was inside a frame, fill the frame with another
+	 window. */
+      frame = find_windows_frame (win);
+      if (frame) cleanup_frame (frame);
+      if (frame == rp_current_frame) set_active_frame (frame);
 
-      switch (win->state)
-	{
-	case IconicState:
-	  PRINT_DEBUG ("Withdrawing iconized window '%s'\n", win->name);
-	  if (ev->xunmap.send_event) withdraw_window (win);
-	  break;
-	case NormalState:
-	  PRINT_DEBUG ("Withdrawing normal window '%s'\n", win->name);
-	  /* If the window was inside a frame, fill the frame with another
-	     window. */
-	  frame = find_windows_frame (win);
-	  if (frame) cleanup_frame (frame);
-	  if (frame == rp_current_frame) set_active_frame (frame);
-
-	  withdraw_window (win);
-	  break;
-	}
-
-      update_window_names (s);
+      withdraw_window (win);
+      break;
     }
+
+  update_window_names (win->scr);
 }
 
 static void 
 map_request (XEvent *ev)
 {
-  screen_info *s;
   rp_window *win;
 
-  s = find_screen (ev->xmap.event);
   win = find_window (ev->xmap.window);
-
-  if (s && win) 
+  if (win == NULL) 
     {
-      PRINT_DEBUG ("Map from a managable window\n");
+      PRINT_DEBUG ("Map request from an unknown window.\n");
+      XMapWindow (dpy, ev->xmap.window);
+      return;
+    }
 
-      switch (win->state)
+  PRINT_DEBUG ("Map request from a managed window\n");
+
+  switch (win->state)
+    {
+    case WithdrawnState:
+      if (unmanaged_window (win->w))
 	{
-	case WithdrawnState:
-	  PRINT_DEBUG ("Unmapped window\n");
-	  if (unmanaged_window (win->w))
-	    {
-	      PRINT_DEBUG ("Unmanaged Window\n");
-	      XMapWindow (dpy, win->w);
-	      break;
-	    }
-	  else
-	    {
-	      PRINT_DEBUG ("managed Window\n");
-	      map_window (win);
-	      break;
-	    }
-	case NormalState:
-	  PRINT_DEBUG ("Mapped Window\n");
-	  /* Its already mapped, so we don't have to do anything */
-
-	  /* 	  maximize (win); */
-	  /* 	  XMapRaised (dpy, win->w); */
-	  /* 	  set_state (win, NormalState); */
-	  /* 	  set_active_window (win); */
-	  break;
-	case IconicState:
-	  PRINT_DEBUG ("Mapped iconic window\n");
-	  if (win->last_access == 0)
-	    {
-	      /* Depending on the rudeness level, actually map the
-		 window. */
-	      if ((rp_honour_transient_map && win->transient)
-		  || (rp_honour_normal_map && !win->transient))
-		set_active_window (win);
-	    }
-	  else
-	    {
-	      /* Depending on the rudeness level, actually map the
-		 window. */
-	      if ((rp_honour_transient_raise && win->transient)
-		  || (rp_honour_normal_raise && !win->transient))
-		set_active_window (win);
-	      else
-		{
-		  if (win->transient)
-		    marked_message_printf (0, 0, "Raise request from transient window %d (%s)", 
-					   win->number, win->name);
-		  else
-		    marked_message_printf (0, 0, "Raise request from window %d (%s)",
-					   win->number, win->name);
-		}
-	    }
+	  PRINT_DEBUG ("Mapping Unmanaged Window\n");
+	  XMapWindow (dpy, win->w);
 	  break;
 	}
-    }
-  else
-    {
-      PRINT_DEBUG ("Not managed.\n");
-      XMapWindow (dpy, ev->xmap.window);
+      else
+	{
+	  PRINT_DEBUG ("Mapping Withdrawn Window\n");
+	  map_window (win);
+	  break;
+	}
+      break;
+    case IconicState:
+      PRINT_DEBUG ("Mapping Iconic window\n");
+      if (win->last_access == 0)
+	{
+	  /* Depending on the rudeness level, actually map the
+	     window. */
+	  if ((rp_honour_transient_map && win->transient)
+	      || (rp_honour_normal_map && !win->transient))
+	    set_active_window (win);
+	}
+      else
+	{
+	  /* Depending on the rudeness level, actually map the
+	     window. */
+	  if ((rp_honour_transient_raise && win->transient)
+	      || (rp_honour_normal_raise && !win->transient))
+	    set_active_window (win);
+	  else
+	    {
+	      if (win->transient)
+		marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT, 
+				       win->number, win->name);
+	      else
+		marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
+				       win->number, win->name);
+	    }
+	}
+      break;
     }
 }
 
 static void
 destroy_window (XDestroyWindowEvent *ev)
 {
+  rp_window_frame *frame;
   rp_window *win;
-  ignore_badwindow++;
 
   win = find_window (ev->window);
+  if (win == NULL) return;
 
-  if (win)
-    {
-      rp_window_frame *frame;
+  ignore_badwindow++;
 
-      frame = find_windows_frame (win);
-      if (frame) cleanup_frame (frame);
-      if (frame == rp_current_frame) set_active_frame (frame);
+  /* A destroyed window should never have a frame, since it should
+     have been cleaned up with an unmap notify event, but just in
+     case... */
+  frame = find_windows_frame (win);
+  if (frame) cleanup_frame (frame);
+  if (frame == rp_current_frame) set_active_frame (frame);
 
-      unmanage (win);
-    }
+  unmanage (win);
 
   ignore_badwindow--;
 }
@@ -291,10 +268,10 @@ configure_request (XConfigureRequestEvent *e)
 		  else 
 		    {
 		      if (win->transient)
-			marked_message_printf (0, 0, "Raise request from transient window %d (%s)", 
+			marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT,
 					       win->number, win->name);
 		      else
-			marked_message_printf (0, 0, "Raise request from window %d (%s)",
+			marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
 					       win->number, win->name);
 		    }
 		}
@@ -425,6 +402,10 @@ handle_key (screen_info *s)
   /* All functions hide the program bar and the frame indicator. */
   if (BAR_TIMEOUT > 0) hide_bar (s);
   hide_frame_indicator();
+
+  /* Disable any alarm that was going to go off. */
+  alarm (0);
+  alarm_signalled = 0;
 
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
@@ -631,6 +612,7 @@ property_notify (XEvent *ev)
 
 	case XA_WM_TRANSIENT_FOR:
 	  PRINT_DEBUG ("Transient for\n");
+	  win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);  
 	  break;
 
 	default:

@@ -253,7 +253,6 @@ split_frame (rp_window_frame *frame, int way)
 
       maximize (win);
       unhide_window (win);
-/*        unhide_transient_for (win); */
       XRaiseWindow (dpy, win->w);
     }
   else
@@ -309,7 +308,6 @@ remove_all_splits ()
 	    {
 	      if (win->frame == frame)
 		hide_window (win);
-/*  	  hide_transient_for (cur->win); */
 	    }
 	}
       free (frame);
@@ -545,7 +543,6 @@ blank_frame (rp_window_frame *frame)
 {
   if (frame->win == NULL) return;
   
-/*    hide_transient_for (frame->win); */
   hide_window (frame->win);
   set_frames_window (frame, NULL);
 

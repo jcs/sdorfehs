@@ -327,10 +327,6 @@ cmd_bind (int interactive, void *data)
 	    {
 	      rp_action *key_action;
 
-	      /* 	      char foo[1000]; */
-	      /* 	      sprintf (foo, " %d %ld : '%s' ", key->state, key->sym, cmd); */
-	      /* 	      message (foo); */
-
 	      if ((key_action = find_keybinding (key->sym, key->state)))
 		replace_keybinding (key_action, cmd);
 	      else
@@ -640,7 +636,8 @@ cmd_delete (int interactive, void *data)
   ev.xclient.data.l[1] = CurrentTime;
 
   status = XSendEvent(dpy, current_window()->w, False, 0, &ev);
-  if (status == 0) fprintf(stderr, "ratpoison: delete window failed\n");
+  if (status == 0)
+    PRINT_DEBUG ("Delete window failed\n");
 
   return NULL;
 }
@@ -668,9 +665,7 @@ command (int interactive, char *data)
   char *result = NULL;
   char *cmd, *rest;
   char *input;
-
   user_command *uc;
-  struct sbuf *buf = NULL;
   
   if (data == NULL)
     return NULL;
@@ -697,20 +692,11 @@ command (int interactive, char *data)
 	}
     }
 
-  /* couldnt find the command name */
-  buf = sbuf_new (strlen(MESSAGE_UNKNOWN_COMMAND + strlen (cmd) + 4));
-  sbuf_copy (buf, MESSAGE_UNKNOWN_COMMAND);
-  sbuf_concat (buf, "'");
-  sbuf_concat (buf, cmd);
-  sbuf_concat (buf, "' ");
-
-  message (sbuf_get (buf));
-  
-  sbuf_free (buf);
+  marked_message_printf (0, 0, MESSAGE_UNKNOWN_COMMAND, cmd);
 
  done:
   free (input);
-  
+
   return result;
 }
 
@@ -938,19 +924,6 @@ cmd_abort (int interactive, void *data)
   return NULL;
 }  
 
-/* Send the current window the prefix key event */
-/* void */
-/* cmd_generate_prefix (void *data) */
-/* { */
-/*   XEvent ev; */
-/*   ev = *rp_current_event; */
-
-/*   ev.xkey.window = current_window()->w; */
-/*   ev.xkey.state = MODIFIER_PREFIX; */
-/*   XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev); */
-/*   XSync (dpy, False); */
-/* } */
-
 /* Maximize the current window. */
 char *
 cmd_maximize (int interactive, void *data)
@@ -1020,7 +993,9 @@ cmd_escape (int interactive, void *data)
 char *
 cmd_echo (int interactive, void *data)
 {
-  if (data) message ((char *)data);
+  if (data)
+    marked_message_printf (0, 0, " %s ", (char *)data);
+
   return NULL;
 }
 
@@ -1198,13 +1173,13 @@ cmd_rudeness (int interactive, void *data)
 
   if (data == NULL)
     {
-      message ("Rudeness level required");
+      message (" Rudeness level required ");
       return NULL;
     }
 
   if (sscanf ((char *)data, "%d", &num) < 1)
     {
-      message ("Bad rudeness level");
+      marked_message_printf (0, 0, " Bad rudeness level: %s ", (char *)data);
       return NULL;
     }
 

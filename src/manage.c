@@ -188,6 +188,9 @@ update_window_information (rp_window *win)
   win->width = attr.width;
   win->height = attr.height;
   win->border = attr.border_width;
+
+  /* Transient status */
+  win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);  
 }
 
 void
@@ -361,7 +364,6 @@ maximize_normal (rp_window *win)
 {
   rp_window_frame *frame;
   int maxx, maxy;
-
   int off_x = 0;
   int off_y = 0;
 
@@ -407,8 +409,6 @@ maximize_normal (rp_window *win)
       amount -= delta;
       maxx = amount + win->width;
 
-      PRINT_DEBUG ("maxy = %d height = %d", maxy, win->height);
-
       amount = maxy - win->height;
       delta = amount % win->hints->height_inc;
       if (amount < 0 && delta) amount -= win->hints->height_inc;
@@ -417,12 +417,22 @@ maximize_normal (rp_window *win)
     }
 
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
+ 
+#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
+  if (win->hints->flags & PMaxSize && frame)
+    {
+      off_x = frame->x - win->width / 2 
+	+ (frame->width - win->border * 2) / 2;
+      off_y = frame->y - win->height / 2
+	+ (frame->height - win->border * 2) / 2;
+    }
+#endif
 
   /* Fit the window inside its frame (if it has one) */
   if (frame)
     {
-      win->x = frame->x;
-      win->y = frame->y;
+      win->x = frame->x + off_x;
+      win->y = frame->y + off_y;
     }
   else
     {
@@ -442,8 +452,8 @@ maximize (rp_window *win)
   if (!win) win = current_window();
   if (!win) return;
 
-  /* Handle maximizing transient windows differently */
-  if (win->transient) 
+  /* Handle maximizing transient windows differently. */
+  if (win->transient)
     {
       maximize_transient (win);
     }
@@ -490,6 +500,10 @@ map_window (rp_window *win)
   remove_from_list (win);
   insert_into_list (win, rp_mapped_window_sentinel);
 
+  /* The window has never been accessed since it was brought back from
+     the Withdrawn state. */
+  win->last_access = 0;
+
   /* It is now considered iconic and set_active_window can handle the rest. */
   set_state (win, IconicState);
 
@@ -500,10 +514,10 @@ map_window (rp_window *win)
   else
     {
       if (win->transient)
-	marked_message_printf (0, 0, "New transient window %d (%s)", 
+	marked_message_printf (0, 0, MESSAGE_MAP_TRANSIENT, 
 			       win->number, win->name);
       else
-	marked_message_printf (0, 0, "New window %d (%s)",
+	marked_message_printf (0, 0, MESSAGE_MAP_WINDOW,
 			       win->number, win->name);
     }
 }

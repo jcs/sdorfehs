@@ -60,11 +60,12 @@ show_bar (screen_info *s)
   if (!s->bar_is_raised)
     {
       s->bar_is_raised = BAR_IS_WINDOW_LIST;
-      XMapWindow (dpy, s->bar_window);
+      XMapRaised (dpy, s->bar_window);
       update_window_names (s);
   
       /* Set an alarm to auto-hide the bar BAR_TIMEOUT seconds later */
       alarm (BAR_TIMEOUT);
+      alarm_signalled = 0;
       return 1;
     }
 
@@ -149,11 +150,12 @@ marked_message (char *msg, int mark_start, int mark_end)
   if (!s->bar_is_raised)
     {
       s->bar_is_raised = BAR_IS_MESSAGE;
-      XMapWindow (dpy, s->bar_window);
+      XMapRaised (dpy, s->bar_window);
     }
 
   /* Reset the alarm to auto-hide the bar in BAR_TIMEOUT seconds. */
   alarm (BAR_TIMEOUT);
+  alarm_signalled = 0;
 
   XMoveResizeWindow (dpy, s->bar_window, 
 		     bar_x (s, width), bar_y (s),
@@ -168,19 +170,36 @@ marked_message (char *msg, int mark_start, int mark_end)
 	       BAR_Y_PADDING + s->font->max_bounds.ascent,
 	       msg, strlen (msg));
 
+
+  /* Crop to boundary conditions. */
+  if (mark_start < 0)
+    mark_start = 0;
+
+  if (mark_end < 0)
+    mark_end = 0;
+
+  if (mark_start > strlen (msg))
+    mark_start = strlen (msg);
+
+  if (mark_end > strlen (msg))
+    mark_end = strlen (msg);
+
+  if (mark_start > mark_end)
+    {
+      int tmp;
+      tmp = mark_start;
+      mark_start = mark_end;
+      mark_end = tmp;
+    }
+
   /* xor the string representing the current window */
   if (mark_start != mark_end)
     {
       int start;
       int end;
 
-      assert (mark_start <= mark_end); /* FIXME: remove these assertions,
-				      make it work in all cases */
-      assert (mark_start <= strlen(msg) + 1);
-      assert (mark_end <= strlen(msg) + 1);
-      
       start = XTextWidth (s->font, msg, mark_start) + BAR_X_PADDING;
-      end = XTextWidth (s->font, msg + mark_start, mark_end - mark_start);
+      end = XTextWidth (s->font, msg + mark_start, mark_end - mark_start) + BAR_X_PADDING;
 
       PRINT_DEBUG ("%d %d strlen(%d)==> %d %d\n", mark_start, mark_end, strlen(msg), start, end);
 

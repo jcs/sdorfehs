@@ -400,6 +400,7 @@ give_window_focus (rp_window *win, rp_window *last_win)
   XSync (dpy, False);
 }
 
+#if 0
 void
 unhide_transient_for (rp_window *win)
 {
@@ -438,7 +439,9 @@ unhide_transient_for (rp_window *win)
       unhide_transient_for (transient_for);
     }
 }
+#endif
 
+#if 0
 /* Hide all transient windows for win until we get to last. */
 void
 hide_transient_for_between (rp_window *win, rp_window *last)
@@ -466,14 +469,18 @@ hide_transient_for_between (rp_window *win, rp_window *last)
       hide_transient_for (transient_for);
     }
 }
+#endif
 
+#if 0
 void
 hide_transient_for (rp_window *win)
 {
   /* Hide ALL the transient windows for win. */
   hide_transient_for_between (win, NULL);
 }
+#endif
 
+#if 0
 /* return 1 if transient_for is a transient window for win or one of
    win's transient_for ancestors. */
 int
@@ -496,6 +503,7 @@ is_transient_ancestor (rp_window *win, rp_window *transient_for)
   
   return 0;
 }
+#endif
 
 void
 set_active_window (rp_window *win)
@@ -510,40 +518,18 @@ set_active_window (rp_window *win)
   PRINT_DEBUG ("new window: %s\n", win->name);
 
   /* Make sure the window comes up full screen */
-//    unhide_transient_for (win);
   maximize (win);
   unhide_window (win);
 
+#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
+  if (!win->transient
+      && !(win->hints->flags & PMaxSize 
+	   && win->hints->max_width < win->scr->root_attr.width
+	   && win->hints->max_height < win->scr->root_attr.height))
+#else
   if (!win->transient)
-    {
-      hide_others(win);
-    }
-
-//    /* Hide the last window and its transients_fors */
-//    if (is_transient_ancestor (win, last_win))
-//      {
-//        /* Do nothing if last_win is a transient since it should stay visible */
-//      }
-//    else
-//      {
-//        hide_window (last_win);
-
-//        if (last_win && is_transient_ancestor (last_win, win))
-//  	{
-//  	  /* We only need to hide the transients "between" last_win and win */
-//  	  hide_transient_for_between (last_win, win);
-//  	}
-//        else if (last_win && last_win->transient && win->transient &&
-//  	       last_win->transient_for == win->transient_for)
-//  	{
-//  	  /* Both last_win and win have the same transient_for so we
-//               don't need to hide anything more */
-//  	}
-//        else
-//  	{
-//  	  hide_transient_for (last_win);
-//  	}
-//      }
+#endif
+    hide_others(win);
 
   give_window_focus (win, last_win);
 
@@ -574,21 +560,7 @@ goto_window (rp_window *win)
 void
 print_window_information (rp_window *win)
 {
-  char number[3];
-  char *str;
-
-  snprintf (number, 3, "%d", win->number);
-
-  /* There is a bit of extra memory being allocated from the
-     formatting tags in MESSAGE_WINDOW_INFORMATION, but it is not a
-     couple bytes. */
-  str = xmalloc (strlen (number) + strlen (win->name) + strlen (MESSAGE_WINDOW_INFORMATION) + 1);
-
-  sprintf (str, MESSAGE_WINDOW_INFORMATION, number, win->name);
-  message (str);
-  free (str);
-
-  return;
+  marked_message_printf (0, 0, MESSAGE_WINDOW_INFORMATION, win->number, win->name);
 }
 
 /* get the window list and store it in buffer delimiting each window

@@ -37,10 +37,14 @@ void give_window_focus (rp_window *win, rp_window *last_win);
 void set_active_window (rp_window *win);
 void goto_window (rp_window *win);
 void set_current_window (rp_window *win);
+
+#if 0
 void unhide_transient_for (rp_window *win);
 void hide_transient_for (rp_window *win);
 void hide_transient_for_between (rp_window *win, rp_window *last);
 int is_transient_ancestor (rp_window *win, rp_window *transient_for);
+#endif
+
 /* int goto_window_name (char *name); */
 rp_window *find_window_other ();
 rp_window *find_window_by_number (int n);
