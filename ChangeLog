@@ -1,5 +1,8 @@
 2003-08-10  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/window.c (give_window_focus): only save the pointer position
+	when win and last_win aren't the same window.
+
 	* src/actions.h (cmd_listhook): new prototype
 
 	* src/actions.c (use_commands): new command listhook

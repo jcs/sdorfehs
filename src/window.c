@@ -327,12 +327,17 @@ give_window_focus (rp_window *win, rp_window *last_win)
 
   unhide_window (win);
 
-  /* Warp the cursor to the window's saved position. */
-  if (last_win != NULL) save_mouse_position (last_win);
+  /* Warp the cursor to the window's saved position if last_win and
+     win are different windows. */
+  if (last_win != NULL && win != last_win)
+    save_mouse_position (last_win);
 
   if (defaults.warp)
-    XWarpPointer (dpy, None, win->scr->root, 
-		  0, 0, 0, 0, win->mouse_x, win->mouse_y);
+    {
+      PRINT_DEBUG (("Warp pointer\n"));
+      XWarpPointer (dpy, None, win->scr->root, 
+		    0, 0, 0, 0, win->mouse_x, win->mouse_y);
+    }
   
   /* Swap colormaps */
   if (last_win != NULL) XUninstallColormap (dpy, last_win->colormap);
