@@ -1,5 +1,11 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes since 0.1.0
+** Window list changes
+A '+' is now drawn between the window number and the window name for
+the last accessed window.
+
+
 * Changes Since 0.0.5
 ** C-t e removed
 
@@ -92,8 +98,7 @@ All fixed length buffer sizes in window names that resulted in
 curious segfaults have been fixed.
 
 ** Themes support
-C preprocessor based window manager themes are now supported.  See
-src/conf.h and src/themes.h.
+There is still no theme support, despite what you might have heard.
 
 
 * Changes Singe 0.0.4
