@@ -1,7 +1,21 @@
 2003-05-09  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/split.c (split_frame): call update_bar() instead of
+	update_window_names().
+	(set_active_frame): likewise
+	(blank_frame): likewise
+
+	* src/bar.h (update_bar): new prototype.
+
+	* src/bar.c (BAR_IS_HIDDEN): new define.
+	(update_bar): new function. 
+
+	* src/actions.c (cmd_frestore): call update_bar() instead of
+	update_window_names().
+
 	* src/split.c (set_active_frame): update the window list after
 	switching frames.
+	(blank_frame): update the window list after blanking the screen.
 
 	* src/actions.c (cmd_frestore): update the window list after
 	restoring the frames.

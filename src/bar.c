@@ -35,6 +35,7 @@
 #include "assert.h"
 
 /* Possible values for bar_is_raised status. */
+#define BAR_IS_HIDDEN  0
 #define BAR_IS_WINDOW_LIST 1
 #define BAR_IS_MESSAGE     2
 
@@ -133,6 +134,23 @@ bar_y (screen_info *s, int height)
     }
 
   return y;
+}
+
+void
+update_bar (screen_info *s)
+{
+  if (s->bar_is_raised == BAR_IS_HIDDEN)
+    return;
+
+  if (s->bar_is_raised == BAR_IS_MESSAGE)
+    {
+      show_last_message();
+    }
+  else
+    {
+      /* The bar is showing a window list. */
+      update_window_names (s);
+    }
 }
 
 void
@@ -393,6 +411,8 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
     }
 
   /* Keep a record of the message. */
+  /* FIXME: What about multiple screens? We need a bar structure for
+     each screen. */
   if (last_msg)
     free (last_msg);
   last_msg = xstrdup (msg);

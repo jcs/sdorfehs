@@ -350,7 +350,7 @@ split_frame (rp_window_frame *frame, int way, int pixels)
       XRaiseWindow (dpy, find_window_number (frame->win_number)->w);
     }
 
-  update_window_names (s);
+  update_bar (s);
   show_frame_indicator();
 }
 
@@ -839,11 +839,12 @@ set_active_frame (rp_window_frame *frame)
   /* If frame->win == NULL, then rp_current_screen is not updated. */
   rp_current_screen = s->screen_num;
 
+  update_bar (s);
+
   /* Possibly show the frame indicator. */
   if ((old != s->current_frame && num_frames(s) > 1)
       || s != old_s)
     {
-      update_window_names (s);
       show_frame_indicator();
     }
 
@@ -859,15 +860,20 @@ set_active_frame (rp_window_frame *frame)
 void
 blank_frame (rp_window_frame *frame)
 {
+  screen_info *s;
   rp_window *win;
 
   if (frame->win_number == EMPTY) return;
+
+  s = frames_screen (frame);
 
   win = find_window_number (frame->win_number);
   hide_window (win);
   hide_others (win);
 
   set_frames_window (frame, NULL);
+
+  update_bar (s);
 
   /* Give the key window focus. */
   XSetInputFocus (dpy, current_screen()->key_window,

@@ -23,6 +23,7 @@
 #define _RATPOISON_BAR_H 1
 
 void update_window_names (screen_info *s);
+void update_bar (screen_info *s);
 int show_bar (screen_info *s);
 int hide_bar (screen_info *s);
 int bar_y (screen_info *s, int height);
