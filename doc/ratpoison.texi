@@ -45,7 +45,7 @@ translation approved by the Free Software Foundation.
 
 @titlepage
 @sp 10
-@titlefont{Ratpoison}
+@titlefont{ratpoison}
 @author Shawn Betts
 
 @page
@@ -83,8 +83,8 @@ This document explains how to use ratpoison.
 * Contacting::                  How do I contact the ratpoison developers?
 * General Use::                 How does this thing work??
 * Keystrokes::                  Key commands and functionality
-* Commands::                    Ratpoison commands
-* Startup file::                They forced me...at gun point!
+* Commands::                    ratpoison commands
+* Startup file::                They threatened me...with violence!
 @end menu
 
 @node About, Contacting, Top, Top
@@ -149,22 +149,12 @@ of ratpoison commands is in the next section.
 
 @table @kbd
 
-@item C-t c
-This opens a new XTerm.
-
-@item C-t e
-This opens a new EMACS session. You will probably only need to do this
-once.
+@item C-t C-t
+Switch to the last window.
 
 @item C-t t
 Sometimes you need to send a C-t to the current window. This keystroke
 does just that.
-
-@item C-t C-t
-Switch to the last window.
-
-@item C-t :
-Enter a command line.
 
 @item C-t 0-9
 Switch to the numbered window.
@@ -240,9 +230,9 @@ Display the list of managed windows. The current window is highlighted.
 @end table
 
 @node Commands, Startup file, Keystrokes, Top
-@chapter Ratpoison commands
+@chapter ratpoison commands
 
-Ratpoison can be controlled with commands (so called colon-commands).
+ratpoison can be controlled with commands (so called colon-commands).
 The summary of available commands is listed below:
 
 @table @command
@@ -352,8 +342,10 @@ barely worth the extra effort. In the off chance that you need to make
 ratpoison your own, we now support it. 
 
 On startup ratpoison looks for @file{~/.ratpoisonrc} and runs it through
-the command parser. This means any command you can bind a key to or run
-at the command prompt (@kbd{C-t :}) you can execute in this rc file.
+the command parser. If @file{~/.ratpoisonrc} does not exist, ratpoison
+tries @file{/etc/ratpoisonrc}. This means any command you can bind a key
+to or run at the command prompt (@kbd{C-t :}) you can execute in this rc
+file.
 
 It adds 320 bytes to ratpoison on a glibc6-i386 machine. Its a little
 steep for a feature and we are attempting to squeeze the fat.
