@@ -57,7 +57,7 @@ void sort_window_list_by_number ();
 
 void insert_into_list (rp_window *win, struct list_head *list);
 
-void print_window_information (rp_window *win);
+void print_window_information (rp_group *group, rp_window *win);
 void get_window_list (char *fmt, char *delim, struct sbuf *buffer, 
 		      int *mark_start, int *mark_end);
 void init_window_stuff ();

@@ -1443,7 +1443,7 @@ cmd_number (int interactive, char *data)
 
   if (data == NULL)
     {
-      print_window_information (current_window());
+      print_window_information (rp_current_group, current_window());
       return NULL;
     }
 
@@ -1463,10 +1463,10 @@ cmd_number (int interactive, char *data)
   else
     {
       /* Impossible, but we'll live with it. */
-      print_window_information (current_window());
+      print_window_information (rp_current_group, current_window());
       free (str);
       return NULL;
-    }      
+    }
 
   /* Get the rest of the string and see if the user specified a target
      window. */
@@ -2933,8 +2933,14 @@ cmd_info (int interactive, char *data)
   else
     {
       rp_window *win = current_window();
-      marked_message_printf (0, 0, " (%d,%d) %d(%s) %s", win->width, win->height,
-			     win->number, window_name (win), win->transient ? "Transient ":"");
+      rp_window_elem *win_elem;
+      win_elem = group_find_window (&rp_current_group->mapped_windows, win);
+      if (win_elem)
+	marked_message_printf (0, 0, " (%d,%d) %d(%s) %s", win->width, win->height,
+			       win_elem->number, window_name (win), win->transient ? "Transient ":"");
+      else
+	marked_message_printf (0, 0, " (%d,%d) (%s) %s", win->width, win->height,
+			       window_name (win), win->transient ? "Transient ":"");
     }
 
   return NULL;

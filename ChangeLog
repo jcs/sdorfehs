@@ -1,5 +1,12 @@
 2004-11-18  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/window.c (print_window_information): add argument,
+	group. print the window's number in the group. All callers
+	updated.
+
+	* src/actions.c (cmd_info): print the window's number in the
+	current group.
+
 	* src/window.c (unhide_transient_for): add a newline to debugging
 	output.
 	(hide_transient_for_between): likewise.
