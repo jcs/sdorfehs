@@ -1,5 +1,21 @@
 2000-12-15  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* list.c (set_active_window): Installs colormap
+	(set_active_window): sets rp_current_window to window passed in as
+	parameter
+
+	* actions.c (prev_window): No longer uses rp_current_window to
+	keep track of state
+	(next_window): No longer uses rp_current_window to keep track of
+	state
+
+	* list.c (add_to_window_list): sets member colormap to the
+	DefaultColormap
+
+	* manage.c (update_window_name): fixed memory leak. Not freeing
+	the win->name before updating it.
+	(manage): Gets the colormap now.
+
 	* list.c (add_to_window_list): Added init code for `hints'
 
 	* events.c (property_notify): Added handler for XA_WM_NORMAL_HINTS.

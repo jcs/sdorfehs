@@ -1,5 +1,23 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes Since 0.0.5
+** Colormap support
+ratpoison now maintains colormaps
+
+** XSizeHints honoured
+Windows may not maximize fully now since they use XSizeHints to figure
+out how big the window can be.
+
+** Keysym reading updates
+keystrokes are now handled far better. Shifted keystrokes work. More
+uniform key event processing.
+
+** New keystroke C-t space
+Does the same as C-t C-n (next window)
+
+** Messages in the window bar
+ratpoison now outputs user error messages.
+
 * Changes Singe 0.0.4
 ** added --kill and --restart
 These command line options allow the restarting and killing of a
