@@ -34,7 +34,7 @@
 $\="\n";
 
 # set this to your rp binary
-$RATPOISON="/home/sabetts/src/ratpoison/src/ratpoison";
+$RATPOISON=$ENV{RATPOISON} || "ratpoison";
 
 # open source file
 $ACTIONS_C="../src/actions.c";
@@ -101,7 +101,7 @@ print COMMONLISP <<PREAMBLE;
 
 (in-package :ratpoison)
 
-(defvar ratpoison-program "/home/sabetts/src/ratpoison/src/ratpoison")
+(defvar ratpoison-program "$RATPOISON")
 
 (defmacro defun-ratpoison (cmd)
   (let ((sym (intern (concatenate 'string "RP-" (symbol-name cmd)))))

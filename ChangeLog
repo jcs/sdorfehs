@@ -1,5 +1,7 @@
 2004-11-11  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* contrib/genrpbindings: fix up path to ratpoison binary
+
 	* src/actions.c (cmd_ratclick): new function
 	(cmd_ratrelwarp): likewise
 	(cmd_ratwarp): likewise
