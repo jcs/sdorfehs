@@ -1,3 +1,9 @@
+ratpoison (0.0.6-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Gergely Nagy <8@free.bsd.hu>  Thu, 15 Feb 2001 13:34:32 +0100
+
 ratpoison (0.0.5-20001216) unstable; urgency=low
 
   * CVS version as of 2000/12/16
