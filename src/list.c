@@ -77,13 +77,19 @@ window_name (rp_window *win)
   switch (defaults.win_name)
     {
     case 0:
-      return win->wm_name;
+      if (win->wm_name)
+	return win->wm_name;
+      else return win->user_name;
 
     case 1:
-      return win->res_name;
+      if (win->res_name)
+	return win->res_name;
+      else return win->user_name;
       
     case 2:
-      return win->res_class;
+      if (win->res_class)
+	return win->res_class;
+      else return win->user_name;
 
     default:
       return win->wm_name;
