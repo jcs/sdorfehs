@@ -7,9 +7,9 @@ version of ratpoison.
 
 Ryan Yeske (rcyeske@vcn.bc.ca)
 
-Ryan began hacking on ratpoison so he could ssh his university
-by only pressing 3 keys.  He also thinks that a keyboard driven window
-manager is the optimal user interface for penbased handheld computers.
+Ryan doesn't commit much code these days, but that's not because he
+doesn't want to, its just that he forgot his cvs ssh password.
+Meanwhile, the patches are piling up.
 
 Other Contributors:
 
