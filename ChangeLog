@@ -1,3 +1,7 @@
+2004-11-17  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* contrib/rpws: use env to find out where bash is
+
 2004-11-11  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* contrib/genrpbindings: fix up path to ratpoison binary

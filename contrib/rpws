@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Workspaces for ratpoison
 # Copyright (C) 2003 Shawn Betts
