@@ -1,3 +1,18 @@
+2003-06-24  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_resize): fix error message text
+	(cmd_resize): likewise
+	(cmd_defresizeunit): likewise
+	(cmd_defresizeunit): likewise
+	(cmd_chdir): likewise
+	(cmd_frestore): likewise
+	(cmd_frestore): likewise
+	(cmd_defwinliststyle): likewise
+	(cmd_defwinliststyle): likewise
+	(cmd_gmove): likewise
+	(cmd_gmove): likewise
+	(cmd_gmerge): likewise
+
 2003-06-22  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/actions.c (cmd_groups): print a * beside the current

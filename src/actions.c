@@ -1621,13 +1621,13 @@ cmd_resize (int interactive, char *data)
       
       if (data == NULL)
 	{
-	  message (" resize: Two numeric arguments required ");
+	  message (" resize: two numeric arguments required ");
 	  return NULL;
 	}
 
       if (sscanf (data, "%d %d", &xdelta, &ydelta) < 2)
 	{
-	  message (" resize: Two numeric arguments required ");
+	  message (" resize: two numeric arguments required ");
 	  return NULL;
 	}
 
@@ -1648,14 +1648,14 @@ cmd_defresizeunit (int interactive, char *data)
 
   if (data == NULL || sscanf (data, "%d", &tmp) < 1)
     {
-      message (" defresizeunit: One argument required ");
+      message (" defresizeunit: one argument required ");
       return NULL;
     }
 
   if (tmp >= 0)
     defaults.frame_resize_unit = tmp;
   else
-    message (" defresizeunit: Bad argument ");
+    message (" defresizeunit: invalid argument ");
 
   return NULL;
 }
@@ -2572,7 +2572,7 @@ cmd_chdir (int interactive, char *data)
       dir = getenv ("HOME");
       if (dir == NULL || *dir == '\0')
         {
-	  message ( " chdir : HOME not set " );
+	  message (" chdir: HOME not set ");
           return NULL;
 	}
     }
@@ -3308,7 +3308,7 @@ cmd_frestore (int interactively, char *data)
   token = strtok (dup, ",");
   if (token == NULL)
     {
-      message (" frestore: bad frame format ");
+      message (" frestore: invalid frame format ");
       free (dup);
       return NULL;
     }
@@ -3319,7 +3319,7 @@ cmd_frestore (int interactively, char *data)
       new = frame_read (token);
       if (new == NULL)
 	{
-	  message (" frestore: bad frame format ");
+	  message (" frestore: invalid frame format ");
 	  free (dup);
 	  return NULL;
 	}
@@ -3401,7 +3401,7 @@ cmd_defwinliststyle (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" defwinliststyle: One argument required ");
+      message (" defwinliststyle: one argument required ");
       return NULL;
      }
 
@@ -3415,7 +3415,7 @@ cmd_defwinliststyle (int interactive, char *data)
     }
   else
     {
-      message (" defwinliststyle: Bad argument ");
+      message (" defwinliststyle: invalid argument ");
     }
 
    return NULL;    
@@ -3606,14 +3606,14 @@ cmd_gmove (int interactive, char *data)
 
   if (current_window() == NULL)
     {
-      message (" gmove: No focused window ");
+      message (" gmove: no focused window ");
       return NULL;
     }
 
   g = find_group (data);
   if (g == NULL)
     {
-      message (" gmove: Cannot find group ");
+      message (" gmove: cannot find group ");
       return NULL;
     }
 
@@ -3637,7 +3637,7 @@ cmd_gmerge (int interactive, char *data)
   if (g)
     groups_merge (g, rp_current_group);
   else
-    message (" gmerge: Cannot find group ");
+    message (" gmerge: cannot find group ");
 
   return NULL;
 }
