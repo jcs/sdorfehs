@@ -1,3 +1,10 @@
+2001-02-26  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* actions.h: prototype for force_maximize added
+
+	* actions.c: the user command "maximize" calls force_maximize
+	(force_maximize): New function 
+
 2001-02-25  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* main.c (read_rc_file): rename from load_rc_file.  Remove static

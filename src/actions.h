@@ -41,6 +41,7 @@ void bye(void *dummy);
 void spawn(void *data);
 void command (char *data);
 void maximize (void *data);
+void force_maximize (void *data);
 
 void cmd_newwm(void *which);
 void cmd_generate (void *data);

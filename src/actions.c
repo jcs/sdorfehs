@@ -145,7 +145,7 @@ user_command user_commands[] =
     {"windows", 	cmd_windows, 		arg_VOID},
     {"title", 		cmd_rename, 		arg_STRING},
     {"clock", 		cmd_clock, 		arg_VOID},
-    {"maximize", 	maximize, 		arg_VOID},
+    {"maximize", 	force_maximize,		arg_VOID},
     {"newwm",		cmd_newwm,		arg_STRING},
     {"generate",	cmd_generate,		arg_STRING}, /* rename to stuff */
     {"version",		cmd_version,		arg_VOID},
@@ -728,7 +728,8 @@ maximize_transient (rp_window *win)
   win->height = maxy;
 }
 
-/* set a good standard window's x,y,width,height fields to maximize the window. */
+/* set a good standard window's x,y,width,height fields to maximize
+   the window. */
 static void
 maximize_normal (rp_window *win)
 {
@@ -803,6 +804,25 @@ maximize (void *data)
 
   /* I don't think this should be here, but it doesn't seem to hurt. */
   send_configure (win);
+
+  XSync (dpy, False);
+}
+
+/* Maximize the current window but don't treat transient windows
+   differently. */
+void
+force_maximize (void *data)
+{
+  rp_window *win = (rp_window *)data;
+
+  if (!win) win = rp_current_window;
+  if (!win) return;
+
+  maximize_normal(win);
+
+  /* Actually do the maximizing */
+  XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width+1, win->height+1);
+  XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
 
   XSync (dpy, False);
 }
