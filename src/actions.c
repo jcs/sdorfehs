@@ -335,14 +335,34 @@ generate_prefix (void *data)
 void
 maximize (void *data)
 {
+  int maxx, maxy;
   rp_window *win = (rp_window *)data;
 
   if (!win) win = rp_current_window;
   if (!win) return;
 
-  XMoveResizeWindow (dpy, win->w,
-		     PADDING_LEFT,
-		     PADDING_TOP,
-		     win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT,
-		     win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM);
+  /* Honour the window's maximum size */
+  if (win->hints->flags & PMaxSize)
+    {
+      maxx = win->hints->max_width;
+      maxy = win->hints->max_height;
+    }
+  else
+    {
+      maxx = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
+      maxy = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
+    }
+
+  /* Make sure we maximize to the nearest Resize Increment specified
+     by the window */
+  if (win->hints->flags & PResizeInc)
+    {
+      maxx -= maxx % win->hints->width_inc;
+      maxy -= maxy % win->hints->height_inc;
+    }
+
+  PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
+
+  XMoveResizeWindow (dpy, win->w, PADDING_LEFT, PADDING_TOP, maxx, maxy);
+  XSync (dpy, False);
 }
