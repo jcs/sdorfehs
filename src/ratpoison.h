@@ -101,5 +101,9 @@ char *xstrdup (char *s);
 char *xsprintf (char *fmt, ...);
 char *xvsprintf (char *fmt, va_list ap);
 int str_comp (char *s1, char *s2, int len);
+/* Needed in cmd_tmpwm */
+void check_child_procs ();
+void chld_handler (int signum);
+void set_sig_handler (int sig, void (*action)(int));
 
 #endif /* ! _RATPOISON_H */

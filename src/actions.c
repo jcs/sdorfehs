@@ -26,6 +26,7 @@
 #include <strings.h>
 #include <time.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "ratpoison.h"
 
@@ -2405,7 +2406,6 @@ cmd_exec (int interactive, struct cmdarg **args)
 int
 spawn(char *cmd)
 {
-  char *tmp;
   rp_child_info *child;
   int pid;
 
@@ -2423,9 +2423,7 @@ spawn(char *cmd)
 #elif defined (HAVE_SETPGRP)
       setpgrp (0, 0);
 #endif
-      /* Prepend with exec to avoid excess /bin/sh's. */
-      tmp = xsprintf ("exec %s", cmd);
-      execl("/bin/sh", "sh", "-c", tmp, 0);
+      execl("/bin/sh", "sh", "-c", cmd, 0);
       _exit(EXIT_FAILURE);
     }
 
@@ -3290,7 +3288,7 @@ static cmdret *
 set_wingravity (struct cmdarg **args)
 {
   if (args[0] == NULL) 
-    return cmdret_new (RET_SUCCESS, wingravity_to_string (defaults.win_gravity));
+    return cmdret_new (RET_SUCCESS, "%s", wingravity_to_string (defaults.win_gravity));
 
   defaults.win_gravity = ARG(0,gravity);
 
@@ -3301,7 +3299,7 @@ static cmdret *
 set_transgravity (struct cmdarg **args)
 {
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, wingravity_to_string (defaults.trans_gravity));
+    return cmdret_new (RET_SUCCESS, "%s", wingravity_to_string (defaults.trans_gravity));
 
   defaults.trans_gravity = ARG(0,gravity);
 
@@ -3312,7 +3310,7 @@ static cmdret *
 set_maxsizegravity (struct cmdarg **args)
 {
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, wingravity_to_string (defaults.maxsize_gravity));
+    return cmdret_new (RET_SUCCESS, "%s", wingravity_to_string (defaults.maxsize_gravity));
 
   defaults.maxsize_gravity = ARG(0,gravity);
 
@@ -3340,7 +3338,7 @@ static cmdret *
 set_bargravity (struct cmdarg **args)
 {
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, wingravity_to_string (defaults.bar_location));
+    return cmdret_new (RET_SUCCESS, "%s", wingravity_to_string (defaults.bar_location));
 
   defaults.bar_location = ARG(0,gravity);
 
@@ -3382,7 +3380,7 @@ set_font (struct cmdarg **args)
   XFontStruct *font;
 
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, defaults.font_string);
+    return cmdret_new (RET_SUCCESS, "%s", defaults.font_string);
 
   font = XLoadQueryFont (dpy, ARG_STRING(0));
   if (font == NULL)
@@ -3535,7 +3533,7 @@ static cmdret *
 set_winfmt (struct cmdarg **args)
 {
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, defaults.window_fmt);
+    return cmdret_new (RET_SUCCESS, "%s", defaults.window_fmt);
 
   free (defaults.window_fmt);
   defaults.window_fmt = xstrdup (ARG_STRING(0));
@@ -3585,7 +3583,7 @@ set_fgcolor (struct cmdarg **args)
   XColor color, junk;
 
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, defaults.fgcolor_string);
+    return cmdret_new (RET_SUCCESS, "%s", defaults.fgcolor_string);
 
   for (i=0; i<num_screens; i++)
     {
@@ -3613,7 +3611,7 @@ set_bgcolor (struct cmdarg **args)
   XColor color, junk;
 
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, defaults.bgcolor_string);
+    return cmdret_new (RET_SUCCESS, "%s", defaults.bgcolor_string);
 
   for (i=0; i<num_screens; i++)
     {
@@ -4154,6 +4152,9 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
       XUnmapWindow (dpy, screens[i].key_window);
     }
 
+  /* Ungrab all our keys. */
+  ungrab_keys_all_wins();
+
   /* Don't listen for any events from any window. */
   list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
     {
@@ -4167,12 +4168,20 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
 
   XSync (dpy, False);
 
+  /* Disable our SIGCHLD handler */
+  set_sig_handler (SIGCHLD, SIG_IGN);
   /* Launch the new WM and wait for it to terminate. */
   pid = spawn (ARG_STRING(0));
+  PRINT_DEBUG (("spawn pid: %d\n", pid));
   do
     {
       child = waitpid (pid, &status, 0);
     } while (child != pid);
+  /* Enable our SIGCHLD handler */
+  set_sig_handler (SIGCHLD, chld_handler);
+  /* Some processes may have quit while our sigchld handler was
+     disabled, so check for them. */
+  check_child_procs();
 
   /* This xsync seems to be needed. Otherwise, the following code dies
      because X thinks another WM is running. */
@@ -4701,7 +4710,7 @@ static cmdret *
 set_framesels (struct cmdarg **args)
 {
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, defaults.frame_selectors);
+    return cmdret_new (RET_SUCCESS, "%s", defaults.frame_selectors);
 
   free (defaults.frame_selectors);
   defaults.frame_selectors = xstrdup (ARG_STRING(0));

@@ -181,14 +181,13 @@ alrm_handler (int signum)
   alarm_signalled++;
 }
 
+/* Check for child processes that have quit but haven't been
+   acknowledged yet. Update their structure. */
 void
-chld_handler (int signum)
+check_child_procs ()
 {
   rp_child_info *cur;
-  int pid, status, serrno;
-
-  serrno = errno;
-
+  int pid, status;
   while (1)
     {
       pid = waitpid (WAIT_ANY, &status, WNOHANG);
@@ -210,6 +209,15 @@ chld_handler (int signum)
 
       chld_signalled = 1;
     }
+}
+
+void
+chld_handler (int signum)
+{
+  int serrno;
+
+  serrno = errno;
+  check_child_procs();
   errno = serrno;  
 }
 
@@ -680,6 +688,9 @@ free_screen (rp_screen *s)
 {
   rp_frame *frame;
   struct list_head *iter, *tmp;
+
+  /* Relinquish our hold on the root window. */
+  XSelectInput(dpy, RootWindow (dpy, s->screen_num), 0);
 
   list_for_each_safe_entry (frame, iter, tmp, &s->frames, node)
     {

@@ -1,3 +1,30 @@
+2005-03-05    <sabetts@localhost>
+
+	* src/ratpoison.h (check_child_procs): new prototype
+	(chld_handler): likewise
+	(set_sig_handler): likewise
+
+	* src/main.c (check_child_procs): new function
+	(chld_handler): call check_child_procs
+	(free_screen): unselect all events on the root window.
+
+	* src/actions.c: include signal.h
+	(spawn): don't prefix the command with exec.
+	(set_wingravity): print the setting as a string.
+	(set_transgravity): likewise
+	(set_maxsizegravity): likewise
+	(set_bargravity): likewise
+	(set_font): likewise
+	(set_winfmt): likewise
+	(set_fgcolor): likewise
+	(set_bgcolor): likewise
+	(set_framesels): likewise
+	(cmd_tmpwm): ungrab the keys for all windows before spawning the
+	new wm.
+	(cmd_tmpwm): disable the sigchld handler then enabled it after the
+	wm returns. call check_child_procs.
+
+
 2005-02-26    <sabetts@localhost>
 
 	* src/actions.c (parse_args): properly check if we've hit the arg
