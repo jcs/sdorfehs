@@ -1,3 +1,12 @@
+2000-10-30  Ryan Yeske  <rcyeske@vcn.bc.ca>
+
+	* actions.h (execute_command): added prototype
+
+	* actions.c (rename_current_window): added test to skip renaming
+	if user entered an empty string
+	(execute_command): added command
+	(key_actions): execute_command is called by pressing ':' 
+
 2000-10-30  shawn  <sabetts@badbox.secure.basis.org>
 
 	* conf.h: added HIDE_MOUSE
