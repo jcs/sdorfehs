@@ -223,6 +223,20 @@ Display the version of ratpoison.
 @item C-t C-w
 Display the list of managed windows. The current window is highlighted.
 
+@item C-t S
+Split the current window horizontally in two. The last accessed window
+not occupying a frame will be the second window.
+
+@item C-t C-S
+Split the current window vertically in two. The last accessed window not
+occupying a frame will be the second window.
+
+@item C-t Q
+Kill all frames but the current one.
+
+@item C-t R
+Kill the current frame. This is a no-op if there is only one frame.
+
 @end table
 
 @node Commands, Startup file, Keystrokes, Top
@@ -324,6 +338,21 @@ prompt.
 After 5 seconds the Program Bar disappears.
 
 This command is bound to @kbd{C-t w} by default.
+
+@item split
+@item hsplit
+Split the current window horizontally in two. The last accessed window
+not occupying a frame will be the second window.
+
+@item vsplit
+Split the current window vertically in two. The last accessed window not
+occupying a frame will be the second window.
+
+@item only
+Kill all frames but the current one.
+
+@item remove
+Kill the current frame. This is a no-op if there is only one frame.
 
 @end table
 
