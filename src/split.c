@@ -350,6 +350,7 @@ split_frame (rp_window_frame *frame, int way, int pixels)
       XRaiseWindow (dpy, find_window_number (frame->win_number)->w);
     }
 
+  update_window_names (s);
   show_frame_indicator();
 }
 
@@ -842,6 +843,7 @@ set_active_frame (rp_window_frame *frame)
   if ((old != s->current_frame && num_frames(s) > 1)
       || s != old_s)
     {
+      update_window_names (s);
       show_frame_indicator();
     }
 

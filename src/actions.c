@@ -3088,6 +3088,7 @@ cmd_frestore (int interactively, char *data)
     }
 
   set_active_frame (current_frame());  
+  update_window_names (s);
   show_frame_indicator();
 
   PRINT_DEBUG (("Done.\n"));

@@ -1,3 +1,14 @@
+2003-05-09  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/split.c (set_active_frame): update the window list after
+	switching frames.
+
+	* src/actions.c (cmd_frestore): update the window list after
+	restoring the frames.
+
+	* src/split.c (split_frame): update the window list after the
+	split.
+
 2003-04-13  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/main.c (main): if the screen was specified on the
