@@ -1,3 +1,9 @@
+2001-02-25  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* configure.in (AC_OUTPUT): added man/Makefile 
+
+	* Makefile.am (SUBDIRS): added man dir
+
 2001-02-21  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* configure.in: change version to 0.0.6-cvs
