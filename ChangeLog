@@ -1,5 +1,8 @@
 2002-01-24  shawn  <sabetts@vcn.bc.ca>
 
+	* src/main.c (init_screen): create the help window with a 0 border
+	width.
+
 	* src/actions.c (find_alias_index): new function
 	(cmd_alias): When an alias is already in the alias list, replace
 	it with the new alias.

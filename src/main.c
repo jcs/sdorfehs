@@ -638,7 +638,7 @@ init_screen (screen_info *s, int screen_num)
 
   /* Create the help window */
   s->help_window = XCreateSimpleWindow (dpy, s->root, 0, 0, s->root_attr.width,
-					s->root_attr.height, 1, s->fg_color, s->bg_color);
+					s->root_attr.height, 0, s->fg_color, s->bg_color);
   XSelectInput (dpy, s->help_window, KeyPressMask);
 
   XSync (dpy, 0);
