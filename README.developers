@@ -1,0 +1,52 @@
+-*- outline -*-
+
+This file is intented to give people who would like to modify
+ratpoison an idea the utility functions I've built up in ratpoison and
+the structure of the code.
+
+* Utility Functions
+
+** String Manipulation
+
+String manipulation is something C is seriously lacking, and something
+everyone does all the time. When writing ratpoison code, you SHOULD
+NOT be malloc'ing temporary string buffers then using strcat, strcpy,
+etc to patch strings together. The following structures and functions
+should give you just about everything you need. 
+
+If there's something you want to do but can't with the following
+utils, then you should consider adding that functionality (Don't just
+hack it!) to them. Chances are, someone else will want to do it too.
+
+*** struct sbuf
+When you need to build a string by concating a bunch together or some
+messy frankensteinish string manipulation sbuf is nice to use. It
+handles all the memory allocation and you just say what you want to do
+with the sbuf_* commands. See sbuf.h.
+
+*** char *xstrdup(char *)
+If you need to copy a string, use this.
+
+*** char *xsprintf (char *fmt, ...)  If you need to printf something
+into a string, don't go xmalloc'ing strlen(s)+20. Use xsprintf, it
+returns a new string, which you need to free when you're
+done. Guaranteed.
+
+*** char *xvsprintf (char *fmt, va_list ap)
+This is just like xsprintf except it takes a va_list argument.
+
+*** str_comp (char *s1, char *s2, int len)
+Just like strncmp, except that it's case-insensitive.
+
+** Memory
+
+*** xmalloc and xrealloc
+These functions are exactly like malloc and realloc, but they will
+NEVER return NULL.
+
+* Coding Style
+
+Ratpoison follows the GNU coding style as described in the GNU Coding
+Standards Document (http://www.gnu.org/prep/standards.html). If you
+see something not compliant with the GNU Standard, fix it and send me
+a patch!
