@@ -29,6 +29,8 @@
 LIST_HEAD(rp_unmapped_window);
 LIST_HEAD(rp_mapped_window);
 
+struct numset *rp_window_numset;
+
 /* Get the mouse position relative to the root of the specified window */
 static void
 get_mouse_root_position (rp_window *win, int *mouse_x, int *mouse_y)
@@ -668,4 +670,16 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
     {
       sbuf_copy (buffer, MESSAGE_NO_MANAGED_WINDOWS);
     }
+}
+
+void
+init_window_stuff ()
+{
+  rp_window_numset = numset_new ();
+}
+
+void
+free_window_stuff ()
+{
+  numset_free (rp_window_numset);
 }

@@ -1,3 +1,32 @@
+2003-03-06  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/main.c (main): call init_window_stuff(). Remove call to init_numbers().
+	(clean_up): call free_window_stuff(). Remove call to free_numbers().
+
+	* src/list.h (free_window_stuff): new prototype
+	(init_window_stuff): likewise
+
+	* src/list.c (rp_window_numset): new global
+	(init_window_stuff): new function
+	(free_window_stuff): new function
+
+	* src/data.h (rp_window_numset): new extern
+
+	* src/number.c (numset_init): new function
+	(number_is_taken): rename to numset_num_is_taken, callers updated.
+	(find_empty_cell): rename to numset_find_empty_cell, callers updated.
+	(add_window_number): rename to numset_add_num, callers updated.
+	(return_window_number): rename to numset_release, callers updated.
+	(init_numbers): remove function
+	(free_numbers): rename to numset_free, callers updated.
+	(numset_num_is_taken): take struct numset* as an argument.
+	(numset_find_empty_cell): likewise
+	(numset_add_num): likewise
+	(numset_request): likewise
+	(numset_release): likewise
+	(numset_free): likewise
+	(numset_new): new function
+
 2003-02-27  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/main.c (free_screen): new function

@@ -1175,11 +1175,11 @@ cmd_number (int interactive, void *data)
 	}
       else
 	{
-	  return_window_number (win->number);
+	  numset_release (rp_window_numset, win->number);
 	}
 
       win->number = new_number;
-      add_window_number (new_number);
+      numset_add_num (rp_window_numset, new_number);
 
       /* resort the the window in the list */
       list_del (&win->node);
@@ -2788,7 +2788,7 @@ cmd_tmpwm (int interactive, void *data)
       if (frame == win->scr->rp_current_frame) set_active_frame (frame);
 
       /* put the window in the unmapped list. */
-      return_window_number (win->number);
+      numset_release (rp_window_numset, win->number);
       list_move_tail(&win->node, &rp_unmapped_window);
     }
 

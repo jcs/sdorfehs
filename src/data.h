@@ -276,4 +276,7 @@ extern int rp_honour_normal_map;
 /* Keep track of X11 error messages. */
 extern char *rp_error_msg;
 
+/* Number sets for windows. */
+extern struct numset *rp_window_numset;
+
 #endif /* _RATPOISON_DATA_H */

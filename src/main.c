@@ -573,8 +573,8 @@ main (int argc, char *argv[])
   set_sig_handler (SIGCHLD, chld_handler);
 
   /* Setup ratpoison's internal structures */
-  init_defaults();
-  init_numbers ();
+  init_defaults ();
+  init_window_stuff ();
 
   /* Initialize the screens */
   num_screens = ScreenCount (dpy);
@@ -730,8 +730,9 @@ clean_up ()
   free_keybindings ();
   free_aliases ();
   free_bar ();
-  free_numbers ();
   free_history ();
+
+  free_window_stuff ();
   
   for (i=0; i<num_screens; i++)
     {

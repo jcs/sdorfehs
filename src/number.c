@@ -24,71 +24,71 @@
 
 #include "ratpoison.h"
 
+/* Initialize a numset structure. */
+static void
+numset_init (struct numset *ns)
+{
+  ns->max_taken = 10;
+  ns->num_taken = 0;
 
-/* A list of the numbers taken. */
-static int *numbers_taken;
-
-/* the number of numbers currently stored in the numbers_taken
-   array. */
-static int num_taken;
-
-/* the size of the numbers_taken array. */
-static int max_taken;
+  ns->numbers_taken = xmalloc (ns->max_taken * sizeof (int));
+}
 
 static int
-number_is_taken (int n)
+numset_num_is_taken (struct numset *ns, int n)
 {
   int i;
 
-  for (i=0; i<num_taken; i++)
+  for (i=0; i<ns->num_taken; i++)
     {
-      if (numbers_taken[i] == n) return 1;
+      if (ns->numbers_taken[i] == n) return 1;
     }
   return 0;
 }
 
 /* returns index into numbers_taken that can be used. */
 static int
-find_empty_cell ()
+numset_find_empty_cell (struct numset *ns)
 {
   int i;
 
-  for (i=0; i<num_taken; i++)
+  for (i=0; i<ns->num_taken; i++)
     {
-      if (numbers_taken[i] == -1) return i;
+      if (ns->numbers_taken[i] == -1) return i;
     }
 
   /* no vacant ones, so grow the array. */
-  if (num_taken >= max_taken)
+  if (ns->num_taken >= ns->max_taken)
     {
-      max_taken *= 2;
-      numbers_taken = xrealloc (numbers_taken, sizeof (int) * max_taken);
+      ns->max_taken *= 2;
+      ns->numbers_taken = xrealloc (ns->numbers_taken, sizeof (int) * ns->max_taken);
     }
-  num_taken++;
+  ns->num_taken++;
 
-  return num_taken-1;
+  return ns->num_taken-1;
 }
 
 int
-add_window_number (int n)
+numset_add_num (struct numset *ns, int n)
 {
-  if (number_is_taken (n)) return 0; /* failed. */
+  if (numset_num_is_taken (ns, n)) 
+    return 0; /* failed. */
   
-  numbers_taken[find_empty_cell()] = n;
+  ns->numbers_taken[numset_find_empty_cell(ns)] = n;
   return 1; /* success! */
 }
 
 /* returns a unique number that can be used as the window number in
    the program bar. */
 int
-get_unique_window_number ()
+numset_request (struct numset *ns)
 {
   int i;
   
   /* look for a unique number, and add it to the list of taken
      numbers. */
   i = 0;
-  while (!add_window_number (i)) i++;
+  while (!numset_add_num (ns, i)) i++;
 
   return i;
 }
@@ -96,32 +96,35 @@ get_unique_window_number ()
 /* When a window is destroyed, it gives back its window number with
    this function. */
 void
-return_window_number (int n)
+numset_release (struct numset *ns, int n)
 {
   int i;
 
-  for (i=0; i<num_taken; i++)
+  for (i=0; i<ns->num_taken; i++)
     {
-      if (numbers_taken[i] == n) 
+      if (ns->numbers_taken[i] == n) 
 	{
-	  numbers_taken[i] = -1;
+	  ns->numbers_taken[i] = -1;
 	  return;
 	}
     }
 }
 
-
-void
-init_numbers ()
+/* Create a new numset and return a pointer to it. */
+struct numset *
+numset_new ()
 {
-  max_taken = 10;
-  num_taken = 0;
+  struct numset *ns;
 
-  numbers_taken = xmalloc (max_taken * sizeof (int));
+  ns = (struct numset *)xmalloc (sizeof (struct numset));
+  numset_init (ns);
+  return ns;
 }
 
+/* Free a numset structure and it's internal data. */
 void
-free_numbers ()
+numset_free (struct numset *ns)
 {
-  free (numbers_taken);
+  free (ns->numbers_taken);
+  free (ns);
 }

@@ -267,7 +267,7 @@ update_window_information (rp_window *win)
 void
 unmanage (rp_window *w)
 {
-  return_window_number (w->number);
+  numset_release (rp_window_numset, w->number);
   list_del (&w->node);
   free_window (w);  
 
@@ -635,7 +635,7 @@ map_window (rp_window *win)
 
   /* Fill in the necessary data about the window */
   update_window_information (win);
-  win->number = get_unique_window_number ();
+  win->number = numset_request (rp_window_numset);
   grab_prefix_key (win->w);
 
   /* Put win in the mapped window list */
@@ -719,7 +719,7 @@ withdraw_window (rp_window *win)
 
   /* Give back the window number. the window will get another one,
      if it is remapped. */
-  return_window_number (win->number);
+  numset_release (rp_window_numset, win->number);
   win->number = -1;
 
   list_move_tail(&win->node, &rp_unmapped_window);
