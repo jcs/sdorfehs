@@ -1,3 +1,7 @@
+2001-02-18  Gergely Nagy  <8@free.bsd.hu>
+
+	* NEWS: mention that ALL of the fixed size buffers are fixed.
+
 2001-02-17  Gergely Nagy  <8@free.bsd.hu>
 
 	* man/ratpoison.1,
