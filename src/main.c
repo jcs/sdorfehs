@@ -97,7 +97,7 @@ static struct option ratpoison_longopts[] =
     {"display", required_argument, 	0, 	'd'},
     {0, 	0, 			0, 	0} };
 
-static char ratpoison_opts[] = "hvc:";
+static char ratpoison_opts[] = "hvcd:";
 
 void
 fatal (const char *msg)
