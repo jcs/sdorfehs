@@ -144,11 +144,10 @@ maximize_frame (rp_window_frame *frame)
 static void
 create_initial_frame (screen_info *screen)
 {
-  screen->rp_current_frame = xmalloc (sizeof (rp_window_frame));
+  screen->rp_current_frame = frame_new (screen);
 
   list_add_tail (&screen->rp_current_frame->node, &screen->rp_window_frames);
 
-  screen->rp_current_frame->number = numset_request (screen->frames_numset);
   update_last_access (screen->rp_current_frame);
 
   maximize_frame (screen->rp_current_frame);
@@ -284,10 +283,8 @@ split_frame (rp_window_frame *frame, int way, int pixels)
 
   s = frames_screen (frame);
 
-  new_frame = xmalloc (sizeof (rp_window_frame));
-
-  /* Give the frame a unique number. */
-  new_frame->number = numset_request (s->frames_numset);
+  /* Make our new frame. */
+  new_frame = frame_new (s);
 
   /* It seems intuitive to make the last frame the newly created
      frame. */
@@ -384,9 +381,7 @@ remove_all_splits ()
       if (frame != s->rp_current_frame)
 	{
 	  list_del (&frame->node);
-
-	  numset_release (s->frames_numset, frame->number);
-	  free (frame);
+	  frame_free (s, frame);
 	}
     }
 
@@ -726,7 +721,6 @@ remove_frame (rp_window_frame *frame)
   area = total_frame_area(s);
   PRINT_DEBUG (("Total Area: %d\n", area));
 
-  numset_release (s->frames_numset, frame->number);
   list_del (&frame->node);
   hide_window (frame->win);
   hide_others (frame->win);
@@ -824,7 +818,7 @@ remove_frame (rp_window_frame *frame)
 	}
     }
 
-  free (frame);
+  frame_free (s, frame);
 }
 
 /* Switch the input focus to another frame, and therefore a different
@@ -990,6 +984,33 @@ find_frame_number (screen_info *s, int num)
     {
       if (cur->number == num)
 	return cur;
+    }
+
+  return NULL;
+}
+
+/* Frame split tree code. */
+
+rp_frame_split *
+find_frame_parent (screen_info *s, rp_window_frame *frame)
+{
+  return find_frame_parent_helper (s->split_tree, frame);
+}
+
+rp_frame_split *
+find_frame_parent_helper (rp_frame_split *split, rp_window_frame *frame)
+{
+  rp_frame_split *cur;
+
+  if (split->frame == frame) 
+    return split;
+
+  /* Look for the frame in each child. If find_frame_parent_helper
+     returns not NULL, then we found it. */
+  list_for_each_entry (cur, &split->children, node)
+    {
+      if (find_frame_parent_helper (cur, frame);)
+	return split;
     }
 
   return NULL;

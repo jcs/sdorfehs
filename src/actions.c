@@ -340,8 +340,11 @@ initialize_default_keybindings (void)
   add_keybinding (XK_Tab, RP_META_MASK, "focuslast");
   add_keybinding (XK_Q, 0, "only");
   add_keybinding (XK_R, 0, "remove");
-  add_keybinding (XK_f, 0, "curframe");
-  add_keybinding (XK_f, RP_CONTROL_MASK, "curframe");
+  add_keybinding (XK_f, 0, "fselect");
+  add_keybinding (XK_f, RP_CONTROL_MASK, "fselect");
+  add_keybinding (XK_F, 0, "curframe");
+  add_keybinding (XK_r, 0, "resize");
+  add_keybinding (XK_r, RP_CONTROL_MASK, "resize");
   add_keybinding (XK_question, 0, "help");
 }
 

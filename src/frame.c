@@ -106,3 +106,21 @@ frame_move_down (rp_window_frame *frame, int amount)
 {
   frame->y += amount;
 }
+
+rp_window_frame *
+frame_new (screen_info *s)
+{
+  rp_window_frame *f;
+
+  f = xmalloc (sizeof (rp_window_frame));
+  f->number = numset_request (s->frames_numset);
+
+  return f;
+}
+
+void
+frame_free (screen_info *s, rp_window_frame *f)
+{
+  numset_release (s->frames_numset, f->number);
+  free (f);
+}

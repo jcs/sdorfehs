@@ -709,7 +709,7 @@ free_screen (screen_info *s)
 
   list_for_each_safe_entry (frame, iter, tmp, &s->rp_window_frames, node)
     {
-      free (frame);
+      frame_free (s, frame);
     }
  
   XDestroyWindow (dpy, s->bar_window);

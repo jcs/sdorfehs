@@ -343,6 +343,10 @@ Kill all frames but the current one.
 @item C-t R
 Kill the current frame. This is a no-op if there is only one frame.
 
+@item C-t r
+@item C-t C-r
+Resize the current frame.
+
 @item C-t b
 @item C-t C-b
 Banish the mouse to the lower right corner of the screen.
@@ -352,6 +356,9 @@ Display a help screen.
 
 @item C-t f
 @item C-t C-f
+select a frame by number.
+
+@item C-t F
 Indicate which frame is the current frame.
 
 @end table

@@ -1,3 +1,20 @@
+2003-03-17  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (initialize_default_keybindings): add keybindings
+	for fselect and resize. Move keybinding for curframe.
+
+	* src/split.c (create_initial_frame): call frame_new to allocate a frame.
+	(split_frame): likewise
+
+	* src/main.c (free_screen): call frame_free to free the screen
+	frames.
+
+	* src/frame.h (frame_new): new prototype
+	(frame_free): likewise
+
+	* src/frame.c (frame_new): new function.
+	(frame_free): likewise
+
 2003-03-07  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/Makefile.am (ratpoison_SOURCES): add frame.c and frame.h
