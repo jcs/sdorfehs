@@ -1,3 +1,11 @@
+2001-09-13  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/actions.c (command): Gobble the whitespace between the
+	command and the argument list. Code that did this in specific
+	commands has been removed.
+
+	* src/input.c (update_input_window): Draw a cheap-o cursor
+
 2001-09-09  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/conf.h (MAXSIZE_WINDOWS_ARE_TRANSIENTS): defined

@@ -1,6 +1,9 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** Cursor in the input window
+There is now a cheap cursor to help you remember where you are.
+
 ** conf.h compile-time customizations moved
 They are now accessible through the def* suite of commands.
 

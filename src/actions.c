@@ -778,6 +778,16 @@ command (int interactive, char *data)
 
   rest = strtok (NULL, "\0");
 
+  /* Gobble whitespace */
+  if (rest)
+    {
+      while (*rest == ' ') 
+	rest++;
+      /* If rest is empty, then we have no argument. */
+      if (*rest == '\0')
+	rest = NULL;
+    }
+
   PRINT_DEBUG ("cmd==%s rest==%s\n", cmd, (char*)rest);
 
   /* find the command */
@@ -1666,10 +1676,7 @@ cmd_defwinname (int interactive, void *data)
       return NULL;
     }
 
-  /* Gobble whitespace */
   name = (char *)data;
-  while (*name == ' ') 
-    name++;
 
   /* FIXME: Using strncmp is sorta dirty since `title' and
      `titlefoobar' would both match. But its quick and dirty. */
