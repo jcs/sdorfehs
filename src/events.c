@@ -100,31 +100,22 @@ unmap_notify (XEvent *ev)
     {
       rp_window_frame *frame;
 
-      if (win->iconizing)
+      switch (win->state)
 	{
-	  /* This event is due to our hiding the window. */
-	  win->iconizing--;
-	}
-      else
-	{
-	  switch (win->state)
-	    {
-	    case IconicState:
-	      PRINT_DEBUG ("Withdrawing iconized window '%s'\n", win->name);
-	      if (ev->xunmap.send_event) withdraw_window (win);
-	      break;
-	    case NormalState:
-	      PRINT_DEBUG ("Withdrawing normal window '%s'\n", win->name);
-	      /* If the window was inside a frame, fill the frame with another
-		 window. */
-	      frame = find_windows_frame (win);
-	      if (frame) cleanup_frame (frame);
-	      if (frame == rp_current_frame) set_active_frame (frame);
+	case IconicState:
+	  PRINT_DEBUG ("Withdrawing iconized window '%s'\n", win->name);
+	  if (ev->xunmap.send_event) withdraw_window (win);
+	  break;
+	case NormalState:
+	  PRINT_DEBUG ("Withdrawing normal window '%s'\n", win->name);
+	  /* If the window was inside a frame, fill the frame with another
+	     window. */
+	  frame = find_windows_frame (win);
+	  if (frame) cleanup_frame (frame);
+	  if (frame == rp_current_frame) set_active_frame (frame);
 
-
-	      withdraw_window (win);
-	      break;
-	    }
+	  withdraw_window (win);
+	  break;
 	}
 
       update_window_names (s);

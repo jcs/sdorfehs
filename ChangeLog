@@ -1,3 +1,14 @@
+2001-06-02  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/manage.c (hide_window): ignore unmap_notify events when
+	unmapping the window.
+
+	* src/list.c (add_to_window_list): use WIN_EVENTS in XSelectInput.
+
+	* src/data.h (struct rp_window): remove iconizing field. remove
+	code using iconizing.
+	(WIN_EVENTS): new define
+
 2001-06-01  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/events.c (cleanup_frame): hide the frame's window's

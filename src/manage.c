@@ -500,9 +500,12 @@ hide_window (rp_window *win)
 {
   if (win == NULL) return;
 
+  /* Ignore the unmap_notify event. */
+  XSelectInput(dpy, win->w,
+	       WIN_EVENTS&~(StructureNotifyMask|EnterWindowMask));
   XUnmapWindow (dpy, win->w);
+  XSelectInput (dpy, win->w, WIN_EVENTS);
   set_state (win, IconicState);
-  win->iconizing++;
 }
 
 void

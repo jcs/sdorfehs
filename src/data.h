@@ -28,6 +28,8 @@
 
 #define FONT_HEIGHT(f) ((f)->max_bounds.ascent + (f)->max_bounds.descent)
 
+#define WIN_EVENTS (PropertyChangeMask | ColormapChangeMask | FocusChangeMask)
+
 typedef struct rp_window rp_window;
 typedef struct screen_info screen_info;
 typedef struct rp_action rp_action;
@@ -51,10 +53,6 @@ struct rp_window
   int state;
   int last_access;		
   int named;
-  
-  /* An indication to unmap_notify that the event was produced by
-     iconizing a window. */
-  int iconizing;
 
   /* Dimensions */
   int x, y, width, height, border;

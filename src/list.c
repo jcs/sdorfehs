@@ -65,7 +65,6 @@ add_to_window_list (screen_info *s, Window w)
   new_window->last_access = 0;
   new_window->prev = NULL;
   new_window->state = WithdrawnState;
-  new_window->iconizing = 0;
   new_window->number = -1;	
   new_window->named = 0;
   new_window->hints = XAllocSizeHints ();
@@ -75,8 +74,7 @@ add_to_window_list (screen_info *s, Window w)
 
   get_mouse_root_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
 
-  XSelectInput (dpy, new_window->w, 
-		PropertyChangeMask | ColormapChangeMask | FocusChangeMask);
+  XSelectInput (dpy, new_window->w, WIN_EVENTS);
 
   new_window->name = xmalloc (strlen ("Unnamed") + 1);
 
