@@ -58,7 +58,8 @@ update_normal_hints (rp_window *win)
 
   XGetWMNormalHints (dpy, win->w, win->hints, &supplied);
 
-  PRINT_DEBUG ("hints: maxx: %d maxy: %d incx: %d incy: %d\n", 
+  PRINT_DEBUG ("hints: minx: %d miny: %d maxx: %d maxy: %d incx: %d incy: %d\n", 
+	       win->hints->min_width, win->hints->min_height,
 	       win->hints->max_width, win->hints->max_height,
 	       win->hints->width_inc, win->hints->height_inc);
 }
@@ -167,9 +168,13 @@ manage (rp_window *win, screen_info *s)
   /* Get the colormap */
   XGetWindowAttributes (dpy, win->w, &attr);
   win->colormap = attr.colormap;
+  win->x = attr.x;
+  win->y = attr.y;
+  win->width = attr.width;
+  win->height = attr.height;
 
   /* We successfully got the name, which means we can start managing! */
-  XSelectInput (dpy, win->w, PropertyChangeMask | ColormapChangeMask | StructureNotifyMask);
+  XSelectInput (dpy, win->w, PropertyChangeMask | ColormapChangeMask);
   XAddToSaveSet(dpy, win->w);
   grab_prefix_key (win->w);
 

@@ -362,8 +362,17 @@ maximize (void *data)
      by the window */
   if (win->hints->flags & PResizeInc)
     {
-      maxx -= maxx % win->hints->width_inc;
-      maxy -= maxy % win->hints->height_inc;
+      int amount;
+
+      amount = maxx - win->width;
+      amount -= amount % win->hints->width_inc;
+      PRINT_DEBUG ("amount x: %d\n", amount);
+      maxx = amount + win->width;
+
+      amount = maxy - win->height;
+      amount -= amount % win->hints->height_inc;
+      PRINT_DEBUG ("amount y: %d\n", amount);
+      maxy = amount + win->height;
     }
 
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
