@@ -63,4 +63,6 @@ void get_window_list (char *fmt, char *delim, struct sbuf *buffer,
 void init_window_stuff ();
 void free_window_stuff ();
 
+rp_window_frame *win_get_frame (rp_window *win);
+
 #endif /* ! _RATPOISON_LIST_H */

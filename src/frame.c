@@ -124,3 +124,44 @@ frame_free (screen_info *s, rp_window_frame *f)
   numset_release (s->frames_numset, f->number);
   free (f);
 }
+
+
+rp_window_frame *
+frame_copy (rp_window_frame *frame)
+{
+  rp_window_frame *copy;
+
+  copy = xmalloc (sizeof (rp_window_frame));
+
+  copy->number = frame->number;
+  copy->x = frame->x;
+  copy->y = frame->y;
+  copy->width = frame->width;
+  copy->height = frame->height;
+  copy->win_number = frame->win_number;
+  copy->last_access = frame->last_access;
+
+  return copy;
+}
+
+char *
+frame_dump (rp_window_frame *frame)
+{
+  char *tmp;
+  struct sbuf *s;
+
+  s = sbuf_new (0);
+  sbuf_printf (s, "%d %d %d %d %d %d %d", 
+	       frame->number,
+	       frame->x,
+	       frame->y,
+	       frame->width,
+	       frame->height,
+	       frame->win_number,
+	       frame->last_access);
+
+  /* Extract the string and return it, and don't forget to free s. */
+  tmp = sbuf_get (s);
+  free (s);
+  return tmp;
+}

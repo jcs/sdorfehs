@@ -1,3 +1,69 @@
+2003-03-30  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/split.c (current_window): call screen_get_frame.
+	(split_frame): call screen_get_frame to get appropriate structure.
+	(split_frame): call find_window_number to get appropriate
+	structure.
+	(remove_all_splits): call screen_get_frame to get appropriate
+	structure.
+	(resize_frame): make sure all frames that will be resized are big
+	enough for the resize.
+	(resize_frame): return int
+	(resize_shrink_to_window): call find_window_number to get the
+	appropriate structure.
+	(resize_frame_right): return int
+	(resize_frame_left): likewise
+	(resize_frame_top): likewise
+	(resize_frame_bottom): likewise
+	(resize_frame_horizontally): backup the frameset and restore it if
+	the resize fails. Do not allow a frame to be resized too small or
+	too big.
+	(resize_frame_vertically): likewise
+	(remove_frame): call find_window_number to get the appropriate
+	structure.
+	(set_active_frame): likewise
+	(blank_frame): likewise
+	(show_frame_message): call screen_get_frame to get the appropriate
+	structure.
+
+	* src/screen.c (screen_width): new function (and prototype)
+	(screen_height): likewise
+	(screen_left): likewise
+	(screen_right): likewise
+	(screen_top): likewise
+	(screen_bottom): likewise
+	(screen_copy_frameset): likewise
+	(screen_restore_frameset): likewise
+	(frameset_free): likewise
+	(screen_get_frame): likewise
+
+	* src/split.c (maximize_frame): call screen_width and
+	screen_height to get the size for the frame.
+
+	* src/ratpoison.h: include screen.h
+
+	* src/manage.c (move_window): 
+
+	* src/frame.h (frame_copy): new prototype
+	(frame_dump): likewise
+
+	* src/frame.c (frame_copy): new function
+	(frame_dump): likewise
+
+	* src/events.c (unmap_notify): compare frame numbers, not
+	pointers.
+	(client_msg): call screen_get_frame when blanking the frame.
+
+	* src/data.h (EMPTY): new define
+	(struct rp_window_frame): replace the win field with
+	win_number. Dependant code updated.
+	(struct rp_window): replace frame with frame_number. Dependant
+	code updated.
+	(struct screen_info): replace rp_current_frame with current_frame
+	and change type to int. Dependant code updated.
+
+	* src/Makefile.am (ratpoison_SOURCES): added screen.h and screen.c
+
 2003-03-25  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/split.h (show_frame_message): new prototype

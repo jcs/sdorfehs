@@ -38,5 +38,7 @@ int frame_left (rp_window_frame *frame);
 
 rp_window_frame *frame_new (screen_info *s);
 void frame_free (screen_info *s, rp_window_frame *f);
+rp_window_frame *frame_copy (rp_window_frame *frame);
+char *frame_dump (rp_window_frame *frame);
 
 #endif

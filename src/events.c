@@ -94,7 +94,7 @@ unmap_notify (XEvent *ev)
 	 window. */
       frame = find_windows_frame (win);
       if (frame) cleanup_frame (frame);
-      if (frame == win->scr->rp_current_frame) set_active_frame (frame);
+      if (frame->number == win->scr->current_frame) set_active_frame (frame);
 
       withdraw_window (win);
       break;
@@ -180,8 +180,12 @@ destroy_window (XDestroyWindowEvent *ev)
      have been cleaned up with an unmap notify event, but just in
      case... */
   frame = find_windows_frame (win);
-  if (frame) cleanup_frame (frame);
-  if (frame == win->scr->rp_current_frame) set_active_frame (frame);
+  if (frame)
+    {
+      cleanup_frame (frame);
+      if (frame->number == win->scr->current_frame) 
+	set_active_frame (frame);
+    }
 
   unmanage (win);
 
@@ -319,7 +323,7 @@ client_msg (XClientMessageEvent *ev)
 	      if (w)
 		set_active_window (w);
 	      else
-		blank_frame (win->scr->rp_current_frame);
+		blank_frame (screen_get_frame (win->scr, win->scr->current_frame));
 	    }
 	}
       else

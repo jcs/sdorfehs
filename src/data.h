@@ -32,6 +32,11 @@
 #define FONT_HEIGHT(f) ((f)->max_bounds.ascent + (f)->max_bounds.descent)
 
 #define WIN_EVENTS (StructureNotifyMask | PropertyChangeMask | ColormapChangeMask | FocusChangeMask)
+/* EMPTY is used when a frame doesn't contain a window, or a window
+   doesn't have a frame. Any time a field refers to the number of a
+   window/frame/screen/etc, Use EMPTY to denote a lack there of. */
+#define EMPTY -1
+
 
 typedef struct rp_window rp_window;
 typedef struct screen_info screen_info;
@@ -42,7 +47,9 @@ struct rp_window_frame
 {
   int number;
   int x, y, width, height;
-  rp_window *win;
+
+  /* The number of the window that is focused in this frame. */
+  int win_number;
 
   /* For determining the last frame. */
   int last_access;
@@ -88,7 +95,7 @@ struct rp_window
   /* A window can be visible inside a frame but not the frame's
      current window. This keeps track of what frame the window was
      mapped into. */
-  rp_window_frame *frame;
+  int frame_number;
 
   struct list_head node;
 };
@@ -113,9 +120,9 @@ struct screen_info
   /* Keep track of which numbers have been given to frames. */
   struct numset *frames_numset;
 
-  /* Pointer to the currently focused frame. One for each screen so
+  /* The number of the currently focused frame. One for each screen so
      when you switch screens the focus doesn't get frobbed. */
-  rp_window_frame *rp_current_frame;
+  int current_frame;
 };
 
 struct rp_action

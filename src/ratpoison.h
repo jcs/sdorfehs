@@ -69,6 +69,7 @@ extern XGCValues gv;
 #include "sbuf.h"
 #include "split.h"
 #include "frame.h"
+#include "screen.h"
 
 void clean_up ();
 screen_info *find_screen (Window w);

@@ -674,9 +674,9 @@ cmd_prev_frame (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  frame = find_frame_prev (current_screen()->rp_current_frame);
+  frame = find_frame_prev (screen_get_frame (current_screen(), current_screen()->current_frame));
   if (!frame)
-    message (MESSAGE_NO_OTHER_WINDOW);
+    message (MESSAGE_NO_OTHER_FRAME);
   else
     set_active_frame (frame);
 
@@ -716,7 +716,7 @@ cmd_next_frame (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  frame = find_frame_next (current_screen()->rp_current_frame);
+  frame = find_frame_next (screen_get_frame (current_screen(), current_screen()->current_frame));
   if (!frame)
     message (MESSAGE_NO_OTHER_FRAME);
   else
@@ -778,7 +778,7 @@ cmd_select (int interactive, void *data)
     {
       if (strlen (str) == 1 && str[0] == '-')
 	{
-	  blank_frame (current_screen()->rp_current_frame);
+	  blank_frame (screen_get_frame (current_screen(), current_screen()->current_frame));
 	}
 /*       else if ((w = find_window_name (str))) */
 /* 	{ */
@@ -1333,17 +1333,19 @@ read_split (const char *str, int max)
 char *
 cmd_h_split (int interactive, void *data)
 {
+  rp_window_frame *frame;
   int pixels;
+
+  frame = screen_get_frame (current_screen(), current_screen()->current_frame);
 
   /* Default to dividing the frame in half. */
   if (data == NULL)
-    pixels = current_screen()->rp_current_frame->height / 2;
+    pixels = frame->height / 2;
   else 
-    pixels = read_split (data, current_screen()->rp_current_frame->height);
-
+    pixels = read_split (data, frame->height);
 
   if (pixels > 0)
-    h_split_frame (current_screen()->rp_current_frame, pixels);
+    h_split_frame (frame, pixels);
   else
     message (" hsplit: invalid argument ");    
 
@@ -1353,16 +1355,19 @@ cmd_h_split (int interactive, void *data)
 char *
 cmd_v_split (int interactive, void *data)
 {
+  rp_window_frame *frame;
   int pixels;
+
+  frame = screen_get_frame (current_screen(), current_screen()->current_frame);
 
   /* Default to dividing the frame in half. */
   if (data == NULL)
-    pixels = current_screen()->rp_current_frame->width / 2;
+    pixels = frame->width / 2;
   else
-    pixels = read_split (data, current_screen()->rp_current_frame->width);
+    pixels = read_split (data, frame->width);
 
   if (pixels > 0)
-    v_split_frame (current_screen()->rp_current_frame, pixels);
+    v_split_frame (frame, pixels);
   else
     message (" vsplit: invalid argument ");    
 
@@ -1390,11 +1395,11 @@ cmd_remove (int interactive, void *data)
       return NULL;
     }
 
-  frame = find_frame_next (s->rp_current_frame);
+  frame = find_frame_next (screen_get_frame (s, s->current_frame));
 
   if (frame)
     {
-      remove_frame (current_screen()->rp_current_frame);
+      remove_frame (screen_get_frame (s, s->current_frame));
       set_active_frame (frame);
     }
 
@@ -1406,7 +1411,7 @@ cmd_shrink (int interactive, void *data)
 {
   screen_info *s = current_screen ();
 
-  resize_shrink_to_window (s->rp_current_frame);
+  resize_shrink_to_window (screen_get_frame (s, s->current_frame));
   return NULL;
 }
 
@@ -1424,6 +1429,7 @@ cmd_resize (int interactive, void *data)
       unsigned int mod;
       KeySym c;
       Window fwin;
+      struct list_head *bk;
 
       /* If we haven't got at least 2 frames, there isn't anything to
 	 scale. */
@@ -1432,25 +1438,45 @@ cmd_resize (int interactive, void *data)
       XGetInputFocus (dpy, &fwin, &revert);
       XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
 
+      /* Save the frameset in case the user aborts. */
+      bk = screen_copy_frameset (s);
+
       while (1)
 	{
 	  show_frame_message (" Resize frame ");
 	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer), 1);
 
 	  if (c == RESIZE_VGROW_KEY && mod == RESIZE_VGROW_MODIFIER)
-	    resize_frame_vertically (s->rp_current_frame, defaults.frame_resize_unit);
+	    resize_frame_vertically (screen_get_frame (s, s->current_frame), defaults.frame_resize_unit);
 	  else if (c == RESIZE_VSHRINK_KEY && mod == RESIZE_VSHRINK_MODIFIER)
-	    resize_frame_vertically (s->rp_current_frame, -defaults.frame_resize_unit);
+	    resize_frame_vertically (screen_get_frame (s, s->current_frame), -defaults.frame_resize_unit);
 	  else if (c == RESIZE_HGROW_KEY && mod == RESIZE_HGROW_MODIFIER)
-	    resize_frame_horizontally (s->rp_current_frame, defaults.frame_resize_unit);
+	    resize_frame_horizontally (screen_get_frame (s, s->current_frame), defaults.frame_resize_unit);
 	  else if (c == RESIZE_HSHRINK_KEY && mod == RESIZE_HSHRINK_MODIFIER)
-	    resize_frame_horizontally (s->rp_current_frame, -defaults.frame_resize_unit);
+	    resize_frame_horizontally (screen_get_frame (s, s->current_frame), -defaults.frame_resize_unit);
 	  else if (c == RESIZE_SHRINK_TO_WINDOW_KEY 
 		   && mod == RESIZE_SHRINK_TO_WINDOW_MODIFIER)
-	    resize_shrink_to_window (s->rp_current_frame);
+	    resize_shrink_to_window (screen_get_frame (s, s->current_frame));
+	  else if (c == INPUT_ABORT_KEY && mod == INPUT_ABORT_MODIFIER)
+	    {
+	      rp_window_frame *cur;
+
+	      screen_restore_frameset (s, bk);
+	      list_for_each_entry (cur, &s->rp_window_frames, node)
+		{
+		  maximize_all_windows_in_frame (cur);
+		}
+	      break;
+	    }
 	  else if (c == RESIZE_END_KEY && mod == RESIZE_END_MODIFIER)
-	    break;
+	    {
+	      frameset_free (bk);
+	      break;
+	    }
 	}
+
+      /* It is our responsibility to free this. */
+      free (bk);
 
       hide_frame_indicator ();
       XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
@@ -1465,8 +1491,8 @@ cmd_resize (int interactive, void *data)
 	  return NULL;
 	}
 
-      resize_frame_horizontally (s->rp_current_frame, xdelta);
-      resize_frame_vertically (s->rp_current_frame, ydelta);
+      resize_frame_horizontally (screen_get_frame (s, s->current_frame), xdelta);
+      resize_frame_vertically (screen_get_frame (s, s->current_frame), ydelta);
     }
 
   return NULL;
@@ -2104,7 +2130,7 @@ cmd_defborder (int interactive, void *data)
   /* Update all the visible windows. */
   list_for_each_entry (win,&rp_mapped_window,node)
     {
-      if (win->frame)
+      if (win_get_frame (win))
 	maximize (win);
     }
 
@@ -2462,7 +2488,7 @@ cmd_focusup (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_up (current_screen()->rp_current_frame)))
+  if ((frame = find_frame_up (screen_get_frame (current_screen(), current_screen()->current_frame))))
     set_active_frame (frame);
 
   return NULL;
@@ -2473,7 +2499,7 @@ cmd_focusdown (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_down (current_screen()->rp_current_frame)))
+  if ((frame = find_frame_down (screen_get_frame (current_screen(), current_screen()->current_frame))))
     set_active_frame (frame);
 
   return NULL;
@@ -2484,7 +2510,7 @@ cmd_focusleft (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_left (current_screen()->rp_current_frame)))
+  if ((frame = find_frame_left (screen_get_frame (current_screen(), current_screen()->current_frame))))
     set_active_frame (frame);
 
   return NULL;
@@ -2495,7 +2521,7 @@ cmd_focusright (int interactive, void *data)
 {
   rp_window_frame *frame;
 
-  if ((frame = find_frame_right (current_screen()->rp_current_frame)))
+  if ((frame = find_frame_right (screen_get_frame (current_screen(), current_screen()->current_frame))))
     set_active_frame (frame);
 
   return NULL;
@@ -2707,7 +2733,7 @@ cmd_nextscreen (int interactive, void *data)
   if (new_screen >= num_screens)
     new_screen = 0;
 
-  set_active_frame (screens[new_screen].rp_current_frame);
+  set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
 
   return NULL;
 }
@@ -2728,7 +2754,7 @@ cmd_prevscreen (int interactive, void *data)
   if (new_screen < 0)
     new_screen = num_screens - 1;
 
-  set_active_frame (screens[new_screen].rp_current_frame);
+  set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
 
   return NULL;
 }
@@ -2797,7 +2823,7 @@ cmd_tmpwm (int interactive, void *data)
       /* Remove the window from the frame. */
       frame = find_windows_frame (win);
       if (frame) cleanup_frame (frame);
-      if (frame == win->scr->rp_current_frame) set_active_frame (frame);
+      if (frame->number == win->scr->current_frame) set_active_frame (frame);
 
       /* put the window in the unmapped list. */
       numset_release (rp_window_numset, win->number);
@@ -2947,5 +2973,11 @@ cmd_fselect (int interactive, void *data)
   else
     marked_message_printf (0, 0, " fselect: No such frame (%d) ", fnum);
 
+  return NULL;
+}
+
+char *
+cmd_restore (int interactively, void *data)
+{
   return NULL;
 }

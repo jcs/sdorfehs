@@ -178,7 +178,10 @@ find_window (Window w)
 void
 set_current_window (rp_window *win)
 {
-  set_frames_window (current_screen()->rp_current_frame, win);
+  rp_window_frame *frame;
+
+  frame = screen_get_frame (current_screen(), current_screen()->current_frame);
+  set_frames_window (frame, win);
 }
 
 rp_window *
@@ -475,10 +478,12 @@ void
 set_active_window (rp_window *win)
 {
   rp_window *last_win;
+  rp_window_frame *frame;
 
   if (win == NULL) return;
 
-  last_win = set_frames_window (win->scr->rp_current_frame, win);
+  frame = screen_get_frame (win->scr, win->scr->current_frame);
+  last_win = set_frames_window (frame, win);
 
   if (last_win) PRINT_DEBUG (("last window: %s\n", window_name (last_win)));
   PRINT_DEBUG (("new window: %s\n", window_name (win)));
@@ -682,4 +687,13 @@ void
 free_window_stuff ()
 {
   numset_free (rp_window_numset);
+}
+
+rp_window_frame *
+win_get_frame (rp_window *win)
+{
+  if (win->frame_number != EMPTY)
+    return screen_get_frame (win->scr, win->frame_number);
+  else
+    return NULL;
 }

@@ -85,14 +85,20 @@ cleanup_frame (rp_window_frame *frame)
 rp_window *
 set_frames_window (rp_window_frame *frame, rp_window *win)
 {
-  rp_window *last_win;
+  int last_win;
 
-  last_win = frame->win;
-  frame->win = win;
+  last_win = frame->win_number;
   if (win)
-    win->frame = frame;
+    {
+      frame->win_number = win->number;
+      win->frame_number = frame->number;
+    }
+  else
+    {
+      frame->win_number = EMPTY;
+    }
 
-  return last_win;
+  return find_window_number (last_win);
 }
 
 static screen_info *
@@ -120,7 +126,7 @@ maximize_all_windows_in_frame (rp_window_frame *frame)
 
   list_for_each_entry (win, &rp_mapped_window, node)
     {
-      if (win->frame == frame)
+      if (win->frame_number == frame->number)
 	{
 	  maximize (win);
 	}
@@ -136,22 +142,24 @@ maximize_frame (rp_window_frame *frame)
   frame->x = defaults.padding_left;
   frame->y = defaults.padding_top;
 
-  frame->width = DisplayWidth (dpy, s->screen_num) - defaults.padding_right - defaults.padding_left;
-  frame->height = DisplayHeight (dpy, s->screen_num) - defaults.padding_bottom - defaults.padding_top;
+  frame->width = screen_width (s);
+  frame->height = screen_height (s);
 }
 
 /* Create a full screen frame */
 static void
 create_initial_frame (screen_info *screen)
 {
-  screen->rp_current_frame = frame_new (screen);
+  rp_window_frame *frame;
 
-  list_add_tail (&screen->rp_current_frame->node, &screen->rp_window_frames);
+  frame = frame_new (screen);
+  screen->current_frame = frame->number;
+  list_add_tail (&frame->node, &screen->rp_window_frames);
 
-  update_last_access (screen->rp_current_frame);
+  update_last_access (frame);
 
-  maximize_frame (screen->rp_current_frame);
-  set_frames_window (screen->rp_current_frame, NULL);
+  maximize_frame (frame);
+  set_frames_window (frame, NULL);
 }
 
 void
@@ -179,7 +187,7 @@ find_last_frame (screen_info *s)
 
   list_for_each_entry (cur, &s->rp_window_frames, node)
     {
-      if (cur != s->rp_current_frame
+      if (cur->number != s->current_frame
 	  && cur->last_access > last_access)
 	{
 	  last_access = cur->last_access;
@@ -201,7 +209,7 @@ find_windows_frame (rp_window *win)
 
   list_for_each_entry (cur, &s->rp_window_frames, node)
     {
-      if (cur->win == win) return cur;
+      if (cur->win_number == win->number) return cur;
     }
 
   return NULL;
@@ -224,7 +232,8 @@ find_frame_prev (rp_window_frame *frame)
 rp_window *
 current_window ()
 {
-  return screens[rp_current_screen].rp_current_frame->win;
+  return find_window_number (screen_get_frame (&screens[rp_current_screen],
+					       screens[rp_current_screen].current_frame)->win_number);
 }
 
 static int
@@ -262,7 +271,7 @@ find_window_for_frame (rp_window_frame *frame)
 	  && !find_windows_frame (cur)
 	  && cur->last_access >= last_access
 	  && window_fits_in_frame (cur, frame)
-	  && !cur->frame)
+	  && cur->frame_number == EMPTY)
 	{
 	  most_recent = cur;
 	  last_access = cur->last_access;
@@ -286,14 +295,8 @@ split_frame (rp_window_frame *frame, int way, int pixels)
   /* Make our new frame. */
   new_frame = frame_new (s);
 
-  /* It seems intuitive to make the last frame the newly created
-     frame. */
-  update_last_access (new_frame);
-
-  /* TODO: don't put the new frame at the end of the list, put it
-     after the existing frame. Then cycling frames cycles in the order
-     they were created. */
-  list_add (&new_frame->node, &s->rp_current_frame->node);
+  /* Add the frame to the frameset. */
+  list_add (&new_frame->node, &(screen_get_frame (s, s->current_frame)->node));
 
   set_frames_window (new_frame, NULL);
 
@@ -335,10 +338,10 @@ split_frame (rp_window_frame *frame, int way, int pixels)
     }
 
   /* resize the existing frame */
-  if (frame->win)
+  if (frame->win_number != EMPTY)
     {
       maximize_all_windows_in_frame (frame);
-      XRaiseWindow (dpy, frame->win->w);
+      XRaiseWindow (dpy, find_window_number (frame->win_number)->w);
     }
 
   show_frame_indicator();
@@ -371,14 +374,14 @@ remove_all_splits ()
   /* Hide all the windows not in the current frame. */
   list_for_each_entry (win, &rp_mapped_window, node)
     {
-      if (win->frame != s->rp_current_frame)
+      if (win->frame_number != s->current_frame)
 	hide_window (win);
     }
 
   /* Delete all the frames except the current one. */
   list_for_each_safe_entry (frame, iter, tmp, &s->rp_window_frames, node)
     {
-      if (frame != s->rp_current_frame)
+      if (frame->number != s->current_frame)
 	{
 	  list_del (&frame->node);
 	  frame_free (s, frame);
@@ -386,30 +389,35 @@ remove_all_splits ()
     }
 
   /* Maximize the frame and the windows in the frame. */
-  maximize_frame (s->rp_current_frame);
-  maximize_all_windows_in_frame (s->rp_current_frame);
+  maximize_frame (screen_get_frame (s, s->current_frame));
+  maximize_all_windows_in_frame (screen_get_frame (s, s->current_frame));
 }
 
 /* Shrink the size of the frame to fit it's current window. */
 void
 resize_shrink_to_window (rp_window_frame *frame)
 {
-  if (frame->win == NULL) return;
+  rp_window *win;
 
-  resize_frame_horizontally (frame, frame->win->width + frame->win->border*2 - frame->width);
-  resize_frame_vertically (frame, frame->win->height + frame->win->border*2 - frame->height);
+  if (frame->win_number == EMPTY) return;
+
+  win = find_window_number (frame->win_number);
+
+  resize_frame_horizontally (frame, win->width + win->border*2 - frame->width);
+  resize_frame_vertically (frame, win->height + win->border*2 - frame->height);
 }
 
 /* resize_frame is a generic frame resizer that can resize vertically,
    horizontally, to the right, to the left, etc. It all depends on the
-   functions passed to it. */
-static void
+   functions passed to it. Returns -1 if the resize failed, 0 for
+   success. */
+static int
 resize_frame (rp_window_frame *frame, rp_window_frame *pusher, int diff,
 	      int (*c1)(rp_window_frame *), int (c2)(rp_window_frame *),
 	      int (*c3)(rp_window_frame *), int (c4)(rp_window_frame *),
 	      void (*resize1)(rp_window_frame *, int),
 	      void (*resize2)(rp_window_frame *, int),
-	      void (*resize3)(rp_window_frame *, rp_window_frame *, int))
+	      int (*resize3)(rp_window_frame *, rp_window_frame *, int))
 {
   screen_info *s = frames_screen (frame);
   rp_window_frame *cur;
@@ -423,6 +431,10 @@ resize_frame (rp_window_frame *frame, rp_window_frame *pusher, int diff,
 	 moved then this frame is affected by the resize. */
       if ((*c1)(cur) == (*c3)(frame))
 	{
+	  /* If the frame can't get any smaller, then fail. */
+	  if (diff > 0 
+	      && abs ((*c3)(cur) - (*c1)(cur)) - diff <= defaults.window_border_width * 2)
+	    return -1;
 	  /* Test for this circumstance:
 	     --+
 	     | |+-+
@@ -451,7 +463,9 @@ resize_frame (rp_window_frame *frame, rp_window_frame *pusher, int diff,
 		   || ((*c4)(cur) > (*c2)(frame)
 		       && (*c4)(cur) <= (*c4)(frame)))
 	    {
-	      resize3 (cur, frame, -diff);
+	      /* Attempt to resize cur. */
+	      if (resize3 (cur, frame, -diff) == -1)
+		return -1;
 	    }
 	}
     }
@@ -459,47 +473,49 @@ resize_frame (rp_window_frame *frame, rp_window_frame *pusher, int diff,
   /* Finally, resize the frame and the windows inside. */
   (*resize1) (frame, diff);
   maximize_all_windows_in_frame (frame);
+
+  return 0;
 }
 
-static void resize_frame_bottom (rp_window_frame *frame, rp_window_frame *pusher, int diff);
-static void resize_frame_top (rp_window_frame *frame, rp_window_frame *pusher, int diff);
-static void resize_frame_left (rp_window_frame *frame, rp_window_frame *pusher, int diff);
-static void resize_frame_right (rp_window_frame *frame, rp_window_frame *pusher, int diff);
+static int resize_frame_bottom (rp_window_frame *frame, rp_window_frame *pusher, int diff);
+static int resize_frame_top (rp_window_frame *frame, rp_window_frame *pusher, int diff);
+static int resize_frame_left (rp_window_frame *frame, rp_window_frame *pusher, int diff);
+static int resize_frame_right (rp_window_frame *frame, rp_window_frame *pusher, int diff);
 
 /* Resize frame by moving it's right side. */
-static void
+static int
 resize_frame_right (rp_window_frame *frame, rp_window_frame *pusher, int diff)
 {
-  resize_frame (frame, pusher, diff,
-		frame_left, frame_top, frame_right, frame_bottom,
-		frame_resize_right, frame_resize_left, resize_frame_left);
+  return resize_frame (frame, pusher, diff,
+		       frame_left, frame_top, frame_right, frame_bottom,
+		       frame_resize_right, frame_resize_left, resize_frame_left);
 }
 
 /* Resize frame by moving it's left side. */
-static void
+static int
 resize_frame_left (rp_window_frame *frame, rp_window_frame *pusher, int diff)
 {
-  resize_frame (frame, pusher, diff,
-		frame_right, frame_top, frame_left, frame_bottom,
-		frame_resize_left, frame_resize_right, resize_frame_right);
+  return resize_frame (frame, pusher, diff,
+		       frame_right, frame_top, frame_left, frame_bottom,
+		       frame_resize_left, frame_resize_right, resize_frame_right);
 }
 
 /* Resize frame by moving it's top side. */
-static void
+static int
 resize_frame_top (rp_window_frame *frame, rp_window_frame *pusher, int diff)
 {
-  resize_frame (frame, pusher, diff,
-		frame_bottom, frame_left, frame_top, frame_right,
-		frame_resize_up, frame_resize_down, resize_frame_bottom);
+  return resize_frame (frame, pusher, diff,
+		       frame_bottom, frame_left, frame_top, frame_right,
+		       frame_resize_up, frame_resize_down, resize_frame_bottom);
 }
 
 /* Resize frame by moving it's bottom side. */
-static void
+static int
 resize_frame_bottom (rp_window_frame *frame, rp_window_frame *pusher, int diff)
 {
-  resize_frame (frame, pusher, diff,
-		frame_top, frame_left, frame_bottom, frame_right,
-		frame_resize_down, frame_resize_up, resize_frame_top);
+  return resize_frame (frame, pusher, diff,
+		       frame_top, frame_left, frame_bottom, frame_right,
+		       frame_resize_down, frame_resize_up, resize_frame_top);
 }
 
 /* Resize frame diff pixels by expanding it to the right. If the frame
@@ -507,19 +523,45 @@ resize_frame_bottom (rp_window_frame *frame, rp_window_frame *pusher, int diff)
 void
 resize_frame_horizontally (rp_window_frame *frame, int diff)
 {
+  int (*resize_fn)(rp_window_frame *, rp_window_frame*, int);
+  struct list_head *l;
   screen_info *s = frames_screen (frame);
 
   if (num_frames (s) < 2 || diff == 0)
     return;
 
-  if (frame_right (frame) < DisplayWidth (dpy, s->screen_num) - defaults.padding_right - defaults.padding_left)
+  if (frame_width (frame) + diff <= defaults.window_border_width * 2)
+    return;
+
+  /* Find out which resize function to use. */
+  if (frame_right (frame) < screen_right (s))
     {
-      resize_frame_right (frame, NULL, diff);
+      resize_fn = resize_frame_right;
     }
-  else if (frame_left (frame) > defaults.padding_left)
+  else if (frame_left (frame) > screen_left (s))
     {
-      resize_frame_left (frame, NULL, diff);
+      resize_fn = resize_frame_left;
     }
+  else
+    {
+      return;
+    }
+
+  /* Copy the frameset. If the resize fails, then we restore the
+     original one. */
+  l = screen_copy_frameset (s);
+
+  if ((*resize_fn) (frame, NULL, diff) == -1)
+    {
+      screen_restore_frameset (s, l);
+    }
+  else
+    {
+      frameset_free (l);
+    }
+
+  /* It's our responsibility to free this. */
+  free (l);
 }
 
 /* Resize frame diff pixels by expanding it down. If the frame is
@@ -527,19 +569,45 @@ resize_frame_horizontally (rp_window_frame *frame, int diff)
 void
 resize_frame_vertically (rp_window_frame *frame, int diff)
 {
+  int (*resize_fn)(rp_window_frame *, rp_window_frame*, int);
+  struct list_head *l;
   screen_info *s = frames_screen (frame);
 
   if (num_frames (s) < 2 || diff == 0)
     return;
 
-  if (frame_bottom (frame) < DisplayHeight (dpy, s->screen_num) - defaults.padding_bottom - defaults.padding_top)
+  if (frame_height (frame) + diff <= defaults.window_border_width * 2)
+    return;
+
+  /* Find out which resize function to use. */
+  if (frame_bottom (frame) < screen_bottom (s))
     {
-      resize_frame_bottom (frame, NULL, diff);
+      resize_fn = resize_frame_bottom;
     }
-  else if (frame_top (frame) > defaults.padding_top)
+  else if (frame_top (frame) > screen_top (s))
     {
-      resize_frame_top (frame, NULL, diff);
+      resize_fn = resize_frame_top;
     }
+  else
+    {
+      return;
+    }
+
+  /* Copy the frameset. If the resize fails, then we restore the
+     original one. */
+  l = screen_copy_frameset (s);
+
+  if ((*resize_fn) (frame, NULL, diff) == -1)
+    {
+      screen_restore_frameset (s, l);
+    }
+  else
+    {
+      frameset_free (l);
+    }
+
+  /* It's our responsibility to free this. */
+  free (l);
 }
 
 static int
@@ -623,6 +691,7 @@ remove_frame (rp_window_frame *frame)
   screen_info *s;
   int area;
   rp_window_frame *cur;
+  rp_window *win;
 
   if (frame == NULL) return;
 
@@ -632,22 +701,23 @@ remove_frame (rp_window_frame *frame)
   PRINT_DEBUG (("Total Area: %d\n", area));
 
   list_del (&frame->node);
-  hide_window (frame->win);
-  hide_others (frame->win);
+  win = find_window_number (frame->win_number);
+  hide_window (win);
+  hide_others (win);
 
   list_for_each_entry (cur, &s->rp_window_frames, node)
     {
       rp_window_frame tmp_frame;
       int fits = 0;
 
-      if (cur->win)
-	{
-	  PRINT_DEBUG (("Trying frame containing window '%s'\n", window_name (cur->win)));
-	}
-      else
-	{
-	  PRINT_DEBUG (("Trying some empty frame\n"));
-	}
+/*       if (cur->win_number != EMPTY) */
+/* 	{ */
+/* 	  PRINT_DEBUG (("Trying frame containing window '%s'\n", window_name (cur->win))); */
+/* 	} */
+/*       else */
+/* 	{ */
+/* 	  PRINT_DEBUG (("Trying some empty frame\n")); */
+/* 	} */
 
       /* Backup the frame */
       memcpy (&tmp_frame, cur, sizeof (rp_window_frame));
@@ -716,10 +786,11 @@ remove_frame (rp_window_frame *frame)
 	  /* The current frame fits into the new space so keep its
 	     new frame parameters and maximize the window to fit
 	     the new frame size. */
-	  if (cur->win)
+	  if (cur->win_number != EMPTY)
 	    {
+	      win = find_window_number (cur->win_number);
 	      maximize_all_windows_in_frame (cur);
-	      XRaiseWindow (dpy, cur->win->w);
+	      XRaiseWindow (dpy, win->w);
 	    }
 	}
       else
@@ -738,18 +809,23 @@ set_active_frame (rp_window_frame *frame)
 {
   screen_info *old_s = current_screen();
   screen_info *s = frames_screen (frame);
-  rp_window_frame *old = current_screen()->rp_current_frame;
+  int old = current_screen()->current_frame;
+  rp_window *win, *old_win;
+
+  win = find_window_number (frame->win_number);
+  old_win = find_window_number (screen_get_frame (current_screen(), 
+						  current_screen()->current_frame)->win_number);
 
   /* Make the switch */
-  give_window_focus (frame->win, old->win);
+  give_window_focus (win, old_win);
   update_last_access (frame);
-  s->rp_current_frame = frame;
+  s->current_frame = frame->number;
 
   /* If frame->win == NULL, then rp_current_screen is not updated. */
   rp_current_screen = s->screen_num;
 
   /* Possibly show the frame indicator. */
-  if ((old != s->rp_current_frame && num_frames(s) > 1)
+  if ((old != s->current_frame && num_frames(s) > 1)
       || s != old_s)
     {
       show_frame_indicator();
@@ -757,7 +833,7 @@ set_active_frame (rp_window_frame *frame)
 
   /* If the frame has no window to give focus to, give the key window
      focus. */
-  if( !frame->win )
+  if(frame->win_number == EMPTY)
     {
       XSetInputFocus (dpy, s->key_window,
 		      RevertToPointerRoot, CurrentTime);
@@ -767,10 +843,13 @@ set_active_frame (rp_window_frame *frame)
 void
 blank_frame (rp_window_frame *frame)
 {
-  if (frame->win == NULL) return;
+  rp_window *win;
 
-  hide_window (frame->win);
-  hide_others (frame->win);
+  if (frame->win_number == EMPTY) return;
+
+  win = find_window_number (frame->number);
+  hide_window (win);
+  hide_others (win);
 
   set_frames_window (frame, NULL);
 
@@ -797,18 +876,19 @@ show_frame_message (char *msg)
 {
   screen_info *s = current_screen ();
   int width, height;
+  rp_window_frame *frame;
+
+  frame = screen_get_frame (s, s->current_frame);
 
   width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
   height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
-  XMoveResizeWindow (dpy, current_screen()->frame_window,
-		     current_screen()->rp_current_frame->x
-		     + current_screen()->rp_current_frame->width / 2 - width / 2,
-		     current_screen()->rp_current_frame->y
-		     + current_screen()->rp_current_frame->height / 2 - height / 2,
+  XMoveResizeWindow (dpy, s->frame_window,
+		     frame->x + frame->width / 2 - width / 2,
+		     frame->y + frame->height / 2 - height / 2,
 		     width, height);
 
-  XMapRaised (dpy, current_screen()->frame_window);
+  XMapRaised (dpy, s->frame_window);
   XClearWindow (dpy, s->frame_window);
   XSync (dpy, False);
 

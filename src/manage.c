@@ -397,8 +397,12 @@ get_state (rp_window *win)
 static void
 move_window (rp_window *win)
 {
-  if (win->frame == NULL) 
+  rp_window_frame *frame;
+
+  if (win->frame_number == EMPTY) 
     return;
+
+  frame = win_get_frame (win);
 
   /* X coord. */
   switch (win->gravity)
@@ -406,17 +410,17 @@ move_window (rp_window *win)
     case NorthWestGravity:
     case WestGravity:
     case SouthWestGravity:
-      win->x = win->frame->x;
+      win->x = frame->x;
       break;
     case NorthGravity:
     case CenterGravity:
     case SouthGravity:
-      win->x = win->frame->x + (win->frame->width - win->border * 2) / 2 - win->width / 2;
+      win->x = frame->x + (frame->width - win->border * 2) / 2 - win->width / 2;
       break;
     case NorthEastGravity:
     case EastGravity:
     case SouthEastGravity:
-      win->x = win->frame->x + win->frame->width - win->width - win->border;
+      win->x = frame->x + frame->width - win->width - win->border;
       break;
     }
 
@@ -426,17 +430,17 @@ move_window (rp_window *win)
     case NorthEastGravity:
     case NorthGravity:
     case NorthWestGravity:
-      win->y = win->frame->y;
+      win->y = frame->y;
       break;
     case EastGravity:
     case CenterGravity:
     case WestGravity:
-      win->y = win->frame->y + (win->frame->height - win->border * 2) / 2 - win->height / 2;
+      win->y = frame->y + (frame->height - win->border * 2) / 2 - win->height / 2;
       break;
     case SouthEastGravity:
     case SouthGravity:
     case SouthWestGravity:
-      win->y = win->frame->y + win->frame->height - win->height - win->border;
+      win->y = frame->y + frame->height - win->height - win->border;
       break;
     }
 }
@@ -449,14 +453,14 @@ maximize_transient (rp_window *win)
   rp_window_frame *frame;
   int maxx, maxy;
 
+  frame = win_get_frame (win);
+
   /* We can't maximize a window if it has no frame. */
-  if (win->frame == NULL)
+  if (frame == NULL)
     return;
 
   /* Set the window's border */
   win->border = defaults.window_border_width;
-
-  frame = win->frame;
 
   /* Always use the window's current width and height for
      transients. */
@@ -507,14 +511,14 @@ maximize_normal (rp_window *win)
   rp_window_frame *frame;
   int maxx, maxy;
 
+  frame = win_get_frame (win);
+
   /* We can't maximize a window if it has no frame. */
-  if (win->frame == NULL)
+  if (frame == NULL)
     return;
 
   /* Set the window's border */
   win->border = defaults.window_border_width;
-
-  frame = win->frame;
 
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)
@@ -670,7 +674,7 @@ hide_window (rp_window *win)
   if (win == NULL) return;
 
   /* An unmapped window is not inside a frame. */
-  win->frame = NULL;
+  win->frame_number = EMPTY;
 
   /* Ignore the unmap_notify event. */
   XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
@@ -748,7 +752,7 @@ hide_others (rp_window *win)
     {
       if (find_windows_frame (cur) 
 	  || cur->state != NormalState 
-	  || cur->frame != frame)
+	  || cur->frame_number != frame->number)
 	continue;
 
       hide_window (cur);
