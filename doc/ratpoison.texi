@@ -262,7 +262,7 @@ When resizing interactively, the following keys are used:
 @item C-p
 Grow the frame vertically.
 @item C-n
-Shrink the frame horizontally.
+Shrink the frame vertically.
 @item C-f
 Grow the frame horizontally.
 @item C-b
