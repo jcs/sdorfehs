@@ -1,3 +1,8 @@
+2004-06-13  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/main.c (init_defaults): set default for window list style to
+	column.
+
 2004-06-03  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/number.c (numset_add_num): add debugging output to print the args.

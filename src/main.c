@@ -495,7 +495,7 @@ init_defaults ()
   defaults.win_name = WIN_NAME_TITLE;
   defaults.startup_message = 1;
   defaults.warp = 1;
-  defaults.window_list_style = STYLE_ROW;
+  defaults.window_list_style = STYLE_COLUMN;
 
   defaults.history_size = 20;
   defaults.frame_selectors = xstrdup ("");
