@@ -1,5 +1,5 @@
 %define name ratpoison
-%define version 0.2.0
+%define version 1.0.0
 %define release 1
 
 Summary: ratpoison - Simple window manager with no fat library dependencies.
@@ -29,8 +29,8 @@ mkdir -p $RPM_BUILD_ROOT
 %setup 
 rm -f config.cache
 ./configure	--prefix=/usr \
-		--infodir=/usr/share/info \
-		--mandir=/usr/share/man
+		--infodir=/usr/info \
+		--mandir=/usr/man
 
 %build
 make 
@@ -43,11 +43,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
+%doc AUTHORS COPYING ChangeLog NEWS README doc/sample.ratpoisonrc doc/ipaq.ratpoisonrc
 /usr/bin/ratpoison
-/usr/share/doc/ratpoison/AUTHORS
-/usr/share/doc/ratpoison/COPYING
-/usr/share/doc/ratpoison/ChangeLog
-/usr/share/doc/ratpoison/NEWS
-/usr/share/doc/ratpoison/README
-/usr/share/info/ratpoison.info*
-/usr/share/man/man1/ratpoison.1*
+/usr/info/ratpoison.info*
+/usr/man/man1/ratpoison.1*
