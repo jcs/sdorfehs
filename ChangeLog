@@ -1,5 +1,8 @@
 2004-04-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/events.c (configure_request): only display a raise request
+	if the window isn't already focused.
+
 	* src/manage.h (ungrab_keys_all_wins): new prototype
 	(grab_keys_all_wins): likewise
 

@@ -244,7 +244,7 @@ configure_request (XConfigureRequestEvent *e)
 		  else if (find_windows_frame (win))
 		    goto_window (win);
 		}
-	      else
+	      else if (current_window() != win)
 		{
 		  if (win->transient)
 		    marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT,
