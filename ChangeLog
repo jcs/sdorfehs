@@ -1,3 +1,7 @@
+2001-04-19  Shawn Betts  <sabetts@van.gobasis.com>
+
+	* src/manage.c (unhide_window): map and raise the window.
+
 2001-04-18  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/input.c (keysym_to_string): handles control, meta, alt,
