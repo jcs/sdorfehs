@@ -100,6 +100,7 @@ static user_command user_commands[] =
     {"shrink",		cmd_shrink,		arg_VOID},
     {"source",		cmd_source,		arg_STRING},
     {"split",		cmd_v_split,		arg_STRING},
+    {"sselect",		cmd_sselect,		arg_STRING},    
     {"startup_message",	cmd_startup_message, 	arg_STRING},
     {"time", 		cmd_time, 		arg_VOID},
     {"title", 		cmd_rename, 		arg_STRING},
@@ -3027,6 +3028,40 @@ cmd_prevscreen (int interactive, char *data)
 
   set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
 
+  return NULL;
+}
+
+char *
+cmd_sselect(int interactive, char *data)
+{
+  char *str;
+  char *tmp;
+  int new_screen;
+  if (data == NULL)
+    str = get_input ("Select Screen: ", trivial_completions);
+  else
+    str = xstrdup (data);
+
+  if (str == NULL)
+    return NULL;
+
+  tmp = strtok (str, " ");
+  if (tmp)
+    {
+      new_screen = string_to_window_number (tmp);
+      if (new_screen < 0)
+	{
+	  message (" sselect: invalid argument ");
+	  free (str);
+	  return NULL;
+	}
+      if (new_screen < num_screens)
+	set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
+      else
+	message (" sselect: out of range ");
+    }
+
+  free (str);
   return NULL;
 }
 

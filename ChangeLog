@@ -1,5 +1,8 @@
 2004-10-05  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/actions.c: new command, sselect
+	(cmd_sselect): new function. added prototype.
+
 	* src/events.c (property_notify): pass the root window to
 	receive_command.
 	(receive_command): take a root window as an argument and use it to

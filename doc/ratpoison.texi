@@ -764,8 +764,9 @@ space.
 
 The X Windowing System assigns each monitor a screen number. To switch
 to another screen use the commands @command{nextscreen} and
-@command{prevscreen}. ratpoison will tell you which frame has focus by
-drawing the current frame indicator in it.
+@command{prevscreen}. Or, @command{sselect} to jump to a specified
+screen. ratpoison will tell you which frame has focus by drawing the
+current frame indicator in it.
 
 Many commands operate only on the current screen. This becomes
 apparent when you have 2 screens each with 1 frame. In each frame you
@@ -774,7 +775,8 @@ command @command{other}, for instance, you'll get a message ``No other
 window.'' ratpoison means there's no other window to switch to in the
 current screen. If you want to switch to the other xterm you can
 switch to it by name (use @command{select} or @kbd{C-t '}), by number,
-or you can use @command{nextscreen} and @command{prevscreen}.
+or you can use @command{nextscreen}, @command{prevscreen}, and
+@command{sselect}.
 
 @deffn Command nextscreen
 This jumps you to the next X11 screen. @command{nextscreen} is
@@ -784,6 +786,10 @@ used for dual-head displays and multiple monitor setups.
 @deffn Command prevscreen
 This jumps you to the previous X11 screen. @command{prevscreen} is
 used for dual-head displays and multiple monitor setups.
+@end deffn
+
+@deffn Command sselect @var{n}
+This jumps you to the @var{n}th X11 screen. Screen numbers start at 0.
 @end deffn
 
 

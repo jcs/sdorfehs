@@ -124,6 +124,7 @@ char *cmd_newkmap (int interactive, char *data);
 char *cmd_delkmap (int interactive, char *data);
 char *cmd_definekey (int interactive, char *data);
 char *cmd_set (int interactive, char *data);
+char *cmd_sselect(int interactive, char *data);
 
 rp_keymap *find_keymap (char *name);
 void initialize_default_keybindings (void);
