@@ -119,7 +119,7 @@ find_window_by_number (int n)
 
   for (cur=rp_window_head; cur; cur=cur->next)
     {
-      if (cur->state != STATE_MAPPED) continue;
+      if (cur->state == STATE_UNMAPPED) continue;
 
       if (n == cur->number) return cur;
     }
@@ -146,6 +146,8 @@ find_window_by_name (char *name)
 
   for (cur=rp_window_head; cur; cur=cur->next)
     {
+      if (cur->state == STATE_UNMAPPED) continue;
+
       if (str_comp (name, cur->name, strlen (name))) return cur;
     }
 
