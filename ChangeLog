@@ -1,4 +1,4 @@
-2004-10-07  Shawn Betts  <katia_dilkina@verizon.net>
+2004-10-07  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* doc/ratpoison.texi (Frame Numbering): new topic
 
@@ -6,7 +6,7 @@
  
 	* autogen.sh: Handle "-f" option. Add usage comment.
 
-2004-10-05  Shawn Betts  <katia_dilkina@verizon.net>
+2004-10-05  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_unsetenv): add an '=' to the string passed to
 	putenv.
@@ -33,7 +33,7 @@
 	(receive_command): take a root window as an argument and use it to
 	listen for the command.
 
-2004-10-04  Shawn Betts  <katia_dilkina@verizon.net>
+2004-10-04  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/screen.h (is_a_root_window): new prototype
 
