@@ -285,8 +285,7 @@ main (int argc, char *argv[])
     }
 
   /* Set an initial window as active. */
-  rp_current_window = rp_window_head;
-  set_active_window (rp_current_window);
+  set_active_window (rp_window_head);
   
   handle_events ();
 
