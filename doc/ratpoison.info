@@ -1,0 +1,134 @@
+This is ratpoison.info, produced by makeinfo version 4.0 from
+ratpoison.texi.
+
+START-INFO-DIR-ENTRY
+* ratpoison: (ratpoison).                     A rat-free Window Manager.
+END-INFO-DIR-ENTRY
+
+   This is the ratpoison user manual.
+
+   Copyright (C) 2000 Shawn Betts
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the sections entitled "Copying" and "GNU General Public License"
+are included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
+   This document explains how to use ratpoison.
+
+
+File: ratpoison.info,  Node: Top,  Next: About,  Prev: (dir),  Up: (dir)
+
+* Menu:
+
+* About::                       What is ratpoison?
+* Contacting::                  How do I contact the ratpoison developers?
+* Using ratpoison::             Key commands and functionality
+
+
+File: ratpoison.info,  Node: About,  Next: Contacting,  Prev: Top,  Up: Top
+
+About
+*****
+
+   ratpoison is a simple Window Manager with no fat library
+dependencies, no fancy graphics, no window decorations, and no flashy
+wank. It is largely modelled after GNU Screen which has done wonders in
+virtual terminal market.
+
+   All interaction with the window manager is done through keystrokes.
+ratpoison has a prefix map to minimize the key clobbering that cripples
+EMACS and other quality pieces of software.
+
+   You'll also be pleased to hear that there is NO ratpoison.conf to
+configure. If you want to configure ratpoison, edit the source.
+
+   ratpoison was written by Shawn Betts
+(<sabetts@users.sourceforge.net>).
+
+
+File: ratpoison.info,  Node: Contacting,  Next: Using ratpoison,  Prev: About,  Up: Top
+
+Contacting
+**********
+
+   ratpoison is hosted on <sourceforge.net>. To see the latest
+developments in ratpoison go to
+<http://www.sourceforge.net/projects/ratpoison> or visit the ratpoison
+webpage at <http://ratpoison.sourceforge.net>.
+
+   There is also a ratpoison mailing list:
+<ratpoison-devel@lists.sourceforge.net>. For details on subscribing and
+for the list archives go to the ratpoison sourceforge.net project.
+
+
+File: ratpoison.info,  Node: Using ratpoison,  Prev: Contacting,  Up: Top
+
+Using ratpoison
+***************
+
+   ratpoison is a very simple window manager. Each window is maximized
+and has no border decorations. Here is a list of commands and what they
+do:
+
+`C-t C-c'
+     This opens a new XTerm.
+
+`C-t C-e'
+     This opens a new EMACS session. You will probably only need to do
+     this once.
+
+`C-t C-w'
+     This displays the Program Bar which displays the windows you
+     currently have running. The number before each window name is used
+     to jump to that window. You can to this by typing `C-t C-<n>'
+     where `<n>' is the number of the window. Note that only windows
+     with numbers from 0 to 9 can be referenced.
+
+     After 5 seconds the Program Bar disappears.
+
+`C-t C-p'
+     This jumps you to the previous window in the window list.
+
+`C-t C-n'
+     This jumps you to the next window in the window list.
+
+`C-t C-<n>'
+     This jumps you to window <n> where <n> is the window number as
+     shown in the Program Bar.
+
+`C-t C-t'
+     This toggles between the current window and the last window.
+
+`C-t t'
+     Sometimes you need to send a C-t to the current window. This
+     keystroke does just that.
+
+`C-t k'
+     This deletes the current window.
+
+`C-t K'
+     This destroys the current window. Normally you should only need to
+     use `C-t k', but just incase you need to rip the heart out of a
+     misbehaving window this command should do the trick.
+
+
+
+Tag Table:
+Node: Top1119
+Node: About1394
+Node: Contacting2112
+Node: Using ratpoison2623
+
+End Tag Table

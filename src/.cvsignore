@@ -1,0 +1,8 @@
+Makefile.in
+Makefile
+*.in
+ratpoison
+config.h
+stamp-h
+stamp-h.in
+.deps
