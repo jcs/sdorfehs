@@ -27,6 +27,8 @@ int show_bar (screen_info *s);
 int hide_bar (screen_info *s);
 int bar_y (screen_info *s);
 int bar_x (screen_info *s, int width);
-void message (char *msg, int hl_start, int hl_end);
+
+#define message(msg) marked_message (msg, 0, 0)
+void marked_message (char *msg, int hl_start, int hl_end);
 
 #endif /* ! _RATPOISON_BAR_H */

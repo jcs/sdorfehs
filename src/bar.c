@@ -136,11 +136,11 @@ update_window_names (screen_info *s)
       sbuf_copy (bar_buffer, MESSAGE_NO_MANAGED_WINDOWS);
     }
 
-  message (sbuf_get (bar_buffer), mark_start, mark_end);
+  marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
 }
 
 void
-message (char *msg, int mark_start, int mark_end)
+marked_message (char *msg, int mark_start, int mark_end)
 {
   XGCValues lgv;
   GC lgc;
@@ -186,7 +186,7 @@ message (char *msg, int mark_start, int mark_end)
       assert (mark_start <= strlen(msg) + 1);
       assert (mark_end <= strlen(msg) + 1);
       
-      start = XTextWidth (s->font, msg, mark_start);
+      start = XTextWidth (s->font, msg, mark_start) + BAR_X_PADDING;
       end = XTextWidth (s->font, msg + mark_start, mark_end - mark_start);
 
       PRINT_DEBUG ("%d %d strlen(%d)==> %d %d\n", mark_start, mark_end, strlen(msg), start, end);
