@@ -1,3 +1,9 @@
+2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (init_user_commands): set the last argument of the
+	following commands to arg_REST: addhook, chdir, remhook, source,
+	tmpwm, and prompt.
+
 2005-01-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (init_user_commands): change select's argument to

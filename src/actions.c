@@ -154,13 +154,13 @@ init_user_commands()
   add_command ("abort",		cmd_abort,	0, 0, 0);
   add_command ("addhook",	cmd_addhook,	2, 2, 2,
 	       "Hook: ", arg_HOOK,
-	       "Command: ", arg_STRING);
+	       "Command: ", arg_REST);
   add_command ("alias",		cmd_alias,	2, 2, 2,
 	       "Alias: ", arg_STRING,
 	       "Command: ", arg_REST);
   add_command ("banish",	cmd_banish,	0, 0, 0);
   add_command ("chdir",		cmd_chdir,	1, 0, 0,
-	       "Dir: ", arg_STRING);
+	       "Dir: ", arg_REST);
   add_command ("clrunmanaged",	cmd_clrunmanaged, 0, 0, 0);
   add_command ("colon",		cmd_colon,	1, 0, 0,
 	       "", arg_REST);
@@ -259,7 +259,7 @@ init_user_commands()
   add_command ("redisplay",	cmd_redisplay,	0, 0, 0);
   add_command ("remhook",	cmd_remhook,	2, 2, 2,
 	       "Hook: ", arg_HOOK,
-	       "Command: ", arg_STRING);
+	       "Command: ", arg_REST);
   add_command ("remove",	cmd_remove,	0, 0, 0);
   add_command ("resize",	cmd_resize,	2, 0, 2,
 	       "", arg_NUMBER,
@@ -277,7 +277,7 @@ init_user_commands()
 	       "Value: ", arg_REST);
   add_command ("shrink",	cmd_shrink,	0, 0, 0);
   add_command ("source",	cmd_source,	1, 1, 1,
-	       "File: ", arg_STRING);
+	       "File: ", arg_REST);
   add_command ("sselect",	cmd_sselect,	1, 1, 1,
 	       "Screen: ", arg_NUMBER);
   add_command ("startup_message", cmd_startup_message,	1, 1, 1,
@@ -285,7 +285,7 @@ init_user_commands()
   add_command ("time",		cmd_time,	0, 0, 0);
   add_command ("title",		cmd_rename,	0, 0, 0);
   add_command ("tmpwm",		cmd_tmpwm,	1, 1, 1,
-	       "Tmp wm: ", arg_STRING);
+	       "Tmp wm: ", arg_REST);
   add_command ("unalias",	cmd_unalias,	1, 1, 1,
 	       "Alias: ", arg_STRING);
   add_command ("unmanage",	cmd_unmanage,	0, 0, 0);
@@ -311,7 +311,7 @@ init_user_commands()
   add_command ("iother",	cmd_iother,	0, 0, 0);
   add_command ("iprev",		cmd_iprev,	0, 0, 0);
   add_command ("prompt",	cmd_prompt,	1, 0, 0,
-	       "", arg_STRING);
+	       "", arg_REST);
   add_command ("sdump",		cmd_sdump,	0, 0, 0);
   add_command ("sfdump",	cmd_sfdump,	0, 0, 0);
   add_command ("undo",		cmd_undo,	0, 0, 0);
