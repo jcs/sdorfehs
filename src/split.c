@@ -536,101 +536,11 @@ resize_frame_vertically (rp_window_frame *frame, int diff)
     {
       resize_frame_bottom (frame, NULL, diff);
     }
-  else if (frame_left (frame) > defaults.padding_top)
+  else if (frame_top (frame) > defaults.padding_top)
     {
       resize_frame_top (frame, NULL, diff);
     }
 }
-
-
-/* Resize FRAME horizontally by diff pixels. if diff is negative then
-   shrink the frame, otherwise enlarge it. frame is the frame being
-   resized, and pusher is the frame that is forcing frame to
-   resize. pusher may be NULL if the user is resizing the window. */
-
-/* void */
-/* resize_frame_horizontally (rp_window_frame *frame, rp_window_frame *pusher, int diff) */
-/* { */
-/*   screen_info *s = frames_screen (frame); */
-/*   rp_window_frame *cur; */
-
-/*   if (num_frames (s) < 2 || diff == 0) */
-/*     return; */
-
-/*   if (frame->x + frame->width < DisplayWidth (dpy, s->screen_num) - defaults.padding_right - defaults.padding_left) */
-/*     { */
-/*       /\* Look for frames on the right that would be pushed over by the */
-/* 	 frame's resize.  *\/ */
-/*       list_for_each_entry (cur, &s->rp_window_frames, node) */
-/* 	{ */
-/* 	  if (cur == frame || cur == pusher) continue; */
-/* 	  if (cur->x == (frame->x + frame->width)) */
-/* 	    { */
-/* 	      if (cur->y >= frame->y */
-/* 		  && cur->y + cur->height <= frame->y + frame->height) */
-/* 		{ */
-/* 		  /\* Resize the frame and the windows inside. This */
-/* 		     window's resizing will not affect any other */
-/* 		     windows. *\/ */
-/* 		  cur->width -= diff; */
-/* 		  cur->x += diff; */
-/* 		  maximize_all_windows_in_frame (cur); */
-/* 		} */
-/* 	      else if ((cur->y < frame->y */
-/* 			&& cur->y + cur->height > frame->y + frame->height) */
-/* 		       || (cur->y > frame->y */
-/* 			   && cur->y < frame->y + frame->height) */
-/* 		       || (cur->y + cur->height > frame->y */
-/* 			   && cur->y + cur->height < frame->y + frame->height)) */
-/* 		{ */
-/* 		  /\* Resize this frame and check for any other frames this */
-/* 		     frame may affect. *\/ */
-/* 		  resize_frame_horizontally (cur, frame, -diff); */
-/* 		} */
-/* 	    } */
-/* 	} */
-/*     } */
-/*   else */
-/*     { */
-/*       /\* Look for frames on theleft that would be pushed over by the */
-/* 	 frame's resize.  *\/ */
-/*       list_for_each_entry (cur, &s->rp_window_frames, node) */
-/* 	{ */
-/* 	  if (cur == frame || cur == pusher) continue; */
-/* 	  if (cur->x + cur->width == frame->x) */
-/* 	    { */
-/* 	      if (cur->y >= frame->y */
-/* 		  && cur->y + cur->height <= frame->y + frame->height) */
-/* 		{ */
-/* 		  /\* Resize the frame and the windows inside. This */
-/* 		     window's resizing will not affect any other */
-/* 		     windows. *\/ */
-/* 		  cur->width -= diff; */
-/* 		  maximize_all_windows_in_frame (cur); */
-/* 		} */
-/* 	      else if ((cur->y < frame->y */
-/* 			&& cur->y + cur->height > frame->y + frame->height) */
-/* 		       || (cur->y > frame->y */
-/* 			   && cur->y < frame->y + frame->height) */
-/* 		       || (cur->y + cur->height > frame->y */
-/* 			   && cur->y + cur->height < frame->y + frame->height)) */
-/* 		{ */
-/* 		  /\* Resize this frame and check for any other frames this */
-/* 		     frame may affect. *\/ */
-/* 		  resize_frame_horizontally (cur, frame, -diff); */
-/* 		} */
-/* 	    } */
-/* 	} */
-
-/*       /\* Since the frame is at the right edge of the screen, the left */
-/* 	 side of the frame will actually move. *\/ */
-/*       frame->x -= diff; */
-/*     } */
-
-/*   /\* Finally, resize the frame and the windows inside. *\/ */
-/*   frame->width += diff; */
-/*   maximize_all_windows_in_frame (frame); */
-/* } */
 
 static int
 frame_is_below (rp_window_frame *src, rp_window_frame *frame)
