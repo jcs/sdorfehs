@@ -1,3 +1,8 @@
+2003-04-13  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/manage.c (get_wmname): add debugging output to print
+	returned elements from X11 call.
+
 2003-04-11  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/manage.c (get_wmname): add a debug line to print the

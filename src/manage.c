@@ -104,6 +104,9 @@ get_wmname (Window w)
 			       XA_STRING, &actual_type, &actual_format, 
 			       &n, &bytes_after, &name);
 
+  PRINT_DEBUG (("XGetWindowProperty: %d %ld %d %ld %ld '%s'\n", status, actual_type, 
+		actual_format, n, bytes_after, name));
+
   if (status != Success || name == NULL)
     {
       PRINT_DEBUG (("I can't get the WMName.\n"));
