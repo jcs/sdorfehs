@@ -66,7 +66,6 @@ struct rp_window
 struct screen_info
 {
   GC normal_gc;
-  GC bold_gc;
   XFontStruct *font;		/* The font we want to use. */
   XWindowAttributes root_attr;
   Window root, bar_window, key_window, input_window;
