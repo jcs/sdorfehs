@@ -91,6 +91,10 @@ unmap_notify (XEvent *ev)
   screen_info *s;
   rp_window *win;
 
+  /* ignore SubstructureNotify unmaps. */
+  if(ev->xunmap.event != ev->xunmap.window 
+     && ev->xunmap.send_event != True) return;
+
   s = find_screen (ev->xunmap.event);
 
   /* FIXME: Should we only look in the mapped window list? */

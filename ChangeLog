@@ -1,3 +1,11 @@
+2001-06-05  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/manage.c (hide_window): ignore only StructureNotify events.
+
+	* src/data.h (WIN_EVENTS): Add StructureNotifyMask.
+
+	* src/events.c (unmap_notify): ignore SubstructureNotify unmaps.
+
 2001-06-02  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/split.c (blank_frame): hide transient's transient_for.
