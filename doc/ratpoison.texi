@@ -390,9 +390,9 @@ the WMCLASS hint. @var{name} can be @samp{title} which is what most
 window managers put in the title bar, @samp{name} which is the
 res_name, or @samp{class} which is the res_class.
 
-@item defwinpos @var{x} @var{y}
-Set the default alignment for normal windows. See the
-@command{pos} command.
+@item defwingravity @var{g}
+Set the default gravity for normal windows. See the
+@command{gravity} command.
 
 @item deffgcolor @var{color}
 Set the foreground color for all text ratpoison displays. @var{color}
