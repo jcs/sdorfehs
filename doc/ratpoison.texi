@@ -749,6 +749,14 @@ output can then be captured and used in the ratpoison script. For
 instance, this could be used to check whether a program is running and
 if it is switch to its window otherwise launch it.
 
+It should also be noted that multiple @option{-c} options can be used.
+
+@example
+$ ratpoison -c split -c split
+@end example
+
+Here ratpoison would split the current frame twice.
+
 @end table
 
 @node Startup file,  , Command Line Arguments, Top
