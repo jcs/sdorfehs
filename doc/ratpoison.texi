@@ -299,10 +299,6 @@ Bind a key to a ratpoison command. This command takes two arguments: the
 key to bind and the command to run. For example, to bind @kbd{C-t R} to
 restart ratpoison:
 
-@item blank
-Blank the current frame. All windows in the current frame will be
-hidden.
-
 @example
 : bind R exec ratpoison --restart
 @end example
@@ -412,7 +408,8 @@ request with a message like @samp{Raise request from window 1
 @item select @var{n}
 This jumps you to window @var{n} where @var{n} is the window number as
 shown in the Program Bar. You can do the same trick with
-@command{C-@var{n}} too.
+@command{C-@var{n}} too. To select no window, blanking the current
+frame, type @samp{select -}.
 
 @item select @var{window-name}
 Go to a window by name. A shortcut is @kbd{C-t '}.
