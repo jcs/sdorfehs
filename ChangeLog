@@ -1,3 +1,9 @@
+2001-05-03  Gergely Nagy  <8@free.bsd.hu>
+
+	* debian/control: adjust build-depends to potato
+	* debian/rules: fixed, so it works under both potato
+	and woody/sid
+
 2001-04-19  Shawn Betts  <sabetts@van.gobasis.com>
 
 	* src/manage.c (unhide_window): map and raise the window.
