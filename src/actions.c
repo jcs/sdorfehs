@@ -864,9 +864,14 @@ spawn(void *data)
 	  /* Some process setup to make sure the spawned process runs
 	     in its own session. */
 	  putenv(DisplayString(dpy));
+#ifdef HAVE_SETSID
 	  setsid();
+#endif
+#if defined (HAVE_SETPGID)
 	  setpgid (0, 0);
-
+#elif defined (HAVE_SETPGRP)
+	  setpgrp (0, 0);
+#endif
 	  execl("/bin/sh", "sh", "-c", cmd, 0);
 	  _exit(EXIT_FAILURE);
 	}

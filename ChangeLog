@@ -1,4 +1,10 @@
-2001-09-15  shawn  <sabetts@diggin.lamenet.tmp>
+2001-09-16  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* configure.in: check for setpgrp.
+
+	* src/actions.c (spawn): Only call setsid if it exists.
+	(spawn): Only call setpgid if it exists.
+	(spawn): if setpgid doesn't exist, try setpgrp.
 
 	* configure.in: check for setsid and setpgid functions. Add
 	contrib/Makefile to AC_OUTPUT.
