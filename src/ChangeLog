@@ -1,5 +1,9 @@
 2001-02-24  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* main.c (load_rc_file): new function
+	(read_initialization_files): new function
+	(main): read the initialization files
+
 	* conf.h: remove themes support
 	
 	* themes.h: remove file

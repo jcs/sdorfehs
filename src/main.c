@@ -176,6 +176,54 @@ print_help ()
   exit (EXIT_SUCCESS);
 }
 
+static void
+load_rc_file (char *filename)
+{
+  FILE *rcfile;
+
+  char *lineptr;
+  size_t n;
+
+  n = 0;
+  lineptr = NULL;
+ 
+  if ((rcfile = fopen (filename, "r")) == NULL)
+    {
+      fprintf (stderr, "ratpoison: could not open %s\n", filename);
+    }
+  else
+    {
+      size_t retval;
+      n = 256;
+      lineptr = (char*)malloc(n);
+      
+      while ((retval = getline (&lineptr, &n, rcfile)) != EOF)
+	{
+	  fprintf (stderr, "read command: %s\n", lineptr);
+
+	  command (lineptr);
+	}
+
+      free (lineptr);
+    }
+}
+
+static void
+read_initialization_files ()
+{
+  char *homedir;
+
+  homedir = getenv ("HOME");
+
+  if (!homedir)
+    fprintf (stderr, "$HOME not set!?\n");
+  else
+    {
+      char *rcfile = (char*)malloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
+      sprintf (rcfile, "%s/.ratpoisonrc", homedir);
+      load_rc_file (rcfile);
+    }
+}
 
 int
 main (int argc, char *argv[])
@@ -281,6 +329,8 @@ main (int argc, char *argv[])
 
   initialize_default_keybindings ();
 
+  read_initialization_files ();
+
   /* Set an initial window as active. */
   set_active_window (find_window_other ());
   
@@ -376,5 +426,5 @@ find_screen (Window w)
   for (i=0; i<num_screens; i++)
     if (screens[i].root == w) return &screens[i];
 
-  return NULL;
-}
+   return NULL;
+ }
