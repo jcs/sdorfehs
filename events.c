@@ -115,6 +115,19 @@ map_request (XEvent *ev)
     }
 }
 
+int
+more_destroy_events ()
+{
+  XEvent ev;
+
+  if (XCheckTypedEvent (dpy, DestroyNotify, &ev))
+    {
+      XPutBackEvent (dpy, &ev);
+      return 1;
+    }
+  return 0;
+}
+
 void
 destroy_window (XDestroyWindowEvent *ev)
 {
@@ -128,18 +141,21 @@ destroy_window (XDestroyWindowEvent *ev)
       /* Goto the last accessed window. */
       if (win == rp_current_window) 
 	{
-	  last_window (); 
+	  printf ("Destroying current window.\n");
+	  
+	  /* If there are more DestroyNotify events, then it is unsafe
+             to go to the last window since it could be
+             deleted. Therefore, wait until the last DestroyNotify
+             event and then switch windows. */
+	  if (!more_destroy_events ()) last_window (); 
 	  unmanage (win);
 	}
       else
 	{
+	  printf ("Destroying some other window.\n");
 	  unmanage (win);
 	}
     }
-
-#ifdef DEBUG
-  printf ("Remove window event.\n");
-#endif
 }
 
 void
