@@ -1,0 +1,87 @@
+.TH RATPOISON 1 "December  4, 2000" "ratpoison 0.0.5" RATPOISON
+.SH NAME
+ratpoison \- fatless X window manager
+.SH SYNOPSIS
+.B ratpoison
+.SH DESCRIPTION
+This manual page documents briefly the
+.B ratpoison
+window manager.
+
+This manual page was written for the Debian GNU/Linux distribution
+because the original program does not have a manual page.
+Instead, it has documentation in the GNU Info format; see below.
+.PP
+\fBratpoison\fP is a simple Window Manager with no fat library
+dependencies, no fancy graphics, no window decorations, and no
+flashy wank. It is largely modelled after \fIGNU Screen\fP which
+has done wonders in virtual terminal market.
+
+All interaction with the window manager is done through
+keystrokes. ratpoison has a prefix map to minimize the key
+clobbering that cripples EMACS and other quality pieces of
+software.
+.SH KEYSTROKES
+.TP
+.B C\-t C\-c
+This opens a new XTerm.
+.TP
+.B C\-t C\-e
+This opens a new EMACS session. You will probably only need to do this
+once.
+.TP
+.B C\-t C\-w
+This displays the Program Bar which displays the windows you currently
+have running. The number before each window name is used to jump to that
+window. You can to this by typing \fBC\-t C\-<n>\fP where \fI<n>\fP is the
+number of the window. Note that only windows with numbers from 0 to 9
+can be referenced.
+
+After 5 seconds the Program Bar disappears.
+.TP
+.B C\-t C\-p
+This jumps you to the previous window in the window list.
+.TP
+.B C\-t C\-n
+This jumps you to the next window in the window list.
+.TP
+.B C\-t C\-<n>
+This jumps you to window <n> where <n> is the window number as shown in
+the Program Bar.
+.TP
+.B C\-t C\-t
+This toggles between the current window and the last window.
+.TP
+.B C\-t t
+Sometimes you need to send a C\-t to the current window. This keystroke
+does just that.
+.TP
+.B C\-t C\-k
+This deletes the current window.
+.TP
+.B C\-t C\-K
+This destroys the current window. Normally you should only need to
+use `C-t k', but just incase you need to rip the heart out of a
+misbehaving window this command should do the trick.
+.TP
+.B C\-t C\-a
+Rename the currently active window. This name will remain for the
+duration of the window's life.
+.TP
+.B C\-t C\-'
+Go to a window by name.
+.SH "SEE ALSO"
+The full documentation for
+.B ratpoison
+is maintained as a Texinfo manual.  If the
+.B info
+and
+.B ratpoison
+programs are properly installed at your site, the command
+.IP
+.B info ratpoison
+.PP
+should give you access to the complete manual.
+.SH AUTHOR
+This manual page was written by Gergely Nagy <8@free.bsd.hu>,
+for the Debian GNU/Linux system (but may be used by others).

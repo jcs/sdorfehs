@@ -1,0 +1,21 @@
+Source: ratpoison
+Section: x11
+Priority: extra
+Maintainer: Gergely Nagy <8@free.bsd.hu>
+Build-Depends: debhelper (>= 2.0.89), xlibs-dev | xlib6g-dev
+Standards-Version: 3.2.1
+
+Package: ratpoison
+Architecture: any
+Depends: ${shlibs:Depends}
+Provides: x-window-manager
+Description: Simple window manager with no fat library dependencies.
+ ratpoison is a simple Window Manager with no fat library
+ dependencies, no fancy graphics, no window decorations,
+ and no flashy wank. It is largely modelled after GNU
+ Screen which has done wonders in virtual terminal market.
+ .
+ All interaction with the window manager is done through
+ keystrokes. ratpoison has a prefix map to minimize the
+ key clobbering that cripples EMACS and other quality
+ pieces of software.

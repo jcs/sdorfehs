@@ -1,0 +1,2 @@
+?package(ratpoison):needs=wm section=WindowManagers \
+  title="ratpoison" command="/usr/bin/ratpoison"

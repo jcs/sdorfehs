@@ -1,0 +1,8 @@
+Document: ratpoison
+Title: Debian ratpoison Manual
+Author: Shawn Betts <sabetts@users.sourceforge.net>
+Abstract: This manual describes the ratpoison window manager
+Section: X11/Window Managers
+
+Format: info
+Files: /usr/share/info/ratpoison.info.gz

@@ -1,0 +1,18 @@
+This package was debianized by Gergely Nagy <8@free.bsd.hu> on
+Tue, 28 Nov 2000 16:13:08 +0100.
+
+It was downloaded from
+	ftp://ratpoison.sourceforge.net/pub/ratpoison/ratpoison-0.0.5.tar.gz
+
+Upstream Author: Shawn Betts <sabetts@users.sourceforge.net>
+
+Changes made to the original sources:
+	* added debian/
+	* added a manual page
+
+Copyright:
+
+ratpoison is covered by the GNU GPL v2. The complete text can be found in
+/usr/share/common-licenses/GPL
+
+Modifications for Debian are also covered by the GNU GPL.

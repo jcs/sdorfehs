@@ -1,0 +1,110 @@
+#!/usr/bin/make -f
+# by Gergely Nagy <8@free.bsd.hu>
+# patch and unpatch based on debian/rules.d/patch.mk in glibc-2.1.95-1
+
+export DH_COMPAT=2
+CFLAGS	= -O2
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -g
+endif
+
+configure: patch configure-stamp
+configure-stamp:
+	dh_testdir
+	CFLAGS="$(CFLAGS)" ./configure --prefix=/usr \
+				       --infodir=/usr/share/info \
+				       --mandir=/usr/share/man
+	touch configure-stamp
+
+patch: patch-stamp
+patch-stamp:
+	test -d debian/patched || install -d debian/patched
+	@echo "Patches applied in the Debian version of ratpoison:" > $@T
+	@for patch in `cat debian/patches/00list`; do \
+		stamp=debian/patched/$$patch.dpatch; \
+		patch=debian/patches/$$patch.dpatch; \
+		test -x $$patch || chmod +x $$patch; \
+		if test -f $$stamp; then \
+			echo "$$patch already applied."; \
+			echo -e "\n$$patch:" >> $@T; \
+			sed -n 's/^# *DP: */  /p' $$patch >> $@T; \
+		else \
+			echo "trying to apply patch $$patch..."; \
+			if $$patch -patch >$$stamp.new 2>&1; then \
+				mv $$stamp.new $$stamp; \
+				touch $$stamp; \
+				echo -e "\n$$patch:" >> $@T; \
+				sed -n 's/^# *DP: */  /p' $$patch >> $@T; \
+			else \
+				echo "error in applying $$patch patch."; \
+				exit 1; \
+			fi; \
+		fi; \
+	done
+	mv -f $@T $@
+
+unpatch:
+	@for patch in `tac debian/patches/00list`; do \
+		stamp=debian/patched/$$patch.dpatch; \
+		patch=debian/patches/$$patch.dpatch; \
+		test -x $$patch || chmod +x $$patch; \
+		if test -f $$stamp; then \
+			echo "trying to revert patch $$patch..."; \
+			if $$patch -unpatch; then \
+				echo "reverted $$patch patch."; \
+				rm -f $$stamp; \
+			else \
+				echo "error in reverting $$patch patch."; \
+				exit 1; \
+			fi; \
+		fi; \
+	done
+	rm -f patch-stamp
+
+build: configure build-stamp
+build-stamp:
+	dh_testdir
+	$(MAKE)
+	touch build-stamp
+
+clean: clean1 unpatch
+clean1:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp patch-stamp
+	-$(MAKE) distclean
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	$(MAKE) install prefix=`pwd`/debian/`dh_listpackages`/usr
+
+binary-indep: build install
+
+binary-arch: build install
+	dh_testversion 2.0.89
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+	dh_installexamples
+	dh_installmenu
+	dh_installmanpages
+	dh_installinfo
+	dh_installchangelogs src/ChangeLog
+	dh_installwm
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install unpatch \
+	clean1 patch configure

@@ -1,0 +1,24 @@
+ratpoison (0.0.5-20001216) unstable; urgency=low
+
+  * CVS version as of 2000/12/16
+
+ -- Gergely Nagy <8@free.bsd.hu>  Sat, 16 Dec 2000 18:13:19 +0100
+
+ratpoison (0.0.5-2) unstable; urgency=low
+
+  * Does not include /usr/info anymore. Whoops...
+  * Modified menu entry (Closes: Bug#79072).
+  * Fixed debian/rules#clean, I'm terribly sorry, won't happen again.
+
+ -- Gergely Nagy <8@free.bsd.hu>  Mon, 11 Dec 2000 12:33:55 +0100
+
+ratpoison (0.0.5-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Gergely Nagy <8@free.bsd.hu>  Mon,  4 Dec 2000 21:52:54 +0100
+
+Local variables:
+mode: debian-changelog
+add-log-mailing-address "8@free.bsd.hu"
+End:
