@@ -43,5 +43,6 @@ rp_window_frame *find_frame_right (rp_window_frame *frame);
 rp_window_frame *find_frame_left (rp_window_frame *frame);
 rp_window_frame *find_frame_down (rp_window_frame *frame);
 rp_window_frame *find_frame_up (rp_window_frame *frame);
+rp_window_frame *find_last_frame ();
 
 #endif

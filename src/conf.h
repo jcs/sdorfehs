@@ -26,7 +26,7 @@
 #include "actions.h"
 
 #define KEY_PREFIX      XK_t
-#define MODIFIER_PREFIX ControlMask
+#define MODIFIER_PREFIX RP_CONTROL_MASK
 
 /* This is the abort key when typing input. */
 #define INPUT_ABORT_KEY      XK_g

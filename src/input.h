@@ -27,6 +27,8 @@ int cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym
 char *get_input (char *prompt);
 char *get_more_input (char *prompt, char *preinput);
 int read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len);
+unsigned int x11_mask_to_rp_mask (unsigned int mask);
+unsigned int rp_mask_to_x11_mask (unsigned int mask);
 void update_modifier_map ();
 void grab_key (int keycode, unsigned int modifiers, Window grab_window);
 

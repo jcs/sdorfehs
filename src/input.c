@@ -28,6 +28,49 @@
 
 #include "ratpoison.h"
 
+/* Convert an X11 modifier mask to the rp modifier mask equivalent, as
+   best it can (the X server may not have a hyper key defined, for
+   instance). */
+unsigned int
+x11_mask_to_rp_mask (unsigned int mask)
+{
+  unsigned int result = 0;
+
+  PRINT_DEBUG ("x11 mask = %x\n", mask);
+
+  result |= mask & ControlMask ? RP_CONTROL_MASK:0;
+  result |= mask & rp_modifier_info.meta_mod_mask ? RP_META_MASK:0;
+  result |= mask & rp_modifier_info.alt_mod_mask ? RP_ALT_MASK:0;
+  result |= mask & rp_modifier_info.hyper_mod_mask ? RP_HYPER_MASK:0;
+  result |= mask & rp_modifier_info.super_mod_mask ? RP_SUPER_MASK:0;
+
+  PRINT_DEBUG ("rp mask = %x\n", mask);
+
+  return result;
+}
+
+/* Convert an rp modifier mask to the x11 modifier mask equivalent, as
+   best it can (the X server may not have a hyper key defined, for
+   instance). */
+unsigned int
+rp_mask_to_x11_mask (unsigned int mask)
+{
+  unsigned int result = 0;
+
+  PRINT_DEBUG ("rp mask = %x\n", mask);
+
+  result |= mask & RP_CONTROL_MASK ? ControlMask:0;
+  result |= mask & RP_META_MASK ? rp_modifier_info.meta_mod_mask:0;
+  result |= mask & RP_ALT_MASK ? rp_modifier_info.alt_mod_mask:0;
+  result |= mask & RP_HYPER_MASK ? rp_modifier_info.hyper_mod_mask:0;
+  result |= mask & RP_SUPER_MASK ? rp_modifier_info.super_mod_mask:0;
+
+  PRINT_DEBUG ("x11 mask = %x\n", mask);
+
+  return result;
+}
+
+
 /* Figure out what keysyms are attached to what modifiers */
 void
 update_modifier_map ()
@@ -125,6 +168,9 @@ grab_key (int keycode, unsigned int modifiers, Window grab_window)
   unsigned int mod_list[8];
   int i;
 
+  /* Convert to a modifier mask that X Windows will understand. */
+  modifiers = rp_mask_to_x11_mask (modifiers);
+
   /* Create a list of all possible combinations of ignored
      modifiers. Assumes there are only 3 ignored modifiers. */
   mod_list[0] = 0;
@@ -154,11 +200,11 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
 
   name = sbuf_new (0);
 
-  if (modifier & ControlMask) sbuf_concat (name, "C-");
-  if (modifier & rp_modifier_info.meta_mod_mask) sbuf_concat (name, "M-");
-  if (modifier & rp_modifier_info.alt_mod_mask) sbuf_concat (name, "A-");
-  if (modifier & rp_modifier_info.hyper_mod_mask) sbuf_concat (name, "H-");
-  if (modifier & rp_modifier_info.super_mod_mask) sbuf_concat (name, "S-");
+  if (modifier & RP_CONTROL_MASK) sbuf_concat (name, "C-");
+  if (modifier & RP_META_MASK) sbuf_concat (name, "M-");
+  if (modifier & RP_ALT_MASK) sbuf_concat (name, "A-");
+  if (modifier & RP_HYPER_MASK) sbuf_concat (name, "H-");
+  if (modifier & RP_SUPER_MASK) sbuf_concat (name, "S-");
     
   sbuf_concat (name, XKeysymToString (keysym));
 
@@ -199,71 +245,6 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
 
   return nbytes;
 }
-
-/* void */
-/* cook_keycode (KeyCode keycode, KeySym *keysym, unsigned int *mod) */
-/* { */
-/*   KeySym normal, shifted; */
-
-/*   /\* FIXME: Although this should theoretically work, the mod that */
-/*      mode_switch is on doesn't seem to get activated. Instead the */
-/*      2<<13 bit gets set! It doesn't seem to matter which mod I put */
-/*      Mode_switch on. So if this doesn't work try uncommented the line */
-/*      below and commented the current one. *\/ */
-
-/* /\*   if (*mod & 8192) *\/ */
-/*   if (*mod & rp_modifier_info.mode_switch_mask) */
-/*     { */
-/*       normal = XKeycodeToKeysym(dpy, keycode, 2); */
-/*       if (normal == NoSymbol) normal = XKeycodeToKeysym(dpy, keycode, 0); */
-/*       shifted = XKeycodeToKeysym(dpy, keycode, 3); */
-/*       if (shifted == NoSymbol) shifted = XKeycodeToKeysym(dpy, keycode, 1); */
-
-/*       /\* Remove the mode switch modifier since we have dealt with it. *\/ */
-/*       *mod &= ~rp_modifier_info.mode_switch_mask; */
-/*     } */
-/*   else */
-/*     { */
-/*       normal = XKeycodeToKeysym(dpy, keycode, 0); */
-/*       shifted = XKeycodeToKeysym(dpy, keycode, 1); */
-/*     } */
-
-/*   /\* FIXME: eew, this looks gross. *\/ */
-/*   if (*mod & (ShiftMask | LockMask)) */
-/*     { */
-/*       /\* if the shifted code is not defined, then we use the normal */
-/* 	 keysym and keep the shift mask *\/ */
-/*       if (shifted == NoSymbol) */
-/* 	{ */
-/* 	  *keysym = normal; */
-/* 	} */
-/*       /\* But if the shifted code is defined, we use it and remove the */
-/* 	 shift mask *\/ */
-/*       else if (*mod & ShiftMask) */
-/* 	{ */
-/* 	  *keysym = shifted; */
-/* 	  *mod &= ~(ShiftMask | LockMask); */
-/* 	} */
-/*       /\* If caps lock is on, use shifted for alpha keys *\/ */
-/*       else if (normal >= XK_a  */
-/* 	       && normal <= XK_z */
-/* 	       && *mod & LockMask) */
-/* 	{ */
-/* 	  *keysym = shifted; */
-/* 	} */
-/*       else */
-/* 	{ */
-/* 	  *keysym = normal; */
-/* 	} */
-/*     } */
-/*   else */
-/*     { */
-/*       *keysym = normal; */
-/*     } */
-
-/*   PRINT_DEBUG ("cooked keysym: %ld '%c' mask: %d\n",  */
-/* 	       *keysym, (char)*keysym, *mod); */
-/* } */
 
 int
 read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)

@@ -46,6 +46,7 @@ static user_command user_commands[] =
     {"focusdown",	cmd_focusdown,	arg_VOID},
     {"focusleft",	cmd_focusleft,	arg_VOID},
     {"focusright",	cmd_focusright,	arg_VOID},
+    {"focuslast",	cmd_focuslast,	arg_VOID},
     {"meta",		cmd_meta,	arg_STRING},
     {"help",		cmd_help,	arg_VOID},
     {"hsplit",		cmd_h_split,	arg_VOID},
@@ -208,7 +209,7 @@ initialize_default_keybindings (void)
 
   add_keybinding (prefix_key.sym, prefix_key.state, "other");
   add_keybinding (prefix_key.sym, 0, "meta");
-  add_keybinding (XK_g, ControlMask, "abort");
+  add_keybinding (XK_g, RP_CONTROL_MASK, "abort");
   add_keybinding (XK_0, 0, "select 0");
   add_keybinding (XK_1, 0, "select 1");
   add_keybinding (XK_2, 0, "select 2");
@@ -221,49 +222,50 @@ initialize_default_keybindings (void)
   add_keybinding (XK_9, 0, "select 9");
   add_keybinding (XK_minus, 0, "select -");
   add_keybinding (XK_A, 0, "title");
-  add_keybinding (XK_A, ControlMask, "title");
+  add_keybinding (XK_A, RP_CONTROL_MASK, "title");
   add_keybinding (XK_K, 0, "kill");
-  add_keybinding (XK_K, ControlMask, "kill");
+  add_keybinding (XK_K, RP_CONTROL_MASK, "kill");
   add_keybinding (XK_Return, 0, "next");
-  add_keybinding (XK_Return, ControlMask,	"next");
+  add_keybinding (XK_Return, RP_CONTROL_MASK,	"next");
   add_keybinding (XK_a, 0, "time");
-  add_keybinding (XK_a, ControlMask, "time");
+  add_keybinding (XK_a, RP_CONTROL_MASK, "time");
   add_keybinding (XK_b, 0, "banish");
-  add_keybinding (XK_b, ControlMask, "banish");
+  add_keybinding (XK_b, RP_CONTROL_MASK, "banish");
   add_keybinding (XK_c, 0, "exec " TERM_PROG);
-  add_keybinding (XK_c, ControlMask, "exec " TERM_PROG);
+  add_keybinding (XK_c, RP_CONTROL_MASK, "exec " TERM_PROG);
   add_keybinding (XK_colon, 0, "colon");
   add_keybinding (XK_exclam, 0, "exec");
-  add_keybinding (XK_exclam, ControlMask, "colon exec " TERM_PROG " -e ");
+  add_keybinding (XK_exclam, RP_CONTROL_MASK, "colon exec " TERM_PROG " -e ");
   add_keybinding (XK_i, 0, "info");
-  add_keybinding (XK_i, ControlMask, "info");
+  add_keybinding (XK_i, RP_CONTROL_MASK, "info");
   add_keybinding (XK_k, 0, "delete");
-  add_keybinding (XK_k, ControlMask, "delete");
+  add_keybinding (XK_k, RP_CONTROL_MASK, "delete");
   add_keybinding (XK_l, 0, "redisplay");
-  add_keybinding (XK_l, ControlMask, "redisplay");
+  add_keybinding (XK_l, RP_CONTROL_MASK, "redisplay");
   add_keybinding (XK_m, 0, "lastmsg");
-  add_keybinding (XK_m, ControlMask, "lastmsg");
+  add_keybinding (XK_m, RP_CONTROL_MASK, "lastmsg");
   add_keybinding (XK_n, 0, "next");
-  add_keybinding (XK_n, ControlMask, "next");
+  add_keybinding (XK_n, RP_CONTROL_MASK, "next");
   add_keybinding (XK_p, 0, "prev");
-  add_keybinding (XK_p, ControlMask, "prev");
+  add_keybinding (XK_p, RP_CONTROL_MASK, "prev");
   add_keybinding (XK_quoteright, 0, "select");
-  add_keybinding (XK_quoteright, ControlMask, "select");
+  add_keybinding (XK_quoteright, RP_CONTROL_MASK, "select");
   add_keybinding (XK_space, 0, "next");
-  add_keybinding (XK_space, ControlMask, "next");
+  add_keybinding (XK_space, RP_CONTROL_MASK, "next");
   add_keybinding (XK_v, 0, "version");
-  add_keybinding (XK_v, ControlMask, "version");
+  add_keybinding (XK_v, RP_CONTROL_MASK, "version");
   add_keybinding (XK_w, 0, "windows");
-  add_keybinding (XK_w, ControlMask, "windows");
+  add_keybinding (XK_w, RP_CONTROL_MASK, "windows");
   add_keybinding (XK_s, 0, "split");
-  add_keybinding (XK_s, ControlMask, "split");
+  add_keybinding (XK_s, RP_CONTROL_MASK, "split");
   add_keybinding (XK_S, 0, "vsplit");
-  add_keybinding (XK_S, ControlMask, "vsplit");
+  add_keybinding (XK_S, RP_CONTROL_MASK, "vsplit");
   add_keybinding (XK_Tab, 0, "focus");
+  add_keybinding (XK_Tab, RP_META_MASK, "focuslast");
   add_keybinding (XK_Q, 0, "only");
   add_keybinding (XK_R, 0, "remove");
   add_keybinding (XK_f, 0, "curframe");
-  add_keybinding (XK_f, ControlMask, "curframe");
+  add_keybinding (XK_f, RP_CONTROL_MASK, "curframe");
   add_keybinding (XK_question, 0, "help");
 }
 
@@ -328,23 +330,23 @@ parse_keydesc (char *keydesc)
 		 has no hyper key. */
 	      if (!strcmp (token, "C"))
 		{
-		  p->state |= ControlMask;
+		  p->state |= RP_CONTROL_MASK;
 		}
-	      else if (!strcmp (token, "M") && rp_modifier_info.meta_mod_mask)
+	      else if (!strcmp (token, "M"))
 		{
-		  p->state |= rp_modifier_info.meta_mod_mask;
+		  p->state |= RP_META_MASK;
 		}
-	      else if (!strcmp (token, "A") && rp_modifier_info.alt_mod_mask)
+	      else if (!strcmp (token, "A"))
 		{
-		  p->state |= rp_modifier_info.alt_mod_mask;
+		  p->state |= RP_ALT_MASK;
 		}
-	      else if (!strcmp (token, "S") && rp_modifier_info.super_mod_mask)
+	      else if (!strcmp (token, "S"))
 		{
-		  p->state |= rp_modifier_info.super_mod_mask;
+		  p->state |= RP_SUPER_MASK;
 		}
-	      else if (!strcmp (token, "H") && rp_modifier_info.hyper_mod_mask)
+	      else if (!strcmp (token, "H"))
 		{
-		  p->state |= rp_modifier_info.hyper_mod_mask;
+		  p->state |= RP_HYPER_MASK;
 		}
 	      else
 		{
@@ -509,7 +511,7 @@ cmd_meta (int interactive, void *data)
   /*   ev1.xkey.x_root == */
   /*   ev1.xkey.y_root == */
 
-  ev1.xkey.state = prefix_key.state;
+  ev1.xkey.state = rp_mask_to_x11_mask (prefix_key.state);
   ev1.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
 
   XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev1);
@@ -1920,6 +1922,19 @@ cmd_startup_message (int interactive, void *data)
     defaults.startup_message = 0;
   else
     message (" startup_message; Invalid argument ");
+
+  return NULL;
+}
+
+char *
+cmd_focuslast (int interactive, void *data)
+{
+  rp_window_frame *frame = find_last_frame();
+
+  if (frame)
+      set_active_frame (frame);
+  else
+    message (" focuslast: No other frame ");
 
   return NULL;
 }

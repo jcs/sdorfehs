@@ -101,6 +101,7 @@ char * cmd_focusleft (int interactive, void *data);
 char * cmd_focusright (int interactive, void *data);
 char * cmd_restart (int interactive, void *data);
 char * cmd_startup_message (int interactive, void *data);
+char * cmd_focuslast (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 

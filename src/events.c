@@ -412,7 +412,7 @@ handle_key (screen_info *s)
 
   read_key (&keysym, &mod, NULL, 0);
 
-  if ((key_action = find_keybinding (keysym, mod)))
+  if ((key_action = find_keybinding (keysym, x11_mask_to_rp_mask (mod))))
     {
       char *result;
       XSetInputFocus (dpy, fwin, revert, CurrentTime);
@@ -427,7 +427,7 @@ handle_key (screen_info *s)
       /* No key match, notify user. */
       XSetInputFocus (dpy, fwin, revert, CurrentTime);
 
-      keysym_name = keysym_to_string (keysym, mod);
+      keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
       marked_message_printf (0, 0, " %s unbound key ", keysym_name);
       free (keysym_name);
     }
@@ -454,7 +454,7 @@ key_press (XEvent *ev)
   modifier = ev->xkey.state;
   cook_keycode ( &ev->xkey, &ks, &modifier, NULL, 0, 1);
 
-  if (ks == prefix_key.sym && (modifier == prefix_key.state))
+  if (ks == prefix_key.sym && (x11_mask_to_rp_mask (modifier) == prefix_key.state))
     {
       handle_key (s);
     }

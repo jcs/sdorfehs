@@ -28,6 +28,15 @@
 rp_window_frame *rp_window_frame_sentinel;
 rp_window_frame *rp_current_frame;
 
+static void
+update_last_access (rp_window_frame *frame)
+{
+  static int counter = 0;
+
+  frame->last_access = counter;
+  counter++;
+}
+
 rp_window *
 set_frames_window (rp_window_frame *frame, rp_window *win)
 {
@@ -82,6 +91,8 @@ create_initial_frame ()
 {
   rp_current_frame = xmalloc (sizeof (rp_window_frame));
 
+  update_last_access (rp_current_frame);
+
   rp_window_frame_sentinel->next = rp_current_frame;
   rp_window_frame_sentinel->prev = rp_current_frame;
   rp_current_frame->next = rp_window_frame_sentinel;
@@ -101,6 +112,27 @@ init_frame_list ()
   rp_window_frame_sentinel->prev = rp_window_frame_sentinel;
 
   create_initial_frame();
+}
+
+rp_window_frame *
+find_last_frame ()
+{
+  rp_window_frame *cur, *last = NULL;
+  int last_access = -1;
+
+  for (cur = rp_window_frame_sentinel->next; 
+       cur != rp_window_frame_sentinel;
+       cur = cur->next)
+    {
+      if (cur != rp_current_frame
+	  && cur->last_access > last_access)
+	{
+	  last_access = cur->last_access;
+	  last = cur;
+	}
+    }
+
+  return last;
 }
 
 /* Return the frame that contains the window. */
@@ -216,6 +248,10 @@ split_frame (rp_window_frame *frame, int way)
   rp_window_frame *new_frame;
 
   new_frame = xmalloc (sizeof (rp_window_frame));
+
+  /* It seems intuitive to make the last frame the newly created
+     frame. */
+  update_last_access (new_frame);
 
   /* append the new frame to the list */
   new_frame->prev = rp_window_frame_sentinel->prev;
@@ -541,6 +577,7 @@ set_active_frame (rp_window_frame *frame)
   rp_window_frame *old = rp_current_frame;
 
   give_window_focus (frame->win, rp_current_frame->win);
+  update_last_access (frame);
   rp_current_frame = frame;
 
   if (old != rp_current_frame && num_frames() > 1)

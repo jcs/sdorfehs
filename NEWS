@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** new command "focuslast"
+Switch between the current frame and the last focused frame. It is
+bound to C-t M-Tab.
+
 ** Raise requests don't change frame focus if rudeness doesn't allow it
 If a window in another frame requests to be raised, a message pops up
 just like everywhere else. The old behavior was to jump focus to the

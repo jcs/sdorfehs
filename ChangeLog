@@ -1,3 +1,37 @@
+2001-10-18  shawn  <sabetts@vcn.bc.ca>
+
+	* src/split.h (find_last_frame): new prototype
+
+	* src/split.c (update_last_access): new function
+	(find_last_frame): likewise
+	(split_frame): update the new frame's last_access field
+	(set_active_frame): update the new current frame's last_access field
+
+	* src/input.h (x11_mask_to_rp_mask): new prototype
+	(rp_mask_to_x11_mask): likewise
+
+	* src/input.c (x11_mask_to_rp_mask): new function
+	(rp_mask_to_x11_mask): likewise
+
+	* src/events.c (handle_key): convert X11 modifier masks to rp
+	modifier masks where appropriate.
+
+	* src/actions.h (cmd_focuslast): new prototype
+
+	* src/actions.c (initialize_default_keybindings): new keybinding
+	for "focuslast"
+	(cmd_focuslast): new function
+	(user_command): new command "focuslast"
+
+	* src/data.h (struct rp_window_frame): new field 'last_access'
+	(RP_CONTROL_MASK): new define. All code depending on the X11
+	modifier mask equivalent has been changed to use this where
+	appropriate.
+	(RP_META_MASK): likewise
+	(RP_ALT_MASK): likewise
+	(RP_SUPER_MASK): likewise
+	(RP_HYPER_MASK): likewise
+
 2001-10-11  shawn  <sabetts@vcn.bc.ca>
 
 	* src/bar.c (show_last_message): abort if there was no last
