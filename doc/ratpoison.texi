@@ -112,6 +112,7 @@ Frames
 * Resizing Frames::             
 * Frame Navigation Commands::   
 * Saving and Restoring Frame Sets::  
+* Frame Numbering::             
 
 Keystrokes
 
@@ -558,6 +559,7 @@ time. ratpoison allows you to split the display into frames (see
 * Resizing Frames::             
 * Frame Navigation Commands::   
 * Saving and Restoring Frame Sets::  
+* Frame Numbering::             
 @end menu
 
 @node Splitting Frames, Resizing Frames, Frames, Frames
@@ -721,7 +723,7 @@ Move to the frame right of the current frame.
 Move to the frame above the current frame.
 @end deffn
 
-@node Saving and Restoring Frame Sets,  , Frame Navigation Commands, Frames
+@node Saving and Restoring Frame Sets, Frame Numbering, Frame Navigation Commands, Frames
 @section Saving and Restoring Frame Sets
 ratpoison provides two commands, @command{fdump} and
 @command{frestore}, that allow the user to save and restore frame
@@ -753,6 +755,23 @@ used interactively, nothing happens.
 Restore the frame layout based on the list of frames
 @var{frames}. @var{frames} should be the text that was printed after
 calling @code{fdump}.
+@end deffn
+
+@node Frame Numbering,  , Saving and Restoring Frame Sets, Frames
+@section Frame Numbering
+
+Frames are normally numbered starting from 0. But this can be changed
+with @command{defframesels} to, for instance, include letters as well.
+
+@example
+defframesels abcdefghijklmnopqrstuvwxyz
+@end example
+
+The above code will bind letters to frames instead of numbers.
+
+@deffn Command defframesels @var{order}
+Tell ratpoison what alphanumeric character to give each frame and in
+what order.
 @end deffn
 
 @node Multiple Monitors, Keystrokes, Frames, Top

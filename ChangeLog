@@ -1,3 +1,7 @@
+2004-10-07  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* doc/ratpoison.texi (Frame Numbering): new topic
+
 2004-07-24  Thien-Thi Nguyen  <ttn@glug.org>
  
 	* autogen.sh: Handle "-f" option. Add usage comment.
