@@ -1,3 +1,7 @@
+2005-02-04  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* configure.in: bump version to 1.4.0-CVS.
+
 2005-02-04  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (set_winname): return the cmdret created.
