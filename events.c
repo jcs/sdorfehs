@@ -285,6 +285,22 @@ key_press (XEvent *ev)
     }
 }
 
+/* Not complete. I just update the name everytime, but I should really
+   check what kind of property update it is. */
+void
+property_notify (XEvent *ev)
+{
+  rp_window *win;
+
+  win = find_window (ev->xproperty.window);
+
+  if (win)
+    {
+      printf ("updating window name\n");
+      update_window_name (win);      
+    }
+}
+
 /* Given an event, call the correct function to handle it. */
 void
 delegate_event (XEvent *ev)
@@ -314,6 +330,7 @@ delegate_event (XEvent *ev)
       printf ("ColormapNotify\n");
       break;
     case PropertyNotify:
+      property_notify (ev);
       printf ("PropertyNotify\n");
       break;
     case SelectionClear:

@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "ratpoison.h"
 
@@ -65,36 +66,71 @@ grab_prefix_key (Window w)
 	   GrabModeAsync, GrabModeAsync);
 }
 
+/* Reget the WM_NAME property for the window and update its name. */
+int
+update_window_name (rp_window *win)
+{
+  XTextProperty text;
+  char **name_list;
+  int list_len;
+  int i;
+
+  if (!XGetWMName (dpy, win->w, &text))
+    {
+      fprintf (stderr, "ratpoison:manage.c: I can't get the WMName.\n");
+      return 0;
+    }
+
+  if (!XTextPropertyToStringList (&text, &name_list, &list_len))
+    {
+      fprintf (stderr, "ratpoison:manage.c:Error retrieving TextList.\n");
+      return 0;
+    }
+
+  for (i=0; i<list_len; i++)
+    {
+      printf ("WMName: %s\n", name_list[i]);
+    }
+
+  /* Set the window's name to the first in the name_list */
+  if (list_len > 0)
+    {
+      char *loc;
+
+      free (win->name);
+      if ((win->name = malloc (strlen (name_list[0]) + 1)) == NULL)
+	{
+	  fprintf (stderr, "manage.c:update_window_name():Out of memory!\n");
+	  exit (EXIT_FAILURE);
+	}    
+      strcpy (win->name, name_list[0]);
+
+      /* A bit of a hack. If there's a : in the string, crop the
+         string off there. This is mostly brought on by netscape's
+         disgusting tendency to put its current URL in the WMName!!
+         arg! */
+      loc = strchr (win->name, ':');
+      if (loc) loc[0] = '\0';
+    }
+
+  /* Its our responsibility to free this. */ 
+  XFreeStringList (name_list);
+
+  return 1;
+}
+
 void
 manage (rp_window *win, screen_info *s)
 {
-  XClassHint hint;
+  if (!update_window_name (win)) return;
 
+  /* We successfully got the name, which means we can start managing! */
   XMapWindow (dpy, win->w);
   XMoveResizeWindow (dpy, win->w, 0, 0, s->root_attr.width, s->root_attr.height);
   XSelectInput (dpy, win->w, PropertyChangeMask);
   XAddToSaveSet(dpy, win->w);
   grab_prefix_key (win->w);
-
   win->state = STATE_MAPPED;
-
-  if (!XGetClassHint (dpy, win->w, &hint))
-    {
-      fprintf (stderr, "ratpoison: I can't get the ClassHint, I don't what to do!\n");
-      exit (EXIT_FAILURE);
-    }
-
-  free (win->name);
-  if ((win->name = malloc (strlen (hint.res_name) + 1)) == NULL)
-    {
-      fprintf (stderr, "manage.c:manage():Out of memory!\n");
-      exit (EXIT_FAILURE);
-    }    
-  strcpy (win->name, hint.res_name);
-
-  /* Its our responsibility to free these. */
-  XFree (hint.res_name);
-  XFree (hint.res_class);
 
 #ifdef DEBUG
   printf ("window '%s' managed.\n", win->name);
@@ -127,7 +163,7 @@ scanwins(screen_info *s)
       if (wins[i] == s->bar_window || wins[i] == s->key_window) continue;
 
       win = add_to_window_list (s, wins[i]);
-      manage (win, s);
+      if (attr.map_state == IsViewable) manage (win, s);
     }
   XFree((void *) wins);	/* cast is to shut stoopid compiler up */
 }
