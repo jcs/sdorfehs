@@ -3542,7 +3542,7 @@ set_winname (struct cmdarg **args)
   else if (!strncmp (name, "class", 5))
     defaults.win_name = WIN_NAME_RES_CLASS;
   else
-    cmdret_new ("defwinname: invalid argument", RET_FAILURE);
+    return cmdret_new ("defwinname: invalid argument", RET_FAILURE);
 
   return cmdret_new (NULL, RET_SUCCESS);
 }
@@ -3880,7 +3880,7 @@ cmd_unalias (int interactive, struct cmdarg **args)
       free (alias_list[alias_list_last].name);
     }
   else
-    cmdret_new ("unalias: alias not found", RET_SUCCESS);
+    return cmdret_new ("unalias: alias not found", RET_SUCCESS);
 
   return cmdret_new (NULL, RET_SUCCESS);
 }
@@ -3892,7 +3892,7 @@ cmd_nextscreen (int interactive, struct cmdarg **args)
 
   /* No need to go through the motions when we don't have to. */
   if (num_screens <= 1)
-    cmdret_new ("nextscreen: no other screen", RET_FAILURE);
+    return cmdret_new ("nextscreen: no other screen", RET_FAILURE);
 
   new_screen = rp_current_screen + 1;
   if (new_screen >= num_screens)
@@ -3910,7 +3910,7 @@ cmd_prevscreen (int interactive, struct cmdarg **args)
 
   /* No need to go through the motions when we don't have to. */
   if (num_screens <= 1)
-    cmdret_new ("prevscreen: no other screen", RET_SUCCESS);
+    return cmdret_new ("prevscreen: no other screen", RET_SUCCESS);
 
   new_screen = rp_current_screen - 1;
   if (new_screen < 0)
@@ -4568,10 +4568,10 @@ cmd_gdelete (int interactive, struct cmdarg **args)
     case GROUP_DELETE_GROUP_OK:
       break;
     case GROUP_DELETE_GROUP_NONEMPTY:
-      cmdret_new ("gdelete: non-empty group", RET_FAILURE);
+      return cmdret_new ("gdelete: non-empty group", RET_FAILURE);
       break;
     default:
-      cmdret_new ("gdelete: unknown return code (this shouldn't happen)", RET_FAILURE);
+      return cmdret_new ("gdelete: unknown return code (this shouldn't happen)", RET_FAILURE);
     }
 
   return cmdret_new (NULL, RET_SUCCESS);

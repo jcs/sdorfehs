@@ -1,11 +1,19 @@
-2005-01-30  Shawn Betts  <katia_dilkina@verizon.net>
+2005-02-04  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (set_winname): return the cmdret created.
+	(cmd_unalias): likewise
+	(cmd_nextscreen): likewise
+	(cmd_prevscreen): likewise
+	(cmd_gdelete): likewise
+
+2005-01-30  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_escape): when the escape key doesn't have a
 	modifier give the meta key a modifier.
 	(cmd_undefinekey): call XSync after ungrabbing and grabbing all
 	keys.
 
-2005-01-22  Shawn Betts  <katia_dilkina@verizon.net>
+2005-01-22  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.h (argtype): add arg_RAW
 
@@ -20,15 +28,15 @@
 	nargs when the argtype is arg_RAW, too.
 	(cmd_set): set nargs when the argtype is arg_RAW, too.
 
-2005-01-20  Shawn Betts  <katia_dilkina@verizon.net>
+2005-01-20  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (init_user_commands): fix unmanage command.
 
-2005-01-19  Shawn Betts  <katia_dilkina@verizon.net>
+2005-01-19  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* contrib/genrpbindings: add python bindings.
 
-2005-01-17  Shawn Betts  <katia_dilkina@verizon.net>
+2005-01-17  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/frame.c (frame_read): remove space in "(frame " string.
 
