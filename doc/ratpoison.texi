@@ -394,20 +394,22 @@ Set the horizontal and vertical padding inside the bar.
 When called non-interactively with no arguments, the current setting is
 returned.
 
-@item msgwait @var{n}
-Set the bar's timeout in seconds.
-
-When called non-interactively with no arguments, the current setting is
-returned.
-
 @item defbarborder @var{n}
 Set the border width for the bar window.
+
+@item defbgcolor @var{color}
+Set the background color for all text ratpoison displays. @var{color}
+is any valid X11 color.
 
 @item defborder @var{n}
 Set the border width for all windows.
 
 When called non-interactively with no arguments, the current setting is
 returned.
+
+@item deffgcolor @var{color}
+Set the foreground color for all text ratpoison displays. @var{color}
+is any valid X11 color.
 
 @item deffont @var{font}
 Set the font. @var{font} is a font string like @samp{9x15bold}.
@@ -489,21 +491,19 @@ Set the default gravity for normal windows. See the
 When called non-interactively with no arguments, the current setting is
 returned.
 
-@item deffgcolor @var{color}
-Set the foreground color for all text ratpoison displays. @var{color}
-is any valid X11 color.
-
-@item defbgcolor @var{color}
-Set the background color for all text ratpoison displays. @var{color}
-is any valid X11 color.
-
 @item delete
 This deletes the current window. You can access it with the @kbd{C-t k}
 keystroke.
 
+@item echo @var{text}
+Display @var{text} as a message.
+
 @item escape @var{key}
 Set the prefix to to @var{key}. For example @samp{escape C-b} sets the
 prefix key to @key{C-b}.
+
+@item exec @var{command}
+Execute a shell command. By default, @kbd{C-t !} does this.
 
 @item focus
 cycle through ratpoison's frames.
@@ -523,20 +523,22 @@ Move to the frame left of the current frame.
 @item focusright
 Move to the frame right of the current frame.
 
-@item meta
-Send a @kbd{C-t} to the current window.
+@item gravity @var{g}
+Change the gravity of the current window. A normal window will default
+to the top-left corner of the screen, but it can also be placed at the
+bottom-right corner of the screen. Valid values for @var{g} are the 8
+directions @samp{northwest}, @samp{north}, @samp{northeast},
+@samp{east}, @samp{southeast}, @samp{south}, @samp{southwest} and
+@samp{west}, clockwise from the top left corner. @samp{center} will
+center the window in the frame. @var{g} and can be abbreviated to the
+standard compass 1 and 2 letter abreviations (i.e. @samp{nw},
+@samp{s}, etc).
 
 @item help
 Display a help screen that lists all bound keystrokes.
 
 @item info
 Display information about the current window.
-
-@item echo @var{text}
-Display @var{text} as a message.
-
-@item exec @var{command}
-Execute a shell command. By default, @kbd{C-t !} does this.
 
 @item kill
 This destroys the current window. Normally you should only need to
@@ -552,11 +554,14 @@ Call the command that @var{key} is bound to. For instance
 @command{link C-t} would call the command @command{other} and switch
 to the last window.
 
-@item redisplay
-Redisplay the current window, just like @kbd{C-t l} would do.
+@item meta
+Send a @kbd{C-t} to the current window.
 
-@item restart
-Restart ratpoison.
+@item msgwait @var{n}
+Set the bar's timeout in seconds.
+
+When called non-interactively with no arguments, the current setting is
+returned.
 
 @item next
 This jumps you to the next window in the window list. This one is
@@ -582,17 +587,6 @@ Kill all frames but the current one.
 This toggles between the current window and the last window. By
 default, this is bound to @kbd{C-t C-t}.
 
-@item gravity @var{g}
-Change the gravity of the current window. A normal window will default
-to the top-left corner of the screen, but it can also be placed at the
-bottom-right corner of the screen. Valid values for @var{g} are the 8
-directions @samp{northwest}, @samp{north}, @samp{northeast},
-@samp{east}, @samp{southeast}, @samp{south}, @samp{southwest} and
-@samp{west}, clockwise from the top left corner. @samp{center} will
-center the window in the frame. @var{g} and can be abbreviated to the
-standard compass 1 and 2 letter abreviations (i.e. @samp{nw},
-@samp{s}, etc).
-
 @item prev
 This jumps you to the previous window in the window list. By default,
 this is bound to @kbd{C-t p}.
@@ -600,8 +594,14 @@ this is bound to @kbd{C-t p}.
 @item quit
 Quit ratpoison.
 
+@item redisplay
+Redisplay the current window, just like @kbd{C-t l} would do.
+
 @item remove
 Kill the current frame. This is a no-op if there is only one frame.
+
+@item restart
+Restart ratpoison.
 
 @item rudeness @var{n}
 The rudeness command lets you decide what windows pop-up automatically
