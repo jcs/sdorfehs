@@ -120,7 +120,7 @@ update_window_names (screen_info *s)
   /* Draw them in reverse order they were added in, so the oldest
      windows appear on the left and the newest on the right end of the
      program bar. */
-  for (cur = rp_window_tail; cur; cur = cur->prev) 
+  for (cur = rp_window_head; cur; cur = cur->next) 
     {
       if (cur->state == STATE_UNMAPPED) continue;
 
