@@ -1,5 +1,8 @@
 2000-10-17  shawn  <sabetts@vcn.bc.ca>
 
+	* events.c (configure_request): resize windows to the max-1. Call
+	XConfigureWindow as well as XSendEvent.
+
 	* manage.c (scanwins): Now only maps visible windows
 
 	* conf.h: Removed keystroke related defines

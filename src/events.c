@@ -168,6 +168,7 @@ destroy_window (XDestroyWindowEvent *ev)
 void
 configure_request (XConfigureRequestEvent *e)
 {
+  XWindowChanges wc;
   XConfigureEvent ce;
   rp_window *win;
 
@@ -175,13 +176,21 @@ configure_request (XConfigureRequestEvent *e)
 
   if (win)
     {
+      PRINT_DEBUG ("window req: %d %d %d %d %d\n", e->x, e->y, e->width, e->height, e->border_width);
+
+      wc.x = 0;
+      wc.y = 0;
+      wc.width = win->scr->root_attr.width - 1;
+      wc.height = win->scr->root_attr.height - 1;
+      wc.border_width = 0;
+
       ce.type = ConfigureNotify;
       ce.event = e->window;
       ce.window = e->window;
       ce.x = 0;
       ce.y = 0;
-      ce.width = win->scr->root_attr.width;
-      ce.height = win->scr->root_attr.height;
+      ce.width = win->scr->root_attr.width - 1;
+      ce.height = win->scr->root_attr.height - 1;
       ce.border_width = 0;      
       ce.above = None;
       ce.override_redirect = 0;
@@ -200,6 +209,13 @@ configure_request (XConfigureRequestEvent *e)
 	}
 
       XSendEvent(dpy, win->w, False, StructureNotifyMask, (XEvent*)&ce);
+      XConfigureWindow (dpy, win->w, 
+			CWX | CWY | CWWidth | CWHeight | CWBorderWidth,
+			&wc);
+    }
+  else
+    {
+      PRINT_DEBUG ("FIXME: Don't handle this\n");
     }
 }
 
