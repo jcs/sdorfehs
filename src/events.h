@@ -22,5 +22,5 @@
 #ifndef _RATPOISON_EVENTS_H
 #define _RATPOISON_EVENTS_H 1
 
-void handle_events ();
+void listen_for_events ();
 #endif /* _RATPOISON_EVENTS_H */

@@ -1,5 +1,22 @@
 2002-01-02  shawn  <sabetts@vcn.bc.ca>
 
+	* src/main.c (init_screen): do not select on any events for the
+	bar_window and the frame_window.
+
+	* src/events.h (listen_for_events): new prototype
+
+	* src/events.c (configure_notify): If the event dimensions don't
+	match the windows, then re-maximize the window.
+	(configure_request): always grant the requests.
+	(delegate_event): Changes to the debugging output.
+	(delegate_event): Don't print debugging messages for events that
+	ratpoison doesn't need to handle.
+	(handle_signals): new function
+	(listen_for_events): new function
+	(handle_events): remove function. Dependant code uses
+	listen_for_events.
+	(get_event): likewise
+
 	* src/manage.h (get_state): new prototype
 
 	* src/manage.c (update_normal_hints): print only the hints that

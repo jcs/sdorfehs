@@ -558,7 +558,7 @@ main (int argc, char *argv[])
     XSetInputFocus (dpy, current_screen()->key_window, 
 		    RevertToPointerRoot, CurrentTime);
 
-  handle_events ();
+  listen_for_events ();
 
   return EXIT_SUCCESS;
 }
@@ -620,7 +620,6 @@ init_screen (screen_info *s, int screen_num)
   s->bar_is_raised = 0;
   s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0,
 				       1, 1, 1, s->fg_color, s->bg_color);
-  XSelectInput (dpy, s->bar_window, StructureNotifyMask);
 
   /* Setup the window that will recieve all keystrokes once the prefix
      key has been pressed. */
@@ -636,7 +635,6 @@ init_screen (screen_info *s, int screen_num)
   /* Create the frame indicator window */
   s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, 1, 
 					 s->fg_color, s->bg_color);
-  XSelectInput (dpy, s->frame_window, KeyPressMask );
 
   /* Create the help window */
   s->help_window = XCreateSimpleWindow (dpy, s->root, 0, 0, s->root_attr.width,

@@ -221,16 +221,23 @@ configure_notify (XConfigureEvent *e)
   rp_window *win;
 
   win = find_window (e->window);
-  if (win)
+  if (win && win->state == NormalState)
     {
-      PRINT_DEBUG ("'%s' window notify: %d %d %d %d %d\n", window_name (win),
-		   e->x, e->y, e->width, e->height, e->border_width);
+      if (win->height != e->height
+	  || win->width != e->width
+	  || win->border != e->border_width
+	  || win->x != e->x
+	  || win->y != e->y)
+	/* The notify event was generated from a granted configure
+	   request which means we must re-maximize the window. */
+	maximize (win);
     }
 }
 
 static void
 configure_request (XConfigureRequestEvent *e)
 {
+  int border;
   XWindowChanges changes;
   rp_window *win;
 
@@ -238,19 +245,8 @@ configure_request (XConfigureRequestEvent *e)
 
   if (win)
     {
-      /* Updated our window struct */
-      if (e->value_mask & CWX)
-	{
-	  changes.x = e->x + win->border;
-	  win->x = e->x + win->border;
-	  PRINT_DEBUG("request CWX %d\n", e->x);
-	}
-      if (e->value_mask & CWY)
-	{
-	  changes.y = e->y + win->border;
-	  win->y = e->y + win->border;
-	  PRINT_DEBUG("request CWY %d\n", e->y);
-	}
+      /* Initialize border variable. */
+      border = win->border;
 
       if (e->value_mask & CWStackMode)
 	{
@@ -284,41 +280,45 @@ configure_request (XConfigureRequestEvent *e)
       PRINT_DEBUG ("'%s' window size: %d %d %d %d %d\n", window_name (win),
 		   win->x, win->y, win->width, win->height, win->border);
 
+      /* Collect the changes to be granted. */
       if (e->value_mask & CWBorderWidth)
 	{
 	  changes.border_width = e->border_width;
-	  win->border = e->border_width;
+	  border = e->border_width;
 	  PRINT_DEBUG("request CWBorderWidth %d\n", e->border_width);
 	}
+
       if (e->value_mask & CWWidth)
 	{
 	  changes.width = e->width;
-	  win->width = e->width;
 	  PRINT_DEBUG("request CWWidth %d\n", e->width);
 	}
+
       if (e->value_mask & CWHeight)
 	{
 	  changes.height = e->height;
-	  win->height = e->height;
 	  PRINT_DEBUG("request CWHeight %d\n", e->height);
+	}
+
+      if (e->value_mask & CWX)
+	{
+	  changes.x = e->x + border;
+	  PRINT_DEBUG("request CWX %d\n", e->x);
+	}
+
+      if (e->value_mask & CWY)
+	{
+	  changes.y = e->y + border;
+	  PRINT_DEBUG("request CWY %d\n", e->y);
 	}
 
       if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
 	{
-	  if (win->state != NormalState)
-	    {
-	      /* The window isn't visible so grant it whatever it likes */
-	      XConfigureWindow (dpy, win->w, e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
-				&changes);
-	      send_configure (win);
-	    }
-	  else
-	    {
-	      /* Draw the hard line. Get back in line, you misbehaving
-		 window! */
-	      maximize (win);
-	      send_configure (win);
-	    }
+	  /* Always grant it whatever it likes. We will catch it the
+	     ConfigureNotify event and maximize the window there. */
+	  XConfigureWindow (dpy, win->w, e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
+			    &changes);
+	  send_configure (win);
 	}
     }
   else
@@ -689,105 +689,94 @@ delegate_event (XEvent *ev)
   switch (ev->type)
     {
     case ConfigureRequest:
-      PRINT_DEBUG ("ConfigureRequest\n");
+      PRINT_DEBUG ("--- Handling ConfigureRequest ---\n");
       configure_request (&ev->xconfigurerequest);
       break;
+
     case CirculateRequest:
-      PRINT_DEBUG ("CirculateRequest\n");
+      PRINT_DEBUG ("--- Handling CirculateRequest ---\n");
       break;
+
     case CreateNotify:
-      PRINT_DEBUG ("CreateNotify\n");
+      PRINT_DEBUG ("--- Handling CreateNotify ---\n");
       new_window (&ev->xcreatewindow);
       break;
+
     case DestroyNotify:
-      PRINT_DEBUG ("DestroyNotify\n");
+      PRINT_DEBUG ("--- Handling DestroyNotify ---\n");
       destroy_window (&ev->xdestroywindow);
       break;
+
     case ClientMessage:
-      PRINT_DEBUG ("ClientMessage\n");
+      PRINT_DEBUG ("--- Handling ClientMessage ---\n");
       client_msg (&ev->xclient);
       break;
+
     case ColormapNotify:
-      PRINT_DEBUG ("ColormapNotify\n");
+      PRINT_DEBUG ("--- Handling ColormapNotify ---\n");
       colormap_notify (ev);
       break;
+
     case PropertyNotify:
-      PRINT_DEBUG ("PropertyNotify\n");
+      PRINT_DEBUG ("--- Handling PropertyNotify ---\n");
       property_notify (ev);
-      break;
-    case SelectionClear:
-      PRINT_DEBUG ("SelectionClear\n");
-      break;
-    case SelectionNotify:
-      PRINT_DEBUG ("SelectionNotify\n");
-      break;
-    case SelectionRequest:
-      PRINT_DEBUG ("SelectionRequest\n");
-      break;
-    case EnterNotify:
-      PRINT_DEBUG ("EnterNotify\n");
-      break;
-    case ReparentNotify:
-      PRINT_DEBUG ("ReparentNotify\n");
       break;
 
     case MapRequest:
-      PRINT_DEBUG ("MapRequest\n");
+      PRINT_DEBUG ("--- Handling MapRequest ---\n");
       map_request (ev);
       break;
 
     case KeyPress:
-      PRINT_DEBUG ("KeyPress %d %d\n", ev->xkey.keycode, ev->xkey.state);
+      PRINT_DEBUG ("--- Handling KeyPress ---\n");
       key_press (ev);
       break;
 
-    case KeyRelease: 
-      PRINT_DEBUG ("KeyRelease %d %d\n", ev->xkey.keycode, ev->xkey.state);
-      break;
-
     case UnmapNotify:
-      PRINT_DEBUG ("UnmapNotify\n");
+      PRINT_DEBUG ("--- Handling UnmapNotify ---\n");
       unmap_notify (ev);
       break;
 
-    case MotionNotify:
-      PRINT_DEBUG ("MotionNotify\n");
+    case FocusOut:
+      PRINT_DEBUG ("--- Handling FocusOut ---\n");
+      focus_change (&ev->xfocus);
       break;
 
-    case Expose:
-      PRINT_DEBUG ("Expose\n");
-      break;
-    case FocusOut:
-      PRINT_DEBUG ("FocusOut\n");
-      focus_change (&ev->xfocus);
-      break;
     case FocusIn:
-      PRINT_DEBUG ("FocusIn\n");
+      PRINT_DEBUG ("--- Handling FocusIn ---\n");
       focus_change (&ev->xfocus);
       break;
+
     case ConfigureNotify:
-      PRINT_DEBUG ("ConfigureNotify\n");
+      PRINT_DEBUG ("--- Handling ConfigureNotify ---\n");
       configure_notify (&ev->xconfigure);
       break;
-    case MapNotify:
-      PRINT_DEBUG ("MapNotify\n");
-      break;
+
     case MappingNotify:
-      PRINT_DEBUG ("MappingNotify\n");
+      PRINT_DEBUG ("--- Handling MappingNotify ---\n");
       mapping_notify( &ev->xmapping );
       break;
+
+    case MapNotify:
+    case Expose:
+    case MotionNotify:
+    case KeyRelease:
+    case ReparentNotify:
+    case EnterNotify:
+    case SelectionRequest:
+    case SelectionNotify:
+    case SelectionClear:
+      /* Ignore these events. */
+      break;
+
     default:
-      PRINT_DEBUG ("Unhandled event %d\n", ev->type);
+      PRINT_DEBUG ("--- Unknown event %d ---\n",- ev->type);
     }
 }
 
 static void
-get_event (XEvent *ev)
+handle_signals ()
 {
-  int x_fd;
-  fd_set fds;
-  struct timeval t;
-
   /* An alarm means we need to hide the popup windows. */
   if (alarm_signalled > 0)
     {
@@ -815,52 +804,40 @@ get_event (XEvent *ev)
       clean_up ();
       exit (EXIT_SUCCESS);
     }
-
-  /* Report any X11 errors that have occurred. */
-  if (rp_error_msg)
-    {
-      marked_message_printf (0, 6, "ERROR: %s", rp_error_msg);
-      free (rp_error_msg);
-      rp_error_msg = NULL;
-    }
-
-  /* Is there anything in the event qeue? */
-  if (QLength (dpy) > 0)
-    {
-      XNextEvent (dpy, ev);
-      return;
-    }
-
-  /* If the event queue is empty, then select on it until there is
-     something. */
-  x_fd = ConnectionNumber (dpy);
-  FD_ZERO (&fds);
-  FD_SET (x_fd, &fds);
-  t.tv_sec = 0;
-  t.tv_usec = 0;
-
-  if (select(x_fd+1, &fds, NULL, NULL, &t) == 1) 
-    {
-    XNextEvent(dpy, ev);
-    return;
-    }
-
-  XFlush(dpy);
-  FD_SET(x_fd, &fds);
-
-  if (select(x_fd+1, &fds, NULL, NULL, NULL) == 1) 
-    {
-    XNextEvent(dpy, ev);
-    return;
-    }
 }
 
+/* The main loop. */
 void
-handle_events ()
+listen_for_events ()
 {
+  int x_fd;
+  fd_set fds;
+
+  x_fd = ConnectionNumber (dpy);
+  FD_ZERO (&fds);
+
+  /* Loop forever. */
   for (;;) 
     {
-      get_event (&rp_current_event);
-      delegate_event (&rp_current_event);
+      handle_signals ();
+
+      /* Report any X11 errors that have occurred. */
+      if (rp_error_msg)
+	{
+	  marked_message_printf (0, 6, "ERROR: %s", rp_error_msg);
+	  free (rp_error_msg);
+	  rp_error_msg = NULL;
+	}
+
+      /* Handle the next event. */
+      FD_SET (x_fd, &fds);
+      XFlush(dpy);
+      
+      if (QLength (dpy) > 0
+	  || select(x_fd+1, &fds, NULL, NULL, NULL) == 1)
+	{
+	  XNextEvent (dpy, &rp_current_event);
+	  delegate_event (&rp_current_event);
+	}
     }
 }
