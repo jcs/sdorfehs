@@ -213,19 +213,67 @@ parse_keydesc (char *keydesc)
 {
   static struct rp_key key;
   struct rp_key *p = &key;
+  char *token, *next_token;
 
   if (!keydesc) 
     return NULL;
 
-  if (keydesc[0] == '^')
+  p->state = 0;
+  p->sym = 0;
+
+  if (!strchr (keydesc, '-'))
     {
-      p->state = ControlMask;
-      p->sym = string_to_keysym (keydesc + 1);
-    }
-  else  
-    {
-      p->state = 0;
+      /* Its got no hyphens in it, so just grab the keysym */
       p->sym = string_to_keysym (keydesc);
+    }
+  else
+    {
+      /* Its got hyphens, so parse out the modifiers and keysym */
+      token = strtok (keydesc, "-");
+
+      do
+	{
+	  next_token = strtok (NULL, "-");
+
+	  if (next_token == NULL)
+	    {
+	      /* There is nothing more to parse and token contains the
+		 keysym name. */
+	      p->sym = string_to_keysym (token);
+	    }
+	  else
+	    {
+	      /* Which modifier is it? Only accept modifiers that are
+		 present. ie don't accept a hyper modifier if the keymap
+		 has no hyper key. */
+	      if (!strcmp (token, "C"))
+		{
+		  p->state |= ControlMask;
+		}
+	      else if (!strcmp (token, "M") && rp_modifier_info.meta_mod_mask)
+		{
+		  p->state |= rp_modifier_info.meta_mod_mask;
+		}
+	      else if (!strcmp (token, "A") && rp_modifier_info.alt_mod_mask)
+		{
+		  p->state |= rp_modifier_info.alt_mod_mask;
+		}
+	      else if (!strcmp (token, "S") && rp_modifier_info.super_mod_mask)
+		{
+		  p->state |= rp_modifier_info.super_mod_mask;
+		}
+	      else if (!strcmp (token, "H") && rp_modifier_info.hyper_mod_mask)
+		{
+		  p->state |= rp_modifier_info.hyper_mod_mask;
+		}
+	      else
+		{
+		  return NULL;
+		}
+	    }
+
+	  token = next_token;
+	} while (next_token != NULL);
     }
 
   if (!p->sym)
@@ -713,6 +761,7 @@ cmd_clock (void *data)
   tmp = ctime(&timep);
   msg = xmalloc (strlen (tmp));
   strncpy(msg, tmp, strlen (tmp) - 1);	/* Remove the newline */
+  msg[strlen(tmp) - 1] = 0;
 
   message (msg);
   free (msg);

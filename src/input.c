@@ -115,33 +115,24 @@ init_modifier_map ()
 char *
 keysym_to_string (KeySym keysym, unsigned int modifier)
 {
-  const unsigned int mod_table[] = {ControlMask, 
-				    Mod1Mask, 
-				    Mod2Mask, 
-				    Mod3Mask, 
-				    Mod4Mask, 
-				    Mod5Mask};
-  const unsigned char str_table[] = "CM2345";
+  struct sbuf *name;
+  char *tmp;
 
-  unsigned char *name;
-  int pos, i;
+  name = sbuf_new (0);
 
-  name = xmalloc (15);
+  if (modifier & ControlMask) sbuf_concat (name, "C-");
+  if (modifier & rp_modifier_info.meta_mod_mask) sbuf_concat (name, "M-");
+  if (modifier & rp_modifier_info.alt_mod_mask) sbuf_concat (name, "A-");
+  if (modifier & rp_modifier_info.hyper_mod_mask) sbuf_concat (name, "H-");
+  if (modifier & rp_modifier_info.super_mod_mask) sbuf_concat (name, "S-");
+    
+  sbuf_concat (name, XKeysymToString (keysym));
 
-  for (pos = 0, i = 0; i < 6; i++)
-    {
-      if (modifier & mod_table[i])
-	{
-	  name[pos] = str_table[i];
-	  name[pos+1] = '-';
-	  pos += 2;
-	}
-    }
+  /* Eat the nut and throw away the shells. */
+  tmp = sbuf_get (name);
+  free (name);
 
-  name[pos] = keysym;
-  name[pos+1] = '\0';
-
-  return name;
+  return tmp;
 }
 
 /* Cooks a keycode + modifier into a keysym + modifier. This should be

@@ -1,3 +1,12 @@
+2001-04-18  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/input.c (keysym_to_string): handles control, meta, alt,
+	hyper, and super modifiers. Returns full keysym names.
+
+	* src/actions.c (parse_keydesc): parses control, meta, alt, hyper,
+	and super modifiers.
+	(cmd_clock): sets the last character in msg to 0.
+
 2001-04-15  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/split.c (show_frame_indicator): contents of
