@@ -2,6 +2,8 @@
 
 	* src/bar.c (get_mark_box): take the bar padding into account when
 	calculate the top of the highlight bar.
+	(prepare_bar): just use height for the height of the window.
+	(marked_message): add the padding to the height of the window.
 
 	* src/window.c (give_window_focus): only save the pointer position
 	when win and last_win aren't the same window.

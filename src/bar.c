@@ -376,8 +376,7 @@ prepare_bar (rp_screen *s, int width, int height)
 
   XMoveResizeWindow (dpy, s->bar_window, 
 		     bar_x (s, width), bar_y (s, height),
-		     width,
-		     height + defaults.bar_y_padding * 2);
+		     width, height);
 
   XRaiseWindow (dpy, s->bar_window);
   XClearWindow (dpy, s->bar_window);
@@ -513,7 +512,7 @@ marked_message (char *msg, int mark_start, int mark_end)
   /* Calculate the width and height of the window. */
   num_lines = count_lines (msg, strlen(msg));
   width = defaults.bar_x_padding * 2 + max_line_length(msg);
-  height = FONT_HEIGHT (defaults.font) * num_lines;
+  height = FONT_HEIGHT (defaults.font) * num_lines + defaults.bar_y_padding * 2;
 
   /* Display the string. */
   prepare_bar (s, width, height);
