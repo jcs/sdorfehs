@@ -113,6 +113,17 @@ main (int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
+  /* Setup signal handlers. */
+  // XSetErrorHandler(handler);  
+  if (signal (SIGALRM, alrm_handler) == SIG_IGN) signal (SIGALRM, SIG_IGN);
+  if (signal (SIGTERM, sighandler) == SIG_IGN) signal (SIGTERM, SIG_IGN);
+  if (signal (SIGINT, sighandler) == SIG_IGN) signal (SIGINT, SIG_IGN);
+  if (signal (SIGHUP, hup_handler) == SIG_IGN) 
+    {
+      printf ("Ignoring HUP.\n");
+      signal (SIGHUP, SIG_IGN);
+    }
+
   init_window_list ();
 
   font = XLoadQueryFont (dpy, FONT_NAME);
@@ -135,17 +146,6 @@ main (int argc, char *argv[])
   for (i=0; i<num_screens; i++)
     {
       init_screen (&screens[i], i);
-    }
-
-  /* Setup signal handlers. */
-  // XSetErrorHandler(handler);  
-  if (signal (SIGALRM, alrm_handler) == SIG_IGN) signal (SIGALRM, SIG_IGN);
-  if (signal (SIGTERM, sighandler) == SIG_IGN) signal (SIGTERM, SIG_IGN);
-  if (signal (SIGINT, sighandler) == SIG_IGN) signal (SIGINT, SIG_IGN);
-  if (signal (SIGHUP, hup_handler) == SIG_IGN) 
-    {
-      printf ("Ignoring HUP.\n");
-      signal (SIGHUP, SIG_IGN);
     }
 
   /* Set our Atoms */
