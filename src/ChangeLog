@@ -1,3 +1,8 @@
+2001-03-03  shawn  <sabetts@livingston>
+
+	* manage.c (maximize_normal): windows with resize increments
+	resize properly when their original size is > the screen size.
+
 2001-03-02  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* main.c (print_version): updated copyright notice.
