@@ -39,8 +39,9 @@
    doesn't work very well yet. */
 //#define HIDE_MOUSE 
 
-/* #define THEME T_CHOCOLATE_BAR */
-#include "themes.h"
+#define FOREGROUND	"black"
+#define BACKGROUND	"white"
+#define FONT		"9x15bold"
 
 #define BAR_Y_PADDING   0       /* The amount of padding on the top
 				   and bottom of the message bar  */
