@@ -1,3 +1,7 @@
+2005-01-14  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/main.c (init_defaults): turn off warp by default.
+
 2005-01-14  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (ARG_STRING): new define

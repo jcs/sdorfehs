@@ -878,9 +878,6 @@ restart ratpoison:
 @example
 bind R restart
 @end example
-
-If no command is specified then bind works exactly like @command{unbind},
-unbinding the key.
 @end deffn
 
 @deffn Command unbind @var{key}
@@ -888,9 +885,8 @@ Unbind a keystroke.
 @end deffn
 
 @deffn Command definekey @var{kmap} @var{key} @var{command}
-@command{definekey} works exactly like @command{bind} and
-@command{unbind} except that it can bind keys on any key map (not just
-@samp{root}).
+@command{definekey} works exactly like @command{bind} except that it
+can bind keys on any key map (not just @samp{root}).
 @end deffn
 
 @deffn Command undefinekey @var{kmap} @var{key}
