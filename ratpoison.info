@@ -115,6 +115,14 @@ do:
      Sometimes you need to send a C-t to the current window. This
      keystroke does just that.
 
+`C-t k'
+     This deletes the current window.
+
+`C-t K'
+     This destroys the current window. Normally you should only need to
+     use `C-t k', but just incase you need to rip the heart out of a
+     misbehaving window this command should do the trick.
+
 
 
 Tag Table:
