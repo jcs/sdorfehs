@@ -1,3 +1,68 @@
+2001-02-19  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* Makefile.am (ratpoison_SOURCES): add themes.h
+
+	* main.c (FONT_NAME): Rename to FONT
+	(BAR_BG_COLOR): Rename to BACKGROUND
+	(BAR_FG_COLOR): Rename to FOREGROUND
+
+	* list.c (find_window_by_number): Rename to find_window_number.
+	(find_window_by_name): Rename to find_window_name.
+	(goto_window_name): Remove.
+	(find_window_prev): Clean up.
+	(find_window_next): Clean up.
+
+	* list.h: Update prototypes.
+
+	* conf.h: Include "themes.h".
+
+	* actions.c (cmd_generate): Fix typo.
+	(prev_window): Remove.
+	(next_window): Remove.
+	(last_window): Remove.
+	(cmd_prev): Add.
+	(cmd_next): Add.
+	(cmd_other): Add.
+	(string_to_window_number): Add.
+	(cmd_select): Add.
+	(cmd_rename): Add.
+	(delete_window): Remove.
+	(cmd_delete): Add.
+	(cmd_delete): Remove.
+	(cmd_kill): Add.
+	(show_version): Remove.
+	(cmd_version): Add.
+	(command): Remove.
+	(command): Remove.
+	(cmd_colon): Deal with partial input.
+	(cmd_exec): Add.
+	(cmd_newwm): Remove.
+	(cmd_newwm): Add.
+	(cmd_clock): Remove.
+	(cmd_clock): Add.
+	(cmd_clock): Remove.
+	(cmd_windows): Add.
+	(goto_window_number): Remove.
+	(abort_keypress): Remove.
+	(cmd_abort): Add.
+
+	* actions.c: Make :select command handle numbers.
+	(cmd_unimplemented): new function.
+
+	Commands are all cmd_ prefixed.  Major changes within this file.
+	* input.c (get_more_input): New function.  Used to collect input
+	on top of some existing input.
+	(get_input): Calls get_more_input to do work.
+
+	* conf.h (THEME): added themes support.
+
+	* bar.h (message): New macro.  Calls marked_message with (0, 0)
+	highlight parameters.
+
+	* bar.c (marked_message): New function
+
+	* actions.h: Update prototypes.
+
 2001-02-19  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* manage.c (manage): calls sort_window_list_by_number
@@ -23,6 +88,10 @@
 	* manage.c (unmanage): kills ratpoison when there are no more
 	windows.
 
+2001-02-17  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.c (generate_key_event): Send KEY_PREFIX.
+	
 2001-02-17  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* manage.c (current_screen): Rename get_screen() and move to this
