@@ -1,5 +1,7 @@
 2003-05-17  Shawn Betts  <sabetts@sfu.ca>
 
+	* configure.in: version bump to 1.3.0-cvs
+
 	* src/main.c (chld_handler): Variable declaration placed in proper
 	location.
 
