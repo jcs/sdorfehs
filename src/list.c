@@ -689,9 +689,11 @@ format_window_name (char *fmt, rp_window *win, rp_window *other_win,
 	      break;
 
 	    case '%':
-	      dbuf[0] = '%';
-	      dbuf[1] = 0;
-	      sbuf_concat (buffer, dbuf);
+	      sbuf_concat (buffer, "%");
+	      break;
+
+	    default:
+	      sbuf_printf_concat (buffer, "%%%c", *fmt);
 	      break;
 	    }
 

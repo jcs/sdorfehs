@@ -1,5 +1,8 @@
 2001-12-21  shawn  <sabetts@vcn.bc.ca>
 
+	* src/list.c (format_window_name): print unrecognized formatting
+	options.
+
 	* src/manage.c (unmanage): set the kill_signalled variable.
 
 	* src/actions.c (wingravity_to_string): new function
