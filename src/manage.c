@@ -530,10 +530,11 @@ withdraw_window (rp_window *win)
   remove_from_list (win);
   append_to_list (win, rp_unmapped_window_sentinel);
 
+  ignore_badwindow++;
+
   XRemoveFromSaveSet (dpy, win->w);
   set_state (win, WithdrawnState);
-
-  ignore_badwindow++;
   XSync (dpy, False);
+
   ignore_badwindow--;
 }

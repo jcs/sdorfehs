@@ -102,6 +102,7 @@ unmap_notify (XEvent *ev)
 	      if (frame) cleanup_frame (frame);
 	      if (frame == rp_current_frame) set_active_frame (frame);
 
+
 	      withdraw_window (win);
 	      break;
 	    }
@@ -557,6 +558,10 @@ colormap_notify (XEvent *ev)
     {
       XWindowAttributes attr;
 
+      /* SDL sets the colormap just before destroying the window, so
+	 ignore BadWindow errors. */
+      ignore_badwindow++;
+
       XGetWindowAttributes (dpy, win->w, &attr);
       win->colormap = attr.colormap;
 
@@ -564,6 +569,8 @@ colormap_notify (XEvent *ev)
 	{
 	  XInstallColormap (dpy, win->colormap);
 	}
+
+      ignore_badwindow--;
     }
 }	  
 

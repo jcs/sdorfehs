@@ -1,3 +1,11 @@
+2001-05-24  Shawn Betts  <sabetts@van.gobasis.com>
+
+	* src/events.c (colormap_notify): ignore badwindows when
+	retrieving and installing the colormap.
+
+	* src/manage.c (withdraw_window): ignore badwindows during all
+	Xlib calls.
+
 2001-05-22  Shawn Betts  <sabetts@van.gobasis.com>
 
 	* src/actions.c (cmd_generate): only generate the event if there
