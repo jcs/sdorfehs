@@ -1,3 +1,8 @@
+2003-08-02  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_number): rename the window's group number
+	instead of it's internal number.
+
 2003-07-16  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/hook.c: include string.h
