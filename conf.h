@@ -28,7 +28,7 @@
 #define KEY_TOGGLEBAR   'w'	/* key to toggle the display of the program bar */
 #define KEY_DELETE      'k'	/* delete a window SHIFT+key will Destroy the window */
 
-#define TERM_PROG       "xterm"	/* command to boot an xterm */
+#define TERM_PROG       "rxvt"	/* command to boot an xterm */
 #define EMACS_PROG      "emacs"	/* command to boot emacs */
 
 #define BAR_FG_COLOR    "Gray60"
