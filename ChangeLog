@@ -1,5 +1,8 @@
 2003-08-22  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/window.c (set_active_window): don't do anything if the
+	window is already the focused window.
+
 	* src/split.c (remove_all_splits): only hide the windows in the
 	current screen.
 
