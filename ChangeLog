@@ -2,6 +2,8 @@
 
 	* src/actions.c (cmd_help): Print key binding when called
 	non-interactively.
+	(cmd_defwaitcursor): error message correctly shows what command
+	the error occurred in.
 
 2002-12-11  Shawn  <sabetts@sfu.ca>
 

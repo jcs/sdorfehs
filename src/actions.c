@@ -2032,7 +2032,7 @@ cmd_defwaitcursor (int interactive, void *data)
   if (data == NULL
       || sscanf (data, "%d", &defaults.wait_for_key_cursor) < 1)
     {
-      message (" defwaitforkey: One argument required ");
+      message (" defwaitcursor: One argument required ");
     }
 
   return NULL;    
