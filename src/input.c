@@ -1,13 +1,14 @@
 /* Read kdb input from the user.
- * 
- * Copyright (C) 2000 Shawn Betts
- * 
- * This program is free software; you can redistribute it and/or modify
+ * Copyright (C) 2000, 2001 Shawn Betts
+ *
+ * This file is part of ratpoison.
+ *
+ * ratpoison is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
  * 
- * This program is distributed in the hope that it will be useful,
+ * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -15,11 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA */
-
+ * Boston, MA 02111-1307 USA
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
@@ -125,18 +127,18 @@ read_key (KeySym *keysym, unsigned int *modifiers)
     } while (IsModifierKey (*keysym));
 }
 
-/* pass in a pointer a string and how much room we have, and fill it
-   in with text from the user. */
-void
-get_input (screen_info *s, char *prompt, char *str, int len)
+char *
+get_input (screen_info *s, char *prompt)
 {
   int cur_len;			/* Current length of the string. */
+  int allocated_len=100;		/* The ammount of memory we allocated for str */
   KeySym ch;
   unsigned int modifier;
   int revert;
   Window fwin;
   int prompt_width = XTextWidth (s->font, prompt, strlen (prompt));
   int width = 200 + prompt_width;
+  char *str;
 
   /* We don't want to draw overtop of the program bar. */
   hide_bar (s);
@@ -159,6 +161,15 @@ get_input (screen_info *s, char *prompt, char *str, int len)
 
   cur_len = 0;
 
+  /* Allocate some memory */
+  str = (char *) malloc ( 100 ); /* Most of the time people
+  				 won't type more than 100 chars, will they ?*/
+  if ( str == NULL )
+    {
+      PRINT_ERROR ("Out of memory\n");
+      exit (EXIT_FAILURE);
+    }
+
   read_key (&ch, &modifier);
   while (ch != XK_Return) 
     {
@@ -177,8 +188,15 @@ get_input (screen_info *s, char *prompt, char *str, int len)
 	}
       else
 	{
+	  if (cur_len > allocated_len - 1)
+	    {
+	      str = realloc ( str, allocated_len + 100 );
+	      /** FIXME: realloc(3) is unlcear to me, how should I check for
+	      its success ? - algernon **/
+	      allocated_len += 100;
+	    }
 	  str[cur_len] = ch;
-	  if (cur_len < len - 1) cur_len++;
+	  cur_len++;
 
 	  XDrawString (dpy, s->input_window, s->normal_gc, 
 		       BAR_X_PADDING + prompt_width,
@@ -191,5 +209,5 @@ get_input (screen_info *s, char *prompt, char *str, int len)
   str[cur_len] = 0;
   XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
   XUnmapWindow (dpy, s->input_window);
+  return str;
 }  
-      
