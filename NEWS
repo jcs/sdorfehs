@@ -1,6 +1,16 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.1.1
+** Shell command exit status
+When a shell command fails to execute then a message is reported in
+ratpoison: "Command not found."
+
+** New command 'warp'
+Toggles rat warping. By default ratpoison saves the position of the
+rat when leaving a window and when the user returns to the window the
+rat's position is restored. This can be counter-intuitive, so now you
+can toggle it.
+
 ** split, vsplit, hsplit
 These commands now take a single argument. The argument can be a ratio
 which divides the frame into two frames sized based on this ratio, or

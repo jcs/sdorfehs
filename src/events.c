@@ -33,6 +33,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <sys/wait.h>
 
 #include "ratpoison.h"
 
@@ -780,6 +781,12 @@ handle_signals ()
 
       hide_frame_indicator();
       alarm_signalled = 0;
+    }
+
+  if (chld_signalled > 0)
+    {
+      marked_message_printf (0,0, " Command not found ");
+      chld_signalled = 0;
     }
 
   if (hup_signalled > 0)

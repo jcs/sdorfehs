@@ -973,29 +973,27 @@ void
 spawn(void *data)
 {
   char *cmd = data;
-  /* Ugly dance to avoid leaving zombies.  Could use SIGCHLD, but it's
-     not very portable. */
-  if (fork() == 0) 
+  int pid;
+
+  pid = fork();
+  if (pid == 0) 
     {
-      if (fork() == 0) 
-	{
-	  /* Some process setup to make sure the spawned process runs
-	     in its own session. */
-	  putenv(current_screen()->display_string);
+      /* Some process setup to make sure the spawned process runs
+	 in its own session. */
+      putenv(current_screen()->display_string);
 #ifdef HAVE_SETSID
-	  setsid();
+      setsid();
 #endif
 #if defined (HAVE_SETPGID)
-	  setpgid (0, 0);
+      setpgid (0, 0);
 #elif defined (HAVE_SETPGRP)
-	  setpgrp (0, 0);
+      setpgrp (0, 0);
 #endif
-	  execl("/bin/sh", "sh", "-c", cmd, 0);
-	  _exit(EXIT_FAILURE);
-	}
-      _exit(EXIT_SUCCESS);
+      execl("/bin/sh", "sh", "-c", cmd, 0);
+      _exit(EXIT_FAILURE);
     }
-  wait((int *) 0);
+
+/*   wait((int *) 0); */
   PRINT_DEBUG ("spawned %s\n", cmd);
 }
 

@@ -165,6 +165,17 @@ struct rp_defaults
   int warp;
 };
 
+/* Information about a child process. */
+struct rp_child_info
+{
+  int pid;
+  int status;
+};
+
+/* When a child process exits this structure holds the information
+   about it to be used to report back to the user. */
+extern struct rp_child_info child_info;
+
 extern struct rp_defaults defaults;
 
 /* The prefix key also known as the command character under screen. */
@@ -250,6 +261,7 @@ extern struct modifier_info rp_modifier_info;
 extern int alarm_signalled;
 extern int kill_signalled;
 extern int hup_signalled;
+extern int chld_signalled;
 
 /* rudeness levels */
 extern int rp_honour_transient_raise;

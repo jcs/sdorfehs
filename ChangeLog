@@ -1,3 +1,19 @@
+2002-11-24  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/main.c: include sys/wait.h
+	(chld_handler): new function
+
+	* src/events.c: include sys/wait.h
+	(handle_signals): Print an error message in the case of a child
+	signal.
+
+	* src/data.h (struct rp_child_info): New struct.
+	(child_info): New global.
+	(chld_signalled): likewise
+
+	* src/actions.c (spawn): Let the SIGCHLD handler handle process
+	completion instead of doing an ugly dance.
+
 2002-11-20  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/ratpoison.h[!HAVE_VARARG_MACROS]: PRINT_ERROR and

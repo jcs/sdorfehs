@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <string.h>
+#include <sys/wait.h>
 
 #include "ratpoison.h"
 
@@ -41,6 +42,7 @@ static void init_screen (screen_info *s, int screen_num);
 int alarm_signalled = 0;
 int kill_signalled = 0;
 int hup_signalled = 0;
+int chld_signalled = 0;
 int rat_x;
 int rat_y;
 int rat_visible = 1;		/* rat is visible by default */
@@ -61,6 +63,7 @@ screen_info *screens;
 int num_screens;
 Display *dpy;
 
+struct rp_child_info child_info;
 struct rp_defaults defaults;
 
 int ignore_badwindow = 0;
@@ -199,6 +202,33 @@ void
 alrm_handler (int signum)
 {
   alarm_signalled++;
+}
+
+void
+chld_handler (int signum)
+{
+  int pid, status, serrno;
+  serrno = errno;
+
+  while (1)
+    {
+      pid = waitpid (WAIT_ANY, &status, WNOHANG);
+      if (pid <= 0)
+	break;
+
+      PRINT_DEBUG("Child status: %d\n", WEXITSTATUS (status));
+
+      /* Tell ratpoison about the CHLD signal. We are only interested
+	 in reporting commands that failed to execute. These processes
+	 have a return value of 127 (according to the sh manual). */
+      if (WEXITSTATUS (status) == 127)
+	{
+	  chld_signalled = 1;
+	  child_info.pid = pid;
+	  child_info.status = status;
+	}
+    }
+  errno = serrno;  
 }
 
 int
@@ -537,6 +567,7 @@ main (int argc, char *argv[])
   set_sig_handler (SIGTERM, sighandler);
   set_sig_handler (SIGINT, sighandler);
   set_sig_handler (SIGHUP, hup_handler);
+  set_sig_handler (SIGCHLD, chld_handler);
 
   /* Setup ratpoison's internal structures */
   init_defaults();
