@@ -1095,8 +1095,15 @@ cmd_kill (int interactive, char *data)
 char *
 cmd_version (int interactive, char *data)
 {
-  message (" " PACKAGE " " VERSION " ");
-  return NULL;
+  if (interactive)
+    {
+      message (" " PACKAGE " " VERSION " (built " __DATE__ " " __TIME__ ") ");
+      return NULL;
+    }
+  else
+    {
+      return strdup (PACKAGE " " VERSION " (built " __DATE__ " " __TIME__ ")");
+    }
 }
 
 char *
@@ -3462,11 +3469,11 @@ cmd_fselect (int interactive, char *data)
 	{
 	  fnum = frame_selector_match (keysym_buf[0]);
 	  if (fnum == -1)
-	    return NULL;
+	    return xstrdup ("abort");
 	}
       else
 	{
-	  return NULL;
+	  return xstrdup ("abort");
 	}
     }
 
@@ -3474,11 +3481,24 @@ cmd_fselect (int interactive, char *data)
      it. */
   frame = find_frame_number (fnum);
   if (frame)
-    set_active_frame (frame);
-  else
-    marked_message_printf (0, 0, " fselect: No such frame (%d) ", fnum);
+    {
+      char *s;
+      struct sbuf *sb;
 
-  return NULL;
+      /* Return the frame number that was selected. */
+      sb = sbuf_new(0);
+      sbuf_printf (sb, "%d", fnum);
+      s = sbuf_get(sb);
+      free (sb);
+
+      set_active_frame (frame);
+      return s;
+    }
+  else
+    {
+      marked_message_printf (0, 0, " fselect: No such frame (%d) ", fnum);
+      return xstrdup ("No such frame");
+    }
 }
 
 char *

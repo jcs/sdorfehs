@@ -3,6 +3,11 @@
 	* src/actions.c: new command, sselect
 	(cmd_sselect): new function. added prototype.
 	(cmd_set): free 'var' at the appropriate places.
+	(cmd_version): add the build date and time.
+	(cmd_fselect): in interactive mode, return 'abort' when the user
+	aborts, the frame number when they select one, or 'No such frame'
+	when they selected a nonexistent one.
+	(cmd_version): return the version string in non-interactive mode.
 
 	* src/events.c (property_notify): pass the root window to
 	receive_command.
