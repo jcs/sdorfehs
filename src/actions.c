@@ -226,8 +226,8 @@ initialize_default_keybindings (void)
   add_keybinding (XK_K, ControlMask, "kill");
   add_keybinding (XK_Return, 0, "next");
   add_keybinding (XK_Return, ControlMask,	"next");
-  add_keybinding (XK_a, 0, "clock");
-  add_keybinding (XK_a, ControlMask, "clock");
+  add_keybinding (XK_a, 0, "time");
+  add_keybinding (XK_a, ControlMask, "time");
   add_keybinding (XK_b, 0, "banish");
   add_keybinding (XK_b, ControlMask, "banish");
   add_keybinding (XK_c, 0, "exec " TERM_PROG);
