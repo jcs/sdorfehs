@@ -1,5 +1,8 @@
 2001-03-07  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* actions.c (string_to_keysym): New function.
+	(parse_keydesc): Call string_to_keysym.
+
 	* main.c (read_startup_files): Use PRINT_DEBUG to report failure
 	to load rc files.
 

@@ -177,6 +177,21 @@ user_command user_commands[] =
     {"startup_message",	cmd_unimplemented,	arg_VOID},
     {0,			0,		0} };
 
+/* return a KeySym from a string that contains either a hex value or
+   an X keysym description */
+static int string_to_keysym (char *str) 
+{ 
+  int retval; 
+  int keysym;
+
+  retval = sscanf (str, "0x%x", &keysym);
+
+  if (!retval || retval == EOF)
+    keysym = XStringToKeysym (str);
+
+  return keysym;
+}
+
 struct rp_key*
 parse_keydesc (char *keydesc)
 {
@@ -189,12 +204,12 @@ parse_keydesc (char *keydesc)
   if (keydesc[0] == '^')
     {
       p->state = ControlMask;
-      p->sym = XStringToKeysym (keydesc + 1);
+      p->sym = string_to_keysym (keydesc + 1);
     }
-  else
+  else  
     {
       p->state = 0;
-      p->sym = XStringToKeysym (keydesc);
+      p->sym = string_to_keysym (keydesc);
     }
 
   if (!p->sym)
