@@ -1,3 +1,8 @@
+2001-05-22  Shawn Betts  <sabetts@van.gobasis.com>
+
+	* src/actions.c (cmd_generate): only generate the event if there
+	is a current window.
+
 2001-05-18  Shawn Betts  <sabetts@van.gobasis.com>
 
 	* src/input.c (update_modifier_map): rename from
