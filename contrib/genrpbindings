@@ -1,0 +1,93 @@
+#!/usr/bin/perl -w
+# genrpbindings -- generate ratpoison bindings for various languages
+#
+# Ryan Yeske <rcyeske@sfu.ca>
+# Tue Dec  4 16:15:53 PST 2001
+#
+# currently generates bindings for:
+# * Perl        (Ratpoison.pm)
+# * Emacs Lisp  (ratpoison-cmd.el)
+#
+# add more languages!
+#
+# Bindings are just very thin wrappers, no argument checking is done.
+# All of the functions return a string.
+#
+# Example: ratpoison --command='echo hello world'
+#
+# #!perl
+# use Ratpoison;
+# Ratpoison::echo ("hello world")
+#
+# ;;; elisp
+# (require 'ratpoison-cmd)
+# (ratpoison-echo "hello world")
+
+$\="\n";
+
+# set this to your rp binary
+$RATPOISON="/usr/local/bin/ratpoison";
+
+# open source file
+$ACTIONS_C="../src/actions.c";
+open ACTIONS_C or die "Can't open $ACTIONS_C";
+
+# open target files
+$PERL_FILE="./Ratpoison.pm";
+$ELISP_FILE="./ratpoison-cmd.el";
+open PERL, ">$PERL_FILE" or die "Can't create $PERL_FILE";
+open ELISP, ">$ELISP_FILE" or die "Can't create $ELISP_FILE";
+
+# PERL preamble
+print PERL 'package Ratpoison;';
+print PERL '$RATPOISON="',$RATPOISON,'";';
+print PERL 'sub rp_cmd { return `$RATPOISON -c "@_"`; }';
+
+# ELISP preamble
+print ELISP '(defvar ratpoison-program "',$RATPOISON,'")';
+print ELISP <<PREAMBLE;
+
+(defmacro defun-ratpoison (cmd)
+  `(defun ,(intern (concat "ratpoison-" (symbol-name cmd))) (&rest args)
+     (apply 'ratpoison-cmd ,(symbol-name cmd) args)))
+
+(defun ratpoison-cmd (cmd &rest args)
+  (with-temp-buffer
+    (call-process ratpoison-program nil (current-buffer) t
+		  "-c" (format "%s %s"
+			       cmd
+			       (mapconcat (lambda (x)
+					    (if (stringp x)
+						x
+					      (prin1-to-string x)))
+					  args " ")))
+    (buffer-substring (point-min) (if (> (point-max) 1)
+				      (- (point-max) 1)
+				    (point-max)))))
+PREAMBLE
+
+# bindings
+while (<ACTIONS_C>) {
+    if (m!/\*\@begin !) {
+	while (<ACTIONS_C>)
+	{
+	    last if (m!/\*\@end !);
+	    if (/{\"(.+)\".+},/) {
+	      $nbindings++;
+	      print PERL "sub abort { return rp_cmd (\"$1\"); }";
+	      print ELISP "(defun-ratpoison $1)";
+	    }
+	}
+    }
+}
+print "$nbindings bindings.";
+
+# PERL postamble
+
+# ELISP postamble
+print ELISP '(provide \'ratpoison-cmd)';
+
+close PERL;
+print "Created $PERL_FILE";
+close ELISP;
+print "Created $ELISP_FILE";
