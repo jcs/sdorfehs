@@ -1,5 +1,8 @@
 2002-01-24  shawn  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (cmd_defbarloc): Read the location argument as a
+	gravity argument using parse_wingravity.
+
 	* src/messages.h (MESSAGE_FRAME_STRING): Pad the string with
 	spaces on both sides.
 

@@ -380,10 +380,10 @@ Run a ratpoison command.
 @item curframe
 Indicate which frame is the current frame.
 
-@item defbarloc @var{n}
-Set the message bar location. @var{n} is a value between 0 and 3. 0 is
-the top left and the values move clockwise around the screen to the
-bottom left which is 3.
+@item defbarloc @var{loc}
+Set the message bar location. @var{loc} can be one of
+@samp{northeast}, @samp{northwest}, @samp{southeast},
+@samp{southwest}, or their abbreviations.
 
 When called non-interactively with no arguments, the current setting is
 returned.
@@ -586,8 +586,9 @@ bottom-right corner of the screen. Valid values for @var{g} are the 8
 directions @samp{northwest}, @samp{north}, @samp{northeast},
 @samp{east}, @samp{southeast}, @samp{south}, @samp{southwest} and
 @samp{west}, clockwise from the top left corner. @samp{center} will
-center the window in the frame. @var{g} and can be abbreviated to one
-or two letters.
+center the window in the frame. @var{g} and can be abbreviated to the
+standard compass 1 and 2 letter abreviations (i.e. @samp{nw},
+@samp{s}, etc).
 
 @item prev
 This jumps you to the previous window in the window list. By default,

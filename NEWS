@@ -1,6 +1,11 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** defbarloc
+This command take a gravity argument just like the wingravity
+commands. Only north east, north west, south east, and south west
+locations are accepted.
+
 ** "number" command takes additional optional argument
 The second argument is used to specify a window other than the
 current.

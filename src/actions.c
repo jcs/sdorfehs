@@ -1702,30 +1702,29 @@ cmd_defbarloc (int interactive, void *data)
   if (data == NULL && !interactive)
     return xstrdup (wingravity_to_string (defaults.bar_location));
 
-  if (data == NULL
-      || sscanf (data, "%d", &loc) < 1)
+  if (data == NULL)
     {
       message (" defbarloc: One argument required ");
       return NULL;
     }
 
+  if ((loc = parse_wingravity (data)) < 0)
+    {
+      message (" defbarloc: Bad location ");
+      return NULL;
+    }
+
   switch (loc)
     {
-    case 0:
-      defaults.bar_location = NorthWestGravity;
-      break;
-    case 1:
-      defaults.bar_location = NorthEastGravity;
-      break;
-    case 2:
-      defaults.bar_location = SouthEastGravity;
-      break;
-    case 3:
-      defaults.bar_location = SouthWestGravity;
+    case NorthWestGravity:
+    case NorthEastGravity:
+    case SouthWestGravity:
+    case SouthEastGravity:
+      defaults.bar_location = loc;
       break;
 
     default:
-      message (" defbarloc: Unknown location ");
+      message (" defbarloc: Bad location ");
       break;
     }
 
@@ -1892,7 +1891,7 @@ cmd_defbarborder (int interactive, void *data)
   int i;
 
   if (data == NULL && !interactive)
-    return xsprintf ("%d", defaults.window_border_width);
+    return xsprintf ("%d", defaults.bar_border_width);
 
   if (data == NULL
       || sscanf (data, "%d", &tmp) < 1)
