@@ -1,3 +1,8 @@
+2003-05-18  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/bar.c (marked_wrapped_message): Free the GC's created with
+	XCreateGC.
+
 2003-05-17  Shawn Betts  <sabetts@sfu.ca>
 
 	* configure.in: version bump to 1.3.0-cvs

@@ -409,6 +409,7 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
       XFillRectangle (dpy, s->bar_window, lgc, 
 		      start, (start_line-1)*line_height + defaults.bar_y_padding, 
 		      width, (end_line-start_line+1)*line_height);
+      XFreeGC (dpy, lgc);
 
       lgv.foreground = s->bg_color;
       lgc = XCreateGC(dpy, s->root, mask, &lgv);
@@ -416,6 +417,7 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
       XFillRectangle (dpy, s->bar_window, lgc, 
 		      start, (start_line-1)*line_height + defaults.bar_y_padding, 
 		      width, (end_line-start_line+1)*line_height);
+      XFreeGC (dpy, lgc);
     }
 
   /* Keep a record of the message. */
