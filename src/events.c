@@ -693,10 +693,6 @@ delegate_event (XEvent *ev)
       configure_request (&ev->xconfigurerequest);
       break;
 
-    case CirculateRequest:
-      PRINT_DEBUG ("--- Handling CirculateRequest ---\n");
-      break;
-
     case CreateNotify:
       PRINT_DEBUG ("--- Handling CreateNotify ---\n");
       new_window (&ev->xcreatewindow);
@@ -766,6 +762,7 @@ delegate_event (XEvent *ev)
     case SelectionRequest:
     case SelectionNotify:
     case SelectionClear:
+    case CirculateRequest:
       /* Ignore these events. */
       break;
 

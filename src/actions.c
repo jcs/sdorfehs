@@ -1040,10 +1040,9 @@ char *
 cmd_number (int interactive, void *data)
 {
   int old_number, new_number;
-  rp_window *other_win;
+  rp_window *other_win, *win;
   char *str;
-  
-  if (current_window() == NULL) return NULL;
+  char *tmp;
 
   if (data == NULL)
     {
@@ -1055,13 +1054,57 @@ cmd_number (int interactive, void *data)
       str = xstrdup ((char *) data);
     }
 
-  if ((new_number = string_to_window_number (str)) >= 0)
+  tmp = strtok (str, " ");
+  if (tmp)
+    {
+      new_number = string_to_window_number (tmp);
+      if (new_number < 0)
+	{
+	  message (" number:  Bad argument ");
+	  free (str);
+	  return NULL;
+	}
+    }
+  else
+    {
+      /* Impossible, but we'll live with it. */
+      print_window_information (current_window());
+      free (str);
+      return NULL;
+    }      
+
+  /* Get the rest of the string and see if the user specified a target
+     window. */
+  tmp = strtok (NULL, "");
+  if (tmp)
+    {
+      int win_number;
+
+      PRINT_DEBUG ("2nd: '%s'\n", tmp); 
+
+      win_number = string_to_window_number (tmp);
+      if (win_number < 0)
+	{
+	  message (" number: Bad argument ");
+	  free (str);
+	  return NULL;
+	}
+
+      win = find_window_number (win_number);
+    }
+  else
+    {
+      PRINT_DEBUG ("2nd: NULL\n");
+      win = current_window();
+    }
+
+  if ( new_number >= 0 && win)
     {
       /* Find other window with same number and give it old number. */
       other_win = find_window_number (new_number);
       if (other_win != NULL)
 	{
-	  old_number = current_window()->number;
+	  old_number = win->number;
 	  other_win->number = old_number;
 
 	  /* Resort the the window in the list */
@@ -1070,18 +1113,18 @@ cmd_number (int interactive, void *data)
 	}
       else
 	{
-	  return_window_number (current_window()->number);
+	  return_window_number (win->number);
 	}
 
-      current_window()->number = new_number;
+      win->number = new_number;
       add_window_number (new_number);
 
       /* resort the the window in the list */
-      remove_from_list (current_window());
-      insert_into_list (current_window(), rp_mapped_window_sentinel);
+      remove_from_list (win);
+      insert_into_list (win, rp_mapped_window_sentinel);
 
       /* Update the window list. */
-      update_window_names (current_screen());
+      update_window_names (win->scr);
     }
 
   free (str);

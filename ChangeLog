@@ -1,3 +1,11 @@
+2002-01-10  shawn  <sabetts@vcn.bc.ca>
+
+	* src/events.c (delegate_event): ignore the CirculateRequest event.
+
+	* src/actions.c (cmd_rename): Allows the user to specify a second
+	argument which is the number of the window whose number will be
+	set to the first argument.
+ 
 2002-01-09  Gergely Nagy  <algernon@debian.org>
 
 	* src/actions.c (setenv, unsetenv): new functions, used when

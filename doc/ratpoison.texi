@@ -565,9 +565,13 @@ and @kbd{C-t enter}.
 This is a bad-bad command. It kills ratpoison and revives that
 ugly rodent! Yuck! Avoid!
 
-@item number @var{n}
-Set the current window's number to @var{n}. If another window occupies
-the requested number already, then the windows' numbers are swapped.
+@item number @var{n} @var{target}
+Set a window's number to @var{n}. If another window occupies the
+requested number already, then the windows' numbers are swapped.
+
+The second argument, @var{target}, is optional. It should be the
+number of the window whose number will be changed. If @var{target} is
+omitted ratpoison defaults to the current window.
 
 @item only
 Kill all frames but the current one.
