@@ -158,6 +158,10 @@ In the default setup, the @kbd{C-t a} keystroke is bound to this command.
 This deletes the current window. You can access it with the @kbd{C-t k}
 keystroke.
 
+@item escape @var{key}
+Set the prefix to to @var{key}. For example @samp{escape ^b} sets the
+prefix key to @key{C-b}.
+
 @item exec @var{command}
 Execute a shell command. By default, @kbd{C-t !} does this.
 
