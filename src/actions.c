@@ -3549,8 +3549,9 @@ cmd_groups (int interactive, char *data)
       if (cur == rp_current_group)
 	mark_start = strlen (sbuf_get (buffer));
 
-      /* Pad start of group name with a space for row style. */
-      if (defaults.window_list_style == STYLE_ROW)
+      /* Pad start of group name with a space for row
+	 style. non-Interactive always gets a column.*/
+      if (defaults.window_list_style == STYLE_ROW && interactive)
 	  sbuf_concat (buffer, " ");	
 
       if(cur == rp_current_group)
@@ -3562,7 +3563,7 @@ cmd_groups (int interactive, char *data)
       sbuf_concat (buffer, fmt);
 
       /* Pad end of group name with a space for row style. */
-      if (defaults.window_list_style == STYLE_ROW)
+      if (defaults.window_list_style == STYLE_ROW && interactive)
 	{
 	  sbuf_concat (buffer, " ");
 	}

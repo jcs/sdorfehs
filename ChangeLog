@@ -3,6 +3,7 @@
 	* src/actions.c (cmd_groups): print a * beside the current
 	group. if non-interactively called, return the string.
 	(sync_wins): rewrite.
+	(cmd_groups): always print a column in non-interactive mode.
 
 2003-06-21  Shawn Betts  <sabetts@sfu.ca>
 
