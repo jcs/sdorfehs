@@ -1,3 +1,9 @@
+2004-05-05    <shawn.betts@sophos.com>
+
+	* src/input.c (grab_key): use keysym_to_keycode_mod to get the
+	keycode and modifier for the keysym.
+	(keysym_to_keycode_mod): new function
+
 2004-04-23  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/data.h (struct rp_defaults): new members, font_string,
