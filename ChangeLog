@@ -1,5 +1,7 @@
 2002-02-14  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* configure.in: fix the --enable-debug help string.
+
 	* src/events.c (configure_request): Ignore the configure notify
 	event caused by the geometry change if the window is not mapped.
 
