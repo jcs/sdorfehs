@@ -1,5 +1,9 @@
 2002-01-26  shawn  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (alias_t): rename data structure from cmd_alias to
+	avoid a name clash with the function cmd_alias. Dependant code
+	updated.
+
 	* src/list.c (set_active_window): Corrected a bug in determining
 	what a maxsize window is. Only one of width or height must be less
 	than the screen width or height for a window to qualify as a

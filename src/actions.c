@@ -117,13 +117,13 @@ static user_command user_commands[] =
 #endif
     {0,			0,		0} };
 
-struct cmd_alias
+typedef struct
 {
   char *name;
   char *alias;
-};
+} alias_t;
   
-static struct cmd_alias *alias_list;
+static alias_t *alias_list;
 static int alias_list_size;
 static int alias_list_last;
 
@@ -264,7 +264,7 @@ initialize_default_keybindings (void)
   /* Initialive the alias list. */
   alias_list_size = 5;
   alias_list_last = 0;
-  alias_list = xmalloc (sizeof (cmd_alias) * alias_list_size);
+  alias_list = xmalloc (sizeof (alias_t) * alias_list_size);
 
   prefix_key.sym = KEY_PREFIX;
   prefix_key.state = MODIFIER_PREFIX;
@@ -2415,7 +2415,7 @@ cmd_alias (int interactive, void *data)
       if (alias_list_last >= alias_list_size)
 	{
 	  alias_list_size *= 2;
-	  alias_list = xrealloc (alias_list, sizeof (cmd_alias) * alias_list_size);
+	  alias_list = xrealloc (alias_list, sizeof (alias_t) * alias_list_size);
 	}
 
       alias_list[alias_list_last].name = xstrdup (name);
