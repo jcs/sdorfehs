@@ -1,3 +1,8 @@
+2001-02-21  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.c (cmd_generate): Send the modifier prefix state as well
+	as the keycode.
+
 2001-02-19  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* events.c (handle_key): Call find_keybinding() instead of looping

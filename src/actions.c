@@ -212,7 +212,7 @@ cmd_generate (void *data)
 /*   ev1.xkey.x_root == */
 /*   ev1.xkey.y_root == */
 
-  ev1.xkey.state = 0;
+  ev1.xkey.state = MODIFIER_PREFIX;
   ev1.xkey.keycode = XKeysymToKeycode (dpy, KEY_PREFIX);
 
   XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev1);
