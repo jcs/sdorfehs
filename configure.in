@@ -17,10 +17,10 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.26 2002/02/14 11:21:29 sabetts Exp $
+dnl $Id: configure.in,v 1.27 2002/03/10 20:29:55 sabetts Exp $
 
 AC_INIT(src/main.c)
-AM_INIT_AUTOMAKE(ratpoison, 1.0.1-cvs)
+AM_INIT_AUTOMAKE(ratpoison, 1.1.0)
 
 AM_CONFIG_HEADER(src/config.h)
 
