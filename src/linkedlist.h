@@ -269,7 +269,6 @@ static inline void list_splice_init(struct list_head *list,
 	typeof(pos) ret = NULL;  \
 	struct list_head *a_head = head;  \
 	if (pos->member.direction == a_head) { \
-		if (a_head->direction != &pos->member) \
 			ret = list_entry(a_head->direction,  \
 					 typeof(*pos), member); \
 	} else { \

@@ -1,5 +1,9 @@
 2003-02-22  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/linkedlist.h (list_direction_entry): no longer returns NULL
+	if there is only one element in the list. Instead, returns the
+	same element again and again.
+
 	* src/actions.c (cmd_number): use list delete entry macro
 	(cmd_number): likewise
 	(cmd_escape): use list looping macro
