@@ -1,5 +1,11 @@
 2001-08-18  Shawn  <sabetts@hotdog>
 
+	* src/events.c (configure_request): grant Iconized and Withdrawn
+	windows any geometry they like.
+
+	* src/list.c (is_transient_ancestor): make sure tmp is a valid
+	pointer before testing if it is a transient.
+
 	* src/main.c (read_rc_file): free the command's result string.
 
 	* src/list.h (get_window_list): new prototype

@@ -218,6 +218,7 @@ configure_notify (XConfigureEvent *e)
 static void
 configure_request (XConfigureRequestEvent *e)
 {
+  XWindowChanges changes;
   rp_window *win;
 
   win = find_window (e->window);
@@ -227,11 +228,13 @@ configure_request (XConfigureRequestEvent *e)
       /* Updated our window struct */
       if (e->value_mask & CWX)
 	{
+	  changes.x = e->x + win->border;
 	  win->x = e->x + win->border;
 	  PRINT_DEBUG("request CWX %d\n", e->x);
 	}
       if (e->value_mask & CWY)
 	{
+	  changes.y = e->y + win->border;
 	  win->y = e->y + win->border;
 	  PRINT_DEBUG("request CWY %d\n", e->y);
 	}
@@ -250,33 +253,38 @@ configure_request (XConfigureRequestEvent *e)
 	  PRINT_DEBUG("request CWStackMode %d\n", e->detail);
 	}
 
+      if (e->value_mask & CWBorderWidth)
+	{
+	  changes.border_width = e->border_width;
+	  win->border = e->border_width;
+	  PRINT_DEBUG("request CWBorderWidth %d\n", e->border_width);
+	}
+      if (e->value_mask & CWWidth)
+	{
+	  changes.width = e->width;
+	  win->width = e->width;
+	  PRINT_DEBUG("request CWWidth %d\n", e->width);
+	}
+      if (e->value_mask & CWHeight)
+	{
+	  changes.height = e->height;
+	  win->height = e->height;
+	  PRINT_DEBUG("request CWHeight %d\n", e->height);
+	}
 
       PRINT_DEBUG ("'%s' new window size: %d %d %d %d %d\n", win->name,
 		   win->x, win->y, win->width, win->height, win->border);
 
-      if (e->value_mask & (CWWidth|CWHeight|CWBorderWidth))
+      if (win->state != NormalState)
 	{
-	  if (e->value_mask & CWBorderWidth)
-	    {
-	      win->border = e->border_width;
-	      PRINT_DEBUG("request CWBorderWidth %d\n", e->border_width);
-	    }
-	  if (e->value_mask & CWWidth)
-	    {
-	      win->width = e->width;
-	      PRINT_DEBUG("request CWWidth %d\n", e->width);
-	    }
-	  if (e->value_mask & CWHeight)
-	    {
-	      win->height = e->height;
-	      PRINT_DEBUG("request CWHeight %d\n", e->height);
-	    }
-
-	  maximize (win);
+	  /* The window isn't visible so grant it whatever it likes */
+	  XConfigureWindow (dpy, win->w, e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
+			    &changes);
 	  send_configure (win);
 	}
       else
 	{
+	  /* Draw the hard line. Get back in line, you misbehaving window! */
 	  maximize (win);
 	  send_configure (win);
 	}
