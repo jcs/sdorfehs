@@ -40,6 +40,9 @@ struct rp_window_frame
   int x, y, width, height;
   rp_window *win;
 
+  /* For determining the last frame. */
+  int last_access;
+
   rp_window_frame *prev, *next;
 };
 
@@ -49,7 +52,7 @@ struct rp_window
   Window w;
   int number;
   int state;
-  int last_access;		
+  int last_access;
   int named;
   
   /* Window name hints. */
@@ -207,6 +210,15 @@ extern int ignore_badwindow;
 
 /* Arguments passed to ratpoison. */
 extern char **myargv;
+
+/* These defines should be used to specify the modifier mask for keys
+   and they are translated into the X11 modifier mask when the time
+   comes to compare modifier masks. */
+#define RP_CONTROL_MASK 1
+#define RP_META_MASK 	2
+#define RP_ALT_MASK 	4
+#define RP_SUPER_MASK 	8
+#define RP_HYPER_MASK 	16
 
 struct modifier_info
 {
