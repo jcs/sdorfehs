@@ -2,7 +2,6 @@ ratpoison (1.0.0-1) unstable; urgency=medium
 
   * New upstream release!
       + Contains a fixed ratpoison.texi (Closes: #107939)
-      + Correctly maximises windows (Closes: #79073)
 
  -- Gergely Nagy <algernon@debian.org>  Thu,  6 Sep 2001 16:41:41 +0200
 
