@@ -61,6 +61,6 @@ extern XGCValues gv;
 void clean_up ();
 screen_info *find_screen (Window w);
 
-void read_rc_file (char *filename);
+void read_rc_file (FILE *file);
 
 #endif /* ! _RATPOISON_H */

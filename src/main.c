@@ -185,66 +185,88 @@ print_help ()
 }
 
 void
-read_rc_file (char *filename)
+read_rc_file (FILE *file)
 {
-  FILE *rcfile;
+  size_t n = 256;
+  char *partial;
+  char *line;
+  int linesize = n;
 
-  if ((rcfile = fopen (filename, "r")) == NULL)
+  partial = (char*)malloc(n);
+  line = (char*)malloc(linesize);
+
+  *line = '\0';
+  while (fgets (partial, n, file) != NULL)
     {
-      PRINT_DEBUG ("ratpoison: could not open %s\n", filename);
-    }
-  else
-    {
-      size_t n = 256;
-      char *partial;
-      char *line;
-      int linesize = n;
-
-      partial = (char*)malloc(n);
-      line = (char*)malloc(linesize);
-
-      *line = '\0';
-      while (fgets (partial, n, rcfile) != NULL)
+      if ((strlen (line) + strlen (partial)) <= linesize)
 	{
-	  if ((strlen (line) + strlen (partial)) <= linesize)
-	    {
-	      linesize *= 2;
-	      line = (char*) realloc (line, linesize);
-	    }
-
-	  strcat (line, partial);
-
-	  if (feof(rcfile) || (*(line + strlen(line) - 1) == '\n'))
-	    {
-	      PRINT_DEBUG ("rcfile line: %s\n", line);
-
-	      /* do it */
-	      command (line);
-
-	      *line = '\0';
-	    }
+	  linesize *= 2;
+	  line = (char*) realloc (line, linesize);
 	}
 
+      strcat (line, partial);
 
-      free (line);
-      free (partial);
+      if (feof(file) || (*(line + strlen(line) - 1) == '\n'))
+	{
+	  /* FIXME: this is a hack, command() should properly parse
+	     the command and args (ie strip whitespace, etc) 
+
+	     We should not care if there is a newline (or vertical
+	     tabs or linefeeds for that matter) at the end of the
+	     command (or anywhere between tokens). */
+	  if (*(line + strlen(line) - 1) == '\n')
+	    *(line + strlen(line) - 1) = '\0';
+
+	  PRINT_DEBUG ("rcfile line: %s\n", line);
+
+	  /* do it */
+	  command (line);
+
+	  *line = '\0';
+	}
     }
+
+
+  free (line);
+  free (partial);
 }
 
 static void
 read_startup_files ()
 {
   char *homedir;
+  FILE *fileptr;
+
+  /* first check $HOME/.ratpoisonrc and if that does not exist then try
+     /etc/ratpoisonrc */
 
   homedir = getenv ("HOME");
-
   if (!homedir)
-    fprintf (stderr, "$HOME not set!?\n");
+    fprintf (stderr, "ratpoison: $HOME not set!?\n");
   else
     {
-      char *rcfile = (char*)malloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
-      sprintf (rcfile, "%s/.ratpoisonrc", homedir);
-      read_rc_file (rcfile);
+      char *filename = (char*)malloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
+      sprintf (filename, "%s/.ratpoisonrc", homedir);
+      
+      if ((fileptr = fopen (filename, "r")) == NULL)
+	{
+	  /* we probably don't need to report this, its not an error */
+	  fprintf (stderr, "ratpoison: could not open %s\n", filename);
+
+	  if ((fileptr = fopen ("/etc/ratpoisonrc", "r")) == NULL)
+	    {
+	      /* neither is this */
+	      fprintf (stderr, "ratpoison: could not open /etc/ratpoisonrc\n");
+	    }
+	}
+
+      if (fileptr)
+	{
+	  read_rc_file (fileptr);
+	  fclose (fileptr);
+	}
+
+      free (filename);
     }
 }
 

@@ -1,5 +1,13 @@
 2001-03-01  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* actions.c (cmd_source): Open the file.  Error report as
+	appropriate.
+
+	* main.c (read_rc_file): Take a file pointer rather than a
+	filename.
+	(read_startup_files): If ~/.ratpoisonrc is not readable try
+	/etc/ratpoisonrc.
+
 	* actions.c: Use PRINT_DEBUG instead of fprintf.  Put useful error
 	text in calls to message().
 	(cmd_select): Show the window list if there is no such window

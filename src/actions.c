@@ -267,7 +267,15 @@ cmd_unimplemented (void *data)
 void
 cmd_source (void *data)
 {
-  read_rc_file ((char*)data);
+  FILE *fileptr;
+
+  if ((fileptr = fopen ((char*) data, "r")) == NULL)
+    message (" source: error opening file ");
+  else
+    {
+      read_rc_file (fileptr);
+      fclose (fileptr);
+    }
 }
 
 void
