@@ -30,7 +30,6 @@ rp_window *find_window (Window w);
 void maximize_current_window ();
 void set_active_window (rp_window *rp_w);
 void set_current_window (rp_window *win);
-void goto_window_number (int n);
 int goto_window_name (char *name);
 rp_window *find_last_accessed_window ();
 rp_window *find_window_by_number (int n);
