@@ -237,11 +237,11 @@ Run a shell command through an X terminal.
 @item C-t C-k
 Close the current window.
 
-@item C-t m
-@item C-t C-m
-Maximize the current window. Sometimes windows don't respond correctly
+@item C-t l
+@item C-t C-l
+Redisplay the current window. Sometimes windows don't respond correctly
 to the initial maximize event and need some coaxing. This is a fancy way
-of saying there are still bugs in ratpoison. @kbd{C-t m} will force the
+of saying there are still bugs in ratpoison. @kbd{C-t l} will force the
 current window to maximize.
 
 @item C-t v
@@ -324,7 +324,7 @@ Set the message bar location. @var{n} is a value between 0 and 3. 0 is
 the top left and the values move clockwise around the screen to the
 bottom left which is 3.
 
-@item defbartimeout @var{n}
+@item msgwait @var{n}
 Set the bar's timeout in seconds.
 
 @item defborder @var{n}
@@ -402,7 +402,7 @@ prefix key to @key{C-b}.
 @item focus
 cycle through ratpoison's frames.
 
-@item generate
+@item meta
 Send a @kbd{C-t} to the current window.
 
 @item help
@@ -420,8 +420,8 @@ use @command{delete}, but just in case you need to rip the heart out of a
 misbehaving window this command should do the trick. Also available as
 @kbd{C-t K}.
 
-@item maximize
-Maximize the current window, just like @kbd{C-t m} would do.
+@item redisplay
+Redisplay the current window, just like @kbd{C-t l} would do.
 
 @item next
 This jumps you to the next window in the window list. This one is
