@@ -494,6 +494,7 @@ init_defaults ()
   defaults.window_list_style = STYLE_ROW;
 
   defaults.history_size = 20;
+  defaults.frame_selectors = xstrdup ("");
 }
 
 int

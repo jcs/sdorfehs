@@ -131,6 +131,7 @@ static user_command user_commands[] =
     {"defbarpadding", 		cmd_defbarpadding, 	arg_STRING},
     {"defresizeunit", 		cmd_defresizeunit, 	arg_STRING},
     {"defwinliststyle",		cmd_defwinliststyle,	arg_STRING},
+    {"defframesels",            cmd_defframesels,       arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to help debug ratpoison. */
@@ -3265,6 +3266,45 @@ cmd_tmpwm (int interactive, char *data)
   return NULL;
 }
 
+/* Return a new string with the frame selector or it as a string if no
+   selector exists for the number. */
+static char *
+frame_selector (int n)
+{
+  if (n < strlen (defaults.frame_selectors))
+    {
+      return xsprintf (" %c ", defaults.frame_selectors[n]);
+    }
+  else
+    {
+      return xsprintf (" %d ", n);
+    }
+}
+
+/* Return true if ch is nth frame selector. */
+static int
+frame_selector_match (char ch)
+{
+  int i;
+
+  /* Is it in the frame selector string? */
+  for (i=0; i<strlen (defaults.frame_selectors); i++)
+    {
+      if (ch == defaults.frame_selectors[i])
+	return i;
+    }
+
+  /* Maybe it's a number less than 9 and the frame selector doesn't
+     define that many selectors. */
+  if (ch >= '0' && ch <= '9'
+      && ch - '0' >= strlen (defaults.frame_selectors))
+    {
+      return ch - '0';
+    }
+
+  return -1;
+}
+
 /* Select a frame by number. */
 char *
 cmd_fselect (int interactive, char *data)
@@ -3297,6 +3337,8 @@ cmd_fselect (int interactive, char *data)
   else
     {
       KeySym c;
+      char keysym_buf[513];
+      int keysym_bufsize = sizeof (keysym_buf);
       unsigned int mod;
       Window *wins;
       int i, j;
@@ -3329,7 +3371,8 @@ cmd_fselect (int interactive, char *data)
 
 	      /* Create the string to be displayed in the window and
 		 determine the height and width of the window. */
-	      num = xsprintf (" %d ", cur->number);
+/* 	      num = xsprintf (" %d ", cur->number); */
+	      num = frame_selector (cur->number);
 	      width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, num, strlen (num));
 	      height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
@@ -3355,7 +3398,7 @@ cmd_fselect (int interactive, char *data)
 
       /* Read a key. */
       XGrabKeyboard (dpy, current_screen()->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
-      read_key (&c, &mod, NULL, 0);
+      read_key (&c, &mod, keysym_buf, keysym_bufsize);
       XUngrabKeyboard (dpy, CurrentTime);
 
       /* Destroy our number windows and free the array. */
@@ -3364,12 +3407,17 @@ cmd_fselect (int interactive, char *data)
 
       free (wins);
 
-      /* FIXME: big assumption here. We don't know for sure if all the
-	 number keys are between XK_0 and XK_9. */
-      if (c >= XK_0 && c <= XK_9)
-	fnum = c - XK_0;
-      else 
-	return NULL;
+      /* FIXME: We only handle one character long keysym names. */
+      if (strlen (keysym_buf) == 1)
+	{
+	  fnum = frame_selector_match (keysym_buf[0]);
+	  if (fnum == -1)
+	    return NULL;
+	}
+      else
+	{
+	  return NULL;
+	}
     }
 
   /* Now that we have a frame number to go to, let's try to jump to
@@ -4094,5 +4142,19 @@ cmd_delkmap (int interactive, char *data)
   list_del (&map->node);
   keymap_free (map);
 
+  return NULL;
+}
+
+char *
+cmd_defframesels (int interactive, char *data)
+{
+  if (data == NULL)
+    {
+      marked_message_printf (0, 0, " %s ", defaults.frame_selectors);
+      return NULL;
+    }
+
+  free (defaults.frame_selectors);
+  defaults.frame_selectors = xstrdup (data);
   return NULL;
 }

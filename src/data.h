@@ -231,6 +231,8 @@ struct rp_defaults
   int warp;
 
   int history_size;
+
+  char *frame_selectors;
 };
 
 /* Information about a child process. */
