@@ -1,6 +1,13 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes Since 0.0.5
+** XErrorEvents don't bring down ratpoison
+
+A friendly message pops up displaying the error message. This does
+mean that there is a problem with ratpoison and it should be
+investigated and reported. But at least your entire session doesn't go
+down.
+
 ** Sorted window list
 
 The window list is now sorted by number.
