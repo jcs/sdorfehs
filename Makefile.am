@@ -17,7 +17,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##
-## $Id: Makefile.am,v 1.8 2001/06/29 14:56:40 algernon Exp $
+## $Id: Makefile.am,v 1.9 2001/09/16 09:48:43 sabetts Exp $
 
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -27,7 +27,7 @@ MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 \
 			config.guess config.h.in config.sub configure \
 			install-sh missing mkinstalldirs stamp-h.in
 
-SUBDIRS			= src doc
+SUBDIRS			= src doc contrib
 
 docdir			= $(datadir)/doc/$(PACKAGE)
 doc_DATA		= AUTHORS COPYING ChangeLog NEWS README

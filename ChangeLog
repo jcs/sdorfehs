@@ -1,3 +1,10 @@
+2001-09-15  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* configure.in: check for setsid and setpgid functions. Add
+	contrib/Makefile to AC_OUTPUT.
+
+	* Makefile.am (SUBDIRS): add contrib
+
 2001-09-14  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/actions.c (spawn): set the process group ID and session ID
