@@ -5,7 +5,11 @@
 	(print_help): add --display option. Add text to demonstrate
 	--display and --command take an argument.
 	(ratpoison_longopts): add display.
+	(ratpoison_longopts): add screen.
 	(ratpoison_opts): add 'd'
+	(ratpoison_opts): add 's'
+	(main): parse the screen argument and process it.
+	(print_help): add --screen
 
 	* src/manage.c (get_wmname): add debugging output to print
 	returned elements from X11 call.

@@ -95,9 +95,10 @@ static struct option ratpoison_longopts[] =
     {"version", no_argument, 		0, 	'v'},
     {"command", required_argument, 	0, 	'c'},
     {"display", required_argument, 	0, 	'd'},
+    {"screen",  required_argument,      0,      's'},
     {0, 	0, 			0, 	0} };
 
-static char ratpoison_opts[] = "hvcd:";
+static char ratpoison_opts[] = "hvcd:s:";
 
 void
 fatal (const char *msg)
@@ -313,6 +314,7 @@ print_help ()
   printf ("-h, --help            Display this help screen\n");
   printf ("-v, --version         Display the version\n");
   printf ("-d, --display <dpy>   Set the X display to use\n");
+  printf ("-s, --screen <num>    Only use the specified screen\n");
   printf ("-c, --command <cmd>   Send ratpoison a colon-command\n\n");
 
   printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
@@ -500,6 +502,8 @@ main (int argc, char *argv[])
   int c;
   char **command = NULL;
   int cmd_count = 0;
+  int screen_arg = 0;
+  int screen_num = 0;
   char *display = NULL;
 
   myargv = argv;
@@ -537,6 +541,11 @@ main (int argc, char *argv[])
 	case 'd':
 	  display = xstrdup (optarg);
 	  break;
+	case 's':
+	  screen_arg = 1;
+	  screen_num = strtol (optarg, NULL, 10);
+	  break;
+	  
 	default:
 	  exit (EXIT_FAILURE);
 	}
@@ -594,9 +603,24 @@ main (int argc, char *argv[])
   screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
   PRINT_DEBUG (("%d screens.\n", num_screens));
 
-  for (i=0; i<num_screens; i++)
+  if (screen_arg)
     {
-      init_screen (&screens[i], i);
+      if (screen_num >= 0 && screen_num < num_screens)
+	{
+	  init_screen (&screens[screen_num], screen_num);
+	}
+      else
+	{
+	  fprintf (stderr, "%d is an invalid screen for the display\n", screen_num);
+	  exit (EXIT_FAILURE);
+	}
+    }
+  else
+    {
+      for (i=0; i<num_screens; i++)
+	{
+	  init_screen (&screens[i], i);
+	}
     }
 
   init_frame_lists ();
@@ -604,10 +628,18 @@ main (int argc, char *argv[])
   initialize_default_keybindings ();
 
   /* Scan for windows */
-  rp_current_screen = 0;
-  for (i=0; i<num_screens; i++)
+  if (screen_arg)
     {
-      scanwins (&screens[i]);
+      rp_current_screen = screen_num;
+      scanwins (&screens[screen_num]);
+    }
+  else
+    {
+      rp_current_screen = 0;
+      for (i=0; i<num_screens; i++)
+	{
+	  scanwins (&screens[i]);
+	}
     }
 
   read_startup_files ();
