@@ -80,7 +80,7 @@ calc_bar_width (XFontStruct *font)
 int
 bar_x (screen_info *s, int width)
 {
-  if (BAR_LOCATION >= 2) return s->root_attr.width - width;
+  if (BAR_LOCATION >= 2) return s->root_attr.width - width - 2;
   else return 0;
 }
 
