@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-## Copyright (C) 2000, 2001 Shawn Betts <sabetts@users.sourceforge.net>
+## Copyright (C) 2000-2004 Shawn Betts <sabetts@vcn.bc.ca>
 ##
 ## This file is part of ratpoison.
 ##
@@ -17,7 +17,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##
-## $Id: Makefile.am,v 1.20 2004/02/27 08:28:17 sabetts Exp $
+## $Id: Makefile.am,v 1.21 2004/12/02 00:22:39 sabetts Exp $
 
 bin_PROGRAMS		= ratpoison
 
