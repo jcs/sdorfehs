@@ -25,8 +25,8 @@ you what it is waiting for another key.
 ** Split windows
 
 Well, the day is finally here. You can now split windows in
-ratpoison. Although it is currently sub-optimal it is present. Hit
-C-t S to split horizontally and C-t C-S to split vertically. Have fun!
+ratpoison. Hit C-t s to split horizontally and C-t S to split
+vertically. Have fun!
 
 ** new command-line option --command
 
