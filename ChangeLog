@@ -1,3 +1,14 @@
+2005-02-10  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (parse_keydesc): return a cmdret error in the
+	event of an error and take a point to an rp_key as an
+	argument. Fill this argument with the parsed key.
+	(parse_keydesc): Don't accept the keysym if it doesn't map to a
+	keycode.
+	(cmdret_new): renamed from cmdret_new_printf. All callers updated.
+	(cmdret_new_printf): remove function.
+	(arg_free): free the key member.
+
 2005-02-09  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/main.c (main): set the RATPOISON env. variable to the path
