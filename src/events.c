@@ -264,6 +264,9 @@ handle_key (screen_info *s)
 	  if (keysym == i->key)
 	    if (i->state == -1 || mod == i->state)
 	      {
+		/* Revert focus back to the current window before
+                   executing the command. */
+		XSetInputFocus (dpy, fwin, revert, CurrentTime);
 		(*i->func)(i->data);
 		goto handled_key;
 	      }
@@ -287,8 +290,6 @@ handle_key (screen_info *s)
 /* 	     || keysym == XK_Super_R */
 /* 	     || keysym == XK_Hyper_L */
 /* 	     || keysym == XK_Hyper_R); /\* ignore modifier keypresses. *\/ */
-
-  XSetInputFocus (dpy, fwin, revert, CurrentTime);
 }
 
 void
