@@ -22,6 +22,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xproto.h>
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -65,7 +66,7 @@ static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
 static char ratpoison_opts[] = "hvrk";
 
 void
-sighandler ()
+sighandler (int signum)
 {
   fprintf (stderr, "ratpoison: Agg! I've been SHOT!\n"); 
   clean_up ();
@@ -73,7 +74,7 @@ sighandler ()
 }
 
 void
-hup_handler ()
+hup_handler (int signum)
 {
   /* Doesn't function correctly. The event IS placed on the queue but
      XSync() doesn't seem to sync it and until other events come in
@@ -85,7 +86,7 @@ hup_handler ()
 }
 
 void
-alrm_handler ()
+alrm_handler (int signum)
 {
   int i;
 
@@ -115,6 +116,36 @@ handler (Display *d, XErrorEvent *e)
   fprintf (stderr, "ratpoison: %s!\n", error_msg);
 
   exit (EXIT_FAILURE); 
+}
+
+void
+set_sig_handler (int sig, void (*action)(int))
+{
+  /* use sigaction because SVR4 systems do not replace the signal
+    handler by default which is a tip of the hat to some god-aweful
+    ancient code.  So use the POSIX sigaction call instead. */
+  struct sigaction act;
+       
+  /* check setting for sig */
+  if (sigaction (sig, NULL, &act)) 
+    {
+      PRINT_ERROR ("Error %d fetching SIGALRM handler\n", errno );
+    } 
+  else 
+    {
+      /* if the existing action is to ignore then leave it intact
+	 otherwise add our handler */
+      if (act.sa_handler != SIG_IGN) 
+	{
+	  act.sa_handler = action;
+	  sigemptyset(&act.sa_mask);
+	  act.sa_flags = 0;
+	  if (sigaction (sig, &act, NULL)) 
+	    {
+	      PRINT_ERROR ("Error %d setting SIGALRM handler\n", errno );
+	    }
+	}
+    }
 }
 
 void
@@ -186,10 +217,10 @@ main (int argc, char *argv[])
 
   /* Setup signal handlers. */
   XSetErrorHandler(handler);  
-  if (signal (SIGALRM, alrm_handler) == SIG_IGN) signal (SIGALRM, SIG_IGN);
-  if (signal (SIGTERM, sighandler) == SIG_IGN) signal (SIGTERM, SIG_IGN);
-  if (signal (SIGINT, sighandler) == SIG_IGN) signal (SIGINT, SIG_IGN);
-  if (signal (SIGHUP, hup_handler) == SIG_IGN) signal (SIGHUP, SIG_IGN);
+  set_sig_handler (SIGALRM, alrm_handler);
+  set_sig_handler (SIGTERM, sighandler);
+  set_sig_handler (SIGINT, sighandler);
+  set_sig_handler (SIGHUP, hup_handler);
 
   /* Set ratpoison specific Atoms. */
   rp_restart = XInternAtom (dpy, "RP_RESTART", False);

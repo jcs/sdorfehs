@@ -1,5 +1,8 @@
 2001-02-11  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* main.c (set_sig_handler): Added
+	(main): Uses set_sig_handler() instead of signal()
+
 	* manage.h (set_state): Added prototype
 
 	* manage.c (send_configure): Now sends the window's x,y,width,height
