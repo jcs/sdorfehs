@@ -510,6 +510,12 @@ set_active_window (rp_window *win)
   if (last_win) PRINT_DEBUG ("last window: %s\n", last_win->name);
   PRINT_DEBUG ("new window: %s\n", win->name);
 
+  /* Make sure the window comes up full screen */
+  unhide_transient_for (win);
+  maximize (win);
+  unhide_window (win);
+
+  /* Hide the last window and its transients_fors */
   if (is_transient_ancestor (win, last_win))
     {
       /* Do nothing if last_win is a transient since it should stay visible */
@@ -528,11 +534,6 @@ set_active_window (rp_window *win)
 	  hide_transient_for (last_win);
 	}
     }
-
-  /* Make sure the window comes up full screen */
-  unhide_transient_for (win);
-  maximize (win);
-  unhide_window (win);
 
   give_window_focus (win, last_win);
 

@@ -1,3 +1,11 @@
+2001-08-19  Shawn  <sabetts@hotdog>
+
+	* src/events.c (cleanup_frame): unhide the new active window
+	before hiding the last window
+
+	* src/list.c (set_active_window): unhide the new active window
+	before hiding the last window.
+
 2001-08-18  Shawn  <sabetts@hotdog>
 
 	* src/actions.c (cmd_bind): Gobble whitespace between keystroke and command.
