@@ -93,8 +93,11 @@ unmap_notify (XEvent *ev)
       /* If the window was inside a frame, fill the frame with another
 	 window. */
       frame = find_windows_frame (win);
-      if (frame) cleanup_frame (frame);
-      if (frame->number == win->scr->current_frame) set_active_frame (frame);
+      if (frame)
+	{
+	  cleanup_frame (frame);
+	  if (frame->number == win->scr->current_frame) set_active_frame (frame);
+	}
 
       withdraw_window (win);
       break;
@@ -175,7 +178,6 @@ destroy_window (XDestroyWindowEvent *ev)
 
   ignore_badwindow++;
   unmanage (win);
-
   ignore_badwindow--;
 }
 
