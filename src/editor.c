@@ -454,7 +454,7 @@ editor_enter (rp_input_line *line)
 
   if (result == -1 || result == 2)
     {
-      marked_message_printf (0, 0, " %s ", expansion);
+      marked_message_printf (0, 0, "%s", expansion);
       free (expansion);
       return EDIT_ABORT;
     }

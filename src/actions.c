@@ -716,7 +716,7 @@ cmd_unmanage (int interactive, char *data)
 
   if (data)
     add_unmanaged_window(data);
-  else message(" unmanage: at least one argument required ");
+  else message("unmanage: at least one argument required");
 
   return NULL;
 }
@@ -740,7 +740,7 @@ cmd_definekey (int interactive, char *data)
 
   if (!data)
     {
-      message (" definekey: at least two arguments required ");
+      message ("definekey: at least two arguments required");
       return NULL;
     }
 
@@ -756,7 +756,7 @@ cmd_definekey (int interactive, char *data)
   /* Make sure the keymap exists */
   if (map == NULL)
     {
-      marked_message_printf (0, 0, " definekey: keymap '%s' not found ", token);
+      marked_message_printf (0, 0, "definekey: keymap '%s' not found", token);
       free (tmp);
       return NULL;
     }
@@ -766,7 +766,7 @@ cmd_definekey (int interactive, char *data)
 
   if (!token)
     {
-      message (" definekey: at least two arguments required ");
+      message ("definekey: at least two arguments required");
       free (tmp);
       return NULL;
     }
@@ -788,7 +788,7 @@ cmd_definekey (int interactive, char *data)
 
   if (key == NULL)
     {
-      marked_message_printf (0, 0, " definekey: unknown key '%s' ", keydesc);
+      marked_message_printf (0, 0, "definekey: unknown key '%s'", keydesc);
       free (keydesc);
       if (cmd)
 	free (cmd);
@@ -817,7 +817,7 @@ cmd_definekey (int interactive, char *data)
     {
       /* If no comand is specified, then unbind the key. */
       if (!remove_keybinding (key->sym, key->state, map))
-	marked_message_printf (0, 0, " definekey: key '%s' is not bound ", keydesc);
+	marked_message_printf (0, 0, "definekey: key '%s' is not bound", keydesc);
     }
   else
     {
@@ -844,7 +844,7 @@ cmd_definekey (int interactive, char *data)
 char *
 cmd_unimplemented (int interactive, char *data)
 {
-  marked_message (" FIXME:  unimplemented command ",0,8);
+  marked_message ("FIXME:  unimplemented command",0,8);
 
   return NULL;
 }
@@ -856,12 +856,12 @@ cmd_source (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" source: one argument required ");
+      message ("source: one argument required");
       return NULL;
     }
 
   if ((fileptr = fopen (data, "r")) == NULL)
-    marked_message_printf (0, 0, " source: %s : %s ", data, strerror(errno));
+    marked_message_printf (0, 0, "source: %s : %s", data, strerror(errno));
   else
     {
       set_close_on_exec (fileptr);
@@ -1067,7 +1067,7 @@ cmd_select (int interactive, char *data)
 	  if (win)
 	    goto_window (win);
 	  else
-	    marked_message_printf (0, 0, " select: unknown window '%s' ", str);
+	    marked_message_printf (0, 0, "select: unknown window '%s'", str);
 	}
     }
 
@@ -1148,7 +1148,7 @@ cmd_version (int interactive, char *data)
 {
   if (interactive)
     {
-      message (" " PACKAGE " " VERSION " (built " __DATE__ " " __TIME__ ") ");
+      message (PACKAGE " " VERSION " (built " __DATE__ " " __TIME__ ")");
       return NULL;
     }
   else
@@ -1208,7 +1208,7 @@ command (int interactive, char *data)
 
 	  alias_recursive_depth++;
 	  if (alias_recursive_depth >= MAX_ALIAS_RECURSIVE_DEPTH)
-	    message (" command: alias recursion has exceeded maximum depth ");
+	    message ("command: alias recursion has exceeded maximum depth");
 	  else
 	    result = command (interactive, sbuf_get (s));
 	  alias_recursive_depth--;
@@ -1472,7 +1472,7 @@ cmd_time (int interactive, char *data)
   strncpy(msg, tmp, strlen (tmp) - 1);	/* Remove the newline */
   msg[strlen(tmp) - 1] = 0;
 
-  marked_message_printf (0, 0, " %s ", msg);
+  marked_message_printf (0, 0, "%s", msg);
   free (msg);
   
   return NULL;
@@ -1501,7 +1501,7 @@ cmd_number (int interactive, char *data)
       new_number = string_to_window_number (tmp);
       if (new_number < 0)
 	{
-	  message (" number: invalid argument ");
+	  message ("number: invalid argument");
 	  free (str);
 	  return NULL;
 	}
@@ -1526,7 +1526,7 @@ cmd_number (int interactive, char *data)
       win_number = string_to_window_number (tmp);
       if (win_number < 0)
 	{
-	  message (" number: invalid argument ");
+	  message ("number: invalid argument");
 	  free (str);
 	  return NULL;
 	}
@@ -1671,7 +1671,7 @@ cmd_escape (int interactive, char *data)
     }
   else
     {
-      marked_message_printf (0, 0, " escape: unknown key '%s' ", data);
+      marked_message_printf (0, 0, "escape: unknown key '%s'", data);
     }
 
   return NULL;
@@ -1682,7 +1682,7 @@ char *
 cmd_echo (int interactive, char *data)
 {
   if (data)
-    marked_message_printf (0, 0, " %s ", data);
+    marked_message_printf (0, 0, "%s", data);
 
   return NULL;
 }
@@ -1732,7 +1732,7 @@ cmd_v_split (int interactive, char *data)
   if (pixels > 0)
     h_split_frame (frame, pixels);
   else
-    message (" vsplit: invalid argument ");    
+    message ("vsplit: invalid argument");    
 
   return NULL;
 }
@@ -1755,7 +1755,7 @@ cmd_h_split (int interactive, char *data)
   if (pixels > 0)
     v_split_frame (frame, pixels);
   else
-    message (" hsplit: invalid argument ");    
+    message ("hsplit: invalid argument");    
 
   return NULL;
 }
@@ -1780,7 +1780,7 @@ cmd_remove (int interactive, char *data)
 
   if (num_frames(s) <= 1)
     {
-      message (" remove: cannot remove only frame ");
+      message ("remove: cannot remove only frame");
       return NULL;
     }
 
@@ -1866,7 +1866,7 @@ cmd_resize (int interactive, char *data)
 	{
           struct resize_binding *binding;
 
-	  show_frame_message (" Resize frame ");
+	  show_frame_message ("Resize frame");
 	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
 
 	  /* Convert the mask to be compatible with ratpoison. */
@@ -1918,13 +1918,13 @@ cmd_resize (int interactive, char *data)
       
       if (data == NULL)
 	{
-	  message (" resize: two numeric arguments required ");
+	  message ("resize: two numeric arguments required");
 	  return NULL;
 	}
 
       if (sscanf (data, "%d %d", &xdelta, &ydelta) < 2)
 	{
-	  message (" resize: two numeric arguments required ");
+	  message ("resize: two numeric arguments required");
 	  return NULL;
 	}
 
@@ -1945,14 +1945,14 @@ set_resizeunit (char *data)
 
   if (sscanf (data, "%d", &tmp) < 1)
     {
-      message (" defresizeunit: one argument required ");
+      message ("defresizeunit: one argument required");
       return NULL;
     }
 
   if (tmp >= 0)
     defaults.frame_resize_unit = tmp;
   else
-    message (" defresizeunit: invalid argument ");
+    message ("defresizeunit: invalid argument");
 
   return NULL;
 }
@@ -2048,7 +2048,7 @@ cmd_rathold (int interactive, char *data)
       tmp = strtok(NULL, " ");
       if (!command)
         {
-          message (" rathold: Needs at least 1 argument. ");
+          message ("rathold: Needs at least 1 argument.");
 	  return NULL;
 	}
       if (tmp)
@@ -2056,7 +2056,7 @@ cmd_rathold (int interactive, char *data)
 	  button = strtol(tmp, &tail, 10);
 	  if (*tail != '\0')
 	    {
-	      marked_message_printf (0, 0, " rathold: %s not a number. ", tmp);
+	      marked_message_printf (0, 0, "rathold: %s not a number.", tmp);
 	      return NULL;
 	    }
 	}
@@ -2072,7 +2072,7 @@ cmd_rathold (int interactive, char *data)
   else if(!strcmp(command,"up"))
     XTestFakeButtonEvent(dpy, button, False, CurrentTime);
   else
-    marked_message_printf (0, 0, "rathold: %s invalid argument", command);
+    marked_message_printf (0, 0, "athold: %s invalid argumen", command);
   
   return NULL;
 }
@@ -2171,14 +2171,14 @@ cmd_help (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" help: One argument required ");
+      message ("help: One argument required");
       return NULL;
     }
 
   map = find_keymap (data);
   if (map == NULL)
     {
-      marked_message_printf (0, 0, " help: keymap '%s' not found ", data);
+      marked_message_printf (0, 0, "help: keymap '%s' not found", data);
       return NULL;
     }
 
@@ -2334,13 +2334,13 @@ cmd_rudeness (int interactive, char *data)
 		     
   if (data == NULL)
     {
-      message (" rudeness: one argument required ");
+      message ("rudeness: one argument required");
       return NULL;
     }
 
   if (sscanf (data, "%d", &num) < 1 || num < 0 || num > 15)
     {
-      marked_message_printf (0, 0, " rudeness: invalid level '%s' ", data);
+      marked_message_printf (0, 0, "rudeness: invalid level '%s'", data);
       return NULL;
     }
 
@@ -2422,12 +2422,12 @@ cmd_gravity (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" gravity: one argument required ");
+      message ("gravity: one argument required");
       return NULL;
     }
 
   if ((gravity = parse_wingravity (data)) < 0)
-    message (" gravity: unknown gravity ");
+    message ("gravity: unknown gravity");
   else
     {
       win->gravity = gravity;
@@ -2446,7 +2446,7 @@ set_wingravity (char *data)
     return xstrdup (wingravity_to_string (defaults.win_gravity));
 
   if ((gravity = parse_wingravity (data)) < 0)
-    message (" defwingravity: unknown gravity ");
+    message ("defwingravity: unknown gravity");
   else
     defaults.win_gravity = gravity;
 
@@ -2462,7 +2462,7 @@ set_transgravity (char *data)
     return xstrdup (wingravity_to_string (defaults.trans_gravity));
 
   if ((gravity = parse_wingravity (data)) < 0)
-    message (" deftransgravity: unknown gravity ");
+    message ("deftransgravity: unknown gravity");
   else
     defaults.trans_gravity = gravity;
 
@@ -2478,7 +2478,7 @@ set_maxsizegravity (char *data)
     return xstrdup (wingravity_to_string (defaults.maxsize_gravity));
 
   if ((gravity = parse_wingravity (data)) < 0)
-    message (" defmaxsizegravity: unknown gravity ");
+    message ("defmaxsizegravity: unknown gravity");
   else
     defaults.maxsize_gravity = gravity;
 
@@ -2495,12 +2495,12 @@ cmd_msgwait (int interactive, char *data)
     
   if (data == NULL)
     {
-      message (" msgwait: one argument required ");
+      message ("msgwait: one argument required");
       return NULL;
     }
 
   if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
-    message (" msgwait: invalid argument ");    
+    message ("msgwait: invalid argument");    
   else
     defaults.bar_timeout = tmp;
 
@@ -2516,7 +2516,7 @@ set_bargravity (char *data)
     return xstrdup (wingravity_to_string (defaults.bar_location));
 
   if ((gravity = parse_wingravity (data)) < 0)
-    message (" defbargravity: unknown gravity ");
+    message ("defbargravity: unknown gravity");
   else
     defaults.bar_location = gravity;
 
@@ -2564,7 +2564,7 @@ set_font (char *data)
   font = XLoadQueryFont (dpy, data);
   if (font == NULL)
     {
-      message (" deffont: unknown font ");
+      message ("deffont: unknown font");
       return NULL;
     }
 
@@ -2594,7 +2594,7 @@ set_padding (char *data)
 
   if (sscanf (data, "%d %d %d %d", &l, &t, &r, &b) < 4)
     {
-      message (" defpadding: four arguments required ");
+      message ("defpadding: four arguments required");
       return NULL;
     }
 
@@ -2652,7 +2652,7 @@ set_border (char *data)
 
   if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
     {
-      message (" defborder: invalid argument ");
+      message ("defborder: invalid argument");
       return NULL;
     }
 
@@ -2679,7 +2679,7 @@ set_barborder (char *data)
 
   if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
     {
-      message (" defbarborder: invalid argument ");
+      message ("defbarborder: invalid argument");
       return NULL;
     }
 
@@ -2705,7 +2705,7 @@ set_inputwidth (char *data)
     return xsprintf ("%d", defaults.input_window_size);
 
   if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
-    message (" definputwidth: invalid argument ");
+    message ("definputwidth: invalid argument");
   else
     defaults.input_window_size = tmp;
 
@@ -2720,7 +2720,7 @@ set_waitcursor (char *data)
 
   if (sscanf (data, "%d", &defaults.wait_for_key_cursor) < 1)
     {
-      message (" defwaitcursor: one argument required ");
+      message ("defwaitcursor: one argument required");
     }
 
   return NULL;    
@@ -2768,7 +2768,7 @@ set_winname (char *data)
   else if (!strncmp (name, "class", 5))
     defaults.win_name = WIN_NAME_RES_CLASS;
   else
-    message (" defwinname: invalid argument ");
+    message ("defwinname: invalid argument");
 
   return NULL;      
 }
@@ -2786,7 +2786,7 @@ set_fgcolor (char *data)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, data, &color, &junk))
 	{
-	  message (" deffgcolor: unknown color ");
+	  message ("deffgcolor: unknown color");
 	  return NULL;
 	}
 
@@ -2817,7 +2817,7 @@ set_bgcolor (char *data)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, data, &color, &junk))
 	{
-	  message (" defbgcolor: unknown color ");
+	  message ("defbgcolor: unknown color");
 	  return NULL;
 	}
 
@@ -2843,7 +2843,7 @@ cmd_setenv (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" setenv: two arguments required ");
+      message ("setenv: two arguments required");
       return NULL;
     }
 
@@ -2855,7 +2855,7 @@ cmd_setenv (int interactive, char *data)
   token = strtok (dup, " ");
   if (token == NULL)
     {
-      message (" setenv: two arguments required ");
+      message ("setenv: two arguments required");
       free (dup);
       sbuf_free (env);
       return NULL;
@@ -2866,7 +2866,7 @@ cmd_setenv (int interactive, char *data)
   token = strtok (NULL, "\0");
   if (token == NULL)
     {
-      message (" setenv: two arguments required ");
+      message ("setenv: two arguments required");
       free (dup);
       sbuf_free (env);
       return NULL;
@@ -2899,7 +2899,7 @@ cmd_getenv (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" getenv: one argument required ");
+      message ("getenv: one argument required");
       return NULL;
     }
 
@@ -2907,7 +2907,7 @@ cmd_getenv (int interactive, char *data)
   var = xmalloc (strlen (data) + 1);
   if (sscanf (data, "%s", var) < 1)
     {
-      message (" getenv: one argument required ");
+      message ("getenv: one argument required");
       free (var);
       return NULL;
     }
@@ -2916,7 +2916,7 @@ cmd_getenv (int interactive, char *data)
 
   if (interactive)
     {
-      marked_message_printf (0, 0, " %s ", value);
+      marked_message_printf (0, 0, "%s", value);
       return NULL;
     }
 
@@ -2941,7 +2941,7 @@ cmd_chdir (int interactive, char *data)
       dir = getenv ("HOME");
       if (dir == NULL || *dir == '\0')
         {
-	  message (" chdir: HOME not set ");
+	  message ("chdir: HOME not set");
           return NULL;
 	}
     }
@@ -2949,7 +2949,7 @@ cmd_chdir (int interactive, char *data)
     dir = data;
 
   if (chdir (dir) == -1)
-    marked_message_printf (0, 0, " chdir: %s : %s ", dir, strerror(errno));
+    marked_message_printf (0, 0, "chdir: %s : %s", dir, strerror(errno));
 
   return NULL;
 }
@@ -2963,7 +2963,7 @@ cmd_unsetenv (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" unsetenv: one argument is required ");
+      message ("unsetenv: one argument is required");
       return NULL;
     }
 
@@ -2985,7 +2985,7 @@ cmd_info (int interactive, char *data)
 {
   if (current_window() == NULL)
     {
-      marked_message_printf (0, 0, " (%d, %d) No window ",
+      marked_message_printf (0, 0, "(%d, %d) No window",
 			     current_screen()->width,
 			     current_screen()->height);
     }
@@ -2995,10 +2995,10 @@ cmd_info (int interactive, char *data)
       rp_window_elem *win_elem;
       win_elem = group_find_window (&rp_current_group->mapped_windows, win);
       if (win_elem)
-	marked_message_printf (0, 0, " (%d,%d) %d(%s) %s", win->width, win->height,
+	marked_message_printf (0, 0, "(%d,%d) %d(%s) %", win->width, win->height,
 			       win_elem->number, window_name (win), win->transient ? "Transient ":"");
       else
-	marked_message_printf (0, 0, " (%d,%d) (%s) %s", win->width, win->height,
+	marked_message_printf (0, 0, "(%d,%d) (%s) %", win->width, win->height,
 			       window_name (win), win->transient ? "Transient ":"");
     }
 
@@ -3073,7 +3073,7 @@ cmd_startup_message (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" startup_message: one argument required ");
+      message ("startup_message: one argument required");
       return NULL;
     }
 
@@ -3082,7 +3082,7 @@ cmd_startup_message (int interactive, char *data)
   else if (!strcasecmp (data, "off"))
     defaults.startup_message = 0;
   else
-    message (" startup_message: invalid argument ");
+    message ("startup_message: invalid argument");
 
   return NULL;
 }
@@ -3095,7 +3095,7 @@ cmd_focuslast (int interactive, char *data)
   if (frame)
       set_active_frame (frame);
   else
-    message (" focuslast: no other frame ");
+    message ("focuslast: no other frame");
 
   return NULL;
 }
@@ -3127,7 +3127,7 @@ set_barpadding (char *data)
 
   if (sscanf (data, "%d %d", &x, &y) < 2) 
     {
-      message (" defbarpadding: two arguments required ");
+      message ("defbarpadding: two arguments required");
       return NULL;
     }
 
@@ -3138,7 +3138,7 @@ set_barpadding (char *data)
     }
   else
     {
-      message (" defbarpadding: invalid argument ");    
+      message ("defbarpadding: invalid argument");    
     }
   return NULL;
 }
@@ -3150,7 +3150,7 @@ cmd_alias (int interactive, char *data)
   
   if (data == NULL)
     {
-      message (" alias: two arguments required ");
+      message ("alias: two arguments required");
       return NULL;
     }
 
@@ -3160,7 +3160,7 @@ cmd_alias (int interactive, char *data)
 
   if (name == NULL || alias == NULL)
     {
-      message (" alias: two arguments required ");
+      message ("alias: two arguments required");
       return NULL;
     }
 
@@ -3178,7 +3178,7 @@ cmd_unalias (int interactive, char *data)
   
   if (data == NULL)
     {
-      message (" unalias: one argument required ");
+      message ("unalias: one argument required");
       return NULL;
     }
 
@@ -3210,7 +3210,7 @@ cmd_unalias (int interactive, char *data)
     }
   else
     {
-      message (" unalias: alias not found ");
+      message ("unalias: alias not found");
     }
 
   return NULL;  
@@ -3224,7 +3224,7 @@ cmd_nextscreen (int interactive, char *data)
   /* No need to go through the motions when we don't have to. */
   if (num_screens <= 1)
     {
-      message (" nextscreen: no other screen ");
+      message ("nextscreen: no other screen");
       return NULL;
     }
   new_screen = rp_current_screen + 1;
@@ -3244,7 +3244,7 @@ cmd_prevscreen (int interactive, char *data)
   /* No need to go through the motions when we don't have to. */
   if (num_screens <= 1) 
     {
-      message (" prevscreen: no other screen ");
+      message ("prevscreen: no other screen");
       return NULL;
     }
 
@@ -3277,14 +3277,14 @@ cmd_sselect(int interactive, char *data)
       new_screen = string_to_window_number (tmp);
       if (new_screen < 0)
 	{
-	  message (" sselect: invalid argument ");
+	  message ("sselect: invalid argument");
 	  free (str);
 	  return NULL;
 	}
       if (new_screen < num_screens)
 	set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
       else
-	message (" sselect: out of range ");
+	message ("sselect: out of range");
     }
 
   free (str);
@@ -3299,7 +3299,7 @@ cmd_warp (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" warp: one argument required ");
+      message ("warp: one argument required");
       return NULL;
     }
 
@@ -3308,7 +3308,7 @@ cmd_warp (int interactive, char *data)
   else if (!strcasecmp (data, "off"))
     defaults.warp = 0;
   else
-    message (" warp: invalid argument ");
+    message ("warp: invalid argument");
  
   return NULL;
 }
@@ -3480,7 +3480,7 @@ cmd_tmpwm (int interactive, char *data)
   push_frame_undo (current_screen()); /* fdump to stack */
   if (data == NULL)
     {
-      message (" tmpwm: one argument required ");
+      message ("tmpwm: one argument required");
       return NULL;
     }
 
@@ -3604,7 +3604,7 @@ cmd_fselect (int interactive, char *data)
       /* Attempt to read the argument. */
       if (sscanf (data, "%d", &fnum) < 1)
 	{
-	  message (" fselect: numerical argument required ");
+	  message ("fselect: numerical argument required");
 	  return NULL;
 	}
     }
@@ -3707,7 +3707,7 @@ cmd_fselect (int interactive, char *data)
     }
   else
     {
-      marked_message_printf (0, 0, " fselect: No such frame (%d) ", fnum);
+      marked_message_printf (0, 0, "fselect: No such frame (%d)", fnum);
       return xstrdup ("No such frame");
     }
 }
@@ -3752,7 +3752,7 @@ cmd_fdump (int interactively, char *data)
 	  || snum < 0 
 	  || num_screens <= snum)
 	{
-	  message (" fdump: invalid argument ");    
+	  message ("fdump: invalid argument");    
 	  return NULL;
 	}
       else
@@ -3775,7 +3775,7 @@ frestore (char *data, rp_screen *s)
 
   if (data == NULL)
     {
-      message (" frestore: one argument required ");
+      message ("frestore: one argument required");
       return NULL;
     }
 
@@ -3785,7 +3785,7 @@ frestore (char *data, rp_screen *s)
   token = strtok_r (dup, ",", &nexttok);
   if (token == NULL)
     {
-      message (" frestore: invalid frame format ");
+      message ("frestore: invalid frame format");
       free (dup);
       return NULL;
     }
@@ -3796,7 +3796,7 @@ frestore (char *data, rp_screen *s)
       new = frame_read (token);
       if (new == NULL)
 	{
-	  message (" frestore: invalid frame format ");
+	  message ("frestore: invalid frame format");
 	  free (dup);
 	  return NULL;
 	}
@@ -3887,7 +3887,7 @@ cmd_verbexec (int interactive, char *data)
   if (cmd == NULL)
     return NULL;
 
-  marked_message_printf(0, 0, " Running %s ", cmd);
+  marked_message_printf(0, 0, "Running %s", cmd);
   spawn (cmd);
   free (cmd);
   return NULL;
@@ -3909,7 +3909,7 @@ set_winliststyle (char *data)
     }
   else
     {
-      message (" defwinliststyle: invalid argument ");
+      message ("defwinliststyle: invalid argument");
     }
 
    return NULL;    
@@ -4095,7 +4095,7 @@ cmd_gmove (int interactive, char *data)
 
   if (current_window() == NULL)
     {
-      message (" gmove: no focused window ");
+      message ("gmove: no focused window");
       return NULL;
     }
 
@@ -4112,7 +4112,7 @@ cmd_gmove (int interactive, char *data)
   g = find_group (str);
   if (g == NULL)
     {
-      message (" gmove: cannot find group ");
+      message ("gmove: cannot find group");
       return NULL;
     }
 
@@ -4127,7 +4127,7 @@ cmd_gmerge (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" gmerge: one argument required ");
+      message ("gmerge: one argument required");
       return NULL;
     }
 
@@ -4136,7 +4136,7 @@ cmd_gmerge (int interactive, char *data)
   if (g)
     groups_merge (g, rp_current_group);
   else
-    message (" gmerge: cannot find group ");
+    message ("gmerge: cannot find group");
 
   return NULL;
 }
@@ -4151,7 +4151,7 @@ cmd_addhook (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" addhook: two arguments required ");
+      message ("addhook: two arguments required");
       return NULL;
     }
 
@@ -4161,7 +4161,7 @@ cmd_addhook (int interactive, char *data)
   hook = hook_lookup (token);
   if (hook == NULL)
     {
-      marked_message_printf (0, 0, " addhook: unknown hook \"%s\"", token);
+      marked_message_printf (0, 0, "addhook: unknown hook \"%s\"", token);
       free (dup);
       return NULL;
     }
@@ -4170,7 +4170,7 @@ cmd_addhook (int interactive, char *data)
   
   if (token == NULL)
     {
-      message (" addhook: two arguments required ");
+      message ("addhook: two arguments required");
       free (dup);
       return NULL;
     }
@@ -4194,7 +4194,7 @@ cmd_remhook (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" remhook: two arguments required ");
+      message ("remhook: two arguments required");
       return NULL;
     }
 
@@ -4204,7 +4204,7 @@ cmd_remhook (int interactive, char *data)
   hook = hook_lookup (token);
   if (hook == NULL)
     {
-      marked_message_printf (0, 0, " remhook: unknown hook \"%s\"", token);
+      marked_message_printf (0, 0, "remhook: unknown hook \"%s\"", token);
       free (dup);
       return NULL;
     }
@@ -4213,7 +4213,7 @@ cmd_remhook (int interactive, char *data)
   
   if (token == NULL)
     {
-      message (" remhook: two arguments required ");
+      message ("remhook: two arguments required");
       free (dup);
       return NULL;
     }
@@ -4269,7 +4269,7 @@ cmd_listhook (int interactive, char *data)
   hook = hook_lookup (str);
   if (hook == NULL)
     {
-      marked_message_printf (0, 0, " listhook: unknown hook \"%s\" ", str);
+      marked_message_printf (0, 0, "listhook: unknown hook \"%s\" ", str);
       return NULL;
     }
 
@@ -4316,7 +4316,7 @@ cmd_gdelete (int interactive, char *data)
       g = find_group (data);
       if (!g)
 	{
-	  message (" gdelete: cannot find group ");
+	  message ("gdelete: cannot find group");
 	  return NULL;
 	}
     }
@@ -4326,10 +4326,10 @@ cmd_gdelete (int interactive, char *data)
     case GROUP_DELETE_GROUP_OK:
       break;
     case GROUP_DELETE_GROUP_NONEMPTY:
-      message (" gdelete: non-empty group ");
+      message ("gdelete: non-empty group");
       break;
     default:
-      message (" gdelete: Unknown return code (this shouldn't happen) ");
+      message ("gdelete: Unknown return code (this shouldn't happen)");
     }
 
   return NULL;
@@ -4361,14 +4361,14 @@ cmd_readkey (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" readkey: keymap expected ");
+      message ("readkey: keymap expected");
       return NULL;
     }
 
   map = find_keymap (data);
   if (map == NULL)
     {
-      marked_message_printf (0, 0, " readkey: Unknown keymap '%s' ", data);
+      marked_message_printf (0, 0, "readkey: Unknown keymap '%s'", data);
       return NULL;
     }
 
@@ -4401,7 +4401,7 @@ cmd_readkey (int interactive, char *data)
     {
       /* No key match, notify user. */
       keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
-      marked_message_printf (0, 0, " %s unbound key ", keysym_name);
+      marked_message_printf (0, 0, "%s unbound key", keysym_name);
       free (keysym_name);
     }
 
@@ -4415,14 +4415,14 @@ cmd_newkmap (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" newkmap: one argument required ");
+      message ("newkmap: one argument required");
       return NULL;
     }
 
   map = find_keymap (data);
   if (map)
     {
-      marked_message_printf (0, 0, " newkmap: '%s' already exists ", data);
+      marked_message_printf (0, 0, "newkmap: '%s' already exists", data);
       return NULL;
     }
 
@@ -4439,20 +4439,20 @@ cmd_delkmap (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" delkmap: one argument required ");
+      message ("delkmap: one argument required");
       return NULL;
     }
 
   if (!strcmp (data, ROOT_KEYMAP) || !strcmp (data, TOP_KEYMAP))
     {
-      marked_message_printf (0, 0, " delkmap: Cannot delete '%s' keymap ", data);
+      marked_message_printf (0, 0, "delkmap: Cannot delete '%s' keymap", data);
       return NULL;
     }
 
   map = find_keymap (data);
   if (map == NULL)
     {
-      marked_message_printf (0, 0,  " delkmap: Unknown keymap '%s' ", data);
+      marked_message_printf (0, 0,  "delkmap: Unknown keymap '%s'", data);
       return NULL;
     }
 
@@ -4571,7 +4571,7 @@ cmd_set (int interactive, char *data)
 
   if (var == NULL) 
     {
-      message (" set: at least two arguments required ");
+      message ("set: at least two arguments required");
       if (rest)
 	free (rest);
       return NULL;
@@ -4587,7 +4587,7 @@ cmd_set (int interactive, char *data)
 	    {
 	      if (interactive) 
 		{
-		  marked_message_printf (0, 0, " %s: %s ", var, result);
+		  marked_message_printf (0, 0, "%s: %s", var, result);
 		  free (var);
 		  free (result);
 		  return NULL;
@@ -4604,7 +4604,7 @@ cmd_set (int interactive, char *data)
 	}
     }
 
-  marked_message_printf (0, 0, " set: unknown variable '%s'", var);
+  marked_message_printf (0, 0, "set: unknown variable '%s", var);
   free (var);
   if (rest)
     free (rest);
@@ -4678,7 +4678,7 @@ set_maxundos (char *data)
 
   if (1 != sscanf (data, "%d", &tmp) || tmp < 0)
     {
-      message (" defmaxundos: invalid argument ");
+      message ("defmaxundos: invalid argument");
       return NULL;
     }
 
@@ -4859,7 +4859,7 @@ cmd_undo (int interactive, char *data)
   list_first (cur, &rp_frame_undos, node);
   if (!cur)
     {
-      message (" No more undo information available ");
+      message ("No more undo information available");
       return NULL;
     }
   else
@@ -4914,14 +4914,14 @@ cmd_describekey (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" describekey: keymap expected ");
+      message ("describekey: keymap expected");
       return NULL;
     }
 
   map = find_keymap (data);
   if (map == NULL)
     {
-      marked_message_printf (0, 0, " describekey: Unknown keymap '%s' ", data);
+      marked_message_printf (0, 0, "describekey: Unknown keymap '%s'", data);
       return NULL;
     }
 
@@ -4954,7 +4954,7 @@ cmd_describekey (int interactive, char *data)
     {
       /* No key match, notify user. */
       keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
-      marked_message_printf (0, 0, " %s unbound key ", keysym_name);
+      marked_message_printf (0, 0, "%s unbound key", keysym_name);
       free (keysym_name);
     }
 
@@ -4976,7 +4976,7 @@ cmd_dedicate (int interactive, char *data)
     /* Just toggle it, rather than on or off. */
     f->dedicated = !(f->dedicated);
 
-  marked_message_printf (0, 0, " Consider this frame %s. ", (f->dedicated)?"chaste":"promiscuous");
+  marked_message_printf (0, 0, "Consider this frame %s.", (f->dedicated)?"chaste":"promiscuous");
 
   return NULL;
 }

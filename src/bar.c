@@ -418,7 +418,7 @@ get_mark_box (char *msg, int mark_start, int mark_end,
 		start_line_beginning, end_line_beginning));
 
   if (mark_start == 0 || start_pos_in_line == 0)
-    start = defaults.bar_x_padding;
+    start = 0;
   else
     start = XTextWidth (defaults.font, 
 			&msg[start_line_beginning], 
@@ -435,13 +435,13 @@ get_mark_box (char *msg, int mark_start, int mark_end,
      mark_end is at the end of a line. */
   if (mark_end_is_new_line)
     {
-      *width = max_line_length(msg);
+      *width = max_line_length(msg) + defaults.bar_x_padding * 2;
     }
   else
     {
       *width = end - start;
     }
-
+  
   *x = start;
   *y = (start_line - 1) * FONT_HEIGHT (defaults.font) + defaults.bar_y_padding;
   *height = (end_line - start_line + 1) * FONT_HEIGHT (defaults.font);

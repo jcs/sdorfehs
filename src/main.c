@@ -463,7 +463,7 @@ init_defaults ()
 
   defaults.input_window_size   = 200;
   defaults.window_border_width = 1;
-  defaults.bar_x_padding       = 0;
+  defaults.bar_x_padding       = 4;
   defaults.bar_y_padding       = 0;
   defaults.bar_location        = NorthEastGravity;
   defaults.bar_timeout 	       = 5;

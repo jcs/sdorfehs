@@ -790,7 +790,7 @@ handle_signals ()
 	    {
 	      /* Report any child that didn't return 0. */
 	      if (cur->status != 0)
-		marked_message_printf (0,0, " /bin/sh -c \"%s\" finished (%d) ", 
+		marked_message_printf (0,0, "/bin/sh -c \"%s\" finished (%d)", 
 				       cur->cmd, cur->status);
 	      list_del  (&cur->node);
 	      free (cur->cmd);

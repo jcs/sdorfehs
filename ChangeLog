@@ -1,3 +1,31 @@
+2004-12-09  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/messages.h (MESSAGE_NO_OTHER_WINDOW): remove padding spaces
+	(MESSAGE_NO_OTHER_FRAME): likewise
+	(MESSAGE_NO_MANAGED_WINDOWS): likewise
+	(MESSAGE_UNKNOWN_COMMAND): likewise
+	(MESSAGE_WINDOW_INFORMATION): likewise
+	(MESSAGE_RAISE_TRANSIENT): likewise
+	(MESSAGE_RAISE_WINDOW): likewise
+	(MESSAGE_MAP_TRANSIENT): likewise
+	(MESSAGE_MAP_WINDOW): likewise
+	(MESSAGE_WELCOME): likewise
+	(MESSAGE_FRAME_STRING): likewise
+
+	* src/main.c (init_defaults): set bar_x_padding to 4
+
+	* src/events.c (handle_signals): Remove padding space on all calls
+	to message and marked_message_printf.
+
+	* src/editor.c (editor_enter): Remove padding space on all calls
+	to message and marked_message_printf.
+
+	* src/actions.c: Remove padding space on all calls to message and
+	marked_message_printf.
+
+	* src/bar.c (get_mark_box): make the mark extend to the edge of
+	the box regardless of the bar padding.
+
 2004-12-08  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/events.c (destroy_window): make sure the current screen is
