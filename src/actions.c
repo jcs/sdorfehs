@@ -1471,7 +1471,8 @@ cmd_help (int interactive, void *data)
 	}
 
       y += FONT_HEIGHT (defaults.font);
-      if (y > s->root_attr.height)
+      /* Make sure the next line fits entirely within the window. */
+      if (y + FONT_HEIGHT (defaults.font) >= s->root_attr.height)
 	{
 	  if (drawing_keys)
 	    {
@@ -1483,6 +1484,7 @@ cmd_help (int interactive, void *data)
 	    {
 	      x += max_width + 20;
 	      drawing_keys = 1;
+	      i++;
 	      old_i = i;
 	    }
 

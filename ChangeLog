@@ -1,3 +1,8 @@
+2002-07-06  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (cmd_help): key descriptions don't run off the
+	bottom of the screen.
+
 2002-03-23  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (command): look for the command in the aliases
