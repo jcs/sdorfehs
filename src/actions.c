@@ -1927,8 +1927,8 @@ cmd_info (int interactive, void *data)
   else
     {
       rp_window *win = current_window();
-      marked_message_printf (0, 0, " (%d,%d) %d(%s) ", win->width, win->height,
-			     win->number, window_name (win));
+      marked_message_printf (0, 0, " (%d,%d) %d(%s) %s", win->width, win->height,
+			     win->number, window_name (win), win->transient ? "Transient ":"");
     }
 
   return NULL;

@@ -424,17 +424,10 @@ maximize_transient (rp_window *win)
 
   frame = win->frame;
 
-  /* Honour the window's maximum size */
-  if (win->hints->flags & PMaxSize)
-    {
-      maxx = win->hints->max_width;
-      maxy = win->hints->max_height;
-    }
-  else
-    {
-      maxx = win->width;
-      maxy = win->height;
-    }
+  /* Always use the window's current width and height for
+     transients. */
+  maxx = win->width;
+  maxy = win->height;
 
   /* Fit the window inside its frame (if it has one) */
   if (frame)

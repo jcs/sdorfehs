@@ -1,3 +1,11 @@
+2001-12-20  shawn  <sabetts@vcn.bc.ca>
+
+	* src/manage.c (maximize_transient): always honour the current
+	size of the window.
+
+	* src/actions.c (cmd_info): print "Transient" if the window is a
+	transient window.
+
 2001-12-18  shawn  <sabetts@vcn.bc.ca>
 
 	* src/manage.c (maximize_transient): Fit the transient window
