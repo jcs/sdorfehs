@@ -1,5 +1,8 @@
 2001-06-05  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/list.c (set_active_window): calls give_window_focus which
+	was accidentally removed.
+
 	* src/actions.c (parse_keydesc): return NULL if the keydesc is a
 	'-'.
 
