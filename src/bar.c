@@ -68,26 +68,6 @@ show_bar (screen_info *s)
   return 0;
 }
 
-/* Calculate the width required for the bar to display the window
-   list. */
-static int
-calc_bar_width (XFontStruct *font)
-{
-  char str[100];		/* window names are capped at 99 chars */
-  int size = 1;
-  rp_window *cur;
-
-  for (cur = rp_window_head; cur; cur = cur->next)
-    {
-      if (cur->state == STATE_UNMAPPED) continue;
-      
-      sprintf (str, "%d-%s", cur->number, cur->name);
-      size += 10 + XTextWidth (font, str, strlen (str));
-    }
-
-  return size;
-}
-
 int
 bar_x (screen_info *s, int width)
 {
@@ -105,51 +85,53 @@ bar_y (screen_info *s)
 void
 update_window_names (screen_info *s)
 {
-  char str[100];		/* window names are capped at 99 chars */
-  int width = calc_bar_width (s->font);
-  rp_window *cur;
-  int cur_x = BAR_X_PADDING;
+  static struct sbuf *bar_buffer = NULL;
+  rp_window *w;
+  char dbuf[10];
+  int first = 1;
 
   if (!s->bar_is_raised) return;
 
-  XMoveResizeWindow (dpy, s->bar_window, 
-		     bar_x (s, width), bar_y (s),
-		     width,
-		     (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2));
-  XClearWindow (dpy, s->bar_window);
-  XRaiseWindow (dpy, s->bar_window);
+  if (bar_buffer == NULL)
+    bar_buffer = sbuf_new (0);
 
-  if (rp_window_head == NULL) return;
+  sbuf_clear (bar_buffer);
 
-  /* Draw them in reverse order they were added in, so the oldest
-     windows appear on the left and the newest on the right end of the
-     bar. */
-  for (cur = rp_window_head; cur; cur = cur->next) 
+  for (w = rp_window_tail; w; w = w->prev)
     {
-      if (cur->state == STATE_UNMAPPED) continue;
+      PRINT_DEBUG ("%d-%s\n", w->number, w->name);
 
-      sprintf (str, "%d-%s", cur->number, cur->name);
-      if ( rp_current_window == cur) 
-	{
-	  XDrawString (dpy, s->bar_window, s->bold_gc, cur_x, 
-		       BAR_Y_PADDING + s->font->max_bounds.ascent, str, 
-		       strlen (str));
-	}
+      if (w->state == STATE_UNMAPPED) continue;
+
+      if (!first)
+	sbuf_concat (bar_buffer, "  ");
+      first = 0;
+
+      sprintf (dbuf, "%d", w->number);
+      sbuf_concat (bar_buffer, dbuf);
+
+      if (w == rp_current_window)
+	sbuf_concat (bar_buffer, "*");
       else
-	{
-	  XDrawString (dpy, s->bar_window, s->normal_gc, cur_x, 
-		       BAR_Y_PADDING + s->font->max_bounds.ascent, str, 
-		       strlen (str));
-	}
+	sbuf_concat (bar_buffer, "-");
 
-      cur_x += 10 + XTextWidth (s->font, str, strlen (str));
+      sbuf_concat (bar_buffer, w->name);
     }
+
+  if (!strcmp (sbuf_get (bar_buffer), ""))
+    {
+      sbuf_copy (bar_buffer, MESSAGE_NO_MANAGED_WINDOWS);
+    }
+
+  display_msg_in_bar (s, sbuf_get (bar_buffer));
 }
 
 void
 display_msg_in_bar (screen_info *s, char *msg)
 {
   int width = BAR_X_PADDING * 2 + XTextWidth (s->font, msg, strlen (msg));
+
+  PRINT_DEBUG ("%s\n", msg);
 
   /* Map the bar if needed */
   if (!s->bar_is_raised)
