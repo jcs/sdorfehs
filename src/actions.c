@@ -268,7 +268,7 @@ init_user_commands()
   add_command ("rudeness",	cmd_rudeness,	1, 0, 0,
 	       "Rudeness: ", arg_NUMBER);
   add_command ("select",	cmd_select,	1, 0, 1,
-	       "Select window: ", arg_STRING);
+	       "Select window: ", arg_REST);
   add_command ("set",		cmd_set,	2, 0, 0,
 	       "", arg_VARIABLE,
 	       "", arg_REST);

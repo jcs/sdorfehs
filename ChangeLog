@@ -1,5 +1,8 @@
 2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/actions.c (init_user_commands): change select's argument to
+	arg_REST.
+
 	* configure.in: add AM_MAINTAINER_MODE
 
 	* src/globals.h (rp_exec_newwm): new extern.
