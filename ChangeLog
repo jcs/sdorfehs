@@ -1,5 +1,8 @@
 2003-08-10  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/bar.c (get_mark_box): take the bar padding into account when
+	calculate the top of the highlight bar.
+
 	* src/window.c (give_window_focus): only save the pointer position
 	when win and last_win aren't the same window.
 

@@ -444,7 +444,7 @@ get_mark_box (char *msg, int mark_start, int mark_end,
     }
 
   *x = start;
-  *y = (start_line - 1) * FONT_HEIGHT (defaults.font);
+  *y = (start_line - 1) * FONT_HEIGHT (defaults.font) + defaults.bar_y_padding;
   *height = (end_line - start_line + 1) * FONT_HEIGHT (defaults.font);
 }
 
