@@ -75,7 +75,7 @@ receive_command_result (Window w)
   /* If result is not the empty string, print it. */
   if (strlen ((char *)result))
     {
-      if (result[1] == '0')
+      if (result[0] == '1')
 	printf ("%s\n", &result[1]);
       else
 	fprintf (stderr, "%s\n", &result[1]);

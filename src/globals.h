@@ -24,8 +24,8 @@
 #include "data.h"
 
 /* codes used in the cmdret code in actions.c */
-#define RET_SUCCESS 0
-#define RET_FAILURE 1
+#define RET_SUCCESS 1
+#define RET_FAILURE 0
 
 #define FONT_HEIGHT(f) ((f)->max_bounds.ascent + (f)->max_bounds.descent)
 #define MAX_FONT_WIDTH(f) ((f)->max_bounds.width)

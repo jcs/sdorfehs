@@ -1,3 +1,12 @@
+2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/globals.h (RET_SUCCESS): set to 1
+	(RET_FAILURE): set to 0
+
+	* src/communications.c (receive_command_result)
+	(receive_command_result): fix error deciding when to print to
+	stderr.
+
 2005-01-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (parse_args): remove erroneous pointer dereference
