@@ -57,6 +57,12 @@
 #define BAR_LOCATION    3	/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
 #define BAR_TIMEOUT     5	/* Number of seconds before the progam bar autohides 0=don't autohide */
 
+/* Number of seconds before the frame indicator disappears */
+#define FRAME_INDICATOR_TIMEOUT 1
+
+/* What to display in the frame indicator */
+#define FRAME_STRING    "Current Frame"
+
 #define PADDING_LEFT 	0	/* space not to be taken up around managed windows */
 #define PADDING_TOP 	0
 #define PADDING_RIGHT 	0
@@ -68,5 +74,10 @@
    jump to them or give them keyboard focus. This has been added
    mostly for use with hand-helds. */
 #define UNMANAGED_WINDOW_LIST "xapm","xclock","xscribble"
+
+#define RAT_WIDTH 	16
+#define RAT_HEIGHT 	16
+#define RAT_HOT_X 	8
+#define RAT_HOT_Y 	8
 
 #endif /* !_ _RATPOISON_CONF_H */

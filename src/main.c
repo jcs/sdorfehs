@@ -37,6 +37,19 @@
 
 static void init_screen (screen_info *s, int screen_num);
 
+/* When a user hits the prefix key, the rat switches to a different
+   pixmap to indicate that ratpoison expects the user to hit another
+   key, these are the pixmaps. */
+static unsigned char rp_rat_bits[] = {
+  0x00, 0x00, 0xfe, 0x7f, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40,
+  0x02, 0x40, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40,
+  0x02, 0x40, 0x02, 0x40, 0xfe, 0x7f, 0x00, 0x00};
+
+static unsigned char rp_rat_mask_bits[] = {
+  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+
 int rat_x;
 int rat_y;
 int rat_visible = 1;		/* rat is visible by default */
@@ -139,6 +152,9 @@ alrm_handler (int signum)
     {
       hide_bar (&screens[i]);
     }
+
+  hide_frame_indicator();
+
   XSync (dpy, False);
 }
 
@@ -435,6 +451,27 @@ main (int argc, char *argv[])
 }
 
 static void
+init_rat_cursor (screen_info *s)
+{
+  Pixmap fore, mask;
+  XColor fg, bg, dummy;
+
+  XAllocNamedColor(dpy, DefaultColormap(dpy, s->screen_num),
+		   "black", &fg, &dummy);
+  XAllocNamedColor(dpy, DefaultColormap(dpy, s->screen_num),
+		   "white", &bg, &dummy);
+
+  fore = XCreatePixmapFromBitmapData (dpy, s->root,
+				      rp_rat_bits, RAT_WIDTH, RAT_HEIGHT, 
+				      1, 0, 1);
+  mask = XCreatePixmapFromBitmapData (dpy, s->root,
+				      rp_rat_mask_bits, RAT_WIDTH, RAT_HEIGHT,
+				      1, 0, 1);
+  s->rat = XCreatePixmapCursor(dpy, fore, mask, 
+			       &fg, &bg, RAT_HOT_X, RAT_HOT_Y);
+}
+
+static void
 init_screen (screen_info *s, int screen_num)
 {
   XColor fg_color, bg_color,/*  bold_color, */ junk;
@@ -444,6 +481,8 @@ init_screen (screen_info *s, int screen_num)
   s->def_cmap = DefaultColormap (dpy, screen_num);
   s->font = font;
   XGetWindowAttributes (dpy, s->root, &s->root_attr);
+  
+  init_rat_cursor (s);
 
   /* Get our program bar colors */
   if (!XAllocNamedColor (dpy, s->def_cmap, FOREGROUND, &fg_color, &junk))
@@ -507,7 +546,6 @@ init_screen (screen_info *s, int screen_num)
 					 fg_color.pixel, bg_color.pixel);
   XSelectInput (dpy, s->frame_window, KeyPressMask );
   XMapRaised (dpy, s->frame_window);
-
 
   XSync (dpy, 0);
 

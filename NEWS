@@ -2,6 +2,11 @@ ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 0.1.1
 
+** rat cursor changes
+
+When you hit the prefix key the rat cursor changes to a square to tell
+you what it is waiting for another key.
+
 ** Split windows
 
 Well, the day is finally here. You can now split windows in

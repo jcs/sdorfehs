@@ -1,5 +1,48 @@
 2001-04-06  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/split.h (hide_frame_indicator): new prototype
+	(show_frame_indicator): likewise
+
+	* src/split.c: include <unistd.h>
+	(split_frame): set the new_frame's window to NULL
+	(split_frame): calls show_frame_indicator once the split is done.
+	(set_active_frame): only call show_frame_indicator if the frame
+	has no window or if we switched to a different frame.
+	(update_frame_indicator): prints FRAME_STRING in the frame
+	indicator window.
+	(hide_frame_indicator): new function
+	(show_frame_indicator): likewise
+
+	* src/main.c (rp_rat_bits): new variable
+	(rp_rat_mask_bits): likewise
+	(alrm_handler): calls hide_frame_indicator
+	(init_rat_cursor): new function
+	(init_screen): calls init_rat_cursor
+
+	* src/events.c (unmap_notify): calls set_active_frame if the
+	window being unmapped was in the current frame
+	(destroy_window): calls set_active_frame if the
+	window being destroyed was in the current frame
+	(grab_rat): new function
+	(grab_rat): likewise
+	(handle_key): calls grab_rat and ungrab_rat
+
+	* src/data.h (struct screen_info): new variable rat
+
+	* src/conf.h (FRAME_INDICATOR_TIMEOUT): new #define
+	(FRAME_STRING): likewise
+	(RAT_HEIGHT): likewise
+	(RAT_WIDTH): likewise
+	(RAT_HOT_X): likewise
+	(RAT_HOT_Y): likewise
+
+	* src/actions.h (cmd_curframe): new prototype
+
+	* src/actions.c (initialize_default_keybindings): new key binds
+	for "curframe"
+	(user_commands): new command "curframe"
+	(cmd_curframe): new function
+
 	* src/split.c (remove_all_splits): only maximize the current
 	window if there is one.
 	(maximize_frame): remove unused code to retrieve the current

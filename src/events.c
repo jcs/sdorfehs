@@ -99,7 +99,10 @@ unmap_notify (XEvent *ev)
 
       XSync(dpy, False);
 
-      if (win == current_window()) cmd_other (NULL);
+      if (frame == rp_current_frame)
+	{
+	  set_active_frame (frame);
+	}
 
       ignore_badwindow--;
 
@@ -183,11 +186,11 @@ destroy_window (XDestroyWindowEvent *ev)
       frame = find_windows_frame (win);
       if (frame) cleanup_frame (frame);
 
-      if (win == current_window())
+      if (frame == rp_current_frame)
 	{
 	  PRINT_DEBUG ("Destroying the current window.\n");
 
-	  set_active_window (find_window_other ());
+	  set_active_frame (frame);
 	  unmanage (win);
 	}
       else
@@ -310,6 +313,20 @@ client_msg (XClientMessageEvent *ev)
 }
 
 static void
+grab_rat ()
+{
+  XGrabPointer (dpy, current_screen()->root, True, 0, 
+		GrabModeAsync, GrabModeAsync, 
+		None, current_screen()->rat, CurrentTime);
+}
+
+static void
+ungrab_rat ()
+{
+  XUngrabPointer (dpy, CurrentTime);
+}
+
+static void
 handle_key (screen_info *s)
 {
   char *keysym_name;
@@ -328,6 +345,10 @@ handle_key (screen_info *s)
 
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
+
+  /* Change the mouse icon to indicate to the user we are waiting for
+     more keystrokes */
+  grab_rat();
 
   read_key (&keysym, &mod, NULL, 0);
 
@@ -352,6 +373,8 @@ handle_key (screen_info *s)
 
       free (msg);
     }
+
+  ungrab_rat();
 }
 
 void

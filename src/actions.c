@@ -131,6 +131,8 @@ initialize_default_keybindings (void)
   add_keybinding (XK_Tab, 0, "focus");
   add_keybinding (XK_Q, 0, "only");
   add_keybinding (XK_R, 0, "remove");
+  add_keybinding (XK_f, 0, "curframe");
+  add_keybinding (XK_f, ControlMask, "curframe");
 }
 
 user_command user_commands[] = 
@@ -161,6 +163,7 @@ user_command user_commands[] =
     {"only",            cmd_only,       arg_VOID},
     {"remove",          cmd_remove,     arg_VOID},
     {"banish",          cmd_banish,     arg_VOID},
+    {"curframe",        cmd_curframe,   arg_VOID},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
@@ -856,4 +859,10 @@ cmd_banish (void *data)
   s = current_screen ();
 
   XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width - 2, s->root_attr.height - 2); 
+}
+
+void
+cmd_curframe (void *data)
+{
+  show_frame_indicator();
 }

@@ -84,6 +84,7 @@ struct screen_info
   int bar_is_raised;
   int screen_num;		/* Our screen number as dictated my X */
   Colormap def_cmap;
+  Cursor rat;
 };
 
 struct rp_action

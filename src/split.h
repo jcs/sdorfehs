@@ -33,5 +33,7 @@ rp_window_frame *find_frame_prev (rp_window_frame *frame);
 rp_window *current_window ();
 void init_frame_list ();
 void set_active_frame (rp_window_frame *frame);
+void show_frame_indicator ();
+void hide_frame_indicator ();
 
 #endif

@@ -21,6 +21,8 @@
  * Functions for handling window splitting and tiling.
  */
 
+#include <unistd.h>
+
 #include "ratpoison.h"
 
 rp_window_frame *rp_window_frame_sentinel;
@@ -175,14 +177,6 @@ find_window_for_frame (rp_window_frame *frame)
   return most_recent;
 }
 
-static void
-update_frame_indicator ()
-{
-  XMoveWindow (dpy, current_screen()->frame_window,
-	       rp_current_frame->x + rp_current_frame->width / 2 - 5, 
-	       rp_current_frame->y + rp_current_frame->height / 2 - 5);
-}
-
 /* Splits the frame in 2. if way is 0 then split vertically otherwise
    split it horizontally. */
 static void
@@ -201,6 +195,8 @@ split_frame (rp_window_frame *frame, int way)
   rp_window_frame_sentinel->prev->next = new_frame;
   rp_window_frame_sentinel->prev = new_frame;
   new_frame->next = rp_window_frame_sentinel;
+
+  new_frame->win = NULL;
 
   if (way)
     {
@@ -242,7 +238,7 @@ split_frame (rp_window_frame *frame, int way)
   maximize (frame->win);
   XRaiseWindow (dpy, frame->win->w);
 
-  update_frame_indicator();
+  show_frame_indicator();
 }
 
 /* Splits the window vertically in 2. */
@@ -471,14 +467,59 @@ remove_frame (rp_window_frame *frame)
 void
 set_active_frame (rp_window_frame *frame)
 {
+  rp_window_frame *old = rp_current_frame;
+
   give_window_focus (frame->win);
   rp_current_frame = frame;
 
-  update_frame_indicator();
+  if (!frame->win || old != rp_current_frame) 
+    {
+      show_frame_indicator();
+    }
 
   if( !frame->win )
     {
       XSetInputFocus (dpy, current_screen()->frame_window, 
 		  RevertToPointerRoot, CurrentTime);
     }
+}
+
+static void
+update_frame_indicator ()
+{
+  screen_info *s = current_screen ();
+  int width, height;
+
+  width = BAR_X_PADDING * 2 + XTextWidth (s->font, FRAME_STRING, strlen (FRAME_STRING));
+  height = (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2);
+
+  XMoveResizeWindow (dpy, current_screen()->frame_window,
+		     rp_current_frame->x + rp_current_frame->width / 2 - width / 2, 
+		     rp_current_frame->y + rp_current_frame->height / 2 - height / 2,
+		     width, height);
+
+  XClearWindow (dpy, s->frame_window);
+  XDrawString (dpy, s->frame_window, s->normal_gc, 
+	       BAR_X_PADDING, 
+	       BAR_Y_PADDING + s->font->max_bounds.ascent,
+	       FRAME_STRING, strlen (FRAME_STRING));
+}
+
+void
+hide_frame_indicator ()
+{
+  /* Only hide the frame indicator if a window occupies the frame */
+  if (rp_current_frame->win)
+    {
+      XUnmapWindow (dpy, current_screen()->frame_window);
+    }
+}
+
+void
+show_frame_indicator ()
+{
+  XMapRaised (dpy, current_screen()->frame_window);
+
+  update_frame_indicator();
+  alarm (FRAME_INDICATOR_TIMEOUT);
 }
