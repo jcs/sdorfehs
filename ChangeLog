@@ -1,3 +1,8 @@
+2001-06-29  Gergely Nagy <8@free.bsd.hu>
+
+	* Makefile.am: do not include debian/ in the tarball
+	* configure.in: better xterm checking, fixes #430631
+
 2001-06-11  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/events.c (grab_rat): wrap in ifdef
