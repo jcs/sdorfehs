@@ -32,6 +32,17 @@
 #define INPUT_ABORT_KEY      XK_g
 #define INPUT_ABORT_MODIFIER ControlMask
 
+/* This is the previous history entry key when typing input. */
+#define INPUT_PREV_HISTORY_KEY      XK_p
+#define INPUT_PREV_HISTORY_MODIFIER ControlMask
+
+/* This is the next history entry key when typing input. */
+#define INPUT_NEXT_HISTORY_KEY      XK_n
+#define INPUT_NEXT_HISTORY_MODIFIER ControlMask
+
+/* Number of history items to store. */
+#define INPUT_MAX_HISTORY 50
+
 /* Treat windows with maxsize hints as if they were a transient window
    (don't hide the windows underneath, and center them) */
 #define MAXSIZE_WINDOWS_ARE_TRANSIENTS

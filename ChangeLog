@@ -1,5 +1,15 @@
 2001-12-21  shawn  <sabetts@vcn.bc.ca>
 
+	* src/input.c (input_history): new static global
+	(input_num_history_entries): likewise
+	(get_more_input): cycle through the input history.
+
+	* src/conf.h (INPUT_PREV_HISTORY_KEY): new define
+	(INPUT_PREV_HISTORY_MODIFIER): likewise
+	(INPUT_NEXT_HISTORY_KEY): likewise
+	(INPUT_NEXT_HISTORY_MODIFIER): likewise
+	(INPUT_MAX_HISTORY): likewise
+
 	* src/input.c (update_input_window): Draw the cursor in the right place.
 
 	* src/actions.h (cmd_defbarpadding): new prototype

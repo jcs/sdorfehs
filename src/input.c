@@ -28,6 +28,10 @@
 
 #include "ratpoison.h"
 
+/* Variables to keep track of input history. */
+static char *input_history[INPUT_MAX_HISTORY];
+static int input_num_history_entries = 0;
+
 /* Convert an X11 modifier mask to the rp modifier mask equivalent, as
    best it can (the X server may not have a hyper key defined, for
    instance). */
@@ -322,8 +326,9 @@ get_more_input (char *prompt, char *preinput)
   int revert;
   Window fwin;
   char *str;
+  int history_index = input_num_history_entries;
 
-  /* Allocate some memory to start with */
+  /* Allocate some memory to start with. */
   str = (char *) xmalloc ( allocated_len );
 
   /* load in the preinput */
@@ -354,6 +359,46 @@ get_more_input (char *prompt, char *preinput)
 	  if (cur_len > 0) cur_len--;
 	  update_input_window(s, prompt, str, cur_len);
 	}
+      else if (ch == INPUT_PREV_HISTORY_KEY 
+	       && modifier == INPUT_PREV_HISTORY_MODIFIER)
+	{
+	  /* Cycle through the history. */
+	  if (input_num_history_entries > 0)
+	    {
+	      history_index--;
+	      if (history_index < 0)
+		{
+		  history_index = input_num_history_entries - 1;
+		}
+
+	      free (str);
+	      str = xstrdup (input_history[history_index]);
+	      allocated_len = strlen (str) + 1;
+	      cur_len = allocated_len - 1;
+
+	      update_input_window (s, prompt, str, cur_len);
+	    }
+	}
+      else if (ch == INPUT_NEXT_HISTORY_KEY 
+	       && modifier == INPUT_NEXT_HISTORY_MODIFIER)
+	{
+	  /* Cycle through the history. */
+	  if (input_num_history_entries > 0)
+	    {
+	      history_index++;
+	      if (history_index >= input_num_history_entries)
+		{
+		  history_index = 0;
+		}
+
+	      free (str);
+	      str = xstrdup (input_history[history_index]);
+	      allocated_len = strlen (str) + 1;
+	      cur_len = allocated_len - 1;
+
+	      update_input_window (s, prompt, str, cur_len);
+	    }
+	}
       else if (ch == INPUT_ABORT_KEY && modifier == INPUT_ABORT_MODIFIER)
 	{
 	  /* User aborted. */
@@ -381,6 +426,24 @@ get_more_input (char *prompt, char *preinput)
     }
 
   str[cur_len] = 0;
+
+  /* Push the history entries down. */
+  if (input_num_history_entries >= INPUT_MAX_HISTORY)
+    {
+      int i;
+      free (input_history[0]);
+      for (i=0; i<INPUT_MAX_HISTORY-1; i++)
+	{
+	  input_history[i] = input_history[i+1];
+	}
+
+      input_num_history_entries--;
+    }
+
+  /* Store the string in the history. */
+  input_history[input_num_history_entries] = xstrdup (str);
+  input_num_history_entries++;
+
   XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
   XUnmapWindow (dpy, s->input_window);
   return str;

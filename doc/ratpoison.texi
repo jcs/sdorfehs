@@ -87,7 +87,9 @@ This document explains how to use ratpoison.
 * Keystrokes::                  Key commands and functionality
 * Commands::                    ratpoison commands
 * Command Line Arguments::      ratpoison command-line actions
+* Input::                       Typing text into ratpoison
 * Startup file::                They threatened me...with violence!
+
 
 @end menu
 
@@ -650,7 +652,7 @@ described in @command{defwinfmt}.
 
 @end table
 
-@node Command Line Arguments, Startup file, Commands, Top
+@node Command Line Arguments, Input, Commands, Top
 @chapter Command Line Arguments
 ratpoison supports command line arguments to request various actions
 when invoking ratpoison.
@@ -676,8 +678,26 @@ window otherwise launch it.
 
 @end table
 
+@node Input, Startup file, Command Line Arguments, Top
+@chapter Input
+At various times ratpoison will prompt you for input. Currently only
+very basic text editing commands exist.
 
-@node Startup file,  , Command Line Arguments, Top
+@table @key
+@item Backspace
+Deletes one letter preceding the cursor.
+
+@item C-p
+Cycle backwards through the history.
+
+@item C-n
+Cycle forwards through the history.
+@end table
+
+All input is stored in the same history list. By default ratpoison has
+a history length of 50 entries.
+
+@node Startup file,  , Input, Top
 @chapter Startup file
 
 Now you've probably read the web page, and you've no doubt dug up some
