@@ -41,6 +41,22 @@ cp ratpoison /usr/local/bin
 If you don't want ratpoison to install in /usr/local/bin, then edit
 the Makefile.
 
+Customization
+-------------
+
+By default, ratpoison is compiled using the rxvt terminal instead of
+the default xterm.  Reasons?  For me (roam@orbitel.bg), xterm did not
+want to start under FreeBSD's XFree86 4.0 port; besides, rxvt is WAY
+better in many respects.
+
+If you do want to use a different terminal program, edit conf.h and
+edit the line:
+
+#define TERM_PROG       "rxvt"	/* command to boot an xterm */
+
+to run you're favorite xterm.
+
+
 Using
 -----
 
