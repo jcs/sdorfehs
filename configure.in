@@ -17,7 +17,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.18 2001/03/14 07:42:17 sabetts Exp $
+dnl $Id: configure.in,v 1.19 2001/06/29 14:54:24 algernon Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 0.2.0-cvs)
@@ -49,10 +49,8 @@ AC_CHECK_TOOL(CC, gcc)
 AC_PROG_CC
 
 dnl check for an x terminal emulator
-AC_CHECK_PROG(TERM_PROG,$term_prog,yes,no)
-if test x$TERM_PROG = xno; then
-   AC_MSG_WARN([*** Can't find x terminal emulator \`$term_prog'])
-fi
+AC_MSG_CHECKING(terminal emulator)
+AC_MSG_RESULT($term_prog)
 
 dnl Check for the X libs
 AC_PATH_X
