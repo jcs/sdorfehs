@@ -1,5 +1,8 @@
 2001-06-05  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/actions.c (parse_keydesc): return NULL if the keydesc is a
+	'-'.
+
 	* src/manage.c (hide_window): ignore only StructureNotify events.
 
 	* src/data.h (WIN_EVENTS): Add StructureNotifyMask.

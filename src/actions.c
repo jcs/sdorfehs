@@ -231,6 +231,12 @@ parse_keydesc (char *keydesc)
       /* Its got hyphens, so parse out the modifiers and keysym */
       token = strtok (keydesc, "-");
 
+      if (token == NULL)
+	{
+	  /* It was nothing but hyphens */
+	  return NULL;
+	}
+
       do
 	{
 	  next_token = strtok (NULL, "-");
