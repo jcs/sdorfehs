@@ -1,3 +1,7 @@
+2001-09-27  shawn  <sabetts@vcn.bc.ca>
+
+	* src/main.c[ratpoison_opts]: remove 'r' and 'k'.
+
 2001-09-23  shawn  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (initialize_default_keybindings): Change C-t a and
