@@ -77,6 +77,7 @@ static user_command user_commands[] =
     {"link",		cmd_link,		arg_STRING},
     {"listhook",        cmd_listhook,           arg_STRING},
     {"meta",		cmd_meta,		arg_STRING},
+    {"msgwait",	        cmd_msgwait,	 	arg_STRING},
     {"newkmap",         cmd_newkmap,            arg_STRING},
     {"newwm",		cmd_newwm,		arg_STRING},
     {"next", 		cmd_next, 		arg_VOID},
@@ -2773,9 +2774,9 @@ cmd_unsetenv (int interactive, char *data)
   s = sbuf_new(0);
   sbuf_copy (s, data);
   sbuf_concat (s, "=");
-  str = sbuf_free_struct (s);
-  putenv (str);
-
+/*   str = sbuf_free_struct (s); */
+  putenv (sbuf_get(s));
+  sbuf_free (s);
   return NULL;
 }
 
