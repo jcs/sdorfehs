@@ -50,7 +50,7 @@ struct rp_frame
 
   /* For determining the last frame. */
   int last_access;
-
+  
   struct list_head node;
 };
 
@@ -137,14 +137,17 @@ struct rp_group
 struct rp_screen
 {
   GC normal_gc;
-  XWindowAttributes root_attr;
   Window root, bar_window, key_window, input_window, frame_window, help_window;
   int bar_is_raised;
   int screen_num;		/* Our screen number as dictated my X */
+  int xine_screen_num;		/* Our screen number for the Xinerama extension */
   Colormap def_cmap;
   Cursor rat;
   unsigned long fg_color, bg_color; /* The pixel color. */
-
+  
+  /* Here to abstract over the Xinerama vs X screens difference */
+  int left, top, width, height;
+  
   char *display_string;
 
   /* A list of frames that may or may not contain windows. There should

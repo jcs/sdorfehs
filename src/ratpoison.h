@@ -84,6 +84,7 @@ extern XGCValues gv;
 #endif /* HAVE_READLINE_HISTORY_H */
 #include "completions.h"
 #include "hook.h"
+#include "xinerama.h"
 
 void clean_up ();
 rp_screen *find_screen (Window w);

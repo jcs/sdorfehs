@@ -141,4 +141,7 @@ extern struct rp_hook_db_entry rp_hook_db[];
 void set_rp_window_focus (rp_window *win);
 void set_window_focus (Window window);
 
+extern int rp_have_xinerama;
+extern int xine_screen_count;
+
 #endif

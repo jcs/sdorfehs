@@ -96,17 +96,17 @@ bar_x (rp_screen *s, int width)
     case NorthWestGravity:
     case WestGravity:
     case SouthWestGravity:
-      x = 0;
+      x = s->left;
       break;
     case NorthGravity:
     case CenterGravity:
     case SouthGravity:
-      x = (s->root_attr.width - width - defaults.bar_border_width * 2) / 2;
+      x = s->left + (s->width - width - defaults.bar_border_width * 2) / 2;
       break;
     case NorthEastGravity:
     case EastGravity:
     case SouthEastGravity:
-      x = s->root_attr.width - width - defaults.bar_border_width * 2;
+      x = s->left + s->width - width - defaults.bar_border_width * 2;
       break;
     }
 
@@ -123,18 +123,18 @@ bar_y (rp_screen *s, int height)
     case NorthEastGravity:
     case NorthGravity:
     case NorthWestGravity:
-      y = 0;
+      y = s->top;
       break;
     case EastGravity:
     case CenterGravity:
     case WestGravity:
-      y = (s->root_attr.height - height 
+      y = s->top + (s->height - height 
 	   - defaults.bar_border_width * 2) / 2;
       break;
     case SouthEastGravity:
     case SouthGravity:
     case SouthWestGravity:
-      y = (s->root_attr.height - height 
+      y = s->top + (s->height - height 
 	   - defaults.bar_border_width * 2);
       break;
     }

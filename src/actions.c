@@ -1660,6 +1660,7 @@ cmd_remove (int interactive, char *data)
     {
       remove_frame (current_frame());
       set_active_frame (frame);
+      show_frame_indicator();
     }
 
   return NULL;
@@ -1792,7 +1793,7 @@ cmd_banish (int interactive, char *data)
 
   s = current_screen ();
 
-  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width - 2, s->root_attr.height - 2); 
+  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2, s->top + s->height - 2); 
   return NULL;
 }
 
@@ -1854,8 +1855,8 @@ cmd_license (int interactive, char *data)
     }
 
   /* Offset the text so its in the center. */
-  x = (s->root_attr.width - max_width) / 2;
-  y = (s->root_attr.height - i * FONT_HEIGHT (defaults.font)) / 2;
+  x = s->left + (s->width - max_width) / 2;
+  y = s->top + (s->height - i * FONT_HEIGHT (defaults.font)) / 2;
   if (x < 0) x = 0;
   if (y < 0) y = 0;
 
@@ -1967,7 +1968,7 @@ cmd_help (int interactive, char *data)
 
 	  y += FONT_HEIGHT (defaults.font);
 	  /* Make sure the next line fits entirely within the window. */
-	  if (y + FONT_HEIGHT (defaults.font) >= s->root_attr.height)
+	  if (y + FONT_HEIGHT (defaults.font) >= (s->top + s->height))
 	    {
 	      if (drawing_keys)
 		{
@@ -2354,8 +2355,8 @@ cmd_defpadding (int interactive, char *data)
 	  frame->width += bk_pos - l;
 	}
 
-      if (bk_pos + bk_len == current_screen()->root_attr.width - defaults.padding_right)
-	frame->width = current_screen()->root_attr.width - r - frame->x;
+      if ((bk_pos + bk_len) == (current_screen()->left + current_screen()->width - defaults.padding_right))
+	frame->width = current_screen()->left + current_screen()->width - r - frame->x;
 
       /* Resize vertically. */
       bk_pos = frame->y;
@@ -2367,8 +2368,8 @@ cmd_defpadding (int interactive, char *data)
 	  frame->height += bk_pos - t;
 	}
 
-      if (bk_pos + bk_len == current_screen()->root_attr.height - defaults.padding_bottom)
-	frame->height = current_screen()->root_attr.height - b - frame->y;
+      if ((bk_pos + bk_len) == (current_screen()->top + current_screen()->height - defaults.padding_bottom))
+	frame->height = current_screen()->top + current_screen()->height - b - frame->y;
 
       maximize_all_windows_in_frame (frame);
     }
@@ -2747,8 +2748,8 @@ cmd_info (int interactive, char *data)
   if (current_window() == NULL)
     {
       marked_message_printf (0, 0, " (%d, %d) No window ",
-			     current_screen()->root_attr.width,
-			     current_screen()->root_attr.height);
+			     current_screen()->width,
+			     current_screen()->height);
     }
   else
     {
@@ -3325,7 +3326,7 @@ cmd_fselect (int interactive, char *data)
 	  height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
 	  /* Create and map the window. */
-	  wins[i] = XCreateWindow (dpy, s->root, cur->x, cur->y, width, height, 1, 
+	  wins[i] = XCreateWindow (dpy, s->root, s->left + cur->x, s->top + cur->y, width, height, 1, 
 				   CopyFromParent, CopyFromParent, CopyFromParent,
 				   CWOverrideRedirect | CWBorderPixel | CWBackPixel,
 				   &attr);

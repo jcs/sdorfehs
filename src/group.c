@@ -331,7 +331,7 @@ group_last_window (rp_group *g)
       if (cur->win->last_access >= last_access 
 	  && cur->win != current_window()
 	  && !find_windows_frame (cur->win)
-	  && cur->win->scr == s)
+	  && (cur->win->scr == s || rp_have_xinerama))
 	{
 	  most_recent = cur;
 	  last_access = cur->win->last_access;
@@ -365,7 +365,7 @@ group_next_window (rp_group *g, rp_window *win)
        cur != we; 
        cur = list_next_entry (cur, &g->mapped_windows, node))
     {
-      if (!find_windows_frame (cur->win) && cur->win->scr == current_screen())
+      if (!find_windows_frame (cur->win) && (cur->win->scr == current_screen() || rp_have_xinerama))
 	{
 	  return cur->win;
 	}
@@ -395,7 +395,7 @@ group_prev_window (rp_group *g, rp_window *win)
        cur != we; 
        cur = list_prev_entry (cur, &g->mapped_windows, node))
     {
-      if (!find_windows_frame (cur->win) && cur->win->scr == current_screen())
+      if (!find_windows_frame (cur->win) && (cur->win->scr == current_screen() || rp_have_xinerama))
 	{
 	  return cur->win;
 	}

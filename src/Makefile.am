@@ -17,7 +17,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##
-## $Id: Makefile.am,v 1.19 2003/07/17 05:41:41 sabetts Exp $
+## $Id: Makefile.am,v 1.20 2004/02/27 08:28:17 sabetts Exp $
 
 bin_PROGRAMS		= ratpoison
 
@@ -66,4 +66,6 @@ ratpoison_SOURCES	= actions.c		\
 			split.c			\
 			split.h			\
 			window.c		\
-			window.h
+			window.h		\
+			xinerama.c		\
+			xinerama.h

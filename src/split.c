@@ -29,6 +29,8 @@
 #define VERTICALLY 0
 #define HORIZONTALLY 1
 
+static rp_screen *frames_screen(rp_frame *);
+
 static void
 update_last_access (rp_frame *frame)
 {
@@ -81,8 +83,8 @@ cleanup_frame (rp_frame *frame)
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
   if (!win->transient
       && !(win->hints->flags & PMaxSize
-	   && win->hints->max_width < win->scr->root_attr.width
-	   && win->hints->max_height < win->scr->root_attr.height))
+	   && win->hints->max_width < win->scr->width
+	   && win->hints->max_height < win->scr->height))
 #else
   if (!win->transient)
 #endif
@@ -99,6 +101,11 @@ set_frames_window (rp_frame *frame, rp_window *win)
     {
       frame->win_number = win->number;
       win->frame_number = frame->number;
+      
+      /* We need to make sure that win and frame are on the same screen,
+       * since with Xinerama, windows can move from one screen to another.
+       */
+      win->scr = frames_screen(frame);
     }
   else
     {
@@ -272,7 +279,7 @@ find_window_for_frame (rp_frame *frame)
 
   list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
     {
-      if (cur->win->scr == s
+      if ((cur->win->scr == s || rp_have_xinerama)
 	  && cur->win != current_window()
 	  && !find_windows_frame (cur->win)
 	  && cur->win->last_access >= last_access
@@ -840,7 +847,7 @@ set_active_frame (rp_frame *frame)
   s->current_frame = frame->number;
 
   /* If frame->win == NULL, then rp_current_screen is not updated. */
-  rp_current_screen = s->screen_num;
+  rp_current_screen = s->xine_screen_num;
 
   update_bar (s);
 
@@ -913,9 +920,14 @@ show_frame_message (char *msg)
   width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
   height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
+  /* We don't want another frame indicator to be displayed on another
+   * screen at the same time, so we hide it before bringing it back again.
+   */
+  hide_frame_indicator ();
+
   XMoveResizeWindow (dpy, s->frame_window,
-		     frame->x + frame->width / 2 - width / 2,
-		     frame->y + frame->height / 2 - height / 2,
+		     s->left + frame->x + frame->width / 2 - width / 2,
+		     s->top + frame->y + frame->height / 2 - height / 2,
 		     width, height);
 
   XMapRaised (dpy, s->frame_window);

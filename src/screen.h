@@ -33,4 +33,8 @@ void screen_restore_frameset (rp_screen *s, struct list_head *head);
 void frameset_free (struct list_head *head);
 rp_frame *screen_get_frame (rp_screen *s, int frame_num);
 
+void init_screens (int screen_arg, int screen_num);
+
+int is_rp_window_for_screen (Window w, rp_screen *s);
+
 #endif

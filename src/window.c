@@ -320,17 +320,17 @@ give_window_focus (rp_window *win, rp_window *last_win)
      we can track which window was last accessed. */
   static int counter = 1;
 
+  /* Warp the cursor to the window's saved position if last_win and
+     win are different windows. */
+  if (last_win != NULL && win != last_win)
+    save_mouse_position (last_win);
+
   if (win == NULL) return;
 
   counter++;
   win->last_access = counter;
 
   unhide_window (win);
-
-  /* Warp the cursor to the window's saved position if last_win and
-     win are different windows. */
-  if (last_win != NULL && win != last_win)
-    save_mouse_position (last_win);
 
   if (defaults.warp)
     {
@@ -344,7 +344,7 @@ give_window_focus (rp_window *win, rp_window *last_win)
   XInstallColormap (dpy, win->colormap);
 
   /* Finally, give the window focus */
-  rp_current_screen = win->scr->screen_num;
+  rp_current_screen = win->scr->xine_screen_num;
   set_rp_window_focus (win);
 
   XSync (dpy, False);
@@ -464,7 +464,17 @@ set_active_window (rp_window *win)
 
   if (win == NULL) return;
 
-  frame = screen_get_frame (win->scr, win->scr->current_frame);
+  /* With Xinerama, we can move a window over to the current screen; otherwise
+   * we have to switch to the screen that the window belongs to.
+   */
+  if (rp_have_xinerama)
+    {
+      frame = screen_get_frame (current_screen(), current_screen()->current_frame);
+    }
+  else
+    {
+      frame = screen_get_frame (win->scr, win->scr->current_frame);
+    }
   last_win = set_frames_window (frame, win);
 
   if (last_win) PRINT_DEBUG (("last window: %s\n", window_name (last_win)));
@@ -481,8 +491,8 @@ set_active_window (rp_window *win)
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
   if (!win->transient
       && !(win->hints->flags & PMaxSize 
-	   && (win->hints->max_width < win->scr->root_attr.width
-	       || win->hints->max_height < win->scr->root_attr.height)))
+	   && (win->hints->max_width < win->scr->width
+	       || win->hints->max_height < win->scr->height)))
 #else
   if (!win->transient)
 #endif

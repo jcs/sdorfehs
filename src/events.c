@@ -50,8 +50,21 @@ new_window (XCreateWindowEvent *e)
   if (e->override_redirect)
     return;
 
-  s = find_screen (e->parent);
   win = find_window (e->window);
+
+  /* In Xinerama mode, all windows have the same root, so check
+   * all Xinerama screens
+   */
+  if (rp_have_xinerama)
+    {
+      /* New windows belong to the current screen */
+      s = &screens[rp_current_screen];
+    }
+  else
+    {
+      s = find_screen (e->parent);
+    }
+  if (is_rp_window_for_screen(e->window, s)) return;
 
   if (s && win == NULL
       && e->window != s->key_window 
@@ -376,10 +389,13 @@ key_press (XEvent *ev)
   unsigned int modifier;
   KeySym ks;
 
-  s = find_screen (ev->xkey.root);
+  if (rp_have_xinerama)
+    s = current_screen();
+  else
+    s = find_screen (ev->xkey.root);
 
 #ifdef HIDE_MOUSE
-  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width - 2, s->root_attr.height - 2); 
+  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2, s->top + s->height - 2); 
 #endif
 
   if (!s) return;
@@ -825,3 +841,4 @@ listen_for_events ()
 	}
     }
 }
+

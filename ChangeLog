@@ -1,3 +1,62 @@
+2004-02-27  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/window.c (give_window_focus): save the mouse position before
+	checking if win is NULL.
+	(give_window_focus): set rp_current_screen to xine_screen_num of
+	the window's screen.
+	(set_active_window): when using xinerama get the frame from the
+	current screen.
+
+	* src/split.c (set_frames_window): update the window's scr
+	attribute to point to the frame's screen.
+	(find_window_for_frame): when xinerama is being used search all
+	windows.
+	(set_active_frame): update rp_current_screen to point to the
+	frame's screen.
+
+	* src/screen.h (init_screens): new prototype
+	(is_rp_window_for_screen): likewise
+
+	* src/screen.c: include string.h and X11/cursorfont.h
+	(init_screens): new function
+	(is_rp_window_for_screen): new function.
+	(init_screen): fill in xine_screen_num when using xinerama.
+
+	* src/ratpoison.h: include xinerama.h
+
+	* src/manage.c (current_screen): use xine_screen_num to find the
+	current screen.
+	(scanwins): use is_rp_window_for_screen to skip over ratpoison windows.
+	(scanwins): when using xinerama only manage windows inside the viewable area.
+
+	* src/main.c (main): call init_xinerama and init_screens. Move
+	screen initing code to these functions.
+	(init_rat_cursor): move to screen.c
+	(init_screen): likewise
+	(find_screen): likewise
+	(clean_up): call free_xinerama
+
+
+	* src/group.c (group_last_window): only check windows in the
+	current screen, unless xinerama is being used in which case all
+	windows are accessible.
+	(group_next_window): likewise
+	(group_prev_window): likewise
+
+	* src/globals.h: new globals rp_have_xinerama, xine_screen_num.
+
+	* src/events.c (new_window): when using xinerama, the new window's
+	screen is the current screen.
+	(key_press): when using xinerama, use the current screen.
+
+	* src/data.h (struct rp_screen): remove root_attr and add left,
+	top, width, height. All dependant code updated. Add xine_screen_num.
+
+	* src/actions.c (cmd_remove): show the frame indicator in the new
+	current frame after removing the frame.
+
+	* src/Makefile.am (ratpoison_SOURCES): add xinerama.c and xinerama.h
+
 2004-02-26  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/split.c (hide_frame_indicator): unmap all 'current frame'

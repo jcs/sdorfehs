@@ -129,7 +129,7 @@ current_screen ()
 
   for (i=0; i<num_screens; i++)
     {
-      if (screens[i].screen_num == rp_current_screen)
+      if (screens[i].xine_screen_num == rp_current_screen)
 	return &screens[i];
     }
   
@@ -385,13 +385,18 @@ scanwins(rp_screen *s)
   for (i = 0; i < nwins; i++) 
     {
       XGetWindowAttributes(dpy, wins[i], &attr);
-      if (wins[i] == s->bar_window 
-	  || wins[i] == s->key_window 
-	  || wins[i] == s->input_window
-	  || wins[i] == s->frame_window
-	  || wins[i] == s->help_window
+      if (is_rp_window_for_screen(wins[i], s)
 	  || attr.override_redirect == True
 	  || unmanaged_window (wins[i])) continue;
+
+      /* FIXME - with this code, windows which are entirely off-screen
+       * when RP starts won't ever be managed when Xinerama is enabled.
+       */
+      if (rp_have_xinerama
+	  && ((attr.x > s->left + s->width)
+               || (attr.x < s->left)
+	       || (attr.y > s->top + s->height)
+	       || (attr.y < s->top))) continue;
 
       win = add_to_window_list (s, wins[i]);
 
@@ -671,7 +676,7 @@ maximize (rp_window *win)
 
 
   /* Actually do the maximizing. */
-  XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
+  XMoveResizeWindow (dpy, win->w, win->scr->left + win->x, win->scr->top + win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);
 
   XSync (dpy, False);
@@ -696,7 +701,7 @@ force_maximize (rp_window *win)
      problem. */
   if (win->hints->flags & PResizeInc)
     {
-      XMoveResizeWindow (dpy, win->w, win->x, win->y,
+      XMoveResizeWindow (dpy, win->w, win->scr->left + win->x, win->scr->top + win->y,
 			 win->width + win->hints->width_inc, 
 			 win->height + win->hints->height_inc);
     }
@@ -708,7 +713,7 @@ force_maximize (rp_window *win)
   XSync (dpy, False);
 
   /* Resize the window to its proper maximum size. */
-  XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
+  XMoveResizeWindow (dpy, win->w, win->scr->left + win->x, win->scr->top + win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);
 
   XSync (dpy, False);

@@ -44,8 +44,6 @@
 # define WAIT_ANY -1
 #endif
 
-static void init_screen (rp_screen *s, int screen_num);
-
 /* Command line options */
 static struct option ratpoison_longopts[] = 
   { {"help", 		no_argument, 		0, 	'h'},
@@ -614,38 +612,8 @@ main (int argc, char *argv[])
   init_defaults ();
   init_groups ();
   init_window_stuff ();
-
-  /* Get the number of screens */
-  num_screens = ScreenCount (dpy);
-
-  /* make sure the screen specified is valid. */
-  if (screen_arg)
-    {
-      if (screen_num < 0 || screen_num >= num_screens)
-	{
-	  fprintf (stderr, "%d is an invalid screen for the display\n", screen_num);
-	  exit (EXIT_FAILURE);
-	}
-
-      /* we're only going to use one screen. */
-      num_screens = 1;
-    }
-
-  /* Initialize the screens */
-  screens = (rp_screen *)xmalloc (sizeof (rp_screen) * num_screens);
-  PRINT_DEBUG (("%d screens.\n", num_screens));
-
-  if (screen_arg)
-    {
-      init_screen (&screens[0], screen_num);
-    }
-  else
-    {
-      for (i=0; i<num_screens; i++)
-	{
-	  init_screen (&screens[i], i);
-	}
-    }
+  init_xinerama ();
+  init_screens (screen_arg, screen_num);
 
   init_frame_lists ();
   update_modifier_map ();
@@ -684,96 +652,6 @@ main (int argc, char *argv[])
   listen_for_events ();
 
   return EXIT_SUCCESS;
-}
-
-static void
-init_rat_cursor (rp_screen *s)
-{
-  s->rat = XCreateFontCursor( dpy, XC_icon );
-}
-
-static void
-init_screen (rp_screen *s, int screen_num)
-{
-  XGCValues gv;
-
-  /* Select on some events on the root window, if this fails, then
-     there is already a WM running and the X Error handler will catch
-     it, terminating ratpoison. */
-  XSelectInput(dpy, RootWindow (dpy, screen_num),
-	       PropertyChangeMask | ColormapChangeMask
-	       | SubstructureRedirectMask | SubstructureNotifyMask );
-  XSync (dpy, False);
-
-  /* Create the numset for the frames. */
-  s->frames_numset = numset_new ();
-
-  /* Build the display string for each screen */
-  s->display_string = xmalloc (strlen(DisplayString (dpy)) + 21);
-  sprintf (s->display_string, "DISPLAY=%s", DisplayString (dpy));
-  if (strrchr (DisplayString (dpy), ':'))
-    {
-      char *dot;
-
-      dot = strrchr(s->display_string, '.');
-      if (dot)
-	sprintf(dot, ".%i", screen_num);
-    }
-
-  PRINT_DEBUG (("%s\n", s->display_string));
-
-  s->screen_num = screen_num;
-  s->root = RootWindow (dpy, screen_num);
-  s->def_cmap = DefaultColormap (dpy, screen_num);
-  XGetWindowAttributes (dpy, s->root, &s->root_attr);
-  
-  init_rat_cursor (s);
-
-  s->fg_color = BlackPixel (dpy, s->screen_num);
-  s->bg_color = WhitePixel (dpy, s->screen_num);
-
-  /* Setup the GC for drawing the font. */
-  gv.foreground = s->fg_color;
-  gv.background = s->bg_color;
-  gv.function = GXcopy;
-  gv.line_width = 1;
-  gv.subwindow_mode = IncludeInferiors;
-  gv.font = defaults.font->fid;
-  s->normal_gc = XCreateGC(dpy, s->root, 
-			   GCForeground | GCBackground | GCFunction 
-			   | GCLineWidth | GCSubwindowMode | GCFont, 
-			   &gv);
-
-  /* Create the program bar window. */
-  s->bar_is_raised = 0;
-  s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 
-				       defaults.bar_border_width, 
-				       s->fg_color, s->bg_color);
-
-  /* Setup the window that will receive all keystrokes once the prefix
-     key has been pressed. */
-  s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, 
-				       WhitePixel (dpy, s->screen_num), 
-				       BlackPixel (dpy, s->screen_num));
-  XSelectInput (dpy, s->key_window, KeyPressMask | KeyReleaseMask);
-  XMapWindow (dpy, s->key_window);
-
-  /* Create the input window. */
-  s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 
-					 defaults.bar_border_width, 
-					 s->fg_color, s->bg_color);
-  XSelectInput (dpy, s->input_window, KeyPressMask | KeyReleaseMask);
-
-  /* Create the frame indicator window */
-  s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, defaults.bar_border_width, 
-					 s->fg_color, s->bg_color);
-
-  /* Create the help window */
-  s->help_window = XCreateSimpleWindow (dpy, s->root, 0, 0, s->root_attr.width,
-					s->root_attr.height, 0, s->fg_color, s->bg_color);
-  XSelectInput (dpy, s->help_window, KeyPressMask);
-
-  XSync (dpy, 0);
 }
 
 static void
@@ -824,6 +702,8 @@ clean_up ()
     }
   free (screens);
 
+  free_xinerama();
+
   XFreeFont (dpy, defaults.font);
   free (defaults.window_fmt);
 
@@ -831,14 +711,3 @@ clean_up ()
   XCloseDisplay (dpy);
 }
 
-/* Given a root window, return the rp_screen struct */
-rp_screen *
-find_screen (Window w)
-{
-  int i;
-
-  for (i=0; i<num_screens; i++)
-    if (screens[i].root == w) return &screens[i];
-
-   return NULL;
- }
