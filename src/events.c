@@ -243,7 +243,8 @@ handle_key (screen_info *s)
   int revert;
   Window fwin;
   XEvent ev;
-  int keysym, mod;
+  KeySym keysym;
+  int mod;
 
   PRINT_DEBUG ("handling key.\n");
 
@@ -256,8 +257,9 @@ handle_key (screen_info *s)
   do
     {  
       XMaskEvent (dpy, KeyPressMask, &ev);
-      keysym = XLookupKeysym((XKeyEvent *) &ev, 0);
       mod = ev.xkey.state;
+
+      cook_keycode (ev.xkey.keycode, &keysym, &mod);
 
       for (i = key_actions; i->key != 0; i++)
 	{
@@ -402,6 +404,12 @@ delegate_event (XEvent *ev)
 
     case KeyPress:
       PRINT_DEBUG ("KeyPress %d %d\n", ev->xkey.keycode, ev->xkey.state);
+      {
+	KeySym thesym;
+	char buf[512];
+	XLookupString (&ev->xkey, buf, 512, &thesym, NULL);
+	PRINT_DEBUG ("key string: '%s' %ld\n", buf, thesym);
+      }
       key_press (ev);
       break;
       

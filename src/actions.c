@@ -3,34 +3,35 @@
 
 #include <unistd.h>
 #include <sys/wait.h>
+#include <X11/keysym.h>
 
 #include "ratpoison.h"
 
 /* Initialization of the key structure */
-rp_action key_actions[] = { {KEY_PREFIX, 0, 0, generate_prefix},
-                            {'c', -1, "xterm", spawn},
-			    {'e', -1, "emacs", spawn},
-			    {'p', -1, 0, prev_window},
-			    {'n', -1, 0, next_window},
-			    {';', ShiftMask, 0, execute_command},
-			    {KEY_PREFIX, -1, 0, last_window},
-			    {'w', -1, 0, toggle_bar},
-			    {'k', ShiftMask, 0, kill_window},
-			    {'k', 0, 0, delete_window},
-			    {'\'', -1, 0, goto_win_by_name},
-			    {'a', -1, 0, rename_current_window},
-			    {'g', ControlMask, 0, abort_keypress},
-			    {'0', -1, 0, goto_window_0},
-			    {'1', -1, 0, goto_window_1},
-			    {'2', -1, 0, goto_window_2},
-			    {'3', -1, 0, goto_window_3},
-			    {'4', -1, 0, goto_window_4},
-			    {'5', -1, 0, goto_window_5},
-			    {'6', -1, 0, goto_window_6},
-			    {'7', -1, 0, goto_window_7},
-			    {'8', -1, 0, goto_window_8},
-			    {'9', -1, 0, goto_window_9},
-			    { 0, 0, 0, 0 } };
+rp_action key_actions[] = { {KEY_PREFIX,	0,		0,		generate_prefix},
+                            {XK_c,		-1,		"xterm",	spawn},
+			    {XK_e,		-1,		"emacs",	spawn},
+			    {XK_p,		-1,		0,		prev_window},
+			    {XK_n,		-1,		0,		next_window},
+			    {XK_colon,		0,		0,		execute_command},
+			    {KEY_PREFIX,	-1,		0,		last_window},
+			    {XK_w,		-1,		0,		toggle_bar},
+			    {XK_K,		0,		0,		kill_window},
+			    {XK_k,		0,		0,		delete_window},
+			    {XK_quoteright,	-1,		0,		goto_win_by_name},
+			    {XK_a,		-1,		0,		rename_current_window},
+			    {XK_g,		ControlMask,	0,		abort_keypress},
+			    {XK_0,		-1,		0,		goto_window_0},
+			    {XK_1,		-1,		0,		goto_window_1},
+			    {XK_2,		-1,		0,		goto_window_2},
+			    {XK_3,		-1,		0,		goto_window_3},
+			    {XK_4,		-1,		0,		goto_window_4},
+			    {XK_5,		-1,		0,		goto_window_5},
+			    {XK_6,		-1,		0,		goto_window_6},
+			    {XK_7,		-1,		0,		goto_window_7},
+			    {XK_8,		-1,		0,		goto_window_8},
+			    {XK_9,		-1,		0,		goto_window_9},
+			    { 0,		0,		0,		0 } };
 
 void
 prev_window (void *data)
