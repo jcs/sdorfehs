@@ -220,7 +220,13 @@ configure_notify (XConfigureEvent *e)
 {
   rp_window *win;
 
+  /* ignore SubstructureNotify ConfigureNotify events. */
+  if(e->event != e->window && e->send_event != True)
+    return;
+
   win = find_window (e->window);
+
+  PRINT_DEBUG("event=%ld window=%ld\n", e->event, e->window);
 
   if (win && win->state == NormalState)
     {
@@ -236,6 +242,9 @@ configure_notify (XConfigureEvent *e)
 	     If the window has resize increments then ratpoison has to
 	     know the real size of the window to increment properly. So,
 	     update the structure before calling maximize. */
+
+	  PRINT_DEBUG ("x=%d y=%d width=%d height=%d\n", e->x, e->y, e->width, e->height);
+	  PRINT_DEBUG ("x=%d y=%d width=%d height=%d\n", win->x, win->y, win->width, win->height);
 
 	  win->x = e->x;
 	  win->y = e->y;

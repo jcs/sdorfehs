@@ -1,3 +1,14 @@
+2002-02-07  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/split.h (find_last_frame): prototype now correctly reflects
+	the actual function.
+
+	* src/events.c (configure_notify): ignore substructurenotify
+	events. Add more debugging statements.
+
+	* src/actions.c (cmd_focuslast): pass the current screen to the
+	call to find_last_frame.
+
 2002-02-02  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_defbarpadding): print an error message if

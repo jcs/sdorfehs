@@ -2310,7 +2310,7 @@ cmd_startup_message (int interactive, void *data)
 char *
 cmd_focuslast (int interactive, void *data)
 {
-  rp_window_frame *frame = find_last_frame();
+  rp_window_frame *frame = find_last_frame(current_screen());
 
   if (frame)
       set_active_frame (frame);
