@@ -3035,11 +3035,15 @@ cmd_warp (int interactive, char *data)
   return NULL;
 }
 
-/* FIXME: This is sorely broken. */
+/* FIXME: This is sorely broken.
+
+  UPDATE: I changed the list_for_each_entry to
+  list_for_each_entry_safe, does this make it less broken?
+  (rcyeske@vcn.bc.ca 20040125) */
 static void
 sync_wins (rp_screen *s)
 {
-  rp_window *win;
+  rp_window *win, *wintmp;
   XWindowAttributes attr;
   unsigned int i, nwins;
   Window dw1, dw2, *wins;
@@ -3047,7 +3051,7 @@ sync_wins (rp_screen *s)
 
   /* Remove any windows in our cached lists that aren't in the query
      tree. These windows have been destroyed. */
-  list_for_each_entry (win, &rp_mapped_window, node)
+  list_for_each_entry_safe (win, wintmp, &rp_mapped_window, node)
     {
       int found;
 
@@ -3147,7 +3151,6 @@ sync_wins (rp_screen *s)
       win = find_window_in_list (wins[i], &rp_unmapped_window);
       if (win)
 	{
-	  rp_frame *frame;
 	  /* If the window is viewable and it is in a frame, then
 	     maximize it and go to the next window. */
 	  if (attr.map_state == IsViewable)
@@ -3213,7 +3216,12 @@ cmd_tmpwm (int interactive, char *data)
 
   /* Don't listen for any events from any window. */
   list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
-    XSelectInput (dpy, win->w, 0);
+    {
+      unhide_window (win);
+      maximize (win);
+      XSelectInput (dpy, win->w, 0);
+    }
+
   list_for_each_safe_entry (win, iter, tmp, &rp_unmapped_window, node)
     XSelectInput (dpy, win->w, 0);
 

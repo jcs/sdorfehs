@@ -1,3 +1,10 @@
+2004-01-25  Ryan Yeske  <rcyeske@vcn.bc.ca>
+
+	* src/actions.c (sync_wins): Change list_for_each_entry to
+	list_for_each_entry_safe.
+	(cmd_tmpwm): Unhide and maximize each mapped window before
+	spawning a new wm.
+
 2003-11-29  Ryan Yeske  <rcyeske@vcn.bc.ca>
 
 	* src/communications.c (receive_command_result): Rename from
