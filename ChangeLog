@@ -1,4 +1,4 @@
-2004-11-18  Shawn Betts  <katia_dilkina@verizon.net>
+2004-11-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (set_vars): add maxundos
 	(push_frame_undo): new function
