@@ -57,7 +57,7 @@ add_keybinding (int keysym, int state, char *cmd)
     {
       /* double the key table size */
       key_actions_table_size *= 2;
-      key_actions = (rp_action*) realloc (key_actions, sizeof (rp_action) * key_actions_table_size);
+      key_actions = (rp_action*) xrealloc (key_actions, sizeof (rp_action) * key_actions_table_size);
       PRINT_DEBUG ("realloc()ed key_table %d\n", key_actions_table_size);
     }
 
@@ -83,7 +83,7 @@ void
 initialize_default_keybindings (void)
 {
   key_actions_table_size = 1;
-  key_actions = (rp_action*) malloc (sizeof (rp_action) * key_actions_table_size);
+  key_actions = (rp_action*) xmalloc (sizeof (rp_action) * key_actions_table_size);
   key_actions_last = 0;
 
   prefix_key.sym = KEY_PREFIX;
@@ -223,7 +223,7 @@ cmd_bind (void *data)
       return;
     }
 
-  keydesc = (char*) malloc (strlen (data + 1));
+  keydesc = (char*) xmalloc (strlen (data + 1));
   sscanf (data, "%s", keydesc);
   cmd = data + strlen (keydesc);
 
@@ -440,12 +440,7 @@ cmd_rename (void *data)
   if (*winname)
     {
       free (rp_current_window->name);
-      rp_current_window->name = malloc (sizeof (char) * strlen (winname) + 1);
-      if (rp_current_window->name == NULL)
-	{
-	  PRINT_ERROR ("Out of memory\n");
-	  exit (EXIT_FAILURE);
-	}
+      rp_current_window->name = xmalloc (sizeof (char) * strlen (winname) + 1);
 
       strcpy (rp_current_window->name, winname);
 
@@ -634,16 +629,10 @@ cmd_newwm(void *data)
 void
 cmd_clock (void *data)
 {
-  screen_info *s;
   char *msg;
   time_t timep;
  
-  msg = malloc(9);
-  if(msg == NULL)
-    {
-      PRINT_DEBUG ("Error allocation memory in show_clock()\n");
-      return;
-    }
+  msg = xmalloc (9);
  
   timep = time(NULL);
   if(timep == ((time_t)-1))
@@ -655,11 +644,8 @@ cmd_clock (void *data)
   strncpy(msg, ctime(&timep) + 11, 8); /* FIXME: a little bit hardcoded looking */
   msg[8] = '\0';
  
-  if (rp_current_window) 
-    {
-      s = rp_current_window->scr;
-      message (msg);
-    }
+  message (msg);
+
   free(msg);
 }
 
@@ -670,10 +656,7 @@ cmd_windows (void *data)
 {
   screen_info *s;
 
-  if (rp_current_window)
-    s = rp_current_window->scr;
-  else
-    s = &screens[0];
+  s = current_screen ();
 
   if (!hide_bar (s)) show_bar (s);
 }

@@ -2,6 +2,14 @@
 
 	* actions.c (cmd_source): Open the file.  Error report as
 	appropriate.
+	(cmd_windows): Call current_screen() to find the current screen.
+	(cmd_clock): Show the clock even if no windows are open.
+	(cmd_clock): Use xmalloc, remove error check.
+	(initialize_default_keybindings): Use xmalloc.
+	(cmd_bind): Use xmalloc.
+	(cmd_rename): Use xmalloc, remove error check.
+	(add_keybinding): Use xrealloc.
+	(replace_keybinding): Use xrealloc.
 
 	* main.c (read_rc_file): Take a file pointer rather than a
 	filename.
