@@ -199,6 +199,7 @@ grab_key (int keycode, unsigned int modifiers, Window grab_window)
 char *
 keysym_to_string (KeySym keysym, unsigned int modifier)
 {
+  static char *null_string = "NULL"; /* A NULL string. */
   struct sbuf *name;
   char *tmp;
 
@@ -210,7 +211,13 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
   if (modifier & RP_HYPER_MASK) sbuf_concat (name, "H-");
   if (modifier & RP_SUPER_MASK) sbuf_concat (name, "S-");
     
-  sbuf_concat (name, XKeysymToString (keysym));
+  /* On solaris machines (perhaps other machines as well) this call
+     can return NULL. In this case use the "NULL" string. */
+  tmp = XKeysymToString (keysym);
+  if (tmp == NULL)
+    tmp = null_string;
+
+  sbuf_concat (name, tmp);
 
   /* Eat the nut and throw away the shells. */
   tmp = sbuf_get (name);

@@ -1,3 +1,8 @@
+2002-01-15  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/input.c (keysym_to_string): handle the case when
+	XKeysymToString returns NULL.
+
 2002-01-11  shawn  <sabetts@vcn.bc.ca>
 
 	* src/main.c (handler): store the error text at the beginning of
