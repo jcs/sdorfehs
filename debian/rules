@@ -69,7 +69,7 @@ install: build
 	done
 	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) \
 		install DESTDIR=$(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison
-	rm -f $(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison/usr/share/doc/COPYING
+	rm -f $(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison/usr/share/doc/ratpoison/COPYING
 
 # these build the various packages
 ratpoison: install
