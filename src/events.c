@@ -281,24 +281,28 @@ configure_request (XConfigureRequestEvent *e)
 	    {
 	      /* Depending on the rudeness level, actually map the
 		 window. */
-	      if ((rp_honour_transient_raise && win->transient)
-		  || (rp_honour_normal_raise && !win->transient))
+	      if (win->state == IconicState)
 		{
-		  if (win->state == IconicState)
-		    set_active_window (win);
+		  if ((rp_honour_transient_raise && win->transient)
+		      || (rp_honour_normal_raise && !win->transient))
+		    {
+		      set_active_window (win);
+		    }
+		  else 
+		    {
+		      if (win->transient)
+			marked_message_printf (0, 0, "Raise request from transient window %d (%s)", 
+					       win->number, win->name);
+		      else
+			marked_message_printf (0, 0, "Raise request from window %d (%s)",
+					       win->number, win->name);
+		    }
 		}
 	      else
 		{
-		  if (win->transient)
-		    marked_message_printf (0, 0, "Raise request from transient window %d (%s)", 
-					   win->number, win->name);
-		  else
-		    marked_message_printf (0, 0, "Raise request from window %d (%s)",
-					   win->number, win->name);
+		  if (find_windows_frame (win))
+		    goto_window (win);
 		}
-
-	      if (find_windows_frame (win))
-		goto_window (win);
 	    }
 
 	  PRINT_DEBUG("request CWStackMode %d\n", e->detail);
