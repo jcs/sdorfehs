@@ -51,6 +51,19 @@ grab_prefix_key (Window w)
 #endif
 }
 
+void
+update_normal_hints (rp_window *win)
+{
+  long supplied;
+
+  XGetWMNormalHints (dpy, win->w, win->hints, &supplied);
+
+  PRINT_DEBUG ("hints: maxx: %d maxy: %d incx: %d incy: %d\n", 
+	       win->hints->max_width, win->hints->max_height,
+	       win->hints->width_inc, win->hints->height_inc);
+}
+		     
+
 char *
 get_window_name (Window w)
 {
@@ -136,19 +149,19 @@ send_configure (rp_window *win)
 void
 manage (rp_window *win, screen_info *s)
 {
+  XMapWindow (dpy, win->w);
+
   if (!update_window_name (win)) return;
 
+  /* Get the WM Hints */
+  update_normal_hints (win);
+
   /* We successfully got the name, which means we can start managing! */
-  XMapWindow (dpy, win->w);
   XSelectInput (dpy, win->w, PropertyChangeMask);
   XAddToSaveSet(dpy, win->w);
   grab_prefix_key (win->w);
-/*   XMoveResizeWindow (dpy, win->w,  */
-/* 		     PADDING_LEFT,  */
-/* 		     PADDING_TOP,  */
-/* 		     s->root_attr.width - PADDING_LEFT - PADDING_RIGHT,  */
-/* 		     s->root_attr.height - PADDING_TOP - PADDING_BOTTOM); */
-/*   send_configure (win); */
+
+  maximize (win);
 
   win->state = STATE_MAPPED;
   win->number = get_unique_window_number ();
