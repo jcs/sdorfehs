@@ -1,3 +1,8 @@
+2005-02-26    <sabetts@localhost>
+
+	* src/actions.c (parse_args): properly check if we've hit the arg
+	limit.
+
 2005-02-22  sabetts  <sabetts@apeguts>
 
 	* src/main.c (read_startup_files): use xsprintf when generating

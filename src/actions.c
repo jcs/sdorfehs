@@ -2101,7 +2101,7 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
   for (i=str; *i; i++)
     {
       /* Have we hit the arg limit? */
-      if (nargs >= 0 && parsed_args >= nargs)
+      if (raw && parsed_args >= nargs)
 	{
 	  struct sbuf *s = sbuf_new(0);
 	  if (!raw)
