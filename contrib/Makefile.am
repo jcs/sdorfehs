@@ -1,2 +1,2 @@
-pkgdata_DATA = ratpoisonrc-mode.el
-EXTRA_DIST    = ratpoisonrc-mode.el
+pkgdata_DATA = ratpoisonrc-mode.el split.sh
+EXTRA_DIST    = ratpoisonrc-mode.el split.sh
