@@ -485,33 +485,6 @@ set_active_window (rp_window *win)
   maximize (win);
   unhide_window (win);
 
-  /* hide the old active window */
-/*   if (win->transient */
-/*       && find_window (win->transient_for) == last_win) */
-/*     { */
-/*       /\* Do nothing if the transient is already in the frame *\/ */
-/*     } */
-/*   else */
-/*     { */
-/*       if (last_win) */
-/* 	{ */
-/* 	if(win->transient && last_win->transient */
-/* 	   && find_window (win->transient_for) == find_window (last_win->transient_for)) */
-/* 	  { */
-/* 	    /\* Do nothing if last win's transient is already in the */
-/* 	       frame. *\/ */
-/* 	  } */
-/* 	else */
-/* 	  { */
-/* 	    hide_transient_for (last_win); */
-/* 	  } */
-
-/* 	hide_window (last_win); */
-/* 	} */
-
-      give_window_focus (win, last_win);
-/*     } */
-
   /* Make sure the program bar is always on the top */
   update_window_names (win->scr);
 

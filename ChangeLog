@@ -1,5 +1,23 @@
 2001-06-02  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/split.c (blank_frame): hide transient's transient_for.
+
+	* src/manage.c (unhide_below_window): new function
+
+	* src/manage.h (unhide_below_window): new prototype
+
+	* src/list.h (unhide_transient_for): new prototype
+	(hide_transient_for): likewise
+
+	* src/list.c (unhide_transient_for): new function
+	(hide_transient_for): likewise
+	(set_active_window): print the name of the last and new windows.
+	(set_active_window): unhide new window's transient_for. hide old
+	window's transient_for.
+
+	* src/events.c (cleanup_frame): hide any transients for the old
+	window and unhide any transients for the new one.
+
 	* src/manage.c (hide_window): ignore unmap_notify events when
 	unmapping the window.
 
