@@ -5,7 +5,11 @@ AM_INIT_AUTOMAKE(ratpoison, 0.0.6)
 
 AM_CONFIG_HEADER(src/config.h)
 
-AC_ARG_ENABLE(debug, [Turn on debugging information], AC_DEFINE(DEBUG))
+dnl by default turn on debugging
+AC_ARG_ENABLE(debug, [  --disable-debug         Turn off debugging information], enable_debugging=no, enable_debugging=yes)
+if test "$enable_debugging" = yes; then
+   AC_DEFINE(DEBUG)
+fi
 
 dnl Checks for programs.
 CFLAGS="$CFLAGS -Wall"
