@@ -1,3 +1,8 @@
+2001-03-01  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* doc/ratpoison.texi (Commands): filled in remaining commands and
+	keys.
+
 2001-02-27  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* doc/ratpoison.texi (Commands): added escape command
