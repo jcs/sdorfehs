@@ -21,44 +21,44 @@
 #include "ratpoison.h"
 
 int
-screen_width (screen_info *s)
+screen_width (rp_screen *s)
 {
   return DisplayWidth (dpy, s->screen_num) - defaults.padding_right - defaults.padding_left;
 }
 
 int
-screen_height (screen_info *s)
+screen_height (rp_screen *s)
 {
   return DisplayHeight (dpy, s->screen_num) - defaults.padding_bottom - defaults.padding_top;
 }
 
 int
-screen_left (screen_info *s)
+screen_left (rp_screen *s)
 {
   return defaults.padding_left;
 }
 
 int
-screen_right (screen_info *s)
+screen_right (rp_screen *s)
 {
   return screen_left (s) + screen_width (s);
 }
 
 int
-screen_top (screen_info *s)
+screen_top (rp_screen *s)
 {
   return defaults.padding_top;
 }
 
 int
-screen_bottom (screen_info *s)
+screen_bottom (rp_screen *s)
 {
   return screen_top (s) + screen_height (s);
 }
 
 /* Returns a pointer to a list of frames. */
 struct list_head *
-screen_copy_frameset (screen_info *s)
+screen_copy_frameset (rp_screen *s)
 {
   struct list_head *head;
   rp_window_frame *cur;
@@ -78,7 +78,7 @@ screen_copy_frameset (screen_info *s)
 
 /* Set head as the frameset, deleting the existing one. */
 void
-screen_restore_frameset (screen_info *s, struct list_head *head)
+screen_restore_frameset (rp_screen *s, struct list_head *head)
 {
   frameset_free (&s->rp_window_frames);
   INIT_LIST_HEAD (&s->rp_window_frames);
@@ -104,7 +104,7 @@ frameset_free (struct list_head *head)
 }
 
 rp_window_frame *
-screen_get_frame (screen_info *s, int frame_num)
+screen_get_frame (rp_screen *s, int frame_num)
 {
   rp_window_frame *cur;
 

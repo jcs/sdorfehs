@@ -22,12 +22,12 @@
 #ifndef _RATPOISON_BAR_H
 #define _RATPOISON_BAR_H 1
 
-void update_window_names (screen_info *s);
-void update_bar (screen_info *s);
-int show_bar (screen_info *s);
-int hide_bar (screen_info *s);
-int bar_y (screen_info *s, int height);
-int bar_x (screen_info *s, int width);
+void update_window_names (rp_screen *s);
+void update_bar (rp_screen *s);
+int show_bar (rp_screen *s);
+int hide_bar (rp_screen *s);
+int bar_y (rp_screen *s, int height);
+int bar_x (rp_screen *s, int width);
 
 #define message(msg) marked_message ((msg), 0, 0)
 void marked_message (char *msg, int hl_start, int hl_end);

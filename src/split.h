@@ -22,7 +22,7 @@
 #ifndef SPLIT_H
 #define SPLIT_H
 
-int num_frames (screen_info *s);
+int num_frames (rp_screen *s);
 rp_window *set_frames_window (rp_window_frame *frame, rp_window *win);
 void cleanup_frame (rp_window_frame *frame);
 void maximize_all_windows_in_frame (rp_window_frame *frame);
@@ -39,7 +39,7 @@ rp_window_frame *find_frame_next (rp_window_frame *frame);
 rp_window_frame *find_frame_prev (rp_window_frame *frame);
 rp_window *current_window ();
 void init_frame_lists ();
-void init_frame_list (screen_info *screen);
+void init_frame_list (rp_screen *screen);
 void set_active_frame (rp_window_frame *frame);
 void blank_frame (rp_window_frame *frame);
 void show_frame_indicator ();
@@ -51,8 +51,8 @@ rp_window_frame *find_frame_right (rp_window_frame *frame);
 rp_window_frame *find_frame_left (rp_window_frame *frame);
 rp_window_frame *find_frame_down (rp_window_frame *frame);
 rp_window_frame *find_frame_up (rp_window_frame *frame);
-rp_window_frame *find_last_frame (screen_info *s);
-rp_window_frame *find_frame_number (screen_info *s, int num);
+rp_window_frame *find_last_frame (rp_screen *s);
+rp_window_frame *find_frame_number (rp_screen *s, int num);
 
 rp_window_frame *current_frame ();
 

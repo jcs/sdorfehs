@@ -108,7 +108,7 @@ frame_move_down (rp_window_frame *frame, int amount)
 }
 
 rp_window_frame *
-frame_new (screen_info *s)
+frame_new (rp_screen *s)
 {
   rp_window_frame *f;
 
@@ -120,7 +120,7 @@ frame_new (screen_info *s)
 }
 
 void
-frame_free (screen_info *s, rp_window_frame *f)
+frame_free (rp_screen *s, rp_window_frame *f)
 {
   numset_release (s->frames_numset, f->number);
   free (f);

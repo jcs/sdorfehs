@@ -1222,7 +1222,7 @@ cmd_windows (int interactive, char *data)
   struct sbuf *window_list = NULL;
   char *tmp;
   int dummy;
-  screen_info *s;
+  rp_screen *s;
 
   if (interactive)
     {
@@ -1403,7 +1403,7 @@ cmd_only (int interactive, char *data)
 char *
 cmd_remove (int interactive, char *data)
 {
-  screen_info *s = current_screen();
+  rp_screen *s = current_screen();
   rp_window_frame *frame;
 
   if (num_frames(s) <= 1)
@@ -1433,7 +1433,7 @@ cmd_shrink (int interactive, char *data)
 char *
 cmd_resize (int interactive, char *data)
 {
-  screen_info *s = current_screen ();
+  rp_screen *s = current_screen ();
 
   /* If the user calls resize with arguments, treat it like the
      non-interactive version. */
@@ -1539,7 +1539,7 @@ cmd_defresizeunit (int interactive, char *data)
 char *
 cmd_banish (int interactive, char *data)
 {
-  screen_info *s;
+  rp_screen *s;
 
   s = current_screen ();
 
@@ -1559,7 +1559,7 @@ cmd_curframe (int interactive, char *data)
 char *
 cmd_license (int interactive, char *data)
 {
-  screen_info *s = current_screen();
+  rp_screen *s = current_screen();
   XEvent ev;
   Window fwin;			/* Window currently in focus */
   int revert;			
@@ -1641,7 +1641,7 @@ cmd_help (int interactive, char *data)
 {
   if (interactive) 
     {
-      screen_info *s = current_screen();
+      rp_screen *s = current_screen();
       XEvent ev;
       Window fwin;			/* Window currently in focus */
       int revert;			
@@ -2005,7 +2005,7 @@ cmd_defbargravity (int interactive, char *data)
 }
 
 static void
-update_gc (screen_info *s)
+update_gc (rp_screen *s)
 {
   XGCValues gv;
 
@@ -2893,7 +2893,7 @@ char *
 cmd_fselect (int interactive, char *data)
 {
   rp_window_frame *frame;
-  screen_info *s = current_screen();
+  rp_screen *s = current_screen();
   int fnum = -1;
 
   /* If the command was specified on the command line or an argument
@@ -3024,7 +3024,7 @@ cmd_fdump (int interactively, char *data)
 char *
 cmd_frestore (int interactively, char *data)
 {
-  screen_info *s = current_screen();
+  rp_screen *s = current_screen();
   char *token;
   char *dup;
   rp_window_frame *new, *cur;

@@ -72,7 +72,7 @@ extern XGCValues gv;
 #include "screen.h"
 
 void clean_up ();
-screen_info *find_screen (Window w);
+rp_screen *find_screen (Window w);
 
 void read_rc_file (FILE *file);
 

@@ -286,7 +286,7 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len, i
 }
 
 static void
-update_input_window (screen_info *s, char *prompt, char *input, int input_len)
+update_input_window (rp_screen *s, char *prompt, char *input, int input_len)
 {
   int 	prompt_width = XTextWidth (defaults.font, prompt, strlen (prompt));
   int 	input_width  = XTextWidth (defaults.font, input, input_len);
@@ -337,7 +337,7 @@ get_more_input (char *prompt, char *preinput)
   char keysym_buf[513];	
   int keysym_bufsize = sizeof (keysym_buf);
   int nbytes;
-  screen_info *s = current_screen ();
+  rp_screen *s = current_screen ();
   int cur_len = 0;		/* Current length of the string. */
   int allocated_len=100; /* The amount of memory we allocated for str */
   KeySym ch;

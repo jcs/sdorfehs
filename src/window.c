@@ -108,7 +108,7 @@ window_name (rp_window *win)
 
 /* Allocate a new window and add it to the list of managed windows */
 rp_window *
-add_to_window_list (screen_info *s, Window w)
+add_to_window_list (rp_screen *s, Window w)
 {
   rp_window *new_window;
 

@@ -45,7 +45,7 @@ static void
 new_window (XCreateWindowEvent *e)
 {
   rp_window *win;
-  screen_info *s;
+  rp_screen *s;
 
   if (e->override_redirect)
     return;
@@ -337,7 +337,7 @@ ungrab_rat ()
 }
 
 static void
-handle_key (screen_info *s)
+handle_key (rp_screen *s)
 {
   char *keysym_name;
   rp_action *key_action;
@@ -395,7 +395,7 @@ handle_key (screen_info *s)
 static void
 key_press (XEvent *ev)
 {
-  screen_info *s;
+  rp_screen *s;
   unsigned int modifier;
   KeySym ks;
 

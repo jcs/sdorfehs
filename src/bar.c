@@ -46,7 +46,7 @@ static int last_mark_end = 0;
 
 /* Hide the bar from sight. */
 int
-hide_bar (screen_info *s)
+hide_bar (rp_screen *s)
 {
   if (s->bar_is_raised)
     {
@@ -60,7 +60,7 @@ hide_bar (screen_info *s)
 
 /* Show window listing in bar. */
 int
-show_bar (screen_info *s)
+show_bar (rp_screen *s)
 {
   if (!s->bar_is_raised)
     {
@@ -81,7 +81,7 @@ show_bar (screen_info *s)
 }
 
 int
-bar_x (screen_info *s, int width)
+bar_x (rp_screen *s, int width)
 {
   int x = 0;
 
@@ -108,7 +108,7 @@ bar_x (screen_info *s, int width)
 }
 
 int
-bar_y (screen_info *s, int height)
+bar_y (rp_screen *s, int height)
 {
   int y = 0;
 
@@ -137,7 +137,7 @@ bar_y (screen_info *s, int height)
 }
 
 void
-update_bar (screen_info *s)
+update_bar (rp_screen *s)
 {
   if (s->bar_is_raised == BAR_IS_HIDDEN)
     return;
@@ -154,7 +154,7 @@ update_bar (screen_info *s)
 }
 
 void
-update_window_names (screen_info *s)
+update_window_names (rp_screen *s)
 {
   struct sbuf *bar_buffer;
   int mark_start = 0;
@@ -274,7 +274,7 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
   XGCValues lgv;
   GC lgc;
   unsigned long mask;
-  screen_info *s = current_screen ();
+  rp_screen *s = current_screen ();
   int i=0;
   int j=0;
   int num_lines;
@@ -436,7 +436,7 @@ marked_message (char *msg, int mark_start, int mark_end)
   XGCValues lgv;
   GC lgc;
   unsigned long mask;
-  screen_info *s = current_screen ();
+  rp_screen *s = current_screen ();
 
   int width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
   int height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);

@@ -47,7 +47,7 @@
 #define WIN_NAME_RES_NAME 	2
 
 typedef struct rp_window rp_window;
-typedef struct screen_info screen_info;
+typedef struct rp_screen rp_screen;
 typedef struct rp_action rp_action;
 typedef struct rp_window_frame rp_window_frame;
 
@@ -67,7 +67,7 @@ struct rp_window_frame
 
 struct rp_window
 {
-  screen_info *scr;
+  rp_screen *scr;
   Window w;
   int number;
   int state;
@@ -108,7 +108,7 @@ struct rp_window
   struct list_head node;
 };
 
-struct screen_info
+struct rp_screen
 {
   GC normal_gc;
   XWindowAttributes root_attr;
@@ -207,16 +207,6 @@ extern struct rp_defaults defaults;
 /* The prefix key also known as the command character under screen. */
 extern struct rp_key prefix_key;
 
-/* These _sentinel pointers point to a special rp_window whose next
-   pointer points to the head of the list and whose prev pointer
-   points to the tail. This is done to simplify removing an element
-   from the list: since there are no head and tail global variable
-   pointers that need to be updated, functions that manipulate
-   elements in a list don't need to know what list they belong to. The
-   last element's next pointer points to the sentinel as does the
-   first element's prev pointer. An empty list is represented by the
-   sentinel's prev and next pointers pointing to itself. */
-
 /* A list of mapped windows. These windows show up in the window
    list and have a number assigned to them. */
 extern struct list_head rp_mapped_window;
@@ -226,7 +216,7 @@ extern struct list_head rp_mapped_window;
 extern struct list_head rp_unmapped_window;
 
 extern int rp_current_screen;
-extern screen_info *screens;
+extern rp_screen *screens;
 extern int num_screens;
 
 extern XEvent rp_current_event;

@@ -36,8 +36,8 @@ int frame_right (rp_window_frame *frame);
 int frame_top (rp_window_frame *frame);
 int frame_left (rp_window_frame *frame);
 
-rp_window_frame *frame_new (screen_info *s);
-void frame_free (screen_info *s, rp_window_frame *f);
+rp_window_frame *frame_new (rp_screen *s);
+void frame_free (rp_screen *s, rp_window_frame *f);
 rp_window_frame *frame_copy (rp_window_frame *frame);
 char *frame_dump (rp_window_frame *frame);
 rp_window_frame *frame_read (char *str);

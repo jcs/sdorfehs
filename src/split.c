@@ -41,12 +41,12 @@ update_last_access (rp_window_frame *frame)
 rp_window_frame *
 current_frame ()
 {
-  screen_info *s = current_screen();
+  rp_screen *s = current_screen();
   return screen_get_frame (s, s->current_frame);
 }
 
 int
-num_frames (screen_info *s)
+num_frames (rp_screen *s)
 {
  int count = 0;
  rp_window_frame *cur;
@@ -108,7 +108,7 @@ set_frames_window (rp_window_frame *frame, rp_window *win)
   return find_window_number (last_win);
 }
 
-static screen_info *
+static rp_screen *
 frames_screen (rp_window_frame *frame)
 {
   int i;
@@ -144,7 +144,7 @@ maximize_all_windows_in_frame (rp_window_frame *frame)
 static void
 maximize_frame (rp_window_frame *frame)
 {
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
 
   frame->x = defaults.padding_left;
   frame->y = defaults.padding_top;
@@ -155,7 +155,7 @@ maximize_frame (rp_window_frame *frame)
 
 /* Create a full screen frame */
 static void
-create_initial_frame (screen_info *screen)
+create_initial_frame (rp_screen *screen)
 {
   rp_window_frame *frame;
 
@@ -179,7 +179,7 @@ init_frame_lists ()
 }
 
 void
-init_frame_list (screen_info *screen)
+init_frame_list (rp_screen *screen)
 {
   INIT_LIST_HEAD (&screen->rp_window_frames);
 
@@ -187,7 +187,7 @@ init_frame_list (screen_info *screen)
 }
 
 rp_window_frame *
-find_last_frame (screen_info *s)
+find_last_frame (rp_screen *s)
 {
   rp_window_frame *cur, *last = NULL;
   int last_access = -1;
@@ -209,7 +209,7 @@ find_last_frame (screen_info *s)
 rp_window_frame *
 find_windows_frame (rp_window *win)
 {
-  screen_info *s;
+  rp_screen *s;
   rp_window_frame *cur;
 
   s = win->scr;
@@ -265,7 +265,7 @@ window_fits_in_frame (rp_window *win, rp_window_frame *frame)
 rp_window *
 find_window_for_frame (rp_window_frame *frame)
 {
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
   int last_access = 0;
   rp_window *most_recent = NULL;
   rp_window *cur;
@@ -292,7 +292,7 @@ find_window_for_frame (rp_window_frame *frame)
 static void
 split_frame (rp_window_frame *frame, int way, int pixels)
 {
-  screen_info *s;
+  rp_screen *s;
   rp_window *win;
   rp_window_frame *new_frame;
 
@@ -374,7 +374,7 @@ void
 remove_all_splits ()
 {
   struct list_head *tmp, *iter;
-  screen_info *s = current_screen();
+  rp_screen *s = current_screen();
   rp_window_frame *frame;
   rp_window *win;
 
@@ -426,7 +426,7 @@ resize_frame (rp_window_frame *frame, rp_window_frame *pusher, int diff,
 	      void (*resize2)(rp_window_frame *, int),
 	      int (*resize3)(rp_window_frame *, rp_window_frame *, int))
 {
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
   rp_window_frame *cur;
 
   /* Loop through the frames and determine which ones are affected by
@@ -532,7 +532,7 @@ resize_frame_horizontally (rp_window_frame *frame, int diff)
 {
   int (*resize_fn)(rp_window_frame *, rp_window_frame*, int);
   struct list_head *l;
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
 
   if (num_frames (s) < 2 || diff == 0)
     return;
@@ -578,7 +578,7 @@ resize_frame_vertically (rp_window_frame *frame, int diff)
 {
   int (*resize_fn)(rp_window_frame *, rp_window_frame*, int);
   struct list_head *l;
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
 
   if (num_frames (s) < 2 || diff == 0)
     return;
@@ -646,7 +646,7 @@ frame_is_right (rp_window_frame *src, rp_window_frame *frame)
 }
 
 static int
-total_frame_area (screen_info *s)
+total_frame_area (rp_screen *s)
 {
   int area = 0;
   rp_window_frame *cur;
@@ -677,7 +677,7 @@ frames_overlap (rp_window_frame *f1, rp_window_frame *f2)
 static int
 frame_overlaps (rp_window_frame *frame)
 {
-  screen_info *s;
+  rp_screen *s;
   rp_window_frame *cur;
 
   s = frames_screen (frame);
@@ -695,7 +695,7 @@ frame_overlaps (rp_window_frame *frame)
 void
 remove_frame (rp_window_frame *frame)
 {
-  screen_info *s;
+  rp_screen *s;
   int area;
   rp_window_frame *cur;
   rp_window *win;
@@ -814,8 +814,8 @@ remove_frame (rp_window_frame *frame)
 void
 set_active_frame (rp_window_frame *frame)
 {
-  screen_info *old_s = current_screen();
-  screen_info *s = frames_screen (frame);
+  rp_screen *old_s = current_screen();
+  rp_screen *s = frames_screen (frame);
   int old = current_screen()->current_frame;
   rp_window *win, *old_win;
   rp_window_frame *old_frame;
@@ -860,7 +860,7 @@ set_active_frame (rp_window_frame *frame)
 void
 blank_frame (rp_window_frame *frame)
 {
-  screen_info *s;
+  rp_screen *s;
   rp_window *win;
 
   if (frame->win_number == EMPTY) return;
@@ -896,7 +896,7 @@ show_frame_indicator ()
 void
 show_frame_message (char *msg)
 {
-  screen_info *s = current_screen ();
+  rp_screen *s = current_screen ();
   int width, height;
   rp_window_frame *frame;
 
@@ -923,7 +923,7 @@ show_frame_message (char *msg)
 rp_window_frame *
 find_frame_up (rp_window_frame *frame)
 {
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
   rp_window_frame *cur;
 
   list_for_each_entry (cur, &s->rp_window_frames, node)
@@ -941,7 +941,7 @@ find_frame_up (rp_window_frame *frame)
 rp_window_frame *
 find_frame_down (rp_window_frame *frame)
 {
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
   rp_window_frame *cur;
 
   list_for_each_entry (cur, &s->rp_window_frames, node)
@@ -959,7 +959,7 @@ find_frame_down (rp_window_frame *frame)
 rp_window_frame *
 find_frame_left (rp_window_frame *frame)
 {
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
   rp_window_frame *cur;
 
   list_for_each_entry (cur, &s->rp_window_frames, node)
@@ -977,7 +977,7 @@ find_frame_left (rp_window_frame *frame)
 rp_window_frame *
 find_frame_right (rp_window_frame *frame)
 {
-  screen_info *s = frames_screen (frame);
+  rp_screen *s = frames_screen (frame);
   rp_window_frame *cur;
 
   list_for_each_entry (cur, &s->rp_window_frames, node)
@@ -993,7 +993,7 @@ find_frame_right (rp_window_frame *frame)
 }
 
 rp_window_frame *
-find_frame_number (screen_info *s, int num)
+find_frame_number (rp_screen *s, int num)
 {
   rp_window_frame *cur;
 

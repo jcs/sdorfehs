@@ -43,7 +43,7 @@
 # define WAIT_ANY -1
 #endif
 
-static void init_screen (screen_info *s, int screen_num);
+static void init_screen (rp_screen *s, int screen_num);
 
 int alarm_signalled = 0;
 int kill_signalled = 0;
@@ -66,7 +66,7 @@ Atom rp_command_request;
 Atom rp_command_result;
 
 int rp_current_screen;
-screen_info *screens;
+rp_screen *screens;
 int num_screens;
 Display *dpy;
 
@@ -620,7 +620,7 @@ main (int argc, char *argv[])
     }
 
   /* Initialize the screens */
-  screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
+  screens = (rp_screen *)xmalloc (sizeof (rp_screen) * num_screens);
   PRINT_DEBUG (("%d screens.\n", num_screens));
 
   if (screen_arg)
@@ -671,13 +671,13 @@ main (int argc, char *argv[])
 }
 
 static void
-init_rat_cursor (screen_info *s)
+init_rat_cursor (rp_screen *s)
 {
   s->rat = XCreateFontCursor( dpy, XC_icon );
 }
 
 static void
-init_screen (screen_info *s, int screen_num)
+init_screen (rp_screen *s, int screen_num)
 {
   XGCValues gv;
 
@@ -761,7 +761,7 @@ init_screen (screen_info *s, int screen_num)
 }
 
 static void
-free_screen (screen_info *s)
+free_screen (rp_screen *s)
 {
   rp_window_frame *frame;
   struct list_head *iter, *tmp;
@@ -811,8 +811,8 @@ clean_up ()
   XCloseDisplay (dpy);
 }
 
-/* Given a root window, return the screen_info struct */
-screen_info *
+/* Given a root window, return the rp_screen struct */
+rp_screen *
 find_screen (Window w)
 {
   int i;

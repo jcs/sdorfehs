@@ -25,7 +25,7 @@
 #include "sbuf.h"
 
 void free_window (rp_window *w);
-rp_window *add_to_window_list (screen_info *s, Window w);
+rp_window *add_to_window_list (rp_screen *s, Window w);
 void last_window ();
 rp_window *find_window_in_list (Window w, struct list_head *list);
 rp_window *find_window (Window w);

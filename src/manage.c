@@ -122,7 +122,7 @@ ungrab_prefix_key (Window w)
 #endif
 }
 
-screen_info*
+rp_screen*
 current_screen ()
 {
   int i;
@@ -369,7 +369,7 @@ unmanage (rp_window *w)
 
 /* When starting up scan existing windows and start managing them. */
 void
-scanwins(screen_info *s)
+scanwins(rp_screen *s)
 {
   rp_window *win;
   XWindowAttributes attr;

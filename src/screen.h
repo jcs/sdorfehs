@@ -21,16 +21,16 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-int screen_bottom (screen_info *s);
-int screen_top (screen_info *s);
-int screen_right (screen_info *s);
-int screen_left (screen_info *s);
-int screen_height (screen_info *s);
-int screen_width (screen_info *s);
+int screen_bottom (rp_screen *s);
+int screen_top (rp_screen *s);
+int screen_right (rp_screen *s);
+int screen_left (rp_screen *s);
+int screen_height (rp_screen *s);
+int screen_width (rp_screen *s);
 
-struct list_head *screen_copy_frameset (screen_info *s);
-void screen_restore_frameset (screen_info *s, struct list_head *head);
+struct list_head *screen_copy_frameset (rp_screen *s);
+void screen_restore_frameset (rp_screen *s, struct list_head *head);
 void frameset_free (struct list_head *head);
-rp_window_frame *screen_get_frame (screen_info *s, int frame_num);
+rp_window_frame *screen_get_frame (rp_screen *s, int frame_num);
 
 #endif
