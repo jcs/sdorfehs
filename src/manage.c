@@ -675,7 +675,10 @@ hide_window (rp_window *win)
   /* An unmapped window is not inside a frame. */
   win->frame = NULL;
 
+  /* Ignore the unmap_notify event. */
+  XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XUnmapWindow (dpy, win->w);
+  XSelectInput (dpy, win->w, WIN_EVENTS);
   set_state (win, IconicState);
 }
 
