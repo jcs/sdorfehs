@@ -6,6 +6,10 @@ Each xinerama screen is handled as X11 screens normally are. The only
 different is that each xinerama screen can select from all the
 managed windows.
 
+** focuslast finds the last focused frame among all screens
+
+** fselect selects from frames in all screens
+
 * Changes since 1.3.0-rc1
 ** new command-line option --file
 Used to specify an alternate configuration file.
