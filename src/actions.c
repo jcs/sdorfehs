@@ -706,17 +706,16 @@ cmd_quit(void *data)
 void
 cmd_clock (void *data)
 {
+  char *msg, *tmp;
   time_t timep;
- 
-  timep = time(NULL);
-  if(timep == ((time_t)-1))
-    {
-      PRINT_ERROR ("time() failed\n")
-      return;
-    }
 
-  /* FIXME: There's an annoying newline at the end */
-  message (ctime(&timep));
+  timep = time(NULL);
+  tmp = ctime(&timep);
+  msg = xmalloc (strlen (tmp));
+  strncpy(msg, tmp, strlen (tmp) - 1);	/* Remove the newline */
+
+  message (msg);
+  free (msg);
 }
 
 
