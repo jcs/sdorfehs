@@ -912,9 +912,9 @@ Delete the keymap, @var{kmap}.
 @end deffn
 
 @deffn Command bind @var{Key} @var{command}
-Bind a key to a ratpoison command. This command takes two arguments: the
-key to bind and the command to run. For example, to bind @kbd{C-t R} to
-restart ratpoison:
+Bind a key to a ratpoison command on the @samp{root} keymap. This
+command takes two arguments: the key to bind and the command to
+run. For example, to bind @kbd{C-t R} to restart ratpoison:
 
 @example
 bind R restart
@@ -922,7 +922,7 @@ bind R restart
 @end deffn
 
 @deffn Command unbind @var{key}
-Unbind a keystroke.
+Unbind a keystroke on the @samp{root} keymap.
 @end deffn
 
 @deffn Command definekey @var{kmap} @var{key} @var{command}
@@ -948,10 +948,8 @@ to the last window.
 @node Default Key Bindings,  , Key Maps, Keystrokes
 @section Default Key Bindings
 
-ratpoison is a very simple window manager. Each window is maximized and
-has no border decorations. The default keystrokes are listed in this
-chapter. Not all commands are accessible by default by keys. A full list
-of ratpoison commands is in the next section.
+The default keystrokes are listed in this chapter. Not all commands
+are accessible by default by keys.
 
 @table @kbd
 
