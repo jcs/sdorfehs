@@ -1,5 +1,17 @@
 2002-11-20  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/ratpoison.h[!HAVE_VARARG_MACROS]: PRINT_ERROR and
+	PRINT_DEBUG are defined as void macros.
+
+	* src/events.c (client_msg): Add semicolon to the end of a
+	PRINT_DEBUG line.
+
+	* src/actions.c (cmd_bind): typecast data as a (char *) before
+	using it in (char *) pointer arithmetic.
+
+	* configure.in: Add check to see if the preprocessor has variable
+	argument macro capabilities.
+
 	* src/main.c (init_defaults): set pointer warping to on by
 	default.
 

@@ -330,7 +330,7 @@ client_msg (XClientMessageEvent *ev)
     {
       rp_window *win;
 
-      PRINT_DEBUG ("WM_CHANGE_STATE\n")
+      PRINT_DEBUG ("WM_CHANGE_STATE\n");
 
       win = find_window (ev->window);
       if (win == NULL) return;

@@ -33,6 +33,11 @@
 
 /* Some error reporting macros */
 #define PRE_PRINT_LOCATION fprintf (stderr, "%s:%s():%d: ", __FILE__, __FUNCTION__, __LINE__);
+
+/* FIXME: Some preprocessors don't have variable args. In that case
+   they don't get error or debugging output. */
+#ifdef HAVE_VARARG_MACROS
+
 #define PRINT_ERROR(format, args...) \
         { fprintf (stderr, PACKAGE ":error -- "); PRE_PRINT_LOCATION; fprintf (stderr, format, ## args); }
 
@@ -43,6 +48,14 @@
 #else
 #  define PRINT_DEBUG(format, args...) 
 #endif /* DEBUG */
+
+#else  /* !HAVE_VARARG_MACROS */
+
+#define PRINT_ERROR (void)
+#define PRINT_DEBUG (void)
+
+#endif /* HAVE_VARARG_MACROS */
+
 
 extern XGCValues gv;
 

@@ -455,7 +455,7 @@ cmd_bind (int interactive, void *data)
 
   keydesc = (char*) xmalloc (strlen (data) + 1);
   sscanf (data, "%s", keydesc);
-  cmd = data + strlen (keydesc);
+  cmd = ((char *)data) + strlen (keydesc);
 
   /* Gobble remaining whitespace before command starts */
   while (*cmd == ' ')
