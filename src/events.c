@@ -287,7 +287,7 @@ handle_key (screen_info *s)
 {
   char *keysym_name;
   char *msg;
-  char *cmd;
+  rp_action *key_action;
   int revert;			
   Window fwin;			/* Window currently in focus */
   KeySym keysym;		/* Key pressed */
@@ -304,10 +304,10 @@ handle_key (screen_info *s)
 
   read_key (&keysym, &mod);
 
-  if ((cmd = find_keybinding (keysym, mod)))
+  if ((key_action = find_keybinding (keysym, mod)))
     {
       XSetInputFocus (dpy, fwin, revert, CurrentTime);
-      command (cmd);
+      command (key_action->data);
     }
   else
     {

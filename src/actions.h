@@ -59,10 +59,17 @@ void cmd_other (void *data);
 void cmd_clock (void *data);
 void cmd_version (void *data);
 void cmd_unimplemented (void *data);
+void cmd_bind (void* data);
 
 /* void cmd_xterm (void *data); */
 
 void initialize_default_keybindings (void);
-char *find_keybinding (int keysym, int state);
+rp_action* find_keybinding (int keysym, int state);
+
+struct key
+{
+  long sym;
+  long state;
+};
 
 #endif /* ! _RATPOISON_ACTIONS_H */

@@ -37,7 +37,7 @@ rp_action *key_actions;
 int key_actions_last;
 int key_actions_table_size;
 
-char *
+rp_action*
 find_keybinding (int keysym, int state)
 {
   int i;
@@ -45,7 +45,7 @@ find_keybinding (int keysym, int state)
     {
       if (key_actions[i].key == keysym 
 	  && key_actions[i].state == state)
-	return strdup(key_actions[i].data);
+	return &key_actions[i];
     }
   return NULL;
 }
@@ -63,7 +63,9 @@ add_keybinding (int keysym, int state, char *cmd)
 
   key_actions[key_actions_last].key = keysym;
   key_actions[key_actions_last].state = state;
-  key_actions[key_actions_last].data = cmd;
+  key_actions[key_actions_last].data = strdup (cmd); /* free this on
+							shutdown, or
+							re/unbinding */
 
   ++key_actions_last;
 }
@@ -138,6 +140,7 @@ user_command user_commands[] =
     {"newwm",		cmd_newwm,		arg_STRING},
     {"generate",	cmd_generate,		arg_STRING}, /* rename to stuff */
     {"version",		cmd_version,		arg_VOID},
+    {"bind",		cmd_bind,		arg_VOID},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
@@ -168,6 +171,74 @@ user_command user_commands[] =
     {"startup_message",	cmd_unimplemented,	arg_VOID},
     {0,			0,		0} };
 
+struct key*
+parse_keydesc (char *keydesc)
+{
+  static struct key key;
+  struct key *p = &key;
+
+  if (!keydesc) 
+    return NULL;
+
+  if (keydesc[0] == '^')
+    {
+      p->state = ControlMask;
+      p->sym = XStringToKeysym (keydesc + 1);
+    }
+  else
+    {
+      p->state = 0;
+      p->sym = XStringToKeysym (keydesc);
+    }
+
+  if (!p->sym)
+    return NULL;
+  else
+    return p;
+}
+
+void
+cmd_bind (void *data)
+{
+  char *keydesc;
+  char *cmd;
+
+  if (!data)
+    {
+      message (" FIXME: cmd_bind: need some args ");
+      return;
+    }
+
+  keydesc = (char*) malloc (strlen (data + 1));
+  sscanf (data, "%s", keydesc);
+  cmd = data + strlen (keydesc);
+
+  if (!keydesc)
+    message (" FIXME: cmd_bind: need a key ");
+  else
+    {
+      if (!cmd || !*cmd)
+	message (" FIXME: cmd_bind: need a command to bind to key ");
+      else
+	{
+	  char foo[1000];
+
+	  struct key *key = parse_keydesc (keydesc);
+
+	  if (key)
+	    {
+	      sprintf (foo, " %ld %ld : '%s' ", key->state, key->sym, cmd);
+	      add_keybinding (key->sym, key->state, cmd);
+	    }
+	  else
+	    sprintf (foo, " FIXME: cmd_bind: couldnt parse key ");
+
+	  message (foo);
+	}
+    }
+
+  free (keydesc);
+}
 
 void
 cmd_unimplemented (void *data)
