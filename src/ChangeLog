@@ -1,3 +1,8 @@
+2000-12-13  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* actions.c: removed gross tabs from key_actions definition. Add
+	C-t space to go to next window.
+
 2000-12-09  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* data.h (struct rp_window): added x, y, width, height, border;
