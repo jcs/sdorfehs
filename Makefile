@@ -10,8 +10,8 @@ LIBS = -lX11
 LDFLAGS = -L/usr/X11R6/lib
 CFLAGS = -g -Wall -I/usr/X11R6/include 
 
-SRC = main.o events.o manage.o list.o bar.o
-HEADERS = bar.h conf.h data.h events.h list.h manage.h ratpoison.h
+SRC = main.o events.o manage.o list.o bar.o number.o
+HEADERS = bar.h conf.h data.h events.h list.h manage.h ratpoison.h number.h
 
 all: ratpoison ratpoison.info
 
