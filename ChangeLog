@@ -1,5 +1,8 @@
 2001-04-10  Gergely Nagy  <algernon@debian.org>
 
+	* src/main.c (main): initialie command to NULL, silences an
+	annoying warning
+
 	* debian/rules: sync it up a bit, so it works with both
 	the current CVS ratpoison
 
