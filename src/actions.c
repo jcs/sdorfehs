@@ -2042,6 +2042,8 @@ cmd_link (int interactive, void *data)
   return NULL;
 }
 
+/* Thanks to Doug Kearns <djkea2@mugc.its.monash.edu.au> for the
+   original patch. */
 char *
 cmd_defbarpadding (int interactive, void *data)
 {
