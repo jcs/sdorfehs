@@ -17,7 +17,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##
-## $Id: Makefile.am,v 1.9 2001/02/19 20:44:20 rcyeske Exp $
+## $Id: Makefile.am,v 1.10 2001/02/25 22:01:41 rcyeske Exp $
 
 bin_PROGRAMS		= ratpoison
 
@@ -46,5 +46,5 @@ ratpoison_SOURCES	= actions.c		\
 			number.h		\
 			ratpoison.h		\
 			sbuf.c			\
-			sbuf.h			\
-			themes.h
+			sbuf.h
+
