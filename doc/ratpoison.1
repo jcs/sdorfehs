@@ -1,542 +1,727 @@
-.TH RATPOISON 1 "26 January, 2002" "ratpoison" RATPOISON
+.TH RATPOISON 1 2005-01-28
+\# This man page is free software; you can redistribute it and/or modify
+\# it under the terms of the GNU General Public License as published by
+\# the Free Software Foundation; either version 2, or (at your option)
+\# any later version.
+\# 
+\# This man page is distributed in the hope that it will be useful,
+\# but WITHOUT ANY WARRANTY; without even the implied warranty of
+\# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\# GNU General Public License for more details.
+\# 
+\# You should have received a copy of the GNU General Public License
+\# along with this software; see the file COPYING.  If not, write to
+\# the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+\# Boston, MA 02111-1307 USA
+.de command
+.	ds command@tmp \fB\\$1\fP
+.	nr command@space 1
+.	shift
+.	while \\n[.$] \{\
+.		ie '\\$1'[' \{\
+.			if ( \\n[command@space] == 1 ) .as command@tmp \& \&
+.			as command@tmp [
+.			nr command@space 0
+.		\}
+.		el .ie '\\$1']' \{\
+.			as command@tmp ]
+.			nr command@space 1
+.		\}
+.		el .ie '\\$1'|' \{\
+.			as command@tmp |
+.			nr command@space 0
+.		\}
+.		el .ie '\\$1'(' \{\
+.			as command@tmp \& (\fB
+.			nr command@space 0
+.			shift
+.			while !'\\$1')' \{\
+.				ie '\\$1'|' .as command@tmp \fP|\fB\h'-1'
+.				el \{\
+.					if ( \\n[command@space] == 1 ) .as command@tmp \& \&
+.					as command@tmp \\$1
+.					nr command@space 1
+.				\}
+.				shift
+.			\}
+.			shift 
+.			as command@tmp \fP)
+.			nr command@space 0
+.		\}
+.		el \{\
+.			if ( \\n[command@space] == 1 ) .as command@tmp \& \&
+.			as command@tmp \fI\\$1\fR
+.			nr command@space 1
+.		\}
+.		shift
+.	\}
+\&\\*[command@tmp]
+..
+.de cmd
+.TP
+.command \\$@
+.br
+..
+.de var
+.TP
+.command \\$@
+.br
+..
 .SH NAME
-ratpoison \- fatless X window manager
+ratpoison \- window manager without mouse dependency
+.P
 .SH SYNOPSIS
+.B ratpoison \-\-help 
+|
+.B \-\-version
+.br
 .B ratpoison
-[
-\fIoptions\fP
-]
+.RB [ \-d
+.IR dpy ]
+.RB [ \-s
+.IR num ]
+.RB [ \-f
+.IR file ]
+.br
+.B ratpoison
+.RB [ \-d
+.IR dpy ]
+.RB [ \-s
+.IR num ]
+.RB [ \-i ] 
+.B \-c
+.IR command
+.RB [ \-c
+.I command 
+\&... ]
 .SH DESCRIPTION
-ratpoison is a simple Window Manager with no fat library dependencies, no fancy graphics, no window decorations, and no rodent dependence. It is largely modeled after GNU Screen which has done wonders in the virtual terminal market.
-.PP
-All interaction with the window manager is done through keystrokes. ratpoison has a prefix map to minimize the key clobbering that cripples EMACS and other quality pieces of software.
-.PP
-ratpoison is a very simple window manager. Each window is maximized and has no border decorations. 
-.SH KEYSTROKES
-The default keystrokes are listed in this chapter. Not all commands are accessible by default by keys. A full list of ratpoison commands is in the next section.
-.TP
-.B C\-t C\-t
-Switch to the last window.
-.TP
-.B C\-t t
-Sometimes you need to send a C\-t to the current window. This
-keystroke does just that.
-.TP
-.B C\-t 0\-9
-Switch to the numbered window.
-.TP
-.B C\-t \-
-Select no window, essentially hiding all windows in the current
-frame.
-.TP
-.B C\-t A, C\-t C\-A
-Rename the current window. The window's new name will prevail for
-the rest of its lifetime.
-.TP
-.B C\-t K, C\-t C\-K
-Send a DestroyClient event to the current window. This will
-terminate the application without question.
-.TP
-.B C\-t n, C\-t C\-n, C\-t Return, C\-t C\-Return, C\-t Space, C\-t C\-Space
-Go to next window.
-.TP
-.B C\-t p, C\-t C\-p
-Go to previous window.
-.TP
-.B C\-t ', C\-t C\-'
-Go to a window by name. You will usually only need to type the
-first few characters of the window name.
-.TP
-.B C\-t a, C\-t C\-a
-Display the current time of day.
-.TP
-.B C\-t c, C\-t C\-c
-Open a new X terminal.
-.TP
-.B C\-t :
-This allows you to execute a single ratpoison command.
-.TP
-.B C\-t !
-Run a shell command.
-.TP
-.B C\-t C\-!
-Run a shell command through an X terminal.
-.TP
-.B C\-t i, C\-t C\-i
-Display information about the current window.
-.TP
-.B C\-t k, C\-t C\-k
-Close the current window.
-.TP
-.B C\-t l, C\-t C\-l
-Redisplay the current window. Sometimes windows don't respond
-correctly to the initial maximize event and need some coaxing.
-This is a fancy way of saying there are still bugs in ratpoison.
-`C\-t l' will force the current window to maximize.
-.TP
-.B C\-t m, C\-t C\-m
-Display the last message.
-.TP
-.B C\-t v, C\-t C\-v
-Display the version of ratpoison.
-.TP
-.B C\-t w, C\-t C\-w
-Display the list of managed windows. The current window is
-highlighted.
-.TP
-.B C\-t s
-Split the current window horizontally in two. The last accessed
-window not occupying a frame will be the second window.
-.TP
-.B C\-t S
-Split the current window vertically in two. The last accessed
-window not occupying a frame will be the second window.
-.TP
-.B C\-t tab
-Cycle through ratpoison's frames.
-.TP
-.B C\-t M\-tab
-Switch to the last focused frame.
-.TP
-.B C\-t Q
-Kill all frames but the current one.
-.TP
-.B C\-t R
-Kill the current frame. This is a no\-op if there is only one frame.
-.TP
-.B C\-t b, C\-t C\-b
-Banish the mouse to the lower right corner of the screen.
-.TP
-.B C\-t ?
-Display a help screen
-.TP
-.B C\-t f, C\-t C\-f
-Select a frame by number.
-.TP
-.B C\-t F
-Indicate which frame is the current frame.
-.TP
-.B C\-t arrow key
-Move to the frame adjoining the current frame in the
-given direction.
-.SH COMMANDS
-ratpoison can be controlled with commands (so called colon\-commands).
-The summary of available commands is listed below:
-.TP
-.B abort
-This is a pretty useless command. By default, it is bound to `C\-t
-g', and its purpose is to abort other commands.
-.TP
-.B alias \fINAME COMMAND\fP
-An alias allows you to name a ratpoison command something else. For
-instance, if you frequently open emacs you may want to make an
-alias called `emacs' that loads emacs. You would do it like this:
+Ratpoison is a Window Manager without fat library
+dependencies, fancy graphics or rat dependence.
 
-: alias emacs exec emacs
+The screen can be split into non-overlapping frames. All
+windows are kept maximized inside their frames.
 
-An alias is treated exactly like a colon command in that you can
-call it from the colon prompt, bind it to a key, and call it
-non\-interactively with `ratpoison \-c'.
-.TP
-.B banish
-Banish the mouse to the lower right corner of the screen.
-.TP
-.B bind \fIKEY COMMAND\fP
-Bind a key to a ratpoison command. This command takes two
-arguments: the key to bind and the command to run. For example, to
-bind `C\-t R' to restart ratpoison:
-
-: bind R restart
-
-If no command is specified then bind works exactly like `unbind',
-unbinding the key.
-.TP
-.B chdir
-Change the current directory for ratpoison.
-.TP
-.B colon \fICOMMAND\fP
-Run a ratpoison command.
-.TP
-.B curframe
-Indicate which frame is the current frame.
-.TP
-.B defbarborder \fIN\fP
-Set the border width for the bar.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defbargravity \fIG\fP
-Set the default alignment for the message bar. See the `gravity' command.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defbarpadding \fIX Y\fP
-Set the horizontal and vertical padding inside the bar.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defbgcolor \fICOLOR\fP
-Set the background color for all text ratpoison displays. \fICOLOR\fP is any
-valid X11 color.
-.TP
-.B defborder \fIN\fP
-Set the border width for all windows.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B deffgcolor \fICOLOR\fP
-Set the foreground color for all text ratpoison displays. \fICOLOR\fP is any
-valid X11 color.
-.TP
-.B deffont \fIFONT\fP
-Set the font. \fIFONT\fP is a font string like `9x15bold'.
-.TP
-.B definputwidth \fIN\fP
-Set the width of the input window.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defmaxsizegravity \fIG\fP
-Set the default alignment for windows with maxsize hints. See the
-`gravity' command.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defpadding \fILEFT TOP RIGHT BOTTOM\fP
-Set the padding around the edge of the screen.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B deftransgravity \fIG\fP
-Set the default alignment for transient windows. See the `gravity'
-command.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defwaitcursor \fIN\fP
-Set whether the rat cursor should change into a square when waiting
-for a key. A non\-zero number means change the cursor. Zero means
-don't change the cursor.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defwinfmt \fIFMT\fP
-Set the default window format for the `windows' command. By
-default it is `N\-W'. The following is a list of valid format
-characters:
-
-`%n'
-The window number
-
-`%s'
-Window status (current window, last window, etc)
-
-`%t'
-Window Name
-
-`%a'
-Application Name
-
-`%c'
-Resource Class
-
-`%i'
-X11 Window ID
-
-`%l'
-A unique number based on when the window was last accessed.
-The higher the number, the more recently it was accessed.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defwingravity \fIG\fP
-Set the default gravity for normal windows. See the `gravity'
-command.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B defwinname \fINAME\fP
-There are three resources ratpoison can get a window's name from:
-the WMNAME hint, the res_name from the WMCLASS hint, or the
-res_class from the WMCLASS hint. \fINAME\fP can be `title' which is what most
-window managers put in the title bar, `name' which is the res_name, or `class'
-which is the res_class.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B delete
-This deletes the current window. You can access it with the `C\-t k'
-keystroke.
-.TP
-.B echo \fITEXT\fP
-Display \fITEXT\fP as a message.
-.TP
-.B escape \fIKEY\fP
-Set the prefix to to \fIKEY\fP. For example `escape C\-b' sets the prefix key
-to <C\-b>.
-.TP
-.B exec \fICOMMAND\fP
-Execute a shell command. By default, `C\-t !' does this.
-.TP
-.B focus
-cycle through ratpoison's frames.
-.TP
-.B focuslast
-Switch to the last focused frame.
-.TP
-.B focusup
-Move to the frame above the current frame.
-.TP
-.B focusdown
-Move to the frame below the current frame.
-.TP
-.B focusleft
-Move to the frame left of the current frame.
-.TP
-.B focusright
-Move to the frame right of the current frame.
-.TP
-.B gravity \fIG\fP
-Change the gravity of the current window. A normal window will default to the
-top\-left corner of the screen, but it can also be placed at the bottom\-right
-corner of the screen. Valid values for \fIG\fP are the 8 directions
-`northwest', `north', `northeast', `east', `southeast', `south', `southwest'
-and `west', clockwise from the top left corner. `center' will center the window
-in the frame. \fIG\fP and can be abbreviated to one or two letters.
-.TP
-.B help
-Display a help screen that lists all bound keystrokes.
-.TP
-.B info
-Display information about the current window.
-.TP
-.B kill
-This destroys the current window. Normally you should only need to
-use `delete', but just in case you need to rip the heart out of a
-misbehaving window this command should do the trick. Also
-available as `C\-t K'.
-.TP
-.B lastmsg
-Display the last message.
-.TP
-.B link \fIKEY\fP
-Call the command that \fIKEY\fP is bound to. For instance `link C\-t' would
-call the command `other' and switch to the last window.
-.TP
-.B meta
-Send a `C\-t' to the current window.
-.TP
-.B msgwait \fIN\fP
-Set the bar's timeout in seconds.
-
-When called non\-interactively with no arguments, the current
-setting is returned.
-.TP
-.B redisplay
-Redisplay the current window, just like `C\-t l' would do.
-.TP
-.B restart
-Restart ratpoison.
-.TP
-.B newwm \fIWINDOW\-MANAGER\fP
-This is a bad\-bad command. It kills ratpoison and revives that
-ugly rodent! Yuck! Avoid!
-.TP
-.B next
-This jumps you to the next window in the window list. This one is
-bound to three keystrokes, namely `C\-t n', `C\-t space', and `C\-t
-enter'.
-.TP
-.B number \fIN TARGET\fP
-Set a window's number to \fIN\fP. If another window occupies the requested
-number already, then the windows' numbers are swapped.
-
-The second argument, \fITARGET\fP, is optional. It should be the number of the
-window whose number will be changed. If \fITARGET\fP is omitted ratpoison
-defaults to the current window.
-.TP
-.B only
-Kill all frames but the current one.
-.TP
-.B other
-This toggles between the current window and the last window. By
-default, this is bound to `C\-t C\-t'.
-.TP
-.B prev
-This jumps you to the previous window in the window list. By
-default, this is bound to `C\-t p'.
-.TP
-.B quit
-Quit ratpoison.
-.TP
-.B remove
-Kill the current frame. This is a no\-op if there is only one frame.
-.TP
-.B rudeness \fIN\fP
-The rudeness command lets you decide what windows pop\-up
-automatically and when. This is often useful for those deep hack
-sessions when you absolutely can't be disturbed.
-
-There are two kinds of windows: normal windows (like an xterm) and
-transient windows (generally pop\-up dialog boxes). When a client
-program wants to display a new window it makes a requests to
-ratpoison. ratpoison then decides whether to grant the request and
-display the window or ignore it. A client program can also request
-that one of its windows be raised. You can customize ratpoison to
-either honour these requests (the default operation) or ignore
-them.
-
-\fIN\fP is a number from 0 to 15. Each of the four bits determine which
-requests ratpoison grants.
-
-Bit 0
-Tells ratpoison to grant raise requests on transient windows
-
-Bit 1
-Tells ratpoison to grant raise requests on normal windows
-
-Bit 2
-Tells ratpoison to grant display requests on new transient
-windows
-
-Bit 3
-Tells ratpoison to grant display requests on new normal
-windows
-
-For example, if you wanted only wanted to grant transient windows raise
-requests and display requests you would type `rudeness 5'. If a request is not
-granted ratpoison will tell you about the request with a message like `Raise
-request from window 1 (emacs)'.
-.TP
-.B select \fIN\fP
-This jumps you to window \fIN\fP where \fIN\fP is the window number as shown in
-the Program Bar. You can do the same trick with `C\-N' too. To select no
-window, blanking the current frame, type `select \-'.
-.TP
-.B select \fIWINDOW\-NAME\fP
-Go to a window by name. A shortcut is `C\-t ''.
-.TP
-.B setenv \fIENV VALUE\fP
-Set the environment variable \fIENV\fP to \fIVALUE\fP
-.TP
-.B source \fIFILE\fP
-Read a text file containing ratpoison commands.
-.TP
-.B split
-.PP
-.B hsplit
-Split the current window horizontally in two. The last accessed
-window not occupying a frame will be the second window.
-.TP
-.B startup_message \fISTATE\fP
-Turn on or off the startup_message. This is most useful in your
-~/.ratpoisonrc file. \fISTATE\fP can be `on' or `off'.
-.TP
-.B time
-Show current time. Disappears after 5 seconds, like all other info
-bars. In the default setup, the `C\-t a' keystroke is bound to
-this command.
-.TP
-.B title \fITITLE\fP
-Rename the currently active window. This name will remain for the
-duration of the window's life, unless you change it again. By
-default, the `C\-t A' keystroke is bound to this command.
-.TP
-.B unbind \fIKEY\fP
-Unbind a keystroke.
-.TP
-.B unsetenv \fIENV\fP
-Clear the value of the environment variable, \fIENV\fP.
-.TP
-.B version
-Print ratpoison version. By default, this is bound to `C\-t v'.
-.TP
-.B vsplit
-Split the current window vertically in two. The last accessed
-window not occupying a frame will be the second window.
-.TP
-.B windows \fIFMT\fP
-This displays the Program Bar which displays the windows you
-currently have running. The number before each window name is used
-to jump to that window. You can do this by typing `C\-t N' where N
-is the number of the window. Note that only windows with numbers
-from 0 to 9 can be referenced using this keystroke. To reach
-windows with numbers greater than 9, use `C\-t '' and type the
-number at the prompt.
-
-After 5 seconds the Program Bar disappears.
-
-This command is bound to `C\-t w' by default.
-
-When invoked from the command\-line like this,
-
-$ ratpoison \-c windows
-
-Instead of a message bar, you will get a list of the windows
-printed to stdout. This allows you to write more advanced scripts
-than simple keyboard macros. This is where \fIFMT\fP comes into play. If
-`windows' is given an arg it treats it as the format string as described in
-`defwinfmt'.
+All interaction with the window manager is done through
+keystrokes. ratpoison has a prefix map to minimize
+key clobbering.
 .SH OPTIONS
 .TP
 .B \-h, \-\-help
-Display this help screen
+Show summary of options.
 .TP
 .B \-v, \-\-version
-Display the version
+Show version of program.
 .TP
-.B \-c \fIcmd\fP, \-\-command \fIcmd\fP
-Send ratpoison a colon\-command.
+.B \-d, \-\-display \fIdisplay\fP
+Set the X display to use or send commands to.
 .TP
-.B \-f \fIfilename\fP, \-\-file \fIfilename\fP
+.B \-s, \-\-screen \fInumber\fP
+Only use the specified screen.
+.TP
+.B \-f, \-\-file \fIfilename\fP
 Specify an alternate configuration file.
-.SH FILES
-.TP
-.B /etc/ratpoisonrc
-System-wide configuration file.
-.TP
+If this is not given, ratpoison will try
 .B $HOME/.ratpoisonrc
-User configuration file.
-.SH "REPORTING BUGS"
-Report bugs to <ratpoison\-devel@nongnu.org>.
-.SH COPYRIGHT
-Copyright \(co 2000, 2001, 2002, 2003, 2004 Shawn Betts
-.br 
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled "GNU Free
-Documentation License".
-.SH "SEE ALSO"
-ratmenu(1), X(7x)
+and if that does not exist
+.B /etc/ratpoisonrc
+and execute each command when starting up.
+.TP
+.B \-i, \-\-interactive
+Execute commands given with
+.B \-c 
+or 
+.B \-\-command 
+in interactive mode.
+That means it will behave exactly as if called with 
+.B C\-t :
+like prompting for missing arguments and things like that.
+.TP
+.B \-c, \-\-command
+Send ratpoison a command.
+There must be a ratpoison instance
+running as window manager for the given display/screen for
+this to work.
+Do not forget to quote the command if it contains
+spaces.
+.SH KEY BINDINGS
+To avoid conflicts with other programs, all default ratpoison 
+key bindings start with an escape key, per default
+.B C\-t
+(read Control\-t).
+Some important default key bindings:
 .PP
-The full documentation for
-.B ratpoison 
-is maintained as a Texinfo manual. If the
-.B info
-and
-.B ratpoison
-programs are properly installed at your site, the command
-.IP
-.B info ratpoison
-.PP 
-should give you access to the complete manual.
-.SH AUTHOR
-Ratpoison was written by Shawn Betts <sabetts@vcn.bc.ca>.
+.B C\-t q
+Quit ratpoison
+.br
+.B C\-t ?\&
+Show key bindings
+.br
+.B C\-t c
+Start an X terminal
+.br
+.B C\-t n
+Switch to next window
+.br
+.B C\-t p
+Switch to previous window
+.br
+.B C\-t 1\fP|\fB2\fP|\fB3\fP|\fB4\fP|\fB5\fP|\fB6\fP|\fB7\fP|\fB8\fP|\fB9
+Switch to window number 1|2|...
+.br
+.B C\-t k
+Close the current window
+.br
+.B C\-t K
+XKill the current application
+.br
+.B C\-t s\fP|\fBS
+Split the current frame into two vertical|horizontal ones
+.br
+.B C\-t Tab\fP|\fBLeft\fP|\fBUp\fP|\fBRight\fP|\fBDown
+Switch to the next|left|top|right|bottom frame.
+.br
+.B C\-t Q
+Make the current frame the only one
+.br
+.B C\-t :
+Execute a ratpoison command
+.PP
+Further default key bindings can be found in parentheses
+after the commands in the next section:
+.SH COMMANDS AND DEFAULT ALIASES
+.cmd abort ( C\-t C\-g )
+Do nothing and that successfully.
+(Useful if you pressed
+\fBC\-t\fP in error).
+.cmd addhook event command
+Add a hook: Run command \fIcommand\fP whenever \fIevent\fP
+is called.
+Possible events are:
+.ta 10
+.br
+\fBkey\fP	Run whenever a top level key is pressed.
+(by default \fBC-t\fP)
+.br
+\fBquit\fP	Run before exiting ratpoison.
+.br
+\fBrestart\fP	Run before restarting ratpoison.
+.br
+\fBswitchframe\fP	Run after a frame actually switched, 
+but before the window in it is focused.
+.br
+\fBswitchgroup\fP	Run after selecting a new group.
+.br
+\fBswitchwin\fP	Run after a new window is selected.
+(With dedication,
+it may already be inactive again, if it was put into another frame)
+.cmd alias alias command
+Add \fIalias\fP as new way to call \fIcommand\fP.
+.cmd bind key command
+alias for "\fBdefinekey root\fP \fIkey\fP \fIcommand\fP"
+.cmd banish ( C\-t b )
+Banish the rat cursor to the lower right corner of the screen.
+.cmd chdir [ directory ]
+If the optional argument is given, change the current directory
+of ratpoison to \fIdirectory\fP.
+If nothing is given, change
+it to the value of the environment variable "HOME".
+.cmd clrunmanaged
+Clears the unmanaged window list.
+.cmd cnext
+Like \fBnext\fP but switch to the next window with another
+resource class than the current one.
+(That means the next window belonging to another type of application
+ than the current one.)
+.cmd cprev
+Like \fBprev\fP but switch to the previous window with another
+resource class than the current one.
+(That means the previous window belonging to another type of application
+ than the current one.)
+.cmd colon ratpoison\-command ( C\-t : )
+Execute \fIratpoison\-command\fP interactively. (i.e. ask for possible
+missing arguments.)
+.cmd cother
+Like \fBother\fP but switch to the window of the current group that was last 
+accessed and has an other resource class but is not currently visible.
+.cmd curframe ( C\-t F )
+Show a bar marking the current frame.
+.cmd definekey keymap key command
+Add a new key binding in \fIkeymap\fP for \fIkey\fP to execute \fIcommand\fP.
+Default keymaps are \fBtop\fP normally only containing \fBC\-t\fP, which
+reads a key from \fBroot\fP, containing all the normal commands.
 
-This manual page was written by Gergely Nagy <8@free.bsd.hu> and
-updated by Shawn Betts <sabetts@vcn.bc.ca> and Doug
-Kearns <djkea2@mugca.cc.monash.edu.au>.
+Note that you have to describe ":" by "colon", "!" by "exclam" and so on.
+If you cannot guess a name of a key, try either \fBC\-t\fP \fIkey\fP
+and look at the error message, or try \fB:describekey root\fP and pressing
+the key.
+.cmd def...
+There are still some aliases stating with "def" around, which
+alias the new form with \fBset\fP. I.e. instead of \fB defresizeunit\fP
+better use the new \fBset resizeunit\fP and so on...
+.cmd dedicate [ \fB0 | \fB1\fP ]
+Consider the current frame dedicated/chaste (\fB1\fP) or promiscuous (\fB0\fP).
+.br
+A dedicated frame will not accept new windows. 
+When new windows are to be focused, they will be opened in a non-dedicated
+frame instead.
+.br
+If no argument is given, toggle the current dedicateness. By default no
+windows are dedicated.
+.cmd delete ( C\-t k )
+Close the current window.
+.cmd delkmap keymap
+Deletes the keymap named \fIkeymap\fP, that was generated
+with \fBnewkmap\fP. The keymaps \fBtop\fP and \fBroot\fP
+cannot be deleted.
+.cmd describekey keymap
+Grab the next key. Similar to \fBreadkey\fP, describekey
+shows only the command in \fIkeymap\fP, 
+that would be executed by \fBreadkey\fP.
+.cmd echo text
+Show \fItext\fP as ratpoison message.
+.cmd escape key
+Update the default escape key to \fIkey\fP.
+.br
+Strictly speaking it updates the the \fBreadkey root\fP command
+in the keymap \fBtop\fP to \fIkey\fP, the \fBother\fP binding
+in \fBroot\fP to \fIkey\fP, and \fBmeta\fP binding in \fBroot\fP
+to \fIkey\fP without modifiers or \fBC\-\fP\fIkey\fP if \fIkey\fP
+has no modifiers.
+.cmd exec shell\-command ( C\-t ! )
+Spawn a shell executing \fIshell\-command\fP.
+.cmd fdump [ screenno ]
+Output the defining data for all frames of the current screen, or
+for screen number \fIscreenno\fP if this is specified.
+.cmd focus ( C\-t Tab )
+Focus the next frame.
+.cmd focuslast
+Switch to the last selected focus.
+.cmd focusleft ( C\-t Left )
+Switch to the frame to the left of the current one.
+.cmd focusdown ( C\-t Down )
+Switch to the frame beneath the current one.
+.cmd focusright ( C\-t Right )
+Switch to the frame to the right of the current one.
+.cmd focusprev 
+Focus the previous frame.
+.cmd focusup ( C\-t Up )
+Switch to the frame above the current one.
+.cmd frestore frames
+Replace the current frames with the ones specified in \fIframes\fP in the
+format as generated by \fBfdump\fP.
+.cmd fselect [ frameno ] ( C\-t f )
+If an argument is supplied, switch to a frame given by number \fIframeno\fP.
+
+If no argument is given, show a frame selector in each frame and wait for
+a key to be pressed. 
+If the key matches an existing frame selector, this frame gets focused.
+
+Frame selectors are by default the numbers starting with zero, but they
+can be changed by \fBset\fPing \fBframesels\fP.
+.cmd gdelete [ group ]
+If the optional argument \fIgroup\fP is supplied, delete group
+\fIgroup\fP. Otherwise delete the current group. 
+If the last
+group is deleted, a new group with name \fBdefault\fP is created.
+The group has to be empty, otherwise it cannot be deleted.
+.cmd getenv variable
+Output the value of the environment variable \fIvariable\fP.
+.cmd getsel
+Paste the current X Selection into the current window.
+.cmd gmerge group
+Move all windows from group \fIgroup\fP into the current group.
+.cmd gmove group
+Move the current window into group \fIgroup\fP.
+.cmd gnew group
+Create a new group with name \fIgroup\fP and select it.
+Most window commands only see (and thus select, consider next,
+previous or last) windows within the group active when they are
+issued.
+.cmd gnewbg group
+Create a new group named \fIgroupf\fP, but do not select it.
+.cmd gnext
+Select the next group. Most window commands only see windows in the
+effective group.
+.cmd gprev
+Select the prior group. Most window commands only see windows in the
+effective group.
+.cmd gravity [ \fBnw | \fBw | \fBsw | \fBn | \fBc | \fBs | \fBne | \fBe | \fBse ]
+Change how in its frame the current window is aligned.
+.cmd groups
+Output a list of all groups with their number.
+.cmd gselect group
+Select the group names \fIgroup\fP. 
+.cmd help [ keymap ]
+If the optional parameter \fIkeymap\fP is given,
+list all keybindings in this keymap, 
+otherwise list all key bindings in keymap \fIroot\fP.
+.cmd hsplit [ l\fB/\fR\fIp | "pixels from left" | "\fB\-\fR\fIpixels from right" ] ( C\-t S )
+Split the current frame into left frame and a right frame.
+If no parameter is given, split in halves.
+If two numbers separated
+by a slash\ ("\fB/\fP") are given, the left one is \fIl\fP times the \fIp\fPth part
+and the right one (\fIp\fP\-\fIl\fP) times the \fIp\fPth part of the prior width.
+Otherwise the right one is \fIpixels from right\fP wide or the left one
+\fIpixels from left\fP wide, depending whether there is \fB\-\fP in front of
+the number or not.
+.cmd inext
+Like \fBnext\fP but switch to the next window with the same
+resource class as the current one. 
+(That means the next window belonging to the same application
+ as the current one.)
+.cmd info ( C\-t i )
+Output the current the width, height, window number and window name of the current
+window.
+(What name means is chosen by "\fBset\ winname\fP".)
+.cmd iprev
+Like \fBprev\fP but switch to the previous window with the same
+resource class as the current one. 
+(That means the previous window belonging to the same application
+ as the current one.)
+.cmd iother
+Like \fBother\fP but switch to the window of the current group that was last 
+accessed and has the same resource class but is not currently visible.
+.cmd kill ( C\-t K )
+Close the X\-connection of the X\-client responsible for the current window.
+.cmd lastmsg ( C\-t m )
+Reshow the last message.
+.cmd license ( C\-t V )
+Show ratpoison's license.
+.cmd link key [ keymap ]
+Do what \fIkey\fP is bound to in the keymap \fIkeymap\fP if supplied.
+Otherwise what \fIkey\fP is bound to in keymap \fBroot\fP.
+.cmd listhook event
+List all commands specified with \fBaddhook\fP to be executed when
+even \fIevent\fP occurs.
+.cmd meta ( C\-t t )
+Send the escape key (that which normally is \fBC\-t\fP) to the current window.
+.cmd msgwait [ seconds ]
+Set the duration the message window is shown. 
+If \fIseconds\fP is zero, wait infinitely.
+.# This will hopefully be changed to set msgwait some day...
+.cmd newkmap keymap
+Generate a new keymap names \fIkeymap\fP. This keymap can
+be used to add new key\-command mapping to it with \fBdefinekey\fP
+and can be called with \fBreadkey\fP.
+.cmd newwm new window manager
+Quit ratpoison and execute \fInew window manager\fP instead.
+.cmd next ( C\-t Return | C\-t n | C\-t space )
+Switch to the next window in the current group.
+.cmd nextscreen
+Switch to the next screen. (If you have multiple physical ones.)
+.cmd number new [ old ]
+Give the number \fInew\fP to the window with the number \fIold\fP or
+the current window.
+.cmd only ( C\-t Q )
+Remove all frames on the current screen except the current frame and
+maximise this one to the size of the whole screen.
+.cmd other ( C\-t C\-t )
+Switch to the window of the current group that was last 
+accessed but is not currently visible.
+.cmd prev ( C\-t p )
+Switch to the previous window in the current group.
+.cmd prevscreen
+Switch to the previous screen. (If you have multiple physical ones.)
+.cmd prompt [ prompt ]
+Ratpoison will ask the user for input, showing \fIprompt\fP (or
+a single colon, if no argument is given) and output the input the
+user has made.
+.br
+Note that this command probably does not make much sense in interactive
+mode.
+.cmd putsel x\-selection
+Replace the X selection with the text \fIx\-selection\fP. It can be
+inserted into the current window with \fBgetsel\fP.
+.cmd quit
+Quit ratpoison.
+.cmd ratwarp x y
+Move the rat cursor to the position (\fIx\fP,\fIy\fP).
+.cmd ratrelwarp deltax deltay
+Move the rat cursor to (\fIdeltax\fP,\fIdeltay\fP), relative
+to the current position.
+.cmd ratclick [ button ]
+Simulate a rat click with \fIbutton\fP (button 1=left button if none given).
+.cmd rathold \fBup\fR\fI | \fBdown\fR\fI  [ button ]
+Simulate pressing|releasing rat button \fIbutton\fP (1=left button if none given).
+.cmd readkey keymap
+Grab the next key pressed, and execute the command associated to this key
+in \fIkeymap\fP. 
+To show it is waiting for a key, ratpoison will change the
+rat cursor to a square if \fBwaitcursor\fP is set.
+
+This command is perhaps best described with its usage in the default
+configuration: By pressing \fBC-t\fP, which is the only key in the keymap
+\fBtop\fP, the command "\fBreadkey root\fP" is executed. The next key
+then executes the command in keymap \fBroot\fP belonging to this command.
+.cmd redisplay ( C\-t l )
+Redisplay the current window.
+.cmd remhook event command
+Remove command \fIcommand\fP from the list of commands to be called when
+event \fIevent\fP is hit. (The command has to specified, as an event can
+have multiple commands attached to it.) 
+Use "\fBlisthook\fP \fIhook\fP" to get a list of all attached commands.
+.cmd remove ( C\-t R )
+Remove the current frame and extend some frames around to fill the remaining
+gap.
+.cmd resize [ deltax deltay ] ( C\-t r )
+If \fIdeltax\fP and \fIdeltay\fP are supplied, resize the current frame
+by that (i.e. move the bottom right corner by the given offsets and then
+move this frame and resize adjacent frames to make the frames fill the
+whole screen again.)
+
+If in interactive mode no arguments are supplied, resize the current
+frame interactively:
+.br
+.ta 20
+\fBReturn\fP:	finish resizing
+.br
+\fBC\-g\fP or \fBEscape\fP:	abort resizing
+.br
+\fBC\-n\fP or \fBDown\fP or \fBj\fP:	grow vertically
+.br
+\fBC\-p\fP or \fBUp\fP or \fBk\fP:	shrink vertically
+.br
+\fBC\-f\fP or \fBRight\fP or \fBl\fP:	grow horizontally
+.br
+\fBC\-b\fP or \fBUp\fP or \fBh\fP:	shrink horizontally
+.br
+\fBs\fP:	shrink to size of current window
+
+While resizing interactively, changes are in multiples of the amount
+of pixels given by \fBset resizeunit\fP (by default 10).
+.cmd restart
+Restart ratpoison.
+.cmd rudeness [ rudeness ]
+Show or set what kind of windows are allowed to jostle into the foreground.
+
+\fIrudeness\fP is a bitwise or of the following values:
+.ta 5
+.br
+1	Transient windows may raise.
+.br
+2	Normal windows may raise.
+.br
+4	New transient windows end up in the foreground.
+.br
+8	New normal windows end up in the foreground.
+
+Default is all allowed i.e.\& 15.
+
+.#This will hopefully change to set rudeness and names instead of numbers one day.
+.cmd sdump
+Output the list of all screens.
+The screens are separated by commas. Each screen is shown as 6 values:
+its number, its x\-coordinate, its y\-coordinate, its width, its height
+and if it is currently selected (1=true,0=false).
+.cmd select \fB\-\fP | name | nr ( C\-t ' )
+If a number is given, switch to the window with number \fInr\fP.
+If a name is given, switch to the window in the current group with
+name \fIname\fP.
+Blank the current frame, if \fB\-\fP is given.
+.cmd set [ variable [ value ] ]
+If no argument is given, output all ratpoison variables and their values.
+.br
+If one argument is given, output the value of ratpoison variable \fIvariable\fP.
+.br
+Otherwise set ratpoison variable \fIvariable\fP to \fIvalue\fP. What values
+are valid depends on the variable. 
+See the section \fBVARIABLES\fP later in this document for details.
+.cmd setenv variable value
+Set the environment variable \fIvariable\fP to \fIvalue\fP.
+(Environment variables will be passed to all programs started from ratpoison.)
+.cmd sfdump
+Output all frames similar to \fBfdump\fP, but not limited to one screen, but
+all screens at once and with the screen number after each frame.
+.cmd shrink
+Shrink the current frame to the size of the current window with in.
+.cmd split [ split ] ( C\-t s )
+alias for \fBvsplit\fP
+.cmd source file
+Read \fIfile\fP and execute each line as ratpoison command.
+.cmd sselect screennumber
+Switch to the screen \fIscreennumber\fP. (If you have multiple physical ones.)
+.cmd startup_message \fBon | \fBoff
+Select whether ratpoison will show a startup message or not.
+.cmd time ( C\-t a )
+Output current data and time.
+.cmd title newname ( C\-t A )
+Overwrite the title of the current window with \fInewname\fP. 
+All following ratpoison commands will only know the 
+window under the new name.
+.cmd tmpwm tmpwm
+Temporarily give control over to the other window manager \fItmpwm\fP,
+reclaiming control when that WM terminates.
+.cmd unalias alias
+Remove the alias \fIalias\fP.
+.cmd unbind key
+alias for "\fBundefinekey root\fP \fIkey\fP"
+.cmd undefinekey keymap key
+Remove the binding for \fIkey\fP from \fIkeymap\fP.
+.cmd undo ( C\-t _ )
+Un\-do the last change to the frameset.
+(Like splitting, resizing, deleting, ...)
+.br
+The amount of steps that can be undone is specified by the variable
+\fBmaxundos\fP.
+.cmd unmanage [ name ]
+Add \fIname\fP to the list of unmanaged windows. 
+Thus, windows of this
+name will not be managed but allowed to choose their position themselves.
+
+In non\-interactive mode calling it without arguments will print the list.
+
+The list can be cleared again by calling \fBclrunmanaged\fP.
+.cmd unsetenv variable
+Remove variable \fIvariable\fP from the list of environment variables.
+.cmd verbexec cmdline
+Spawn a shell executing \fIcmdline\fP after showing a message with the command.
+.cmd version ( C\-t v )
+Output version and compile time information.
+.cmd vsplit [ l\fB/\fR\fIp | "pixels from top" | "\fB\-\fR\fIpixels from bottom" ] ( C\-t s )
+Split the current frame into upper frame and a lower frame.
+If no parameter is given, split in halves.
+If two numbers separated
+by a slash\ ("\fB/\fP") are given, the upper one is \fIl\fP times the \fIp\fPth part
+and the lower one (\fIp\fP\-\fIl\fP) times the \fIp\fPth part of the prior height.
+Otherwise the lower one is \fIpixels from bottom\fP wide or the upper one
+\fIpixels from top\fP high, depending whether there is a \fB\-\fP in front of
+the number or not.
+.cmd warp [ \fBon | \fBoff ]
+Select if focusing a window moves the rat cursor to the place it had been last
+time this window was focused, or not.
+.cmd windows [ format ] ( C\-t w )
+In interactive mode, 
+show the list of all windows in the current group for
+the duration specified by \fBmsgwait\fP 
+If \fBmsgwait\fP is zero, toggle between indefinitely showing
+and not showing.
+
+The messages are shown in columns or rows depending on the \fBset\fPting
+of \fBwinliststyle\fP in the format set by \fBset winfmt\fP.
+The following substitutions happen in format:
+.br
+%n by the window number,
+.br
+%s by window status (\fB*\fP is active window,
+\fB+\fP would be chosen by \fBother\fP, \fB\-\fP otherwise)
+.br
+%t by the window name (see \fBset winname\fP),
+.br
+%a by the application name,
+.br
+%c by the resource class,
+.br
+%i by the X Window ID,
+.br
+%l by the last access number,
+.br
+%f by the frame number and
+.br
+%% by a single %
+
+In non\-interactive mode, output the list of windows in the current group
+line by line. The format string can be overwritten by the optional parameter
+\fIformat\fP.
+.SH VARIABLES
+Ratpoison variables can be shown and set with \fBset\fP. 
+There are:
+.var resizeunit pixels
+Set the amount of pixels interactive \fBresize\fPing will add/subtract
+in each step.
+.br
+Default is 5.
+.var maxundos number
+The maximal amount of step ratpoison can undo with the \fBundo\fP command.
+.br
+Default is 20.
+.var wingravity \fBnw | \fBw | \fBsw | \fBn | \fBc | \fBs | \fBne | \fBe | \fBse
+Set the default gravity new normal windows will get.
+Possible values are the same as in the \fBgravity\fP command, which changes
+the gravity of an existing window: cardinal points or numbers 1 to 9.
+.br
+Default is \fBnorthwest\fP.
+.var maxsizegravity \fBnw | \fBw | \fBsw | \fBn | \fBc | \fBs | \fBne | \fBe | \fBse
+Set the default gravity new self\-maximised windows will get.
+Possible values are the same as in the \fBgravity\fP command, which changes
+the gravity of an existing window: cardinal points or numbers 1 to 9.
+.br
+Default is \fBcenter\fP.
+.var transgravity \fBnw | \fBw | \fBsw | \fBn | \fBc | \fBs | \fBne | \fBe | \fBse
+Set the default gravity new transient windows will get.
+Possible values are the same as in the \fBgravity\fP command, which changes
+the gravity of an existing window: cardinal points or numbers 1 to 9.
+.br
+Default is \fBcenter\fP.
+.var bargravity \fBnw | \fBw | \fBsw | \fBn | \fBc | \fBs | \fBne | \fBe | \fBse
+Select the location where message and prompt bars appear.
+.br
+Default is \fBnortheast\fP.
+.var font font
+Make ratpoison use font \fIfont\fP.
+.var padding left top right bottom
+Set how much space at the borders of the screen will not be used.
+.br
+Default is 0 0 0 0.
+.var border pixels
+Selects how thick the frame around windows is.
+.br
+Default is 1.
+.var barborder pixels
+Selects how thick the frame around ratpoison's prompt or message windows is.
+.br
+Default is 1.
+.var inputwidth pixels
+Determine the width of the input window.
+.br
+Default is 200.
+.var waitcursor \fB0 | \fB1
+Determine whether to change the rat cursor when waiting for a key
+(\fB1\fP) or not (\fB0\fP).
+(see \fBreadkey\fP and \fBdescribekey\fP).
+.br
+Default is 1.
+.var winfmt format
+Choose the default format for the the \fBwindows\fP command.
+.br
+Default is %n%s%t.
+.var winname \fBtitle | \fBname | \fBclass
+Choose what is considered the "name" of the window by ratpoison:
+.ta 7
+\fBtitle\fP	The title of the window.
+.br
+\fBname\fP	The resource name of the window.
+.br
+\fBclass\fP	The resource class i.e. the name of the application.
+.br
+Default is \fBtitle\fP.
+.var fgcolor color
+The foreground color of the windows ratpoison creates.
+.br
+Default is black.
+.var bgcolor color
+The background color of the windows ratpoison creates.
+.br
+Default is white.
+.var barpadding x y
+Set horizontal padding of ratpoison windows to \fIx\fP and vertical
+padding to \fIy\fP.
+.br
+Default is 4 0
+.var winliststyle \fBrow | \fBcolumn
+Determines whether windows are shown in \fBrow\fPs or in \fBcolumn\fPs.
+.br
+Default is column.
+.var framesels selectors
+Override the frame selectors \fBfselect\fP uses. 
+The first character is the selector for the first frame,
+the second character is the selector for the second frame and so on.
+
+Using this variable, one can directly access more than 10 frames.
+
+Default is an empty string, which is equivalent to "0123456789".
+.SH AUTHOR
+Upstream Author is Shawn Betts <sabetts@vcn.bc.ca>.
+.br
+See /usr/share/doc/ratpoison/AUTHORS for other contributors.
+.P
+This manual page was written by Bernhard R. Link <brlink@debian.org>.
