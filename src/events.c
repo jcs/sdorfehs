@@ -304,10 +304,10 @@ handle_key (screen_info *s)
     {
       if (keysym == i->key)
 	{
-	  if (i->state == -1 || mod == i->state)
+	  if (mod == i->state)
 	    {
 	      /* Revert focus back to the current window before
-	       executing the command. */
+		 executing the command. */
 	      XSetInputFocus (dpy, fwin, revert, CurrentTime);
 	      (*i->func)(i->data);
 	      return;
@@ -323,7 +323,7 @@ handle_key (screen_info *s)
 
   /* No key match, notify user. */
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
-  display_msg_in_bar (s, msg);
+  display_msg_in_bar (s, msg, 0, 0);
 }
 
 void
