@@ -107,7 +107,7 @@ unmap_notify (XEvent *ev)
     return;
 
   /* FIXME: Should we only look in the mapped window list? */
-  win = find_window_in_list (ev->xunmap.window, rp_mapped_window_sentinel);
+  win = find_window_in_list (ev->xunmap.window, &rp_mapped_window);
 
   if (win == NULL)
     return;
@@ -653,9 +653,7 @@ mapping_notify (XMappingEvent *ev)
   rp_window *cur;
 
   /* Remove the grab on the current prefix key */
-  for (cur = rp_mapped_window_sentinel->next; 
-       cur != rp_mapped_window_sentinel; 
-       cur = cur->next)
+  list_for_each_entry (cur,&rp_mapped_window,node)
     {
       ungrab_prefix_key (cur->w);
     }
@@ -671,9 +669,7 @@ mapping_notify (XMappingEvent *ev)
     }
 
   /* Add the grab on the current prefix key */
-  for (cur = rp_mapped_window_sentinel->next; 
-       cur != rp_mapped_window_sentinel; 
-       cur = cur->next)
+  list_for_each_entry (cur, &rp_mapped_window,node)
     {
       grab_prefix_key (cur->w);
     }

@@ -584,7 +584,6 @@ main (int argc, char *argv[])
       init_screen (&screens[i], i);
     }
 
-  init_window_list ();
   init_frame_lists ();
   update_modifier_map ();
   initialize_default_keybindings ();

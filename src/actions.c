@@ -1135,8 +1135,8 @@ cmd_number (int interactive, void *data)
 	  other_win->number = old_number;
 
 	  /* Resort the the window in the list */
-	  remove_from_list (other_win);
-	  insert_into_list (other_win, rp_mapped_window_sentinel);
+	  list_del (&other_win->node);
+	  insert_into_list (other_win, &rp_mapped_window);
 	}
       else
 	{
@@ -1147,8 +1147,8 @@ cmd_number (int interactive, void *data)
       add_window_number (new_number);
 
       /* resort the the window in the list */
-      remove_from_list (win);
-      insert_into_list (win, rp_mapped_window_sentinel);
+      list_del (&win->node);
+      insert_into_list (win, &rp_mapped_window);
 
       /* Update the window list. */
       update_window_names (win->scr);
@@ -1232,9 +1232,7 @@ cmd_escape (int interactive, void *data)
 	}
 
       /* Remove the grab on the current prefix key */
-      for (cur = rp_mapped_window_sentinel->next; 
-	   cur != rp_mapped_window_sentinel; 
-	   cur = cur->next)
+      list_for_each_entry (cur, &rp_mapped_window, node)
 	{
 	  ungrab_prefix_key (cur->w);
 	}
@@ -1243,9 +1241,7 @@ cmd_escape (int interactive, void *data)
       prefix_key.state = key->state;
 
       /* Add the grab for the new prefix key */
-      for (cur = rp_mapped_window_sentinel->next; 
-	   cur != rp_mapped_window_sentinel; 
-	   cur = cur->next)
+      list_for_each_entry (cur,&rp_mapped_window,node)
 	{
 	  grab_prefix_key (cur->w);
 	}
@@ -1994,9 +1990,7 @@ cmd_defpadding (int interactive, void *data)
 
   /* Resize the frames to make sure they are not too big and not too
      small. */
-  for (frame = current_screen()->rp_window_frame_sentinel->next; 
-       frame != current_screen()->rp_window_frame_sentinel;
-       frame = frame->next)
+  list_for_each_entry (frame,&(current_screen()->rp_window_frames),node)
     {
       int bk_pos, bk_len;
 
@@ -2061,9 +2055,7 @@ cmd_defborder (int interactive, void *data)
   defaults.window_border_width = tmp;
 
   /* Update all the visible windows. */
-  for (win = rp_mapped_window_sentinel->next; 
-       win != rp_mapped_window_sentinel; 
-       win = win->next)
+  list_for_each_entry (win,&rp_mapped_window,node)
     {
       if (win->frame)
 	maximize (win);

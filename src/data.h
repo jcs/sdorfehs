@@ -22,6 +22,8 @@
 #ifndef _RATPOISON_DATA_H
 #define _RATPOISON_DATA_H
 
+#include "linkedlist.h"
+
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -44,7 +46,7 @@ struct rp_window_frame
   /* For determining the last frame. */
   int last_access;
 
-  rp_window_frame *prev, *next;
+  struct list_head node;
 };
 
 struct rp_window
@@ -87,7 +89,7 @@ struct rp_window
      mapped into. */
   rp_window_frame *frame;
 
-  rp_window *next, *prev;  
+  struct list_head node;
 };
 
 struct screen_info
@@ -105,7 +107,7 @@ struct screen_info
 
   /* A list of frames that may or may not contain windows. There should
      always be one in the list. */
-  rp_window_frame *rp_window_frame_sentinel;
+  struct list_head rp_window_frames;
 
   /* Pointer to the currently focused frame. One for each screen so
      when you switch screens the focus doesn't get frobbed. */
@@ -194,11 +196,11 @@ extern struct rp_key prefix_key;
 
 /* A list of mapped windows. These windows show up in the window
    list and have a number assigned to them. */
-extern rp_window *rp_mapped_window_sentinel;
+extern struct list_head rp_mapped_window;
 
 /* A list of unmapped windows. These windows do not have a number
    assigned to them and are not visible/active. */
-extern rp_window *rp_unmapped_window_sentinel;
+extern struct list_head rp_unmapped_window;
 
 extern int rp_current_screen;
 extern screen_info *screens;

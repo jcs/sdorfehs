@@ -1,3 +1,73 @@
+2003-02-22  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_number): use list delete entry macro
+	(cmd_number): likewise
+	(cmd_escape): use list looping macro
+	(cmd_escape): likewise
+	(cmd_defpadding): likewise
+	(cmd_defborder): likewise
+
+	* src/data.h: include linkedlist.h
+	(struct rp_window_frame): use struct list_head instead of next,
+	prev pointers.
+	(struct rp_window): likewise
+	(struct screen_info): rename rp_window_frame_sentinel to
+	rp_window_frames and change it's type to list_head.
+
+	* src/events.c (mapping_notify): use list looping macro
+	(mapping_notify): likewise
+
+	* src/list.c: rename rp_unmapped_window_sentinel to
+	rp_unmapped_window and rp_mapped_window_sentinel to
+	rp_mapped_window. Use LIST_HEAD to create them. externs updated.
+	(add_to_window_list): use list add entry macro.
+	(find_window_in_list): list head is of type list_head. Prototype
+	and callers updated.
+	(find_window_in_list): use list looping macro
+	(init_window_list): remove function
+	(find_window_number): use list looping macro
+	(find_window_name): likewise
+	(find_window_prev): use list previous entry macro
+	(find_window_next): use list next entry macro
+	(find_window_other): use list looping macro
+	(append_to_list): remove function
+	(insert_into_list): use list looping macro
+	(insert_into_list): use list add entry macro
+	(remove_from_list): remove function
+	(get_window_list): use list looping macro
+
+	* src/main.c (main): do not call init_window_list()
+
+	* src/manage.c (unmanage): use list delete macro
+	(map_window): likewise
+	(withdraw_window): use list moving macro to move entry to
+	another list.
+	(hide_others): use list looping macro
+
+	* src/split.c (num_frames): use list looping macro
+	(frames_screen): likewise
+	(maximize_all_windows_in_frame): likewise
+	(delete_frame_from_list): remove function
+	(create_initial_frame): remove list init code. Add current frame
+	to screen's frame list.
+	(init_frame_list): use list init macro
+	(find_last_frame): use list looping macro
+	(find_windows_frame): likewise
+	(find_frame_next): use list next entry macro
+	(find_frame_prev): use list previous entry macro
+	(find_window_for_frame): use list looping macro
+	(split_frame): use list add entry macro
+	(remove_all_splits): use list looping macro
+	(resize_frame_vertically): likewise
+	(resize_frame_horizontally): likewise
+	(total_frame_area): likewise
+	(frame_overlaps): likewise
+	(remove_frame): likewise
+	(find_frame_up): likewise
+	(find_frame_down): likewise
+	(find_frame_left): likewise
+	(find_frame_right): likewise
+
 2003-02-10  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/split.h (num_frames): new prototype

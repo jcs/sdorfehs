@@ -275,8 +275,7 @@ void
 unmanage (rp_window *w)
 {
   return_window_number (w->number);
-  remove_from_list (w);
-
+  list_del (&w->node);
   free_window (w);
 
 #ifdef AUTO_CLOSE
@@ -640,8 +639,8 @@ map_window (rp_window *win)
   grab_prefix_key (win->w);
 
   /* Put win in the mapped window list */
-  remove_from_list (win);
-  insert_into_list (win, rp_mapped_window_sentinel);
+  list_del (&win->node);
+  insert_into_list (win, &rp_mapped_window); 
 
   /* The window has never been accessed since it was brought back from
      the Withdrawn state. */
@@ -723,8 +722,7 @@ withdraw_window (rp_window *win)
   return_window_number (win->number);
   win->number = -1;
 
-  remove_from_list (win);
-  append_to_list (win, rp_unmapped_window_sentinel);
+  list_move_tail(&win->node, &rp_unmapped_window);
 
   ignore_badwindow++;
 
@@ -746,9 +744,7 @@ hide_others (rp_window *win)
   frame = find_windows_frame (win);
   if (frame == NULL) return;
 
-  for (cur = rp_mapped_window_sentinel->next; 
-       cur != rp_mapped_window_sentinel; 
-       cur = cur->next)
+  list_for_each_entry (cur, &rp_mapped_window, node)
     {
       if (find_windows_frame (cur) 
 	  || cur->state != NormalState 

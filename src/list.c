@@ -26,8 +26,8 @@
 
 #include "ratpoison.h"
 
-rp_window *rp_unmapped_window_sentinel;
-rp_window *rp_mapped_window_sentinel;
+LIST_HEAD(rp_unmapped_window);
+LIST_HEAD(rp_mapped_window);
 
 /* Get the mouse position relative to the root of the specified window */
 static void
@@ -116,7 +116,6 @@ add_to_window_list (screen_info *s, Window w)
   new_window->w = w;
   new_window->scr = s;
   new_window->last_access = 0;
-  new_window->prev = NULL;
   new_window->state = WithdrawnState;
   new_window->number = -1;	
   new_window->named = 0;
@@ -139,18 +138,18 @@ add_to_window_list (screen_info *s, Window w)
   new_window->res_class = NULL;
 
   /* Add the window to the end of the unmapped list. */
-  append_to_list (new_window, rp_unmapped_window_sentinel);
+  list_add_tail (&new_window->node, &rp_unmapped_window);
 
   return new_window;
 }
 
 /* Check to see if the window is in the list of windows. */
 rp_window *
-find_window_in_list (Window w, rp_window *sentinel)
+find_window_in_list (Window w, struct list_head *list)
 {
   rp_window *cur;
 
-  for (cur = sentinel->next; cur != sentinel; cur = cur->next)
+  list_for_each_entry (cur, list, node)
     {
       if (cur->w == w) return cur;
     }
@@ -164,11 +163,11 @@ find_window (Window w)
 {
   rp_window *win = NULL;
 
-  win = find_window_in_list (w, rp_mapped_window_sentinel);
+  win = find_window_in_list (w, &rp_mapped_window);
 
   if (!win) 
     {
-      win = find_window_in_list (w, rp_unmapped_window_sentinel);
+      win = find_window_in_list (w, &rp_unmapped_window);
     }
 
   return win;
@@ -180,27 +179,12 @@ set_current_window (rp_window *win)
   set_frames_window (current_screen()->rp_current_frame, win);
 }
 
-void
-init_window_list ()
-{
-  rp_mapped_window_sentinel = xmalloc (sizeof (rp_window));
-  rp_unmapped_window_sentinel = xmalloc (sizeof (rp_window));
-
-  rp_mapped_window_sentinel->next = rp_mapped_window_sentinel;
-  rp_mapped_window_sentinel->prev = rp_mapped_window_sentinel;
-
-  rp_unmapped_window_sentinel->next = rp_unmapped_window_sentinel;
-  rp_unmapped_window_sentinel->prev = rp_unmapped_window_sentinel;
-}
-
 rp_window *
 find_window_number (int n)
 {
   rp_window *cur;
 
-  for (cur = rp_mapped_window_sentinel->next; 
-       cur != rp_mapped_window_sentinel; 
-       cur = cur->next)
+  list_for_each_entry (cur,&rp_mapped_window,node)
     {
 /*       if (cur->state == STATE_UNMAPPED) continue; */
 
@@ -228,9 +212,7 @@ find_window_name (char *name)
 {
   rp_window *w;
 
-  for (w = rp_mapped_window_sentinel->next; 
-       w != rp_mapped_window_sentinel; 
-       w = w->next)
+  list_for_each_entry (w,&rp_mapped_window,node)
     {
 /*       if (w->state == STATE_UNMAPPED)  */
 /* 	continue; */
@@ -252,12 +234,10 @@ find_window_prev (rp_window *w)
 
   if (!w) return NULL;
 
-  for (cur = w->prev; 
-       cur != w;
-       cur = cur->prev)
+  for (cur = list_prev_entry (w, &rp_mapped_window, node); 
+       cur != w; 
+       cur = list_prev_entry (cur, &rp_mapped_window, node))
     {
-      if (cur == rp_mapped_window_sentinel) continue;
-
       if (!find_windows_frame (cur))
 	{
 	  return cur;
@@ -276,12 +256,10 @@ find_window_next (rp_window *w)
 
   if (!w) return NULL;
 
-  for (cur = w->next; 
-       cur != w;
-       cur = cur->next)
+  for (cur = list_next_entry (w, &rp_mapped_window, node); 
+       cur != w; 
+       cur = list_next_entry (cur, &rp_mapped_window, node))
     {
-      if (cur == rp_mapped_window_sentinel) continue;
-
       if (!find_windows_frame (cur))
 	{
 	  return cur;
@@ -298,9 +276,7 @@ find_window_other ()
   rp_window *most_recent = NULL;
   rp_window *cur;
 
-  for (cur = rp_mapped_window_sentinel->next; 
-       cur != rp_mapped_window_sentinel; 
-       cur = cur->next)
+  list_for_each_entry (cur, &rp_mapped_window, node)
     {
       if (cur->last_access >= last_access 
 	  && cur != current_window()
@@ -314,97 +290,23 @@ find_window_other ()
   return most_recent;
 }
 
-/* This somewhat CPU intensive (memcpy) swap function sorta defeats
-   the purpose of a linear linked list. */
-/* static void */
-/* swap_list_elements (rp_window *a, rp_window *b) */
-/* { */
-/*   rp_window tmp; */
-/*   rp_window *tmp_a_next, *tmp_a_prev; */
-/*   rp_window *tmp_b_next, *tmp_b_prev; */
-
-/*   if (a == NULL || b == NULL || a == b) return; */
-
-/*   tmp_a_next = a->next; */
-/*   tmp_a_prev = a->prev; */
-
-/*   tmp_b_next = b->next; */
-/*   tmp_b_prev = b->prev; */
-
-/*   memcpy (&tmp, a, sizeof (rp_window)); */
-/*   memcpy (a, b, sizeof (rp_window)); */
-/*   memcpy (b, &tmp, sizeof (rp_window)); */
-
-/*   a->next = tmp_a_next; */
-/*   a->prev = tmp_a_prev; */
-
-/*   b->next = tmp_b_next; */
-/*   b->prev = tmp_b_prev; */
-/* } */
-
-/* Can you say b-b-b-b-bubble sort? */
-/* void */
-/* sort_window_list_by_number () */
-/* { */
-/*   rp_window *i, *j, *smallest; */
-
-/*   for (i=rp_window_head; i; i=i->next) */
-/*     { */
-/*       if (i->state == STATE_UNMAPPED) continue; */
-
-/*       smallest = i; */
-/*       for (j=i->next; j; j=j->next) */
-/* 	{ */
-/* 	  if (j->state == STATE_UNMAPPED) continue; */
-
-/* 	  if (j->number < smallest->number) */
-/* 	    { */
-/* 	      smallest = j; */
-/* 	    } */
-/* 	} */
-
-/*       swap_list_elements (i, smallest); */
-/*     } */
-/* } */
-
-void
-append_to_list (rp_window *win, rp_window *sentinel)
-{
-  win->prev = sentinel->prev;
-  sentinel->prev->next = win;
-  sentinel->prev = win;
-  win->next = sentinel;
-}
-
 /* Assumes the list is sorted by increasing number. Inserts win into
    to Right place to keep the list sorted. */
 void
-insert_into_list (rp_window *win, rp_window *sentinel)
+insert_into_list (rp_window *win, struct list_head *list)
 {
   rp_window *cur;
 
-  for (cur = sentinel->next; cur != sentinel; cur = cur->next)
+  list_for_each_entry (cur, list, node)
     {
       if (cur->number > win->number)
 	{
-	  win->next = cur;
-	  win->prev = cur->prev;
-
-	  cur->prev->next = win;
-	  cur->prev = win;
-
+	  list_add_tail (&win->node, &cur->node);
 	  return;
 	}
     }
 
-  append_to_list (win, sentinel);
-}
-
-void
-remove_from_list (rp_window *win)
-{
-  win->next->prev = win->prev;
-  win->prev->next = win->next;
+  list_add_tail(&win->node, list);
 }
 
 static void
@@ -734,9 +636,7 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
   sbuf_clear (buffer);
   other_window = find_window_other ();
 
-  for (w = rp_mapped_window_sentinel->next; 
-       w != rp_mapped_window_sentinel; 
-       w = w->next)
+  list_for_each_entry (w,&rp_mapped_window,node)
     {
       PRINT_DEBUG ("%d-%s\n", w->number, window_name (w));
 
@@ -757,7 +657,7 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
 
       /* Only put the delimiter between the windows, and not after the the last
          window. */
-      if (delim && w->next != rp_mapped_window_sentinel)
+      if (delim && w->node.next != &rp_mapped_window)
 	sbuf_concat (buffer, delim);
 
       if (w == current_window())
