@@ -2,6 +2,12 @@
 
 	* NEWS: mention that ALL of the fixed size buffers are fixed.
 
+2001-02-17  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* Makefile.am (SUBDIRS): Source dir before documentation dirs.
+
+	* autogen.sh: Do not continue if a step fails.
+
 2001-02-17  Gergely Nagy  <8@free.bsd.hu>
 
 	* man/ratpoison.1,

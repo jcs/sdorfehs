@@ -1,6 +1,3 @@
 #!/bin/sh
 
-autoheader
-aclocal
-automake -a -c
-autoconf
+autoheader && aclocal && automake -a -c && autoconf
