@@ -97,7 +97,7 @@ This document explains how to use ratpoison.
 
 ratpoison is a simple Window Manager with no fat library dependencies,
 no fancy graphics, no window decorations, and no flashy wank. It is
-largely modelled after GNU Screen which has done wonders in the
+largely modeled after GNU Screen which has done wonders in the
 virtual terminal market.
 
 All interaction with the window manager is done through
@@ -342,7 +342,7 @@ Execute a shell command. By default, @kbd{C-t !} does this.
 
 @item kill
 This destroys the current window. Normally you should only need to
-use @command{delete}, but just incase you need to rip the heart out of a
+use @command{delete}, but just in case you need to rip the heart out of a
 misbehaving window this command should do the trick. Also available as
 @kbd{C-t K}.
 
@@ -499,7 +499,7 @@ window otherwise launch it.
 
 Now you've probably read the web page, and you've no doubt dug up some
 old file I forgot about. You're probably wondering, ``say, didn't he say
-there was no configuration file to customize?''. Ok, ya got me. But lets
+there was no configuration file to customize?''. Okay, ya got me. But lets
 be honest here: ratpoison is so pure and fast-acting, customization is
 barely worth the extra effort. In the off chance that you need to make
 ratpoison your own, we now support it. 
