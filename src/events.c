@@ -239,11 +239,11 @@ configure_request (XConfigureRequestEvent *e)
 	{
 	  if (e->detail == Above)
 	    {
-/* 	      goto_window (win); */
+	      goto_window (win);
 	    }
 	  else if (e->detail == Below)
 	    {
-/* 	      set_active_window (find_window_other ()); */
+	      set_active_window (find_window_other ());
 	    }
 
 	  PRINT_DEBUG("request CWStackMode %d\n", e->detail);
