@@ -1,5 +1,8 @@
 2002-02-02  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (cmd_defbarpadding): print an error message if
+	defbarpadding is called interactively without arguments.
+
 	* src/events.c (handle_signals): only hide the bar if it times
 	out.
 

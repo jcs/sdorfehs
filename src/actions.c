@@ -2342,7 +2342,7 @@ cmd_defbarpadding (int interactive, void *data)
 {
   int x, y;
 
-  if (data == NULL)
+  if (data == NULL && !interactive)
     return xsprintf ("%d %d", defaults.bar_x_padding, defaults.bar_y_padding);
 
   if (data == NULL
