@@ -234,6 +234,7 @@ scanwins(screen_info *s)
 	  || wins[i] == s->key_window 
 	  || wins[i] == s->input_window
 	  || wins[i] == s->frame_window
+	  || wins[i] == s->help_window
 	  || attr.override_redirect == True
 	  || unmanaged_window (wins[i])) continue;
 
@@ -499,8 +500,9 @@ hide_window (rp_window *win)
 {
   if (win == NULL) return;
 
-  set_state (win, IconicState);
   XUnmapWindow (dpy, win->w);
+  set_state (win, IconicState);
+  win->iconizing++;
 }
 
 void

@@ -442,6 +442,9 @@ main (int argc, char *argv[])
     }
 
   read_startup_files ();
+
+  /* Indicate to the user that ratpoison has booted */
+  message (MESSAGE_WELCOME);
   
   handle_events ();
 
@@ -544,13 +547,15 @@ init_screen (screen_info *s, int screen_num)
   					 1, 1, 1, fg_color.pixel, bg_color.pixel);
   XSelectInput (dpy, s->input_window, KeyPressMask );
 
-  s->frame_window = XCreateSimpleWindow (dpy, s->root, 
-					 s->root_attr.width / 2 - 5, 
-					 s->root_attr.height / 2 - 5, 
-					 10, 10, 1,
+  /* Create the frame indicator window */
+  s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, 1, 
 					 fg_color.pixel, bg_color.pixel);
   XSelectInput (dpy, s->frame_window, KeyPressMask );
-  XMapRaised (dpy, s->frame_window);
+
+  /* Create the help window */
+  s->help_window = XCreateSimpleWindow (dpy, s->root, 0, 0, s->root_attr.width,
+					s->root_attr.height, 1, fg_color.pixel, bg_color.pixel);
+  XSelectInput (dpy, s->help_window, KeyPressMask);
 
   XSync (dpy, 0);
 
@@ -582,6 +587,7 @@ clean_up ()
       XDestroyWindow (dpy, screens[i].key_window);
       XDestroyWindow (dpy, screens[i].input_window);
       XDestroyWindow (dpy, screens[i].frame_window);
+      XDestroyWindow (dpy, screens[i].help_window);
 
       XFreeCursor (dpy, screens[i].rat);
       XFreeColormap (dpy, screens[i].def_cmap);

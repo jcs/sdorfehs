@@ -65,6 +65,7 @@ add_to_window_list (screen_info *s, Window w)
   new_window->last_access = 0;
   new_window->prev = NULL;
   new_window->state = WithdrawnState;
+  new_window->iconizing = 0;
   new_window->number = -1;	
   new_window->named = 0;
   new_window->hints = XAllocSizeHints ();

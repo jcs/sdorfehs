@@ -134,6 +134,7 @@ initialize_default_keybindings (void)
   add_keybinding (XK_R, 0, "remove");
   add_keybinding (XK_f, 0, "curframe");
   add_keybinding (XK_f, ControlMask, "curframe");
+  add_keybinding (XK_question, 0, "help");
 }
 
 user_command user_commands[] = 
@@ -165,6 +166,8 @@ user_command user_commands[] =
     {"remove",          cmd_remove,     arg_VOID},
     {"banish",          cmd_banish,     arg_VOID},
     {"curframe",        cmd_curframe,   arg_VOID},
+    {"help",		cmd_help,	arg_VOID},
+    {"quit",		cmd_quit,	arg_VOID},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
@@ -173,7 +176,6 @@ user_command user_commands[] =
     {"stuff", 		cmd_unimplemented, 	arg_VOID},
     {"number", 		cmd_unimplemented, 	arg_VOID},
     {"hardcopy",	cmd_unimplemented,	arg_VOID},
-    {"help",		cmd_unimplemented,	arg_VOID},
     {"lastmsg",		cmd_unimplemented,	arg_VOID},
     {"license",		cmd_unimplemented,	arg_VOID},
     {"lockscreen",	cmd_unimplemented,	arg_VOID},
@@ -181,7 +183,6 @@ user_command user_commands[] =
     {"msgwait",		cmd_unimplemented,	arg_VOID},
     {"msgminwait",	cmd_unimplemented,	arg_VOID},
     {"nethack",		cmd_unimplemented,	arg_VOID},
-    {"quit",		cmd_unimplemented,	arg_VOID},
     {"redisplay",	cmd_unimplemented,	arg_VOID},
     {"screen",		cmd_unimplemented,	arg_VOID},
     {"setenv",		cmd_unimplemented,	arg_VOID},
@@ -691,13 +692,13 @@ cmd_newwm(void *data)
 
 /* Quit ratpoison. Thanks to 
 "Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
-/* static void */
-/* bye(void *dummy) */
-/* { */
-/*   PRINT_DEBUG ("Exiting\n"); */
-/*   clean_up (); */
-/*   exit (EXIT_SUCCESS); */
-/* } */
+void
+cmd_quit(void *data)
+{
+  PRINT_DEBUG ("Exiting\n");
+  clean_up ();
+  exit (EXIT_SUCCESS);
+}
 
 /* Show the current time on the bar. Thanks to Martin Samuelsson
    <cosis@lysator.liu.se> for the patch. Thanks to Jonathan Walther
@@ -865,4 +866,76 @@ void
 cmd_curframe (void *data)
 {
   show_frame_indicator();
+}
+
+void
+cmd_help (void *data)
+{
+  screen_info *s = current_screen();
+  XEvent ev;
+  Window fwin;			/* Window currently in focus */
+  int revert;			
+  int i;
+  int x = 10;
+  int y = 0;
+  int max_width = 0;
+  char *keysym_name;
+
+  XMapRaised (dpy, s->help_window);
+
+  XGetInputFocus (dpy, &fwin, &revert);
+  XSetInputFocus (dpy, s->help_window, RevertToPointerRoot, CurrentTime);
+
+  XDrawString (dpy, s->help_window, s->normal_gc,
+	       10, y + s->font->max_bounds.ascent,
+	       "ratpoison key bindings", strlen ("ratpoison key bindings"));
+
+  y += FONT_HEIGHT (s->font) * 2;
+
+  XDrawString (dpy, s->help_window, s->normal_gc,
+	       10, y + s->font->max_bounds.ascent,
+	       "Command key: ", strlen ("Command key: "));
+
+  keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
+  XDrawString (dpy, s->help_window, s->normal_gc,
+	       10 + XTextWidth (s->font, "Command key: ", strlen ("Command key: ")),
+	       y + s->font->max_bounds.ascent,
+	       keysym_name, strlen (keysym_name));
+  free (keysym_name);
+
+  y += FONT_HEIGHT (s->font) * 2;
+  
+  for (i=0; i<key_actions_last; i++)
+    {
+      keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
+
+      XDrawString (dpy, s->help_window, s->normal_gc,
+		   x, y + s->font->max_bounds.ascent,
+		   keysym_name, strlen (keysym_name));
+
+      if (XTextWidth (s->font, key_actions[i].data, strlen (key_actions[i].data))
+	  + XTextWidth (s->font, keysym_name, strlen (keysym_name)) > max_width)
+	{
+	  max_width = XTextWidth (s->font, key_actions[i].data, strlen (key_actions[i].data))
+	    + XTextWidth (s->font, keysym_name, strlen (keysym_name));
+	}
+
+      XDrawString (dpy, s->help_window, s->normal_gc,
+		   x + 90, y + s->font->max_bounds.ascent,
+		   key_actions[i].data, strlen (key_actions[i].data));
+
+      free (keysym_name);
+
+      y += FONT_HEIGHT (s->font);
+      if (y > s->root_attr.height)
+	{
+	  x += max_width + 10 + 90;
+	  y = FONT_HEIGHT (s->font) * 4;
+	  max_width = 0;
+	}
+    }
+
+  XMaskEvent (dpy, KeyPressMask, &ev);
+  XUnmapWindow (dpy, s->help_window);
+  XSetInputFocus (dpy, fwin, revert, CurrentTime);
 }

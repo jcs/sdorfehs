@@ -48,7 +48,7 @@ new_window (XCreateWindowEvent *e)
   win = find_window (e->window);
 
   if (s && !win && e->window != s->key_window && e->window != s->bar_window 
-      && e->window != s->input_window && e->window != s->frame_window)
+      && e->window != s->input_window && e->window != s->frame_window && e->window != s->help_window)
     {
       win = add_to_window_list (s, e->window);
       update_window_information (win);
@@ -81,24 +81,30 @@ unmap_notify (XEvent *ev)
     {
       rp_window_frame *frame;
 
-      /* If the window was inside a frame, fill the frame with another
-	 window. */
-      frame = find_windows_frame (win);
-      if (frame) cleanup_frame (frame);
-
-      switch (win->state)
+      if (win->iconizing)
 	{
-	case IconicState:
-	  /* This shouldn't actually happen, since the window is
-	     already unmapped, so do nothing */
-	  PRINT_DEBUG ("Iconizing iconized window '%s'\n", win->name);
-	  break;
-	case NormalState:
-	  PRINT_DEBUG ("Withdrawing window '%s'\n", win->name);
-	  withdraw_window (win);
-/* 	  hide_window (win); */
-	  if (frame == rp_current_frame) set_active_frame (frame);
-	  break;
+	  /* This event is due to our hiding the window. */
+	  win->iconizing--;
+	}
+      else
+	{
+	  switch (win->state)
+	    {
+	    case IconicState:
+	      PRINT_DEBUG ("Withdrawing iconized window '%s'\n", win->name);
+	      if (ev->xunmap.send_event) withdraw_window (win);
+	      break;
+	    case NormalState:
+	      PRINT_DEBUG ("Withdrawing normal window '%s'\n", win->name);
+	      /* If the window was inside a frame, fill the frame with another
+		 window. */
+	      frame = find_windows_frame (win);
+	      if (frame) cleanup_frame (frame);
+	      if (frame == rp_current_frame) set_active_frame (frame);
+
+	      withdraw_window (win);
+	      break;
+	    }
 	}
 
       update_window_names (s);
@@ -138,10 +144,10 @@ map_request (XEvent *ev)
 	  PRINT_DEBUG ("Mapped Window\n");
 	  /* Its already mapped, so we don't have to do anything */
 
-/* 	  maximize (win); */
-/* 	  XMapRaised (dpy, win->w); */
-/* 	  set_state (win, NormalState); */
-/* 	  set_active_window (win); */
+	  /* 	  maximize (win); */
+	  /* 	  XMapRaised (dpy, win->w); */
+	  /* 	  set_state (win, NormalState); */
+	  /* 	  set_active_window (win); */
 	  break;
 	case IconicState:
 	  PRINT_DEBUG ("Mapped iconic window\n");
@@ -233,11 +239,11 @@ configure_request (XConfigureRequestEvent *e)
 	{
 	  if (e->detail == Above)
 	    {
-	      goto_window (win);
+/* 	      goto_window (win); */
 	    }
 	  else if (e->detail == Below)
 	    {
-	      set_active_window (find_window_other ());
+/* 	      set_active_window (find_window_other ()); */
 	    }
 
 	  PRINT_DEBUG("request CWStackMode %d\n", e->detail);
@@ -344,9 +350,9 @@ handle_key (screen_info *s)
 
   PRINT_DEBUG ("handling key...\n");
 
-  /* All functions hide the program bar. Unless the bar doesn't time
-     out. */
+  /* All functions hide the program bar and the frame indicator. */
   if (BAR_TIMEOUT > 0) hide_bar (s);
+  hide_frame_indicator();
 
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);

@@ -52,6 +52,10 @@ struct rp_window
   int last_access;		
   int named;
   
+  /* An indication to unmap_notify that the event was produced by
+     iconizing a window. */
+  int iconizing;
+
   /* Dimensions */
   int x, y, width, height, border;
 
@@ -76,7 +80,7 @@ struct screen_info
   GC normal_gc;
   XFontStruct *font;		/* The font we want to use. */
   XWindowAttributes root_attr;
-  Window root, bar_window, key_window, input_window, frame_window;
+  Window root, bar_window, key_window, input_window, frame_window, help_window;
   int bar_is_raised;
   int screen_num;		/* Our screen number as dictated my X */
   Colormap def_cmap;

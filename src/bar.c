@@ -99,7 +99,7 @@ update_window_names (screen_info *s)
   int mark_start = 0;
   int mark_end = 0;
 
-  if (!s->bar_is_raised) return;
+  if (s->bar_is_raised != BAR_IS_WINDOW_LIST) return;
 
   if (bar_buffer == NULL)
     bar_buffer = sbuf_new (0);

@@ -37,7 +37,6 @@ user_command
   int argtype;
 };
 
-void bye(void *dummy);
 void spawn(void *data);
 void command (char *data);
 
@@ -71,6 +70,8 @@ void cmd_only (void *data);
 void cmd_remove (void *data);
 void cmd_banish (void *data);
 void cmd_curframe (void *data);
+void cmd_help (void *data);
+void cmd_quit(void *data);
 
 /* void cmd_xterm (void *data); */
 

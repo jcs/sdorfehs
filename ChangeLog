@@ -1,3 +1,35 @@
+2001-04-15  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/messages.h (MESSAGE_WELCOME): new define
+
+	* src/manage.c (scanwins): ignore the help window
+	(hide_window): increment window's iconizing variable
+
+	* src/main.c (main): display welcoming message
+	(init_screen): create the help window
+	(init_screen): don't map the frame indicator window
+	(clean_up): destroy the help window
+
+	* src/list.c (add_to_window_list): initialize iconizing to 0
+
+	* src/events.c (new_window): skip help_window
+	(unmap_notify): skip normal processing if the event is from
+	iconizing the window.
+	(unmap_notify): clean up the window's frame if it is being
+	withdrawn.
+
+	* src/data.h (struct screen_info): new variable help_window
+
+	* src/bar.c (update_window_names): only print the window list if
+	the bar is already displaying the window list.
+
+	* src/actions.h (cmd_help): new prototype
+	(cmd_quit): likewise
+
+	* src/actions.c (initialize_default_keybindings): new keybinding for "help"
+	(cmd_quit): new function
+	(cmd_help): likewise
+
 2001-04-13  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/actions.c (cmd_clock): doesn't allocate memory. displays the
