@@ -329,7 +329,6 @@ give_window_focus (rp_window *win, rp_window *last_win)
 
   counter++;
   win->last_access = counter;
-
   unhide_window (win);
 
   if (defaults.warp)
@@ -544,6 +543,7 @@ print_window_information (rp_window *win)
    %c - resource class
    %i - X11 Window ID
    %l - last access number
+   %f - print the frame number the window is in
    
  */
 static void
@@ -605,6 +605,16 @@ format_window_name (char *fmt, rp_window_elem *win_elem, rp_window *other_win,
 	    case 'l':
 	      snprintf (dbuf, 9, "%d", win_elem->win->last_access);
 	      sbuf_concat (buffer, dbuf);
+	      break;
+
+	    case 'f':
+	      if (win_elem->win->frame_number != EMPTY)
+		{
+		  snprintf (dbuf, 9, "%d", win_elem->win->frame_number);
+		  sbuf_concat (buffer, dbuf);
+		}
+	      else
+		sbuf_concat (buffer, " ");
 	      break;
 
 	    case '%':

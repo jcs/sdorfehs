@@ -1,3 +1,7 @@
+2004-05-19  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/window.c (format_window_name): add %f format option
+
 2004-05-05  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/input.c (grab_key): use keysym_to_keycode_mod to get the

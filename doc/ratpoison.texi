@@ -369,6 +369,9 @@ X11 Window ID
 @item %l
 A unique number based on when the window was last accessed. The higher
 the number, the more recently it was accessed.
+@item %f
+The frame number the window is displayed in or a space if it is not in
+a frame.
 @end table
 
 When called non-interactively with no arguments, the current setting is
