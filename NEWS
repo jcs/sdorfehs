@@ -6,6 +6,11 @@ This command take a gravity argument just like the wingravity
 commands. Only north east, north west, south east, and south west
 locations are accepted.
 
+** new command defbarborder
+This command allows you to customize the border width of ratpoison's
+windows. These windows are the input window, the bar window, and the
+current frame indication window.
+
 ** "number" command takes additional optional argument
 The second argument is used to specify a window other than the
 current.

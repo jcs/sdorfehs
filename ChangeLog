@@ -2,6 +2,8 @@
 
 	* src/actions.c (cmd_defbarloc): Read the location argument as a
 	gravity argument using parse_wingravity.
+	(cmd_defbgcolor): don't set the background color for key_window.
+	(cmd_deffgcolor): don't set the foreground color for key_window.
 
 	* src/messages.h (MESSAGE_FRAME_STRING): Pad the string with
 	spaces on both sides.

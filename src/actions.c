@@ -2028,7 +2028,6 @@ cmd_deffgcolor (int interactive, void *data)
       screens[i].fg_color = color.pixel;
       update_gc (&screens[i]);
       XSetWindowBorder (dpy, screens[i].bar_window, color.pixel);
-      XSetWindowBorder (dpy, screens[i].key_window, color.pixel);
       XSetWindowBorder (dpy, screens[i].input_window, color.pixel);
       XSetWindowBorder (dpy, screens[i].frame_window, color.pixel);
       XSetWindowBorder (dpy, screens[i].help_window, color.pixel);
@@ -2060,7 +2059,6 @@ cmd_defbgcolor (int interactive, void *data)
       screens[i].bg_color = color.pixel;
       update_gc (&screens[i]);
       XSetWindowBackground (dpy, screens[i].bar_window, color.pixel);
-      XSetWindowBackground (dpy, screens[i].key_window, color.pixel);
       XSetWindowBackground (dpy, screens[i].input_window, color.pixel);
       XSetWindowBackground (dpy, screens[i].frame_window, color.pixel);
       XSetWindowBackground (dpy, screens[i].help_window, color.pixel);
