@@ -3,7 +3,7 @@
 	* src/editor.c (saved_command): Only define whe HAVE_HISTORY is
 	defined.
 
-2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
+2005-01-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (command): treat arg_SHELLCMD like arg_REST.
 	(cmd_set): likewise
