@@ -1,3 +1,7 @@
+2004-09-27  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* contrib/ratpoison.el (ratpoison-command): use call-process.
+
 2004-06-13  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/main.c (init_defaults): set default for window list style to

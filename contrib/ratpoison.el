@@ -6,7 +6,7 @@
 ;; Maintainer: Gergely Nagy <algernon@debian.org>
 ;; Version: 0.2
 ;; Keywords: faces, ratpoison, X
-;; CVS Id: $Id: ratpoison.el,v 1.2 2003/10/24 23:52:45 rcyeske Exp $
+;; CVS Id: $Id: ratpoison.el,v 1.3 2004/09/27 23:23:52 sabetts Exp $
 ;; Last updated: <2001/10/05 17:58:38 algernon>
 
 ;; This file is NOT part of GNU Emacs.
@@ -167,8 +167,7 @@
 ; Command stuff
 (defun ratpoison-command (command)
   (interactive "sRP Command: ")
-  (shell-command (concat ratpoison-program " -c \"" command
-			 "\"")))
+  (call-process ratpoison-program nil nil nil "-c" command))
 
 (defun ratpoison-command-on-region (start end)
   (interactive "r")
