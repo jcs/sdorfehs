@@ -735,6 +735,11 @@ to select a frame whose number is greater than 9 unless the number is
 passed as an argument.
 @end deffn
 
+@deffn Command gdelete @var{group}
+Delete a group. @var{group} is optional. If it is not specified
+ratpoison will attempt to delete the current group. Only empty groups
+can be deleted. To empty a group see @command{gmerge}.
+
 @deffn Command getenv @var{env}
 Display the value of the environment variable, @var{env}.
 @end deffn

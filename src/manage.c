@@ -705,6 +705,8 @@ force_maximize (rp_window *win)
       XResizeWindow (dpy, win->w, win->width + 1, win->height + 1);
     }
 
+  XSync (dpy, False);
+
   /* Resize the window to its proper maximum size. */
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);

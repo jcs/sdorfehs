@@ -102,7 +102,8 @@ static user_command user_commands[] =
     {"gprev", 		cmd_gprev, 		arg_VOID},
     {"gnew", 		cmd_gnew, 		arg_VOID},
     {"gnewbg", 		cmd_gnewbg, 		arg_VOID},
-    {"gselect",		cmd_gselect,		arg_VOID},
+    {"gselect",		cmd_gselect,		arg_STRING},
+    {"gdelete",		cmd_gdelete,		arg_STRING},
     {"groups",		cmd_groups,		arg_VOID},
     {"gmove",		cmd_gmove,		arg_VOID},
     {"gmerge",		cmd_gmerge,		arg_VOID},
@@ -3817,7 +3818,36 @@ cmd_listhook (int interactive, char *data)
       free(buffer);
       return tmp;
     }
+}
 
+char *
+cmd_gdelete (int interactive, char *data)
+{
+  rp_group *g; 
 
+  if (data == NULL) 
+    g = rp_current_group;
+  else
+    {
+      g = find_group (data);
+      if (!g)
+	{
+	  message (" gdelete: cannot find group ");
+	  return NULL;
+	}
+    }
+  
+  switch (group_delete_group (g))
+    {
+    case GROUP_DELETE_GROUP_OK:
+      break;
+    case GROUP_DELETE_GROUP_NONEMPTY:
+      message (" gdelete: non-empty group ");
+      break;
+    default:
+      message (" gdelete: Unknown return code (this shouldn't happen) ");
+    }
+
+  return NULL;
 }
 

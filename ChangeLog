@@ -1,3 +1,25 @@
+2003-08-22  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/split.c (remove_all_splits): only hide the windows in the
+	current screen.
+
+	* src/group.h (group_delete_group): new prototype
+
+	* src/group.c (group_last_window): find the last window in the
+	current screen.
+	(group_next_window): find next window in current screen.
+	(group_prev_window): find previous window in current screen.
+
+	* src/manage.c (force_maximize): call XSync() after first resize.
+
+	* src/globals.h (GROUP_DELETE_GROUP_OK): new define
+	(GROUP_DELETE_GROUP_NONEMPTY): likewise
+
+	* src/actions.h (cmd_gdelete): new prototype
+
+	* src/actions.c (user_commands): new command gdelete
+	(cmd_gdelete): new command
+
 2003-08-10  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/editor.c (editor_enter): return EDIT_ABORT if there was an

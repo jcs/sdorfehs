@@ -324,12 +324,14 @@ group_last_window (rp_group *g)
   int last_access = 0;
   rp_window_elem *most_recent = NULL;
   rp_window_elem *cur;
+  rp_screen *s = current_screen();
 
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
       if (cur->win->last_access >= last_access 
 	  && cur->win != current_window()
-	  && !find_windows_frame (cur->win))
+	  && !find_windows_frame (cur->win)
+	  && cur->win->scr == s)
 	{
 	  most_recent = cur;
 	  last_access = cur->win->last_access;
@@ -363,7 +365,7 @@ group_next_window (rp_group *g, rp_window *win)
        cur != we; 
        cur = list_next_entry (cur, &g->mapped_windows, node))
     {
-      if (!find_windows_frame (cur->win))
+      if (!find_windows_frame (cur->win) && cur->win->scr == current_screen())
 	{
 	  return cur->win;
 	}
@@ -393,7 +395,7 @@ group_prev_window (rp_group *g, rp_window *win)
        cur != we; 
        cur = list_prev_entry (cur, &g->mapped_windows, node))
     {
-      if (!find_windows_frame (cur->win))
+      if (!find_windows_frame (cur->win) && cur->win->scr == current_screen())
 	{
 	  return cur->win;
 	}
@@ -476,3 +478,35 @@ set_current_group (rp_group *g)
   /* Call the switch group hook. */
   hook_run (&rp_switch_group_hook);
 }
+
+int
+group_delete_group (rp_group *g)
+{
+  if (list_empty (&(g->mapped_windows)) 
+      && list_empty (&(g->unmapped_windows)))
+    {
+      /* we can safely delete the group */
+      if (g == rp_current_group) 
+	{
+	  rp_current_group = group_next_group ();
+	}
+
+      list_del (&(g->node));
+      group_free (g);
+
+      if (list_empty (&rp_groups))
+	{
+	  /* Create the first group in the list (We always need at least
+	     one). */
+	  g = group_new (numset_request (group_numset), DEFAULT_GROUP_NAME);
+	  rp_current_group = g;
+	  list_add_tail (&g->node, &rp_groups);
+	}
+      return GROUP_DELETE_GROUP_OK;
+    }
+  else
+    {
+      return GROUP_DELETE_GROUP_NONEMPTY;
+    }
+}
+

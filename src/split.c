@@ -384,7 +384,7 @@ remove_all_splits ()
   /* Hide all the windows not in the current frame. */
   list_for_each_entry (win, &rp_mapped_window, node)
     {
-      if (win->frame_number != s->current_frame)
+      if (win->frame_number != s->current_frame && win->scr == s)
 	hide_window (win);
     }
 
