@@ -2,6 +2,7 @@
 
 	* manage.c (maximize_normal): windows with resize increments
 	resize properly when their original size is > the screen size.
+	(maximize_transient): likewise
 
 2001-03-02  shawn  <sabetts@diggin.lamenet.tmp>
 

@@ -313,11 +313,13 @@ maximize_transient (rp_window *win)
 
 	  amount = maxx - win->width;
 	  amount -= amount % win->hints->width_inc;
+	  if (amount < 0) amount -= win->hints->width_inc;
 	  PRINT_DEBUG ("amount x: %d\n", amount);
 	  maxx = amount + win->width;
 
 	  amount = maxy - win->height;
 	  amount -= amount % win->hints->height_inc;
+	  if (amount < 0) amount -= win->hints->height_inc;
 	  PRINT_DEBUG ("amount y: %d\n", amount);
 	  maxy = amount + win->height;
 	}
