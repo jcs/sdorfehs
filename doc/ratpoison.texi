@@ -329,7 +329,7 @@ Indicate which frame is the current frame.
 @end table
 
 @node Commands, Input, Keystrokes, Top
-@chapter ratpoison commands
+@chapter Commands
 
 ratpoison can be controlled with commands (so called colon-commands).
 The summary of available commands is listed below:
@@ -339,6 +339,19 @@ The summary of available commands is listed below:
 @item abort
 This is a pretty useless command. By default, it is bound to
 @kbd{C-t g}, and its purpose is to abort other commands.
+
+@item alias @var{name} @var{command}
+An allows you to name a ratpoison command something else. For
+instance, if you frequently open emacs you may want to make an alias
+called @samp{emacs} that loads emacs. You would do it like this:
+
+@example
+: alias emacs exec emacs
+@end example
+
+An alias is treated exactly like a colon command in that you can call
+it from the colon prompt, bind it to a key, and call it
+non-interactively with @command{ratpoison -c}.
 
 @item banish
 Banish the mouse to the lower right corner of the screen.

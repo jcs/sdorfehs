@@ -81,6 +81,7 @@ static user_command user_commands[] =
     {"restart",		cmd_restart,	arg_VOID},
     {"startup_message",	cmd_startup_message, arg_STRING},
     {"link",		cmd_link,	arg_STRING},
+    {"alias",		cmd_alias,	arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
@@ -114,6 +115,16 @@ static user_command user_commands[] =
     {"stuff", 		cmd_unimplemented, 	arg_VOID},
 #endif
     {0,			0,		0} };
+
+struct cmd_alias
+{
+  char *name;
+  char *alias;
+};
+  
+static struct cmd_alias *alias_list;
+static int alias_list_size;
+static int alias_list_last;
 
 rp_action*
 find_keybinding_by_action (char *action)
@@ -248,6 +259,11 @@ initialize_default_keybindings (void)
   key_actions_table_size = 1;
   key_actions = (rp_action*) xmalloc (sizeof (rp_action) * key_actions_table_size);
   key_actions_last = 0;
+
+  /* Initialive the alias list. */
+  alias_list_size = 5;
+  alias_list_last = 0;
+  alias_list = xmalloc (sizeof (cmd_alias) * alias_list_size);
 
   prefix_key.sym = KEY_PREFIX;
   prefix_key.state = MODIFIER_PREFIX;
@@ -827,6 +843,7 @@ command (int interactive, char *data)
   char *cmd, *rest;
   char *input;
   user_command *uc;
+  int i;
   
   if (data == NULL)
     return NULL;
@@ -859,6 +876,16 @@ command (int interactive, char *data)
       if (!strcmp (cmd, uc->name))
 	{
 	  result = uc->func (interactive, rest);
+	  goto done;
+	}
+    }
+
+  /* Look for it in the aliases. */
+  for (i=0; i<alias_list_last; i++)
+    {
+      if (!strcmp (cmd, alias_list[i].name))
+	{
+	  result = command (interactive, alias_list[i].alias);
 	  goto done;
 	}
     }
@@ -2210,5 +2237,38 @@ cmd_defbarpadding (int interactive, void *data)
     {
       message (" defbarpadding: Bad argument ");    
     }
+  return NULL;
+}
+
+char *
+cmd_alias (int interactive, void *data)
+{
+  char *name, *alias;
+  
+  if (data == NULL)
+    {
+      message (" alias: At least one argument required ");
+      return NULL;
+    }
+
+  if (alias_list_last >= alias_list_size)
+    {
+      alias_list_size *= 2;
+      alias_list = xrealloc (alias_list, sizeof (cmd_alias) * alias_list_size);
+    }
+
+  name = strtok (data, " ");
+  alias = strtok (NULL, "\0");
+
+  if (name == NULL || alias == NULL)
+    {
+      message (" alias: Two arguments required ");
+      return NULL;
+    }
+      
+  alias_list[alias_list_last].name = xstrdup (name);
+  alias_list[alias_list_last].alias = xstrdup (alias);
+  alias_list_last++;
+
   return NULL;
 }

@@ -1,7 +1,17 @@
 2001-12-21  shawn  <sabetts@vcn.bc.ca>
 
+	* src/actions.h (cmd_alias): new prototype
+
 	* src/actions.c (user_commands): remove "license" from the
 	unimplemented section.
+	(user_commands): new command "alias"
+	(cmd_alias): new function
+	(command): handle aliases
+	(initialize_default_keybindings): initialize the alias list
+	(struct cmd_alias): new struct
+	(alias_list): new static global
+	(alias_list_size): likewise
+	(alias_list_last): likewise
 
 	* src/actions.h (cmd_license): new prototype
 

@@ -106,6 +106,7 @@ char * cmd_focuslast (int interactive, void *data);
 char * cmd_link (int interactive, void *data);
 char * cmd_defbarpadding (int interactive, void *data);
 char * cmd_license (int interactive, void *data);
+char * cmd_alias (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 
