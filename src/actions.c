@@ -2408,13 +2408,8 @@ spawn(char *cmd)
 cmdret *
 cmd_newwm(int interactive, struct cmdarg **args)
 {
-  PRINT_DEBUG (("Switching to %s\n", ARG_STRING(0)));
-
-  putenv(current_screen()->display_string);
-  execlp(ARG_STRING(0), ARG_STRING(0), 0);
-
-  PRINT_ERROR (("exec %s ", ARG_STRING(0)));
-  perror(" failed");
+  /* in the event loop, this will switch WMs. */
+  rp_exec_newwm = xstrdup (ARG_STRING(0));
 
   return cmdret_new (NULL, RET_SUCCESS);
 }

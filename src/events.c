@@ -886,6 +886,20 @@ handle_signals ()
       chld_signalled = 0;
     }
 
+  if (rp_exec_newwm)
+    {
+      PRINT_DEBUG (("Switching to %s\n", rp_exec_newwm));
+
+      putenv(current_screen()->display_string);
+      execlp(rp_exec_newwm, rp_exec_newwm, 0);
+
+      /* Failed. Clean up. */
+      PRINT_ERROR (("exec %s ", rp_exec_newwm));
+      perror(" failed");
+      free (rp_exec_newwm);
+      rp_exec_newwm = NULL;
+    }
+
   if (hup_signalled > 0)
     {
       PRINT_DEBUG (("Restarting\n"));
@@ -900,6 +914,14 @@ handle_signals ()
       hook_run (&rp_quit_hook);
       clean_up ();
       exit (EXIT_SUCCESS);
+    }
+
+  /* Report any X11 errors that have occurred. */
+  if (rp_error_msg)
+    {
+      marked_message_printf (0, 6, "ERROR: %s", rp_error_msg);
+      free (rp_error_msg);
+      rp_error_msg = NULL;
     }
 }
 
@@ -918,14 +940,6 @@ listen_for_events ()
     {
       handle_signals ();
 
-      /* Report any X11 errors that have occurred. */
-      if (rp_error_msg)
-	{
-	  marked_message_printf (0, 6, "ERROR: %s", rp_error_msg);
-	  free (rp_error_msg);
-	  rp_error_msg = NULL;
-	}
-
       /* Handle the next event. */
       FD_SET (x_fd, &fds);
       XFlush(dpy);
@@ -935,6 +949,7 @@ listen_for_events ()
 	{
 	  XNextEvent (dpy, &rp_current_event);
 	  delegate_event (&rp_current_event);
+	  XSync(dpy, False);
 	}
     }
 }

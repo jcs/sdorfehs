@@ -1,3 +1,16 @@
+2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/globals.h (rp_exec_newwm): new extern.
+
+	* src/globals.c (rp_exec_newwm): new global.
+
+	* src/actions.c (cmd_newwm): set rp_exec_newwm to the new wm.
+
+	* src/events.c (listen_for_events): call XSync after
+	delegate_event.
+	(handle_signals): exec newwm if its not NULL. Report X11 errors
+	(moved from listen_for_events).
+
 2005-01-15  Ryan Yeske  <rcyeske@gmail.com>
 
 	* src/editor.c (saved_command): Only define whe HAVE_HISTORY is
