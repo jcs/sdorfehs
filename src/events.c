@@ -65,36 +65,6 @@ new_window (XCreateWindowEvent *e)
     }
 }
 
-static void
-cleanup_frame (rp_window_frame *frame)
-{
-  rp_window *last_win;
-  rp_window *win;
-
-  win = find_window_other ();
-  if (win == NULL)
-    {
-      set_frames_window (frame, NULL);
-      return;
-    }
-
-  last_win = set_frames_window (frame, win);
-
-  maximize (win);
-  unhide_window (win);
-
-
-#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
-  if (!win->transient
-      && !(win->hints->flags & PMaxSize 
-	   && win->hints->max_width < win->scr->root_attr.width
-	   && win->hints->max_height < win->scr->root_attr.height))
-#else
-  if (!win->transient)
-#endif
-    hide_others (win);
-}
-
 static void 
 unmap_notify (XEvent *ev)
 {
@@ -406,7 +376,10 @@ handle_key (screen_info *s)
     }
 
   read_key (&keysym, &mod, NULL, 0);
+
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
+  if (rat_grabbed)
+    ungrab_rat();
 
   if ((key_action = find_keybinding (keysym, x11_mask_to_rp_mask (mod))))
     {
@@ -424,9 +397,6 @@ handle_key (screen_info *s)
       marked_message_printf (0, 0, " %s unbound key ", keysym_name);
       free (keysym_name);
     }
-
-  if (rat_grabbed)
-    ungrab_rat();
 }
 
 static void

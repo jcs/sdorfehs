@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.1.1
+** new command 'tmpwm'
+temporarily run a different window manager, then come back to
+ratpoison once it has terminated.
+
 ** error and debug reporting
 The format has been changed to the more standard format used by C
 compilers.

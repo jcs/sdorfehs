@@ -28,6 +28,7 @@
 
 #include "ratpoison.h"
 
+
 static rp_action *key_actions;
 static int key_actions_last;
 static int key_actions_table_size;
@@ -90,6 +91,7 @@ static user_command user_commands[] =
     {"warp",		cmd_warp,	arg_STRING},
     {"resize",		cmd_resize,	arg_STRING},
     {"shrink",		cmd_shrink,	arg_VOID},
+    {"tmpwm",		cmd_tmpwm,	arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
@@ -972,7 +974,7 @@ cmd_exec (int interactive, void *data)
 }
 
 
-void
+int
 spawn(void *data)
 {
   char *cmd = data;
@@ -1001,6 +1003,8 @@ spawn(void *data)
 
 /*   wait((int *) 0); */
   PRINT_DEBUG (("spawned %s\n", cmd));
+
+  return pid;
 }
 
 /* Switch to a different Window Manager. Thanks to 
@@ -2705,5 +2709,82 @@ cmd_warp (int interactive, void *data)
   else
     message (" warp: invalid argument ");
  
+  return NULL;
+}
+
+/* Temporarily give control over to another window manager, reclaiming
+   control when that WM terminates. */
+char *
+cmd_tmpwm (int interactive, void *data)
+{
+  struct list_head *tmp, *iter;
+  rp_window *win = NULL;
+  int status;
+  int pid;
+  int i;
+
+  if (data == NULL)
+    {
+      message (" tmpwm: one argument required ");
+      return NULL;
+    }
+
+  /* Release event selection on the root windows, so the new WM can
+     have it. */
+  for (i=0; i<num_screens; i++)
+    XSelectInput(dpy, RootWindow (dpy, i), 0);
+
+  /* Don't listen for any events from any window. */
+  list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
+    XSelectInput (dpy, win->w, 0);
+  list_for_each_safe_entry (win, iter, tmp, &rp_unmapped_window, node)
+    XSelectInput (dpy, win->w, 0);
+
+  XSync (dpy, False);
+
+  /* FIXME: drop all our windows. We shouldn't do this. */
+  list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
+    {
+      rp_window_frame *frame;
+
+      /* Remove the window from the frame. */
+      frame = find_windows_frame (win);
+      if (frame) cleanup_frame (frame);
+      if (frame == win->scr->rp_current_frame) set_active_frame (frame);
+
+      /* put the window in the unmapped list. */
+      return_window_number (win->number);
+      list_move_tail(&win->node, &rp_unmapped_window);
+    }
+
+  /* Now that all the windows are in the unmapped list, unmanage them. */
+  list_for_each_safe_entry (win, iter, tmp, &rp_unmapped_window, node)
+    {
+      unmanage (win);
+    }
+
+  /* Launch the new WM and wait for it to terminate. */
+  pid = spawn ((char *)data);
+  waitpid (pid, &status, 0);
+
+  /* Enable the event selection on the root window. */
+  for (i=0; i<num_screens; i++)
+    {
+      XSelectInput(dpy, RootWindow (dpy, i),
+		   PropertyChangeMask | ColormapChangeMask
+		   | SubstructureRedirectMask | SubstructureNotifyMask);
+    }
+  XSync (dpy, False);
+
+  /* Pick up all the windows. */
+  for (i=0; i<num_screens; i++)
+    scanwins (&screens[i]);
+
+  /* If no window has focus, give the key_window focus. */
+  if (current_window() == NULL)
+    XSetInputFocus (dpy, current_screen()->key_window, 
+		    RevertToPointerRoot, CurrentTime);
+
+  /* And we're back in ratpoison. */
   return NULL;
 }

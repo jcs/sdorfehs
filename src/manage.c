@@ -320,11 +320,16 @@ scanwins(screen_info *s)
 
       win = add_to_window_list (s, wins[i]);
 
-      PRINT_DEBUG (("map_state: %d\n", attr.map_state));
+      PRINT_DEBUG (("map_state: %s\n", 
+		    attr.map_state == IsViewable ? "IsViewable":
+		    attr.map_state == IsUnviewable ? "IsUnviewable" : "IsUnmapped"));
+      PRINT_DEBUG (("state: %s\n", 
+		    get_state(win) == IconicState ? "Iconic":
+		    get_state(win) == NormalState ? "Normal" : "Other"));
       
       /* Collect mapped and iconized windows. */
       if (attr.map_state == IsViewable
-	  || (attr.map_state == IsUnmapped 
+	  || (attr.map_state == IsUnmapped
 	      && get_state (win) == IconicState))
 	map_window (win);
     }

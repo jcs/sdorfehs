@@ -739,6 +739,14 @@ Turn on or off the startup_message. This is most useful in your
 When called non-interactively with no arguments, the current setting is
 returned.
 
+@item tmpwm @var{WM}
+Gives control over to another window manager and regains control once
+it has terminated. @var{WM} is the path to the new window
+manager. This command is useful when you want to temporarily take a
+look at another window manager, or program under a different window
+manager, but you want to come back to ratpoison when you've finished
+your investigation.
+
 @item time
 Show current time. Disappears after 5 seconds, like all other info bars.
 In the default setup, the @kbd{C-t a} keystroke is bound to this command.

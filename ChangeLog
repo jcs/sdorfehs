@@ -1,3 +1,19 @@
+2003-02-23  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/split.h (cleanup_frame): new protoype
+
+	* src/manage.c (scanwins): added better debugging output
+
+	* src/events.c (cleanup_frame): move to split.c
+	(handle_key): ungrab the rat right after we read the key.
+
+	* src/actions.h (cmd_tmpwm): new prototype.
+
+	* src/actions.c (spawn): return the pid of the child
+	process. prototype updated.
+	(cmd_tmpwm): new function
+	(user_commands): new command, tmp_wm.
+
 2003-02-22  Shawn Betts  <sabetts@sfu.ca>
 
 	* configure.in: don't check for variable argument support in

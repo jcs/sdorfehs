@@ -52,6 +52,36 @@ num_frames (screen_info *s)
  return count;
 }
 
+void
+cleanup_frame (rp_window_frame *frame)
+{
+  rp_window *last_win;
+  rp_window *win;
+
+  win = find_window_other ();
+  if (win == NULL)
+    {
+      set_frames_window (frame, NULL);
+      return;
+    }
+
+  last_win = set_frames_window (frame, win);
+
+  maximize (win);
+  unhide_window (win);
+
+
+#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
+  if (!win->transient
+      && !(win->hints->flags & PMaxSize 
+	   && win->hints->max_width < win->scr->root_attr.width
+	   && win->hints->max_height < win->scr->root_attr.height))
+#else
+  if (!win->transient)
+#endif
+    hide_others (win);
+}
+
 rp_window *
 set_frames_window (rp_window_frame *frame, rp_window *win)
 {

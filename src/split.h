@@ -24,6 +24,7 @@
 
 int num_frames (screen_info *s);
 rp_window *set_frames_window (rp_window_frame *frame, rp_window *win);
+void cleanup_frame (rp_window_frame *frame);
 void maximize_all_windows_in_frame (rp_window_frame *frame);
 void h_split_frame (rp_window_frame *frame, int pixels);
 void v_split_frame (rp_window_frame *frame, int pixels);
