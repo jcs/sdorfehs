@@ -1,3 +1,8 @@
+2001-03-05  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* bar.c (update_window_names): Print a '+' for the last accessed
+	window.
+
 2001-03-03  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* actions.c (cmd_bind): Do not pollute the message bar with

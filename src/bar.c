@@ -92,6 +92,8 @@ update_window_names (screen_info *s)
 {
   static struct sbuf *bar_buffer = NULL;
   rp_window *w;
+  rp_window *other_window;
+
   char dbuf[10];
 
   int mark_start = 0;
@@ -103,6 +105,8 @@ update_window_names (screen_info *s)
     bar_buffer = sbuf_new (0);
 
   sbuf_clear (bar_buffer);
+
+  other_window = find_window_other ();
 
   for (w = rp_mapped_window_sentinel->next; 
        w != rp_mapped_window_sentinel; 
@@ -120,6 +124,8 @@ update_window_names (screen_info *s)
 
       if (w == rp_current_window)
 	sbuf_concat (bar_buffer, "*");
+      else if (w == other_window)
+	sbuf_concat (bar_buffer, "+");
       else
 	sbuf_concat (bar_buffer, "-");
 
