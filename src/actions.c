@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA
  */
-
+
 #include <unistd.h>
 #include <sys/wait.h>
 #include <X11/keysym.h>
@@ -26,13 +26,7 @@
 #include <time.h>
 
 #include "ratpoison.h"
-
-/* #define C ControlMask */
-/* #define M Mod1Mask		/\* Meta *\/ */
-/* #define A Mod2Mask		/\* Alt *\/ */
-/* #define S Mod3Mask		/\* Super *\/ */
-/* #define H Mod4Mask		/\* Hyper *\/ */
-
+
 rp_action *key_actions;
 int key_actions_last;
 int key_actions_table_size;
