@@ -259,7 +259,6 @@ Display the current time of day.
 Open a new X terminal.
 
 @item C-t :
-@item C-t C-:
 This allows you to execute a single ratpoison command.
 
 @item C-t !
