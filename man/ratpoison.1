@@ -2,7 +2,7 @@
 .SH NAME
 ratpoison \- fatless X window manager
 .SH SYNOPSIS
-.B ratpoison
+.B ratpoison [ \fIoptions\fP ]
 .SH DESCRIPTION
 This manual page documents briefly the
 .B ratpoison
@@ -22,46 +22,129 @@ keystrokes. ratpoison has a prefix map to minimize the key
 clobbering that cripples EMACS and other quality pieces of
 software.
 .SH KEYSTROKES
-The default keystrokes are listed in the next section. However, there
-are some which are bound to complex commands, and those are listed
-here.
+ratpoison is controlled entirely through the keyboard. The default
+keystrokes are listed in this section.
 .TP
-.B C\-t c
-This opens a new XTerm.
+.B C-t C-t
+Switch to the last window.
 .TP
-.B C\-t e
-This opens a new EMACS session. You will probably only need to do this
-once.
-.TP
-.B C\-t t
-Sometimes you need to send a C\-t to the current window. This command
+.B C-t t
+Sometimes you need to send a C-t to the current window. This keystroke
 does just that.
 .TP
-.B C\-t :
-Enter a command line.
+.B C\-t 0-9
+Switch to the numbered window.
+.TP
+.B C\-t A,
+.B C\-t C\-A
+Rename the current window. The window's new name will prevail for the
+rest of its lifetime.
+.TP
+.B C\-t K,
+.B C\-t C\-K
+Send a DestroyClient event to the current window. This will terminate
+the application without question.
+.TP
+.B C\-t n,
+.B C\-t C\-n,
+.B C\-t Return,
+.B C\-t C\-Return,
+.B C\-t Space,
+.B C\-t C\-Space,
+Go to next window.
+.TP
+.B C\-t p,
+.B C\-t C\-p
+Go to previous window.
+.TP
+.B C\-t ',
+.B C\-t C\-'
+Go to a window by name.  You will usually only need to type the first
+few characters of the window name.
+.TP
+.B C\-t a,
+.B C\-t C\-a
+Display the current time of day.
+.TP
+.B C\-t c,
+.B C\-t C\-c
+Open a new X terminal.
+.TP
+.B C\-t :,
+.B C\-t C\-:
+This allows you to execute a single ratpoison command.
+.TP
+.B C\-t e,
+.B C\-t C\-e
+Run Emacs (you know you want to).
+.TP
+.B C\-t !,
+Run a shell command.
+.TP
+.B C\-t C\-!
+Run a shell command through an X terminal.
+.TP
+.B C\-t k,
+.B C\-t C\-k
+Close the current window.
+.TP
+.B C\-t m,
+.B C\-t C\-m
+Maximize the current window. Sometimes windows don't respond correctly
+to the initial maximize event and need some coaxing. This is a fancy way
+of saying there are still bugs in ratpoison. \fIC\-t m\fP will force the
+current window to maximize.
+.TP
+.B C\-t v,
+.B C\-t C\-v
+Display the version of ratpoison.
+.TP
+.B C\-t w,
+.B C\-t C\-w
+Display the list of managed windows. The current window is highlighted.
 .SH COMMANDS
 Ratpoison can be controlled with commands (so called colon-commands).
 The summary of available commands is listed below:
-.\" FIXME: Complete this!
 .TP
 .B abort
 This is a pretty useless command. By default, it is bound to
 \fIC\-t g\fP, and its purpose is to abort other commands.
 .TP
+.B bind \fIkey\fP \fIcommand\fP
+Bind a key to a ratpoison command. This command takes two arguments: the
+key to bind and the command to run. For example, to bind \fIC\-t R\fP to
+restart ratpoison:
+.IP
+: bind R exec ratpoison --restart
+.PP
+.TP
 .B clock
 Show current time. Disappears after 5 seconds, like all other info bars.
 In the default setup, the \fIC\-t a\fP keystroke is bound to this command.
 .TP
+.B colon \fIcommand\fP
+Run a ratpoison command.
+.TP
 .B delete
 This deletes the current window. You can access it with the \fIC\-t k\fP
 keystroke.
+.TP
+.B escape \fIkey\fP
+Set the prefix to \fIkey\fP. For example 
+.IP
+: escape ^b
+.PP
+sets the prefix key to \fIC\-b\fP.
+.TP
+.B generate
+Send a \fIC\-t\fP to the current window.
 .TP
 .B exec \fIcommand\fP
 Execute a shell command. By default, \fIC\-t !\fP does this.
 .TP
 .B kill
 This destroys the current window. Normally you should only need to
-use \fBdelete\fP, but just incase you need to rip the heart out of a
+use \fIdelete\fP, but just incase you need to rip the heart out of a
 misbehaving window this command should do the trick. Also available as
 \fIC\-t K\fP.
 .TP
@@ -73,14 +156,9 @@ This jumps you to the next window in the window list. This one is
 bound to three keystrokes, namely \fIC\-t n\fP, \fIC\-t space\fP,
 and \fIC\-t enter\fP.
 .TP
-.B newwm \fIwindow\-manager\fP
+.B newwm \fIwindow-manager\fP
 This is a bad-bad command. It kills ratpoison and revives that
-ugly rotten! Yuck! Avoid!
-.TP
-.B number \fIn\fP
-This jumps you to window \fIn\fP where \fIn\fP is the window number as
-shown in the Program Bar. You can do the same trick with
-\fIC\-<n>\fP too.
+ugly rodent! Yuck! Avoid!
 .TP
 .B other
 This toggles between the current window and the last window. By
@@ -90,8 +168,16 @@ default, this is bound to \fIC\-t C\-t\fP.
 This jumps you to the previous window in the window list. By default,
 this is bound to \fIC\-t p\fP.
 .TP
-.B select \fIwindow\-name\fP
-Go to a window by name. A shourcut is \fIC\-t '\fP.
+.B select \fIn\fP
+This jumps you to window \fIn\fP where \fIn\fP is the window number as
+shown in the Program Bar. You can do the same trick with
+\fIC\-n\fP too.
+.TP
+.B select \fIwindow-name\fP
+Go to a window by name. A shortcut is \fIC\-t '\fP.
+.TP
+.B source \fIfile\fP
+Read a text file containing ratpoison commands.
 .TP
 .B title \fItitle\fP
 Rename the currently active window. This name will remain for the
@@ -99,18 +185,41 @@ duration of the window's life, unless you change it again. By default,
 the \fIC\-t A\fP keystroke is bound to this command.
 .TP
 .B version
-Print ratpoison version. \fIC\-t v\fP! \fIC\-t v\fP!
+Print ratpoison version.  By default, this is bound to \fIC\-t v\fP.
 .TP
 .B windows
 This displays the Program Bar which displays the windows you currently
-have running. The number before each window name is used to jump to that
-window. You can do this by typing \fBC\-t C\-<n>\fP where \fI<n>\fP is the
-number of the window. Note that only windows with numbers from 0 to 9
-can be referenced.
+have running. The number before each window name is used to jump to
+that window. You can do this by typing \fIC\-t n\fP where \fIn\fP
+is the number of the window. Note that only windows with numbers from
+0 to 9 can be referenced using this keystoke.  To reach windows with
+numbers greater than 9, use \fIC\-t '\fP and type the number at the
+prompt.
 
 After 5 seconds the Program Bar disappears.
 
-This command is bound to \fIC\-t w\fP.
+This command is bound to \fIC\-t w\fP by default.
+.SH OPTIONS
+These are the command line options that are recognized by ratpoison:
+.TP
+\fB\-r\fR, \fB\-\-restart\fR
+restart ratpoison
+.TP
+\fB\-k\fR, \fB\-\-kill\fR
+kill ratpoison
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+output version information and exit
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+display this help and exit
+.SH "REPORTING BUGS"
+Report bugs to <ratpoison-devel@lists.sourceforge.net>.
+.SH COPYRIGHT
+Copyright \(co 2000, 2001 Shawn Betts
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 .SH "SEE ALSO"
 The full documentation for
 .B ratpoison
@@ -126,4 +235,5 @@ should give you access to the complete manual.
 .SH AUTHOR
 Ratpoison was written by Shawn Betts <sabetts@users.sourceforge.net>.
 
-This manual page was written by Gergely Nagy <8@free.bsd.hu>.
+This manual page was written by Gergely Nagy <8@free.bsd.hu> and
+updated by Shawn Betts <sabetts@users.sourceforge.net>.
