@@ -183,4 +183,10 @@ extern int alarm_signalled;
 extern int kill_signalled;
 extern int hup_signalled;
 
+/* rudeness levels */
+extern int rp_honour_transient_raise;
+extern int rp_honour_normal_raise;
+extern int rp_honour_transient_map;
+extern int rp_honour_normal_map;
+
 #endif /* _RATPOISON_DATA_H */

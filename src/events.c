@@ -181,7 +181,31 @@ map_request (XEvent *ev)
 	  break;
 	case IconicState:
 	  PRINT_DEBUG ("Mapped iconic window\n");
-	  set_active_window (win);
+	  if (win->last_access == 0)
+	    {
+	      /* Depending on the rudeness level, actually map the
+		 window. */
+	      if ((rp_honour_transient_map && win->transient)
+		  || (rp_honour_normal_map && !win->transient))
+		set_active_window (win);
+	    }
+	  else
+	    {
+	      /* Depending on the rudeness level, actually map the
+		 window. */
+	      if ((rp_honour_transient_raise && win->transient)
+		  || (rp_honour_normal_raise && !win->transient))
+		set_active_window (win);
+	      else
+		{
+		  if (win->transient)
+		    marked_message_printf (0, 0, "Raise request from transient window %d (%s)", 
+					   win->number, win->name);
+		  else
+		    marked_message_printf (0, 0, "Raise request from window %d (%s)",
+					   win->number, win->name);
+		}
+	    }
 	  break;
 	}
     }
@@ -251,19 +275,37 @@ configure_request (XConfigureRequestEvent *e)
 	  PRINT_DEBUG("request CWY %d\n", e->y);
 	}
 
-      if (e->value_mask & CWStackMode && win->state == NormalState)
+      if (e->value_mask & CWStackMode)
 	{
 	  if (e->detail == Above)
 	    {
-	      goto_window (win);
-	    }
-	  else if (e->detail == Below)
-	    {
-	      set_active_window (find_window_other ());
+	      /* Depending on the rudeness level, actually map the
+		 window. */
+	      if ((rp_honour_transient_raise && win->transient)
+		  || (rp_honour_normal_raise && !win->transient))
+		{
+		  if (win->state == IconicState)
+		    set_active_window (win);
+		}
+	      else
+		{
+		  if (win->transient)
+		    marked_message_printf (0, 0, "Raise request from transient window %d (%s)", 
+					   win->number, win->name);
+		  else
+		    marked_message_printf (0, 0, "Raise request from window %d (%s)",
+					   win->number, win->name);
+		}
+
+	      if (find_windows_frame (win))
+		goto_window (win);
 	    }
 
 	  PRINT_DEBUG("request CWStackMode %d\n", e->detail);
 	}
+
+      PRINT_DEBUG ("'%s' window size: %d %d %d %d %d\n", win->name,
+		   win->x, win->y, win->width, win->height, win->border);
 
       if (e->value_mask & CWBorderWidth)
 	{
@@ -284,21 +326,22 @@ configure_request (XConfigureRequestEvent *e)
 	  PRINT_DEBUG("request CWHeight %d\n", e->height);
 	}
 
-      PRINT_DEBUG ("'%s' new window size: %d %d %d %d %d\n", win->name,
-		   win->x, win->y, win->width, win->height, win->border);
-
-      if (win->state != NormalState)
+      if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
 	{
-	  /* The window isn't visible so grant it whatever it likes */
-	  XConfigureWindow (dpy, win->w, e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
-			    &changes);
-	  send_configure (win);
-	}
-      else
-	{
-	  /* Draw the hard line. Get back in line, you misbehaving window! */
-	  maximize (win);
-	  send_configure (win);
+	  if (win->state != NormalState)
+	    {
+	      /* The window isn't visible so grant it whatever it likes */
+	      XConfigureWindow (dpy, win->w, e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
+				&changes);
+	      send_configure (win);
+	    }
+	  else
+	    {
+	      /* Draw the hard line. Get back in line, you misbehaving
+		 window! */
+	      maximize (win);
+	      send_configure (win);
+	    }
 	}
     }
   else

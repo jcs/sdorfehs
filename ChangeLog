@@ -1,3 +1,37 @@
+2001-08-23  Shawn  <sabetts@hotlunch>
+
+	* src/manage.c (maximize_normal): In the new height on windows
+	with increment hints code, reorder the steps.
+	(map_window): conditionally map the window based on the rudeness
+	level.
+
+	* src/main.c (rp_honour_transient_raise): new global declaration
+	(rp_honour_transient_map): likewise
+	(rp_honour_normal_raise): likewise
+	(rp_honour_normal_map): likewise
+
+	* src/events.c (map_request): conditionally map the window based
+	on the rudeness level.
+	(configure_request): conditionally raise the window based on the
+	rudeness level.
+	(configure_request): only maximize the window if the height,
+	width, border, or position was changed.
+
+	* src/data.h (rp_honour_transient_raise): new global
+	(rp_honour_normal_raise): likewise
+	(rp_honour_transient_map): likewise
+	(rp_honour_normal_map): likewise
+
+	* src/bar.h (marked_message_printf): new prototype
+
+	* src/bar.c: include stdarg.h
+	(marked_message_printf): new function
+
+	* src/actions.h (cmd_rudeness): new prototype
+
+	* src/actions.c (user_commands): new command 'rudeness'
+	(cmd_rudeness): new function
+
 2001-08-22  Shawn  <sabetts@hotdog>
 
 	* src/split.h (set_frames_window): new prototype

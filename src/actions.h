@@ -73,6 +73,7 @@ char * cmd_curframe (int interactive, void *data);
 char * cmd_help (int interactive, void *data);
 char * cmd_quit(int interactive, void *data);
 char * cmd_number (int interactive, void *data);
+char * cmd_rudeness (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 

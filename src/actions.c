@@ -171,6 +171,7 @@ user_command user_commands[] =
     {"help",		cmd_help,	arg_VOID},
     {"quit",		cmd_quit,	arg_VOID},
     {"number", 		cmd_number, 	arg_STRING},
+    {"rudeness",	cmd_rudeness,	arg_STRING},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
@@ -1166,6 +1167,31 @@ cmd_help (int interactive, void *data)
   XMaskEvent (dpy, KeyPressMask, &ev);
   XUnmapWindow (dpy, s->help_window);
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
+
+  return NULL;
+}
+
+char *
+cmd_rudeness (int interactive, void *data)
+{
+  int num;
+
+  if (data == NULL)
+    {
+      message ("Rudeness level required");
+      return NULL;
+    }
+
+  if (sscanf ((char *)data, "%d", &num) < 1)
+    {
+      message ("Bad rudeness level");
+      return NULL;
+    }
+
+  rp_honour_transient_raise = num & 1;
+  rp_honour_normal_raise = num & 2;
+  rp_honour_transient_map = num & 4;
+  rp_honour_normal_map = num & 8;
 
   return NULL;
 }

@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 #include "ratpoison.h"
 
@@ -103,6 +104,32 @@ update_window_names (screen_info *s)
   get_window_list (NULL, bar_buffer, &mark_start, &mark_end);
 
   marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
+}
+
+void
+marked_message_printf (int mark_start, int mark_end, char *fmt, ...)
+{
+  int size, nchars;
+  char *buffer;
+  va_list ap;
+
+  va_start (ap, fmt);
+
+  /* A resonable starting value. */
+  size = strlen (fmt) + 1;
+  buffer = (char *)xmalloc (size);
+
+  nchars = vsnprintf (buffer, size, fmt, ap);
+  if (nchars >= size)
+    {
+      buffer = (char *)xrealloc (buffer, nchars + 1);
+      vsnprintf (buffer, nchars + 1, fmt, ap);
+    }
+
+  va_end (ap);
+
+  marked_message (buffer, mark_start, mark_end);
+  free (buffer);
 }
 
 void

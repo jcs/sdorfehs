@@ -403,14 +403,16 @@ maximize_normal (rp_window *win)
 
       amount = maxx - win->width;
       delta = amount % win->hints->width_inc;
-      amount -= delta;
       if (amount < 0 && delta) amount -= win->hints->width_inc;
+      amount -= delta;
       maxx = amount + win->width;
+
+      PRINT_DEBUG ("maxy = %d height = %d", maxy, win->height);
 
       amount = maxy - win->height;
       delta = amount % win->hints->height_inc;
-      amount -= delta;
       if (amount < 0 && delta) amount -= win->hints->height_inc;
+      amount -= delta;
       maxy = amount + win->height;
     }
 
@@ -491,8 +493,19 @@ map_window (rp_window *win)
   /* It is now considered iconic and set_active_window can handle the rest. */
   set_state (win, IconicState);
 
-  /* FIXME: We may not want a window to pop up out of nowhere */
-  set_active_window (win);
+  /* Depending on the rudeness level, actually map the window. */
+  if ((rp_honour_transient_map && win->transient)
+      || (rp_honour_normal_map && !win->transient))
+    set_active_window (win);
+  else
+    {
+      if (win->transient)
+	marked_message_printf (0, 0, "New transient window %d (%s)", 
+			       win->number, win->name);
+      else
+	marked_message_printf (0, 0, "New window %d (%s)",
+			       win->number, win->name);
+    }
 }
 
 void

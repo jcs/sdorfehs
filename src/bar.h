@@ -30,5 +30,6 @@ int bar_x (screen_info *s, int width);
 
 #define message(msg) marked_message (msg, 0, 0)
 void marked_message (char *msg, int hl_start, int hl_end);
+void marked_message_printf (int mark_start, int mark_end, char *fmt, ...);
 
 #endif /* ! _RATPOISON_BAR_H */

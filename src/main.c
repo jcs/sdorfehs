@@ -74,6 +74,12 @@ struct rp_key prefix_key;
 
 struct modifier_info rp_modifier_info;
 
+/* rudeness levels */
+int rp_honour_transient_raise = 1;
+int rp_honour_normal_raise = 1;
+int rp_honour_transient_map = 1;
+int rp_honour_normal_map = 1;
+
 /* Command line options */
 static struct option ratpoison_longopts[] = 
   { {"help", 	no_argument, 		0, 	'h'},
