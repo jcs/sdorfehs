@@ -1,0 +1,29 @@
+/* src/config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
+#undef HAVE_SYS_WAIT_H
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if the X Window System is missing or not being used.  */
+#undef X_DISPLAY_MISSING
+
+/* When defined, ratpoison will print debugging information */
+#undef DEBUG
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the X11 library (-lX11).  */
+#undef HAVE_LIBX11
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+
