@@ -54,5 +54,6 @@ void toggle_bar (void *data);
 void maximize (void *data);
 void show_clock (void *data);
 void show_version (void *data);
+void xterm_command (void *data);
 
 extern rp_action key_actions[];

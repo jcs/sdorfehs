@@ -54,54 +54,78 @@ rp_action key_actions[] =
 
     {XK_0, 		0, 	"number 0", 		command},
     {XK_0, 		C, 	"number 0", 		command},
+
     {XK_1, 		0, 	"number 1", 		command},
     {XK_1, 		C, 	"number 1", 		command},
+
     {XK_2, 		0, 	"number 2", 		command},
     {XK_2, 		C, 	"number 2", 		command},
+
     {XK_3, 		0, 	"number 3", 		command},
     {XK_3, 		C, 	"number 3", 		command},
+
     {XK_4, 		0, 	"number 4", 		command},
     {XK_4, 		C, 	"number 4", 		command},
+
     {XK_5, 		0, 	"number 5", 		command},
     {XK_5, 		C, 	"number 5", 		command},
+
     {XK_6, 		0, 	"number 6", 		command},
     {XK_6, 		C, 	"number 6", 		command},
+
     {XK_7, 		0, 	"number 7", 		command},
     {XK_7, 		C, 	"number 7", 		command},
+
     {XK_8, 		0, 	"number 8", 		command},
     {XK_8, 		C, 	"number 8", 		command},
+
     {XK_9, 		0, 	"number 9", 		command},
     {XK_9, 		C, 	"number 9", 		command},
+
     {XK_A, 		0, 	"title", 		command},
     {XK_A, 		C, 	"title", 		command},
+
     {XK_K, 		0, 	"kill", 		command},    
     {XK_K, 		C, 	"kill", 		command},    
+
     {XK_Return,		0,	"next",			command},
     {XK_Return,		C,	"next",			command},
+
     {XK_a, 		0, 	"clock", 		command},
     {XK_a, 		C, 	"clock", 		command},
+
     {XK_c, 		0, 	"exec " TERM_PROG, 	command},
     {XK_c, 		C, 	"exec " TERM_PROG, 	command},
+
     {XK_colon, 		0, 	"colon",		command},
-    {XK_colon, 		C, 	"colon",		command},
+
     {XK_e, 		0, 	"exec emacs", 		command},
     {XK_e, 		C, 	"exec emacs", 		command},
+
     {XK_exclam, 	0, 	"exec", 		command},
-    {XK_exclam, 	C, 	"exec", 		command},
+    {XK_exclam, 	C, 	"xterm", 	command},
+
     {XK_k, 		0, 	"delete", 		command},  
     {XK_k, 		C, 	"delete", 		command},  
+
     {XK_m, 		0, 	"maximize", 		command},
     {XK_m, 		C, 	"maximize", 		command},
+
     {XK_n, 		0,	"next", 		command}, 
     {XK_n, 		C,	"next", 		command}, 
+
     {XK_p, 		0, 	"prev", 		command},   
     {XK_p, 		C, 	"prev", 		command},   
+
     {XK_quoteright, 	0,     	"select", 		command},
     {XK_quoteright, 	C,     	"select", 		command},
+
     {XK_space, 		0, 	"next", 		command},
     {XK_space, 		C, 	"next", 		command},
+
     {XK_v, 		0, 	"version", 		command},
     {XK_v, 		C, 	"version", 		command},
+
     {XK_w, 		0, 	"windows",		command},
     {XK_w, 		C, 	"windows",		command},
     {0, 		0, 	0, 			0 } };
@@ -111,6 +135,7 @@ user_command user_commands[] =
     {"next", 		next_window, 		arg_VOID},
     {"prev", 		prev_window, 		arg_VOID},
     {"exec", 		shell_command, 		arg_STRING},
+    {"xterm", 		xterm_command, 		arg_STRING},
     {"number", 		goto_window_number, 	arg_NUMBER},
     {"select", 		goto_win_by_name, 	arg_STRING},
     {"colon",	 	command,		arg_STRING},
@@ -411,6 +436,24 @@ shell_command (void *data)
 
   spawn (cmd);
 }
+
+
+/*BENNO: This could be done a lot neater. I mainly code python so my C string
+ handling is kinda rusty ;). It seems to work though */
+void
+xterm_command (void *data)
+{
+  char cmd[MAX_COMMAND_LENGTH];
+  char realcmd[MAX_COMMAND_LENGTH + strlen(TERM_PROG) + 5];
+  if (data == NULL)
+    get_input (get_screen(), MESSAGE_PROMPT_XTERM_COMMAND, cmd, MAX_COMMAND_LENGTH);
+  else
+    strncpy (cmd, data, MAX_COMMAND_LENGTH-1);
+ 	
+  sprintf(realcmd, "%s -e %s", TERM_PROG, cmd);
+  spawn (realcmd);
+}
+
 
 void
 spawn(void *data)
