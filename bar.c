@@ -84,14 +84,14 @@ calc_bar_width (XFontStruct *font)
   return size;
 }
 
-static int
+int
 bar_x (screen_info *s, int width)
 {
   if (BAR_LOCATION >= 2) return s->root_attr.width - width;
   else return 0;
 }
 
-static int
+int
 bar_y (screen_info *s)
 {
   if (BAR_LOCATION % 2) return 0;
