@@ -11,6 +11,7 @@ rp_action key_actions[] = { {'c', -1, "xterm", spawn},
 			    {'e', -1, "emacs", spawn},
 			    {'p', -1, 0, prev_window},
 			    {'n', -1, 0, next_window},
+			    {';', ShiftMask, 0, execute_command},
 			    {KEY_PREFIX, -1, 0, last_window},
 			    {'w', -1, 0, toggle_bar},
 			    {'k', ShiftMask, 0, kill_window},
@@ -91,18 +92,21 @@ rename_current_window (void *data)
   get_input (rp_current_window->scr, "Name: ", winname, 100);
   PRINT_DEBUG ("user entered: %s\n", winname);
 
-  free (rp_current_window->name);
-  rp_current_window->name = malloc (sizeof (char) * strlen (winname) + 1);
-  if (rp_current_window->name == NULL)
+  if (*winname)
     {
-      PRINT_ERROR ("Out of memory\n");
-      exit (EXIT_FAILURE);
-    }
-  strcpy (rp_current_window->name, winname);
-  rp_current_window->named = 1;
+      free (rp_current_window->name);
+      rp_current_window->name = malloc (sizeof (char) * strlen (winname) + 1);
+      if (rp_current_window->name == NULL)
+	{
+	  PRINT_ERROR ("Out of memory\n");
+	  exit (EXIT_FAILURE);
+	}
+      strcpy (rp_current_window->name, winname);
+      rp_current_window->named = 1;
   
-  /* Update the program bar. */
-  update_window_names (rp_current_window->scr);
+      /* Update the program bar. */
+      update_window_names (rp_current_window->scr);
+    }
 }
 
 
@@ -131,6 +135,17 @@ kill_window (void *data)
   if (rp_current_window == NULL) return;
 
   XKillClient(dpy, rp_current_window->w);
+}
+
+void
+execute_command (void *data)
+{
+  char cmd[100];
+
+  get_input (rp_current_window->scr, "Command: ", cmd, 100);
+  PRINT_DEBUG ("user entered: %s\n", cmd);
+
+  spawn (cmd);
 }
 
 void
