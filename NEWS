@@ -2,6 +2,11 @@ ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 0.1.1
 
+** new key syntax
+keys are now specified with C-, M-, A-, H-, S- which stand for the
+control, meta, alt, hyper, and super modifiers. ^ does not denote
+control. Before, control t looked like ^t now it looks like C-t.
+
 ** new command 'help'
 help brings up a key binding listing. it is bound to C-t ?.
 
