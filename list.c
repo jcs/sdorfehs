@@ -78,7 +78,6 @@ find_window (Window w)
   return NULL;
 }
       
-/* this function can rp_current_window a dangling pointer. */
 void
 remove_from_window_list (rp_window *w)
 {
@@ -87,6 +86,10 @@ remove_from_window_list (rp_window *w)
 
   if (w->prev != NULL) w->prev->next = w->next;
   if (w->next != NULL) w->next->prev = w->prev;
+
+  /* set rp_current_window to NULL, so a dangling pointer is not
+     left. */
+  if (rp_current_window == w) rp_current_window = NULL;
 
   free (w);
 #ifdef DEBUG
