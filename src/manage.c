@@ -312,17 +312,18 @@ maximize_transient (rp_window *win)
   if (win->hints->flags & PResizeInc)
     {
       int amount;
+      int delta;
 
       amount = maxx - win->width;
-      amount -= amount % win->hints->width_inc;
-      if (amount < 0) amount -= win->hints->width_inc;
-      PRINT_DEBUG ("amount x: %d\n", amount);
+      delta = amount % win->hints->width_inc;
+      amount -= delta;
+      if (amount < 0 && delta) amount -= win->hints->width_inc;
       maxx = amount + win->width;
 
       amount = maxy - win->height;
-      amount -= amount % win->hints->height_inc;
-      if (amount < 0) amount -= win->hints->height_inc;
-      PRINT_DEBUG ("amount y: %d\n", amount);
+      delta = amount % win->hints->height_inc;
+      amount -= delta;
+      if (amount < 0 && delta) amount -= win->hints->height_inc;
       maxy = amount + win->height;
     }
 
@@ -378,6 +379,9 @@ maximize_normal (rp_window *win)
   /* Fit the window inside its frame (if it has one) */
   if (win->frame)
     {
+      PRINT_DEBUG ("frame width=%d height=%d\n", 
+		   win->frame->width, win->frame->height);
+
       if (maxx > win->frame->width) maxx = win->frame->width 
 				      - win->border * 2;
       if (maxy > win->frame->height) maxy = win->frame->height 
@@ -389,17 +393,18 @@ maximize_normal (rp_window *win)
   if (win->hints->flags & PResizeInc)
     {
       int amount;
+      int delta;
 
       amount = maxx - win->width;
-      amount -= amount % win->hints->width_inc;
-      if (amount < 0) amount -= win->hints->width_inc;
-      PRINT_DEBUG ("amount x: %d\n", amount);
+      delta = amount % win->hints->width_inc;
+      amount -= delta;
+      if (amount < 0 && delta) amount -= win->hints->width_inc;
       maxx = amount + win->width;
 
       amount = maxy - win->height;
-      amount -= amount % win->hints->height_inc;
-      if (amount < 0) amount -= win->hints->height_inc;
-      PRINT_DEBUG ("amount y: %d\n", amount);
+      delta = amount % win->hints->height_inc;
+      amount -= delta;
+      if (amount < 0 && delta) amount -= win->hints->height_inc;
       maxy = amount + win->height;
     }
 
