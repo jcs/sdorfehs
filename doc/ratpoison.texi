@@ -419,7 +419,7 @@ Resource Class
 X11 Window ID
 @item %l
 A unique number based on when the window was last accessed. The higher
-the number, the more recent it was accessed.
+the number, the more recently it was accessed.
 @end table
 
 @item defwinname @var{name}
