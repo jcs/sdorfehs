@@ -310,7 +310,7 @@ key_press (XEvent *ev)
 
   if (!s) return;
 
-  if (ks == KEY_PREFIX && (modifier & MODIFIER_PREFIX))
+  if (ks == KEY_PREFIX && (modifier == MODIFIER_PREFIX))
     {
       handle_key (s);
     }
