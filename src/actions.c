@@ -45,41 +45,22 @@ rp_action key_actions[] =
 
     {XK_g, 		C, 	"abort",		command},
 
-    {XK_0, 		0, 	"number 0", 		command},
-    {XK_0, 		C, 	"number 0", 		command},
-
-    {XK_1, 		0, 	"number 1", 		command},
-    {XK_1, 		C, 	"number 1", 		command},
-
-    {XK_2, 		0, 	"number 2", 		command},
-    {XK_2, 		C, 	"number 2", 		command},
-
-    {XK_3, 		0, 	"number 3", 		command},
-    {XK_3, 		C, 	"number 3", 		command},
-
-    {XK_4, 		0, 	"number 4", 		command},
-    {XK_4, 		C, 	"number 4", 		command},
-
-    {XK_5, 		0, 	"number 5", 		command},
-    {XK_5, 		C, 	"number 5", 		command},
-
-    {XK_6, 		0, 	"number 6", 		command},
-    {XK_6, 		C, 	"number 6", 		command},
-
-    {XK_7, 		0, 	"number 7", 		command},
-    {XK_7, 		C, 	"number 7", 		command},
-
-    {XK_8, 		0, 	"number 8", 		command},
-    {XK_8, 		C, 	"number 8", 		command},
-
-    {XK_9, 		0, 	"number 9", 		command},
-    {XK_9, 		C, 	"number 9", 		command},
+    {XK_0, 		0, 	"select 0", 		command},
+    {XK_1, 		0, 	"select 1", 		command},
+    {XK_2, 		0, 	"select 2", 		command},
+    {XK_3, 		0, 	"select 3", 		command},
+    {XK_4, 		0, 	"select 4", 		command},
+    {XK_5, 		0, 	"select 5", 		command},
+    {XK_6, 		0, 	"select 6", 		command},
+    {XK_7, 		0, 	"select 7", 		command},
+    {XK_8, 		0, 	"select 8", 		command},
+    {XK_9, 		0, 	"select 9", 		command},
 
     {XK_A, 		0, 	"title", 		command},
     {XK_A, 		C, 	"title", 		command},
 
-    {XK_K, 		0, 	"kill", 		command},    
-    {XK_K, 		C, 	"kill", 		command},    
+    {XK_K, 		0, 	"kill", 		command},
+    {XK_K, 		C, 	"kill", 		command},
 
     {XK_Return,		0,	"next",			command},
     {XK_Return,		C,	"next",			command},
@@ -96,19 +77,19 @@ rp_action key_actions[] =
     {XK_e, 		C, 	"exec " EMACS_PROG,	command},
 
     {XK_exclam, 	0, 	"exec", 		command},
-    {XK_exclam, 	C, 	"xterm", 	command},
+    {XK_exclam, 	C, 	"colon exec " TERM_PROG " -e ", 	command},
 
-    {XK_k, 		0, 	"delete", 		command},  
-    {XK_k, 		C, 	"delete", 		command},  
+    {XK_k, 		0, 	"delete", 		command},
+    {XK_k, 		C, 	"delete", 		command},
 
     {XK_m, 		0, 	"maximize", 		command},
     {XK_m, 		C, 	"maximize", 		command},
 
-    {XK_n, 		0,	"next", 		command}, 
-    {XK_n, 		C,	"next", 		command}, 
+    {XK_n, 		0,	"next", 		command},
+    {XK_n, 		C,	"next", 		command},
 
-    {XK_p, 		0, 	"prev", 		command},   
-    {XK_p, 		C, 	"prev", 		command},   
+    {XK_p, 		0, 	"prev", 		command},
+    {XK_p, 		C, 	"prev", 		command},
 
     {XK_quoteright, 	0,     	"select", 		command},
     {XK_quoteright, 	C,     	"select", 		command},
@@ -124,29 +105,61 @@ rp_action key_actions[] =
     {0, 		0, 	0, 			0 } };
 
 user_command user_commands[] = 
-  { {"abort",		abort_keypress,		arg_VOID},
-    {"next", 		next_window, 		arg_VOID},
-    {"prev", 		prev_window, 		arg_VOID},
-    {"exec", 		shell_command, 		arg_STRING},
-    {"xterm", 		xterm_command, 		arg_STRING},
-    {"number", 		goto_window_number, 	arg_NUMBER},
-    {"select", 		goto_win_by_name, 	arg_STRING},
-    {"colon",	 	command,		arg_STRING},
-    {"kill", 		kill_window, 		arg_VOID},
-    {"delete", 		delete_window, 		arg_VOID},
-    {"other", 		last_window, 		arg_VOID},
-    {"windows", 	toggle_bar, 		arg_VOID},
-    {"title", 		rename_current_window, 	arg_STRING},
-    {"clock", 		show_clock, 		arg_VOID},
+  { {"abort",		cmd_abort,		arg_VOID},
+    {"next", 		cmd_next, 		arg_VOID},
+    {"prev", 		cmd_prev, 		arg_VOID},
+    {"exec", 		cmd_exec, 		arg_STRING},
+    {"select", 		cmd_select,		arg_STRING},
+    {"colon",	 	cmd_colon,		arg_STRING},
+    {"kill", 		cmd_kill, 		arg_VOID},
+    {"delete", 		cmd_delete, 		arg_VOID},
+    {"other", 		cmd_other, 		arg_VOID},
+    {"windows", 	cmd_windows, 		arg_VOID},
+    {"title", 		cmd_rename, 		arg_STRING},
+    {"clock", 		cmd_clock, 		arg_VOID},
     {"maximize", 	maximize, 		arg_VOID},
-    {"newwm",		switch_to,		arg_STRING},
-    {"generate",	generate_key_event,	arg_STRING},
-    {"version",		show_version,		arg_VOID},
-    {0,			0,			0} };
+    {"newwm",		cmd_newwm,		arg_STRING},
+    {"generate",	cmd_generate,		arg_STRING}, /* rename to stuff */
+    {"version",		cmd_version,		arg_VOID},
+
+    /* the following screen commands may or may not be able to be
+       implemented.  See the screen documentation for what should be
+       emulated with these commands */
+
+    {"echo", 		cmd_unimplemented, 	arg_VOID},
+    {"stuff", 		cmd_unimplemented, 	arg_VOID},
+    {"number", 		cmd_unimplemented, 	arg_VOID},
+    {"hardcopy",	cmd_unimplemented,	arg_VOID},
+    {"help",		cmd_unimplemented,	arg_VOID},
+    {"lastmsg",		cmd_unimplemented,	arg_VOID},
+    {"license",		cmd_unimplemented,	arg_VOID},
+    {"lockscreen",	cmd_unimplemented,	arg_VOID},
+    {"meta",		cmd_unimplemented,	arg_VOID},
+    {"msgwait",		cmd_unimplemented,	arg_VOID},
+    {"msgminwait",	cmd_unimplemented,	arg_VOID},
+    {"nethack",		cmd_unimplemented,	arg_VOID},
+    {"quit",		cmd_unimplemented,	arg_VOID},
+    {"redisplay",	cmd_unimplemented,	arg_VOID},
+    {"screen",		cmd_unimplemented,	arg_VOID},
+    {"setenv",		cmd_unimplemented,	arg_VOID},
+    {"shell",		cmd_unimplemented,	arg_VOID},
+    {"shelltitle",	cmd_unimplemented,	arg_VOID},
+    {"sleep",		cmd_unimplemented,	arg_VOID},
+    {"sorendition",	cmd_unimplemented,	arg_VOID},
+    {"split",		cmd_unimplemented,	arg_VOID},
+    {"focus",		cmd_unimplemented,	arg_VOID},
+    {"startup_message",	cmd_unimplemented,	arg_VOID},
+    {0,			0,		0} };
 
 
 void
-generate_key_event (void *data)
+cmd_unimplemented (void *data)
+{
+  marked_message (" FIXME:  unimplemented command ",0,8);
+}
+
+void
+cmd_generate (void *data)
 {
   XEvent ev1, ev;
   ev = *rp_current_event;
@@ -183,7 +196,7 @@ generate_key_event (void *data)
 /*   ev1.xkey.y_root == */
 
   ev1.xkey.state = 0;
-  ev1.xkey.keycode = XKeysymToKeycode (dpy, 's');
+  ev1.xkey.keycode = XKeysymToKeycode (dpy, KEY_PREFIX);
 
   XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev1);
 
@@ -193,96 +206,106 @@ generate_key_event (void *data)
 }
 
 void
-prev_window (void *data)
+cmd_prev (void *data)
 {
-  rp_window *new_win = (rp_window *)data;
+  rp_window *w;
 
-  if (new_win == NULL) new_win = rp_current_window;
-  if (new_win != NULL)
+  if (!rp_current_window)
+    message (MESSAGE_NO_MANAGED_WINDOWS);
+  else 
     {
-      new_win = new_win->prev;
-      if (new_win == NULL) 
-	new_win = rp_window_tail;
-      if (new_win->state == STATE_UNMAPPED) 
-	prev_window (new_win);
+      w = find_window_prev (rp_current_window);
+
+      if (w == rp_current_window)
+	message (MESSAGE_NO_OTHER_WINDOW);
       else
-	{
-	  if (rp_current_window == new_win)
-	    message (MESSAGE_NO_OTHER_WINDOW, 0, 0);
-	  else
-	    set_active_window (new_win);
-	}
-    }
-  else
-    {
-      message (MESSAGE_NO_MANAGED_WINDOWS, 0, 0);
+	set_active_window (w);
     }
 }
 
-
 void
-next_window (void *data)
+cmd_next (void *data)
 {
-  rp_window *new_win = (rp_window *)data;
+  rp_window *w;
 
-  if (new_win == NULL) new_win = rp_current_window;
-  if (new_win != NULL)
+  if (!rp_current_window)
+    message (MESSAGE_NO_MANAGED_WINDOWS);
+  else 
     {
-      new_win = new_win->next;
-      if (new_win == NULL) 
-	new_win = rp_window_head;
-      if (new_win->state == STATE_UNMAPPED) 
-	next_window (new_win);
+      w = find_window_next (rp_current_window);
+
+      if (w == rp_current_window)
+	message (MESSAGE_NO_OTHER_WINDOW);
       else
-	{
-	  if (rp_current_window == new_win)
-	    message (MESSAGE_NO_OTHER_WINDOW, 0, 0);
-	  else
-	    set_active_window (new_win);
-	}
+	set_active_window (w);
     }
+}
+
+void 
+cmd_other (void *data)
+{
+  rp_window *w;
+
+  w = find_window_other ();
+
+  if (w == rp_current_window)
+    message (MESSAGE_NO_OTHER_WINDOW);
   else
-    {
-      message (MESSAGE_NO_MANAGED_WINDOWS, 0, 0);
-    }
+    set_active_window (w);
 }
 
-
-void
-last_window (void *data)
+static int
+string_to_window_number (str)
+char *str;
 {
-  rp_window *oldwin = rp_current_window;
+  int i;
+  char *s;
 
-  /* what happens if find_last_accessed_window() returns something
-     funky? (rcy) */
-  set_active_window (find_last_accessed_window ());
-
-  if (rp_current_window == oldwin)
+  for (i = 0, s = str; *s; s++)
     {
-      message (MESSAGE_NO_OTHER_WINDOW, 0, 0);
+      if (*s < '0' || *s > '9')
+        break;
+      i = i * 10 + (*s - '0');
     }
+  return *s ? -1 : i;
 }
 
-
+/* switch to window number or name */
 void
-goto_win_by_name (void *data)
+cmd_select (void *data)
 {
-  char *winname;
-  
-  if (rp_current_window == NULL) return;
+  char *str;
+  int n;
+  rp_window *w;
 
   if (data == NULL)
-    winname = get_input (MESSAGE_PROMPT_GOTO_WINDOW_NAME);
+    str = get_input (MESSAGE_PROMPT_SWITCH_TO_WINDOW);
   else
-    winname = strdup ((char *) data);
+    str = strdup ((char *) data);
 
-  goto_window_name (winname);
+  /* try by number */
+  if ((n = string_to_window_number (str)) >= 0)
+    {
+      if ((w = find_window_number (n)))
+	set_active_window (w);
+      else
+	message ("no window by that number (FIXME: show window list)");
+    }
+  else
+    /* try by name */
+    {
+      if ((w = find_window_name (str)))
+	set_active_window (w);
+      else
+	/* we need to format a string that includes the str */
+	message ("MESSAGE_NO_WINDOW_NAMED (FIXME:)");
+    }
 
-  free (winname);
+  free (str);
 }
 
 void
-rename_current_window (void *data)
+cmd_rename (void *data)
 {
   char *winname;
   
@@ -316,7 +339,7 @@ rename_current_window (void *data)
 
 
 void
-delete_window (void *data)
+cmd_delete (void *data)
 {
   XEvent ev;
   int status;
@@ -335,7 +358,7 @@ delete_window (void *data)
 }
 
 void 
-kill_window (void *data)
+cmd_kill (void *data)
 {
   if (rp_current_window == NULL) return;
 
@@ -343,36 +366,30 @@ kill_window (void *data)
 }
 
 void
-show_version (void *data)
+cmd_version (void *data)
 {
-  message (" " PACKAGE " " VERSION " ", 0, 0);
+  message (" " PACKAGE " " VERSION " ");
 }
 
-void
+void 
 command (void *data)
 {
-  char *input;
   char *cmd, *rest;
-  void *arg;
+  char *input;
 
   user_command *uc;
   struct sbuf *buf = NULL;
   
   if (data == NULL)
-    input = get_input (MESSAGE_PROMPT_COMMAND);
-  else
-    input = strdup ((char *) data);
-  
-  if (input == NULL)
     return;
+
+  /* get a writable copy for strtok() */
+  input = strdup ((char *) data);
 
   cmd = strtok (input, " ");
 
   if (cmd == NULL)
-    {
-      free (input);
-      return;
-    }
+    goto done;
 
   rest = strtok (NULL, "\0");
 
@@ -383,52 +400,43 @@ command (void *data)
     {
       if (!strcmp (cmd, uc->name))
 	{
-	  /* create an arg out of the rest */
-	  switch (uc->argtype)
-	    {
-	    case arg_VOID:
-	      arg = NULL;
-	      break;
-
-	    case arg_STRING:
-	      arg = rest;
-	      break;
-
-	    case arg_NUMBER:
-	      if (rest)
-		sscanf (rest, "%d", (int*)&arg);
-	      else
-		arg = 0;
-	      break;
-
-	    default:
-	      abort ();
-	    }
-
-	  uc->func (arg);
-
-          free (input);
-	  return;
+	  uc->func (rest);
+	  goto done;
 	}
     }
 
   /* couldnt find the command name */
-
   buf = sbuf_new (strlen(MESSAGE_UNKNOWN_COMMAND + strlen (cmd) + 4));
   sbuf_copy (buf, MESSAGE_UNKNOWN_COMMAND);
   sbuf_concat (buf, "'");
   sbuf_concat (buf, cmd);
   sbuf_concat (buf, "' ");
 
-  message (sbuf_get (buf), 0, 0);
+  message (sbuf_get (buf));
   
   sbuf_free (buf);
 
+ done:
   free (input);
 }
 
 void
-shell_command (void *data)
+cmd_colon (void *data)
+{
+  char *input;
+
+  if (data == NULL)
+    input = get_input (MESSAGE_PROMPT_COMMAND);
+  else
+    input = get_more_input (MESSAGE_PROMPT_COMMAND, data);
+
+  command (input);
+  
+  free (input);
+}
+
+void
+cmd_exec (void *data)
 {
   char *cmd;
 
@@ -440,25 +448,6 @@ shell_command (void *data)
   spawn (cmd);
 
   free (cmd);
-}
-
-void
-xterm_command (void *data)
-{
-  char *cmd, *realcmd;
-
-  if (data == NULL)
-    cmd = get_input (MESSAGE_PROMPT_XTERM_COMMAND);
-  else
-    cmd = strdup ((char *) data);
-
-  realcmd = (char *) malloc (strlen (cmd) + strlen (TERM_PROG) + 5);
-
-  sprintf(realcmd, "%s -e %s", TERM_PROG, cmd);
-  spawn (realcmd);
-
-  free(cmd);
-  free(realcmd);
 }
 
 
@@ -489,7 +478,7 @@ spawn(void *data)
 /* Switch to a different Window Manager. Thanks to 
 "Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
 void
-switch_to(void *data)
+cmd_newwm(void *data)
 {
   char *prog;
 
@@ -522,7 +511,7 @@ switch_to(void *data)
 /* Show the current time on the bar. Thanks to 
    Martin Samuelsson <cosis@lysator.liu.se> for the patch. */
 void
-show_clock (void *data)
+cmd_clock (void *data)
 {
   screen_info *s;
   char *msg;
@@ -548,39 +537,15 @@ show_clock (void *data)
   if (rp_current_window) 
     {
       s = rp_current_window->scr;
-      message (msg, 0, 0);
+      message (msg);
     }
   free(msg);
 }
 
-void
-goto_window_number (void *data)
-{
-  int n = (int)data;
-  rp_window *win;
-
-  win = find_window_by_number (n);
-
-  if (win == NULL)
-    {
-      /* Display window list to indicate failure. */
-      /* FIXME: We can always assume there is 1 screen, but which one
-	 is the active one? Need to test on multi-screen x-servers. */
-      show_bar (&screens[0]);
-      return;
-    }
-
-  if (win == rp_current_window)
-    {
-      /* TODO: Add message "This IS window # (xxx) */
-    }
-
-  set_active_window (win);
-}
 
 /* Toggle the display of the program bar */
 void
-toggle_bar (void *data)
+cmd_windows (void *data)
 {
   screen_info *s;
 
@@ -594,22 +559,22 @@ toggle_bar (void *data)
 
 
 void
-abort_keypress (void *data)
+cmd_abort (void *data)
 {
 }  
 
 /* Send the current window the prefix key event */
-void
-generate_prefix (void *data)
-{
-  XEvent ev;
-  ev = *rp_current_event;
+/* void */
+/* cmd_generate_prefix (void *data) */
+/* { */
+/*   XEvent ev; */
+/*   ev = *rp_current_event; */
 
-  ev.xkey.window = rp_current_window->w;
-  ev.xkey.state = MODIFIER_PREFIX;
-  XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev);
-  XSync (dpy, False);
-}
+/*   ev.xkey.window = rp_current_window->w; */
+/*   ev.xkey.state = MODIFIER_PREFIX; */
+/*   XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev); */
+/*   XSync (dpy, False); */
+/* } */
 
 /* Set a transient window's x,y,width,height fields to maximize the
    window. */

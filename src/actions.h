@@ -37,28 +37,30 @@ user_command
   int argtype;
 };
 
-void switch_to(void *which);
 void bye(void *dummy);
-void generate_prefix (void *data);
-void generate_key_event (void *data);
-void abort_keypress (void *data);
-void goto_window_number (void *data);
 void spawn(void *data);
-void shell_command (void *data);
 void command (void *data);
-void command (void *data);
-void kill_window (void *data);
-void delete_window (void *data);
-void rename_current_window (void *data);
-void goto_win_by_name (void *data);
-void last_window (void *data);
-/* void next_window (void *data); */
-/* void prev_window (void *data); */
-void toggle_bar (void *data);
 void maximize (void *data);
-void show_clock (void *data);
-void show_version (void *data);
-void xterm_command (void *data);
+
+void cmd_newwm(void *which);
+void cmd_generate (void *data);
+void cmd_abort (void *data);
+void cmd_exec (void *data);
+void cmd_colon (void *data);
+void cmd_kill (void *data);
+void cmd_delete (void *data);
+void cmd_rename (void *data);
+void cmd_select (void *data);
+void cmd_last (void *data);
+void cmd_next (void *data);
+void cmd_prev (void *data);
+void cmd_windows (void *data);
+void cmd_other (void *data);
+void cmd_clock (void *data);
+void cmd_version (void *data);
+void cmd_unimplemented (void *data);
+
+/* void cmd_xterm (void *data); */
 
 extern rp_action key_actions[];
 
