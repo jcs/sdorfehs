@@ -1,5 +1,9 @@
 2004-11-19  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/frame.c (frame_dump): dump the frame as an sexpr instead of
+	a list of numbers.
+	(frame_read): read the new frame dump format
+
 	* src/actions.c (cmd_describekey): fix error messages.
 
 2004-11-18  Shawn Betts  <sabetts@vcn.bc.ca>

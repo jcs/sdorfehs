@@ -21,6 +21,8 @@
 
 #include "ratpoison.h"
 
+#include <string.h>
+
 int
 frame_left (rp_frame *frame)
 {
@@ -157,14 +159,15 @@ frame_dump (rp_frame *frame)
   win = find_window_number (frame->win_number);
 
   s = sbuf_new (0);
-  sbuf_printf (s, "%d %d %d %d %d %ld %d", 
+  sbuf_printf (s, "(frame :number %d :x %d :y %d :width %d :height %d :window %ld :last_access %d :dedicated %d)", 
 	       frame->number,
 	       frame->x,
 	       frame->y,
 	       frame->width,
 	       frame->height,
 	       win ? win->w:0,
-	       frame->last_access);
+	       frame->last_access,
+	       frame->dedicated);
 
   /* Extract the string and return it, and don't forget to free s. */
   tmp = sbuf_get (s);
@@ -172,26 +175,63 @@ frame_dump (rp_frame *frame)
   return tmp;
 }
 
+/* Used only by frame_read */
+#define read_slot(x) do { tmp = strtok (NULL, " "); x = strtol(tmp,NULL,10); } while(0)
+
 rp_frame *
 frame_read (char *str)
 {
-  Window w;
+  Window w = 0L;
   rp_window *win;
   rp_frame *f;
+  char *tmp, *dup;
 
+  /* Create a blank frame. */
   f = xmalloc (sizeof (rp_frame));
-  if (sscanf (str, "%d %d %d %d %d %ld %d", 
-	      &f->number,
-	      &f->x,
-	      &f->y,
-	      &f->width,
-	      &f->height,
-	      &w,
-	      &f->last_access) < 7)
+
+  PRINT_DEBUG(("parsing '%s'\n", str));
+  
+  dup = xstrdup(str);
+  tmp = strtok (dup, " ");
+
+  /* Verify it starts with '(frame ' */
+  if (!strcmp(tmp, "(frame "))
     {
+      PRINT_DEBUG(("Doesn't start with '(frame '\n"));
+      free (dup);
       free (f);
       return NULL;
     }
+  /* NOTE: there is no check to make sure each field was filled in. */
+  tmp = strtok(NULL, " ");
+  while (tmp)
+    {
+      if (!strcmp(tmp, ":number"))
+	read_slot(f->number);
+      else if (!strcmp(tmp, ":x"))
+	read_slot(f->x);
+      else if (!strcmp(tmp, ":y"))
+	read_slot(f->y);
+      else if (!strcmp(tmp, ":width"))
+	read_slot(f->width);
+      else if (!strcmp(tmp, ":height"))
+	read_slot(f->height);
+      else if (!strcmp(tmp, ":window"))
+	read_slot(w);
+      else if (!strcmp(tmp, ":last-access"))
+	read_slot(f->last_access);
+      else if (!strcmp(tmp, ":dedicated"))
+	read_slot(f->dedicated);
+      else if (!strcmp(tmp, ")"))
+	break;
+      else
+	PRINT_ERROR(("Unknown slot %s\n", tmp));
+      /* Read the next token. */
+      tmp = strtok(NULL, " ");
+    }
+  if (tmp)
+    PRINT_ERROR(("Frame has trailing garbage\n"));
+  free (dup);
 
   /* Perform some integrity checks on what we got and fix any
      problems. */
@@ -207,17 +247,19 @@ frame_read (char *str)
     f->height = defaults.window_border_width*2 + 1;
   if (f->last_access < 0)
     f->last_access = 0;
+  if (f->dedicated < 0)
+    f->dedicated = 0;
+  else if (f->dedicated > 1)
+    f->dedicated = 1;
 
   /* Find the window with the X11 window ID. */
   win = find_window_in_list (w, &rp_mapped_window);
   if (win)
-    {
-      f->win_number = win->number;
-    }
+    f->win_number = win->number;
   else
-    {
-      f->win_number = EMPTY;
-    }
+    f->win_number = EMPTY;
 
   return f;
 }
+
+#undef read_slot
