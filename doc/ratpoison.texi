@@ -520,7 +520,4 @@ tries @file{/etc/ratpoisonrc}. This means any command you can bind a key
 to or run at the command prompt (@kbd{C-t :}) you can execute in this rc
 file.
 
-It adds roughly 320 bytes to ratpoison on a glibc6-i386 machine. Its a
-little steep for a feature and we are attempting to squeeze the fat.
-
 @bye
