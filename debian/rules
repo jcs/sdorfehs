@@ -4,7 +4,7 @@
 ##
 ## Released under the GNU GPL v2
 ##
-## $Id: rules,v 1.6 2001/04/10 11:54:09 algernon Exp $
+## $Id: rules,v 1.7 2001/05/03 15:03:57 algernon Exp $
 
 export DH_COMPAT  = 2
 DEBHELPER_OPTIONS = -p$@ -Pdebian/$(DEB_HOST_ARCH)/$@
@@ -77,6 +77,7 @@ install: build
 	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) \
 		install DESTDIR=$(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison
 	rm -f $(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison/usr/share/doc/ratpoison/COPYING
+	rm -f $(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison/usr/share/doc/ratpoison/ChangeLog
 
 # these build the various packages
 ratpoison: install
@@ -94,7 +95,7 @@ ratpoison: install
 	dh_installinfo $(DEBHELPER_OPTIONS)
 #	dh_undocumented $(DEBHELPER_OPTIONS)
 	dh_installchangelogs ChangeLog $(DEBHELPER_OPTIONS)
-	dh_installwm $(DEBHELPER_OPTIONS)
+	dh_installwm $(DEBHELPER_OPTIONS) /usr/bin/ratpoison
 	dh_link $(DEBHELPER_OPTIONS)
 	dh_strip $(DEBHELPER_OPTIONS)
 	dh_compress $(DEBHELPER_OPTIONS)
