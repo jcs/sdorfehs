@@ -108,6 +108,7 @@ static user_command user_commands[] =
     {"gmerge",		cmd_gmerge,		arg_VOID},
     {"addhook",         cmd_addhook,            arg_STRING},
     {"remhook",         cmd_remhook,            arg_STRING},
+    {"listhook",        cmd_listhook,           arg_STRING},
 
     /* Commands to set default behavior. */
     {"defbargravity",		cmd_defbargravity,	arg_STRING},
@@ -3718,7 +3719,7 @@ cmd_remhook (int interactive, char *data)
   hook = hook_lookup (token);
   if (hook == NULL)
     {
-      marked_message_printf (0, 0, " addhook: unknown hook \"%s\"", token);
+      marked_message_printf (0, 0, " remhook: unknown hook \"%s\"", token);
       free (dup);
       return NULL;
     }
@@ -3727,7 +3728,7 @@ cmd_remhook (int interactive, char *data)
   
   if (token == NULL)
     {
-      message (" addhook: two arguments required ");
+      message (" remhook: two arguments required ");
       free (dup);
       return NULL;
     }
@@ -3740,3 +3741,83 @@ cmd_remhook (int interactive, char *data)
   free (dup);
   return NULL;
 }
+
+struct list_head *
+hook_completions (char* str)
+{
+  struct list_head *list;
+  struct rp_hook_db_entry *entry;
+
+  /* Initialize our list. */
+  list = xmalloc (sizeof (struct list_head));
+  INIT_LIST_HEAD (list);
+ 
+  for (entry = rp_hook_db; entry->name; entry++)
+    {
+      struct sbuf *hookname;
+
+      hookname = sbuf_new(0);
+      sbuf_copy (hookname, entry->name);
+      list_add_tail (&hookname->node, list);
+    }
+  
+  return list;
+}
+
+char *
+cmd_listhook (int interactive, char *data)
+{
+  struct sbuf *buffer;
+  struct list_head *hook;
+  struct sbuf *cur;
+  char *str;
+  
+  if (data == NULL)
+    str = get_input (" Hook: ", hook_completions);
+  else
+    str = xstrdup (data);
+
+  /* User aborted. */
+  if (str == NULL)
+    return NULL;
+
+  hook = hook_lookup (str);
+  if (hook == NULL)
+    {
+      marked_message_printf (0, 0, " listhook: unknown hook \"%s\" ", str);
+      return NULL;
+    }
+
+  buffer = sbuf_new(0);
+
+  if (list_empty(hook))
+    {
+      sbuf_printf(buffer, " Nothing defined for %s ", str);
+    }
+  else
+    {
+      list_for_each_entry (cur, hook, node)
+	{
+	  sbuf_printf_concat(buffer, "%s", sbuf_get (cur));
+	  if (cur->node.next != hook)
+	    sbuf_printf_concat(buffer, "\n");
+	}
+    }
+
+  /* Display it or return it. */
+  if (interactive)
+    {
+      marked_message (sbuf_get (buffer), 0, 0);
+      sbuf_free (buffer);
+      return NULL;
+    }
+  else
+    {
+      char* tmp = sbuf_get(buffer);
+      free(buffer);
+      return tmp;
+    }
+
+
+}
+

@@ -1,3 +1,12 @@
+2003-08-10  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.h (cmd_listhook): new prototype
+
+	* src/actions.c (use_commands): new command listhook
+	(cmd_remhook): fix error messages
+	(hook_completions): new function
+	(cmd_listhook): likewise
+
 2003-08-02  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/actions.c (cmd_number): rename the window's group number
