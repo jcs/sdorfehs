@@ -1,3 +1,29 @@
+2003-05-25  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/input.c (read_key): Do not wait for the key release
+	event. Remove gobble_rel argument. Callers updated.
+
+2003-05-24  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/group.h (group_resort_window): new prototype
+
+	* src/group.c (group_find_window_by_number): return
+	rp_window_elem*. Dependant code updated.
+	(group_insert_window): new function
+	(group_in_list): likewise
+	(group_resort_window): likewise
+	(group_map_window): insert the window and sort the list.
+
+	* src/actions.c (cmd_number): Change the group number of the
+	window.
+	(cmd_resize): print an error message if the command was called
+	interactively with <2 arguments.
+
+2003-05-21  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_resize): fail if data == NULL when called
+	non-interactively.
+
 2003-05-20  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/linkedlist.h: Move all C function to linkedlist.c

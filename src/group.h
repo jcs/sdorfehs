@@ -3,6 +3,7 @@
 
 void init_groups ();
 void group_add_window (rp_group *g, rp_window *w);
+void group_resort_window (rp_group *g, rp_window_elem *w);
 void group_free (rp_group *g);
 rp_group *group_new (int number);
 
@@ -26,6 +27,6 @@ rp_group *group_next_group ();
 rp_group *group_add_new_group ();
 
 rp_window_elem *group_find_window (struct list_head *list, rp_window *win);
-rp_window *group_find_window_by_number (rp_group *g, int num);
+rp_window_elem *group_find_window_by_number (rp_group *g, int num);
 
 #endif

@@ -77,7 +77,7 @@ group_find_window (struct list_head *list, rp_window *win)
   return NULL;
 }
 
-rp_window *
+rp_window_elem *
 group_find_window_by_number (rp_group *g, int num)
 {
   rp_window_elem *cur;
@@ -85,11 +85,61 @@ group_find_window_by_number (rp_group *g, int num)
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
       if (cur->number == num)
-	return cur->win;
+	return cur;
     }
 
   return NULL;
   
+}
+
+
+/* Insert a window_elem into the correct spot in the group's window
+   list to preserve window number ordering. */
+static void
+group_insert_window (struct list_head *h, rp_window_elem *w)
+{
+  rp_window_elem *cur;
+
+  list_for_each_entry (cur, h, node)
+    {
+      if (cur->number > w->number)
+	{
+	  list_add_tail (&w->node, &cur->node);
+	  return;
+	}
+    }
+
+  list_add_tail(&w->node, h);
+}
+
+int
+group_in_list (struct list_head *h, rp_window_elem *w)
+{
+  rp_window_elem *cur;
+
+  list_for_each_entry (cur, h, node)
+    {
+      if (cur == w)
+	return 1;
+    }
+
+  return 0;
+}
+
+/* If a window_elem's number has changed then the list has to be
+   resorted. */
+void
+group_resort_window (rp_group *g, rp_window_elem *w)
+{
+  /* Only a mapped window can be resorted. */
+  if (!group_in_list (&g->mapped_windows, w))
+    {
+      PRINT_DEBUG (("Attempting to restort an unmapped window!\n"));
+      return;
+    }
+
+  list_del (&w->node);
+  group_insert_window (&g->mapped_windows, w);
 }
 
 void
@@ -116,7 +166,8 @@ group_map_window (rp_group *g, rp_window *win)
   if (we)
     {
       we->number = numset_request (g->numset);
-      list_move_tail (&we->node, &g->mapped_windows);
+      list_del (&we->node);
+      group_insert_window (&g->mapped_windows, we);
     }
 }
 

@@ -246,8 +246,10 @@ pos_in_line (char* msg, int pos)
   int ret=0;
   if(i>=0) 
     {
-    for(; i<=pos && i>=0; ++ret, --i) if(msg[i]=='\n') break;
-  }
+      for(; i<=pos && i>=0; ++ret, --i)
+	if(msg[i]=='\n') 
+	  break;
+    }
   PRINT_DEBUG (("pos_in_line(\"%s\", %d) = %d\n", msg, pos, ret));
   return ret;
 }

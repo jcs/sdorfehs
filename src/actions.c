@@ -781,7 +781,9 @@ cmd_select (int interactive, char *data)
       /* try by number */
       else if ((n = string_to_window_number (str)) >= 0)
 	{
-	  if ((w = group_find_window_by_number (rp_current_group, n)))
+	  rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
+
+	  if ((w = elem->win))
 	    goto_window (w);
 	  else
 	    /* show the window list as feedback */
@@ -1098,16 +1100,12 @@ cmd_time (int interactive, char *data)
   return NULL;
 }
 
-/* Assign a new number to a window ala screen's number command. Thanks
-   to Martin Samuelsson <cosis@lysator.liu.se> for the original
-   patch. */
-/* FIXME: With the new group code, this doesn't work as expected. */
+/* Assign a new number to a window ala screen's number command. */
 char *
 cmd_number (int interactive, char *data)
 {
-  rp_frame *frame;
   int old_number, new_number;
-  rp_window *other_win, *win;
+  rp_window_elem *other_win, *win;
   char *str;
   char *tmp;
 
@@ -1116,11 +1114,9 @@ cmd_number (int interactive, char *data)
       print_window_information (current_window());
       return NULL;
     }
-  else
-    {
-      str = xstrdup (data);
-    }
 
+  /* Read in the number requested by the user. */
+  str = xstrdup (data);
   tmp = strtok (str, " ");
   if (tmp)
     {
@@ -1157,33 +1153,26 @@ cmd_number (int interactive, char *data)
 	  return NULL;
 	}
 
-      win = find_window_number (win_number);
+      win = group_find_window_by_number (rp_current_group, win_number);
     }
   else
     {
       PRINT_DEBUG (("2nd: NULL\n"));
-      win = current_window();
+      win = group_find_window (&rp_current_group->mapped_windows, current_window());
     }
 
+  /* Make the switch. */
   if ( new_number >= 0 && win)
     {
       /* Find other window with same number and give it old number. */
-      other_win = find_window_number (new_number);
+      other_win = group_find_window_by_number (rp_current_group, new_number);
       if (other_win != NULL)
 	{
 	  old_number = win->number;
 	  other_win->number = old_number;
 
-	  /* Update the frame containing the window. */
-	  if (other_win->frame_number != EMPTY)
-	    {
-	      frame = screen_get_frame (other_win->scr, other_win->frame_number);
-	      frame->win_number = old_number;
-	    }
-
 	  /* Resort the window in the list */
-	  list_del (&other_win->node);
-	  insert_into_list (other_win, &rp_mapped_window);
+	  group_resort_window (rp_current_group, other_win);
 	}
       else
 	{
@@ -1193,19 +1182,11 @@ cmd_number (int interactive, char *data)
       win->number = new_number;
       numset_add_num (rp_window_numset, new_number);
 
-      /* Update the frame containing the window. */
-      if (win->frame_number != EMPTY)
-	{
-	  frame = screen_get_frame (win->scr, win->frame_number);
-	  frame->win_number = new_number;
-	}
-
       /* resort the the window in the list */
-      list_del (&win->node);
-      insert_into_list (win, &rp_mapped_window);
+      group_resort_window (rp_current_group, win);
 
       /* Update the window list. */
-      update_window_names (win->scr);
+      update_window_names (win->win->scr);
     }
 
   free (str);
@@ -1457,7 +1438,7 @@ cmd_resize (int interactive, char *data)
       while (1)
 	{
 	  show_frame_message (" Resize frame ");
-	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer), 1);
+	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
 
 	  if (c == RESIZE_VGROW_KEY && mod == RESIZE_VGROW_MODIFIER)
 	    resize_frame_vertically (current_frame(), defaults.frame_resize_unit);
@@ -1497,6 +1478,12 @@ cmd_resize (int interactive, char *data)
   else
     {
       int xdelta, ydelta;
+      
+      if (data == NULL)
+	{
+	  message (" resize: Two numeric arguments required ");
+	  return NULL;
+	}
 
       if (sscanf (data, "%d %d", &xdelta, &ydelta) < 2)
 	{
@@ -2970,7 +2957,7 @@ cmd_fselect (int interactive, char *data)
       /* Read a key. */
       XGetInputFocus (dpy, &fwin, &revert);
       XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
-      read_key (&c, &mod, NULL, 0, 1);
+      read_key (&c, &mod, NULL, 0);
       XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
 
       /* Destroy our number windows and free the array. */
