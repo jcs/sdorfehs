@@ -82,6 +82,7 @@ This document explains how to use ratpoison.
 * About::                       What is ratpoison?
 * Contacting::                  How do I contact the ratpoison developers?
 * Concepts::                    Window manipulation concepts
+* Groups::                      Grouping windows together
 * General Use::                 How does this thing work??
 * Splitting Frames::            When you want to see more than one window
 * Multiple Monitors::           What to do with all your computer junk
@@ -92,7 +93,15 @@ This document explains how to use ratpoison.
 * Startup file::                They threatened me...with violence!
 * Command Index::               Index
 
+@detailmenu
+ --- The Detailed Node Listing ---
 
+Splitting Frames
+
+* Resizing Frames::             
+* Saving and Restoring Frame Sets::  
+
+@end detailmenu
 @end menu
 
 @node About, Contacting, Top, Top
@@ -122,7 +131,7 @@ and for the list archives go to the ratpoison sourceforge.net project.
 
 There is a #ratpoison irc channel on irc.openprojects.net.
 
-@node Concepts, General Use, Contacting, Top
+@node Concepts, Groups, Contacting, Top
 @chapter Concepts
 
 ratpoison uses the concept of @dfn{panes} to place and size
@@ -156,7 +165,33 @@ window, it is useful to be able to see the document you are searching
 as well as the search window. For this reason transient windows appear
 overtop (according to their gravity) of the previously focused window.
 
-@node General Use, Splitting Frames, Concepts, Top
+Every window belongs in a group. A group is simply that: a group of
+windows. By default there is only one group (the @dfn{default group})
+that all windows exist in. You can create new groups. When a program
+creates a window it will be added to the current group. Groups are
+generally used to organize windows into different classes such as work
+and wasting-time-at-work.
+
+@node Groups, General Use, Concepts, Top
+@chapter Groups
+ratpoison provides functionality to group windows together. This
+coupled with saving and restoring frames configurations is what most
+people would call @dfn{virtual desktops} or @dfn{workspaces}. 
+
+While ratpoison doesn't explicity provide support for such things, it
+does allow you to write scripts to this end. Such a script exists in
+@file{contrib/} called @file{rpws}. Consult that file for details on
+seting up workspaces inside ratpoison.
+
+Groups are more general purpose than workspaces. windows from one
+group can be visible along with windows from another group. If you
+switch to a different group nothing changes except the list of windows
+you can cycle through. ratpoison allows the user to move a window from
+one group to another, merge two groups, create new groups, and delete
+existing ones. @xref{Commands}, for information on the commands for
+manipulating groups.
+
+@node General Use, Splitting Frames, Groups, Top
 @chapter General Use
 
 When ratpoison starts you should see an empty X server. To open an x
@@ -201,6 +236,67 @@ not always fill it in the way you might like it to.
 Finally, when you've had enough of the splitting and you just want
 good ol' full screen ratpoison press @kbd{C-t Q} to remove all splits
 and leave you with the current window full screen.
+
+@menu
+* Resizing Frames::             
+* Saving and Restoring Frame Sets::  
+@end menu
+
+@node Resizing Frames, Saving and Restoring Frame Sets, Splitting Frames, Splitting Frames
+@section Resizing Frames
+ratpoison provides a command, @command{resize}, that resizes the
+current frame. It is bound to the key @kbd{C-t r} by
+default. @command{resize} can be used non-interactively by providing
+two arguments: the number of pixels to grow horizontally and the
+number to grow vertically. For example, if you wanted to grow the
+current window by 10 pixels horizontally and shrink it vertically by
+50 you could enter the command:
+
+@example
+resize 10 -50
+@end example
+
+When resizing interactively, the following keys are used:
+
+@table @kbd
+@item C-p
+Grow the frame vertically.
+@item C-n
+Shrink the frame horizontally.
+@item C-f
+Grow the frame horizontally.
+@item C-b
+Shrink the frame horizontally.
+@item return
+Accept the new frame size.
+@item C-g
+Abort and restore the frame to its original size.
+@end table
+
+The increment size used to resize the frame interactively is
+customized with the command @command{defresizeunit}.
+
+@node Saving and Restoring Frame Sets,  , Resizing Frames, Splitting Frames
+@section Saving and Restoring Frame Sets
+ratpoison provides two commands, @command{fdump} and
+@command{frestore}, that allow the user to save and restore frame
+configurations. Let's say, for example, you have split your desktop
+into several frames with some windows in these frames and now you want
+to quickly bring Emacs forward and browse some code (full-screen of
+course) then return to your funky frame configuration. You could use
+@command{fdump} to dump the frames, hit @kbd{C-t Q} to remove all
+frames, and then select your emacs window. When you've finished with
+emacs you could use @command{frestore} to restore the windows and
+frames.
+
+If a frame contained a window when you dumped the frame layout but
+that window is not present when you restore the layout, the frame
+holding that window will be blank.
+
+Calling @command{fdump} and @command{frestore} and copying and pasting
+the layout by hand each time is a bit cumbersome. There are some
+simple bindings in @file{doc/sample.ratpoisonrc} that allow you to
+save and restore frame layouts with the press of a key.
 
 @node Multiple Monitors, Keystrokes, Splitting Frames, Top
 @chapter Multiple Monitors
@@ -372,6 +468,26 @@ The summary of available commands is listed below:
 @deffn Command abort
 This is a pretty useless command. By default, it is bound to
 @kbd{C-t g}, and its purpose is to abort other commands.
+@end deffn
+
+@deffn Command addhook @var{hook} @var{command}
+Add a @var{command} to @var{hook}. When the hook is run, @var{command}
+will be executed.
+
+The following hooks are available:
+
+@table @asis
+@item prefix
+Run when the prefix key is pressed
+@item switchwin
+Run when the user switches to a different window in the current frame.
+@item switchframe
+Run when the user switches to another frame. This is also run when the
+user switches to a different screen, since a frame switch also occurs.
+@item switchgroup
+Run when the user switches to a different group.
+@end table
+
 @end deffn
 
 @deffn Command alias @var{name} @var{command}
@@ -623,6 +739,33 @@ passed as an argument.
 Display the value of the environment variable, @var{env}.
 @end deffn
 
+@deffn Command gmerge @var{group}
+Merge @var{group} with the current group. All windows in @var{group}
+will be moved to the current group. @var{group} is not deleted.
+@end deffn
+
+@deffn Command gmove @var{group}
+Move the current window to @var{group}.
+@end deffn
+
+@deffn Command gnew @var{name}
+Create a new group with the name @var{name}. @var{name} is
+optional. This new group becomes the new group.
+@end deffn
+
+@deffn Command gnewbg @var{name}
+This is the same as @command{gnew} except that the current group does
+not change.
+@end deffn
+
+@deffn Command gnext
+Go to the next group in the list.
+@end deffn
+
+@deffn Command gprev
+Go to the previous group in the list.
+@end deffn
+
 @deffn Command gravity @var{g}
 Change the gravity of the current window. A normal window will default
 to the top-left corner of the screen, but it can also be placed at the
@@ -636,6 +779,15 @@ standard compass 1 and 2 letter abbreviations (i.e. @samp{nw},
 
 When called non-interactively with no arguments, the current setting is
 returned.
+@end deffn
+
+@deffn Command groups
+Display a list of groups with a similar format to @command{windows}.
+@end deffn
+
+@deffn Command gselect @var{group}
+Select a particular group by name or number. If @var{group} is not
+provided, ratpoison will interactively prompt for the group.
 @end deffn
 
 @deffn Command help
@@ -728,6 +880,11 @@ Quit ratpoison.
 
 @deffn Command redisplay
 Redisplay the current window, just like @kbd{C-t l} would do.
+@end deffn
+
+@deffn Command remhook @var{hook} @var{command}
+Remove @var{command} from the hook. See @command{addhook} for a list
+of available hooks.
 @end deffn
 
 @deffn Command remove
@@ -940,22 +1097,86 @@ described in @command{defwinfmt}.
 
 @node Input, Command Line Arguments, Commands, Top
 @chapter Input
-At various times ratpoison will prompt you for input. Currently only
-very basic text editing commands exist.
+At various times ratpoison will prompt you for input. Ratpoison sports
+a fully featured line editor. The following table lists the keystrokes
+and actions:
 
 @table @key
-@item Backspace
-Deletes one letter preceding the cursor.
+@item C-g
+@itemx escape
+abort the command requesting input.
+
+@item C-f
+@itemx right arrow
+move forward a character.
+
+@item C-b
+@itemx left arrow
+move backward a character.
+
+@item M-f
+move forward a word.
+
+@item M-b
+move backward a word.
+
+@item C-a
+@itemx home
+move to the beginning of the line.
+
+@item C-e
+@itemx end
+move to the end of the line.
+
+@item C-d
+@itemx delete
+delete the character at point.
+
+@item M-d
+delete the word at point.
+@item backspace
+delete the character before the point.
+
+@item M-backspace
+delete the word before the point.
+
+@item C-k
+delete from the point to the end of the line.
+
+@item C-u
+delete from the point to the beginning of the line.
+
+@item C-y
+Yank the text from the X11 cut buffer.
 
 @item C-p
+@itemx up arrow
 Cycle backwards through the history.
 
 @item C-n
+@itemx down arrow
 Cycle forwards through the history.
+
+@item return
+submit the line of text.
+
+@item tab
+complete the text up to the point or if there are several possible
+completions, cycle through them. This only works in certain
+contexts. Tab completion will complete a shell command, a window name,
+a group name, and colon commands in their apropriate context
+(i.e. when being asked for a window name).
+
+@item S-iso-lefttab
+This is shift + tab by the way. This does the same as tab, but cycles
+backwards through the completions.
+
 @end table
 
 All input is stored in the same history list. By default ratpoison has
-a history length of 50 entries.
+a history length of 100 entries. This history is saved to the file
+@file{~/.ratpoison_history} and is loaded when you start
+ratpoison. This means your history sticks between sessions.
 
 @node Command Line Arguments, Startup file, Input, Top
 @chapter Command Line Arguments

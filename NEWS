@@ -8,7 +8,6 @@ contrib/rpws for instructions on how to use it.
 ** new commands addhook and remhook
 There are now hooks for various operations.
 
-* Changes since 1.2.0-beta5
 ** Completions
 You can now type Tab and get completions on window names, group names,
 and colon commands.
