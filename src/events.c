@@ -129,16 +129,10 @@ more_destroy_events ()
 void
 destroy_window (XDestroyWindowEvent *ev)
 {
-  /* if there are multiple destroy events queued, and a mapped window
-     is deleted then switch_window_pending is set to 1 and the window
-     switch is done after all destroy events have been done. */
-  static int switch_window_pending = 0; 
-  int last_destroy_event;
   rp_window *win;
 
   win = find_window (ev->window);
 
-  last_destroy_event = !more_destroy_events();
   if (win)
     {
       /* Goto the last accessed window. */
@@ -146,22 +140,18 @@ destroy_window (XDestroyWindowEvent *ev)
 	{
 	  PRINT_DEBUG ("Destroying current window.\n");
 	  
-	  /* tell ratpoison to switch to the last window when all the
-             destroy events have been delt with. */
-	  switch_window_pending = 1;
 	  unmanage (win);
+
+	  /* Switch to last viewed window */
+	  ignore_badwindow = 1;
+	  last_window (NULL);
+	  ignore_badwindow = 0;
 	}
       else
 	{
 	  PRINT_DEBUG ("Destroying some other window.\n");
 	  unmanage (win);
 	}
-    }
-
-  if (last_destroy_event && switch_window_pending)
-    {
-      last_window (NULL);
-      switch_window_pending = 0;
     }
 }
 
@@ -249,6 +239,9 @@ handle_key (screen_info *s)
 
   PRINT_DEBUG ("handling key.\n");
 
+  /* All functions hide the program bar. */
+  if (BAR_TIMEOUT > 0) hide_bar (s);
+
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
 
@@ -282,9 +275,6 @@ handle_key (screen_info *s)
       XSync (dpy, False);
       return;
     }
-
-  /* All functions hide the program bar. */
-  hide_bar (s);
 
   for (i = key_actions; i->key != 0; i++)
     {
