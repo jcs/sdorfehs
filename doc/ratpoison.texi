@@ -82,9 +82,14 @@ This document explains how to use ratpoison.
 * About::                       What is ratpoison?
 * Contacting::                  How do I contact the ratpoison developers?
 * General Use::                 How does this thing work??
+* Splitting The Screen::        When you want to see more than one window
 * Keystrokes::                  Key commands and functionality
 * Commands::                    ratpoison commands
+* Command Line Arguments::      ratpoison command-line actions
 * Startup file::                They threatened me...with violence!
+
+
+
 @end menu
 
 @node About, Contacting, Top, Top
@@ -114,7 +119,7 @@ and for the list archives go to the ratpoison sourceforge.net project.
 
 There is a #ratpoison irc channel on irc.openprojects.net.
 
-@node General Use, Keystrokes, Contacting, Top
+@node General Use, Splitting The Screen, Contacting, Top
 @chapter General Use
 
 When ratpoison starts you should see an empty X server. To open an x
@@ -128,7 +133,7 @@ between windows. To see what windows are being managed hit @kbd{C-t
 w}. Each window has a number. You can jump to a window by hitting
 @kbd{C-t} followed by the window's number. This assumes the the window's
 number is one digit. You can also switch to a window by typing in part
-of its name. To do this hit @kbd{C-t A}.
+of its name. To do this hit @kbd{C-t '}.
 
 ratpoison allows you to cycle through the windows with @kbd{C-t n}
 and @kbd{C-t p}.
@@ -138,8 +143,29 @@ how we didn't have to drag a single window, or click a single maximize
 button? Beautiful wasn't it? Felt fast? Cool? Its modern computing at
 its best boys and girls.
 
+@node Splitting The Screen, Keystrokes, General Use, Top
+@chapter Splitting The Screen
+Sometimes you may want to see two or more windows at the same
+time. ratpoison allows you to split the screen into frames. Each frame
+can then contain 1 window. To split the current frame horizontally use
+@kbd{C-t s}. To split the current frame vertically use @kbd{C-t S}. If
+you have enough windows, you'll notice that the new frame will find a
+window for itself. You can now use the normal navigation commands to
+switch windows in the frame. Note, however, that if you switch by name
+or number to a window that is already in another frame, you'll switch
+to that frame.
 
-@node Keystrokes, Commands, General Use, Top
+Before too long, you'll probably want to switch to another frame. Use
+@kbd{C-t tab} to cycle through the frames. If you want to remove a
+frame use @kbd{C-t R}. ratpoison automatically adjusts the size of the
+other frames to take up the free space. Unfortunately ratpoison may
+not always fill it in the way you might like it to.
+
+Finally, when you've had enough of the splitting and you just want
+good ol' full screen ratpoison press @kbd{C-t Q} to remove all splits
+and leave you with the current window full screen.
+
+@node Keystrokes, Commands, Splitting The Screen, Top
 @chapter Keystrokes
 
 ratpoison is a very simple window manager. Each window is maximized and
@@ -223,13 +249,16 @@ Display the version of ratpoison.
 @item C-t C-w
 Display the list of managed windows. The current window is highlighted.
 
-@item C-t S
+@item C-t s
 Split the current window horizontally in two. The last accessed window
 not occupying a frame will be the second window.
 
-@item C-t C-S
+@item C-t S
 Split the current window vertically in two. The last accessed window not
 occupying a frame will be the second window.
+
+@item C-t tab
+Cycle through ratpoison's frames.
 
 @item C-t Q
 Kill all frames but the current one.
@@ -237,9 +266,20 @@ Kill all frames but the current one.
 @item C-t R
 Kill the current frame. This is a no-op if there is only one frame.
 
+@item C-t b
+@item C-t C-b
+Banish the mouse to the lower right corner of the screen.
+
+@item C-t ?
+Display a help screen
+
+@item C-t f
+@item C-t C-f
+Indicate which frame is the current frame.
+
 @end table
 
-@node Commands, Startup file, Keystrokes, Top
+@node Commands, Command Line Arguments, Keystrokes, Top
 @chapter ratpoison commands
 
 ratpoison can be controlled with commands (so called colon-commands).
@@ -251,10 +291,17 @@ The summary of available commands is listed below:
 This is a pretty useless command. By default, it is bound to
 @kbd{C-t g}, and its purpose is to abort other commands.
 
+@item banish
+Banish the mouse to the lower right corner of the screen.
+
 @item bind @var{Key} @var{command}
 Bind a key to a ratpoison command. This command takes two arguments: the
 key to bind and the command to run. For example, to bind @kbd{C-t R} to
 restart ratpoison:
+
+@item blank
+Blank the current frame. All windows in the current frame will be
+hidden.
 
 @example
 : bind R exec ratpoison --restart
@@ -267,6 +314,9 @@ In the default setup, the @kbd{C-t a} keystroke is bound to this command.
 @item colon @var{command}
 Run a ratpoison command.
 
+@item curframe
+Indicate which frame is the current frame.
+
 @item delete
 This deletes the current window. You can access it with the @kbd{C-t k}
 keystroke.
@@ -275,8 +325,17 @@ keystroke.
 Set the prefix to to @var{key}. For example @samp{escape ^b} sets the
 prefix key to @key{C-b}.
 
+@item focus
+cycle through ratpoison's frames.
+
 @item generate
 Send a @kbd{C-t} to the current window.
+
+@item help
+Display a help screen that lists all bound keystrokes.
+
+@item echo @var{text}
+Display @var{text} as a message.
 
 @item exec @var{command}
 Execute a shell command. By default, @kbd{C-t !} does this.
@@ -299,6 +358,10 @@ and @kbd{C-t enter}.
 This is a bad-bad command. It kills ratpoison and revives that
 ugly rodent! Yuck! Avoid!
 
+@item number @var{n}
+Set the current window's number to @var{n}. If another window occupies
+the requested number already, then the windows' numbers are swapped.
+
 @item other
 This toggles between the current window and the last window. By
 default, this is bound to @kbd{C-t C-t}.
@@ -306,6 +369,45 @@ default, this is bound to @kbd{C-t C-t}.
 @item prev
 This jumps you to the previous window in the window list. By default,
 this is bound to @kbd{C-t p}.
+
+@item quit
+Quit ratpoison.
+
+@item rudeness @var{n}
+The rudeness command lets you decide what windows pop-up automatically
+and when. This is often useful for those deep hack sessions when you
+absolutely can't be disturbed.
+
+There are two kinds of windows: normal windows (like an xterm) and
+transient windows (generally pop-up dialog boxes). When a client
+program wants to display a new window it makes a requests to
+ratpoison. ratpoison then decides whether to grant the request and
+display the window or ignore it. A client program can also request
+that one of its windows be raised. You can customize ratpoison to
+either honour these requests (the default operation) or ignore them.
+
+@var{n} is a number from 0 to 15. Each of the four bits determine
+which requests ratpoison grants.
+
+@table @asis
+@item Bit 0
+Tells ratpoison to grant raise requests on transient windows
+
+@item Bit 1
+Tells ratpoison to grant raise requests on normal windows
+
+@item Bit 2
+Tells ratpoison to grant display requests on new transient windows
+
+@item Bit 3 
+Tells ratpoison to grant display requests on new normal windows
+@end table
+
+For example, if you wanted only wanted to grant transient windows
+raise requests and display requests you would type @samp{rudeness
+5}. If a request is not granted ratpoison will tell you about the
+request with a message like @samp{Raise request from window 1
+(emacs)}.
 
 @item select @var{n}
 This jumps you to window @var{n} where @var{n} is the window number as
@@ -322,6 +424,9 @@ Read a text file containing ratpoison commands.
 Rename the currently active window. This name will remain for the
 duration of the window's life, unless you change it again. By default,
 the @kbd{C-t A} keystroke is bound to this command.
+
+@item unbind @var{key}
+Unbind a keystroke.
 
 @item version
 Print ratpoison version.  By default, this is bound to @kbd{C-t v}.
@@ -356,7 +461,40 @@ Kill the current frame. This is a no-op if there is only one frame.
 
 @end table
 
-@node Startup file,  , Commands, Top
+@node Command Line Arguments, Startup file, Commands, Top
+@chapter Command Line Arguments
+ratpoison supports command line arguments to request various actions
+when invoking ratpoison.
+
+@table @code
+@item -h, --help
+Display this help screen
+
+@item -v, --version
+Display the version
+
+@item -r, --restart
+Restart ratpoison
+
+@item -k, --kill
+Kill ratpoison
+
+@item -c, --command
+Send ratpoison a colon-command. This allows you to control ratpoison
+from the command-line. with the @option{-c} option you can script
+ratpoison using any programming language that can spawn a
+process. Some commands behave differently when invoked this
+way. Currently the only command that behaves differently is the
+@code{windows} command. Instead of displaying the window list in a
+message window, it is printed to stdout. The output can then be
+captured and used in the ratpoison script. For instance, this could be
+used to check whether a program is running and if it is switch to its
+window otherwise launch it.
+
+@end table
+
+
+@node Startup file,  , Command Line Arguments, Top
 @chapter Startup file
 
 Now you've probably read the web page, and you've no doubt dug up some
