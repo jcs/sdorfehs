@@ -1,3 +1,7 @@
+2001-03-31  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* doc/ipaq.ratpoisonrc: Use keysym names.
+
 2001-03-28  Shawn  <sabetts@vcn.bc.ca>
 
 	* src/main.c (main): initialize rp_command_request and
