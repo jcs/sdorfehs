@@ -1,3 +1,10 @@
+2002-01-23  Shawn  <sabetts@vcn.bc.ca>
+
+	* src/events.c (configure_notify): remove function
+	(delegate_event): add ConfigureNotify to the ignored events list.
+
+	* src/manage.c (update_normal_hints): improve debugging output.
+
 2002-01-17  Gergely Nagy  <algernon@debian.org>
 
 	* debian/changelog: update for a new snapshot

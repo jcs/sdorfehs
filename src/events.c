@@ -216,25 +216,6 @@ destroy_window (XDestroyWindowEvent *ev)
 }
 
 static void
-configure_notify (XConfigureEvent *e)
-{
-  rp_window *win;
-
-  win = find_window (e->window);
-  if (win && win->state == NormalState)
-    {
-      if (win->height != e->height
-	  || win->width != e->width
-	  || win->border != e->border_width
-	  || win->x != e->x
-	  || win->y != e->y)
-	/* The notify event was generated from a granted configure
-	   request which means we must re-maximize the window. */
-	maximize (win);
-    }
-}
-
-static void
 configure_request (XConfigureRequestEvent *e)
 {
   int border;
@@ -314,10 +295,33 @@ configure_request (XConfigureRequestEvent *e)
 
       if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
 	{
-	  /* Always grant it whatever it likes. We will catch it the
-	     ConfigureNotify event and maximize the window there. */
-	  XConfigureWindow (dpy, win->w, e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
-			    &changes);
+	  if (win->state == NormalState)
+	    {
+	      /* Draw the hardline. Visible windows always maximize. */ 
+	      maximize (win);
+	    }
+	  else
+	    {
+	      /* The window isn't visible so grant it whatever it
+		 likes. */
+	      XConfigureWindow (dpy, win->w, 
+				e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
+				&changes);
+
+	      /* Update the window's structure. */
+	      if (e->value_mask & CWX)
+		win->x = changes.x;
+	      if (e->value_mask & CWY)
+		win->y = changes.y;
+	      if (e->value_mask & CWBorderWidth)
+		win->border = border;
+	      if (e->value_mask & CWWidth)
+		win->width = changes.width;
+	      if (e->value_mask & CWHeight)
+		win->height = changes.height;
+	    }
+
+	  /* This is required to be ICCCM compliant. */
 	  send_configure (win);
 	}
     }
@@ -743,16 +747,12 @@ delegate_event (XEvent *ev)
       focus_change (&ev->xfocus);
       break;
 
-    case ConfigureNotify:
-      PRINT_DEBUG ("--- Handling ConfigureNotify ---\n");
-      configure_notify (&ev->xconfigure);
-      break;
-
     case MappingNotify:
       PRINT_DEBUG ("--- Handling MappingNotify ---\n");
       mapping_notify( &ev->xmapping );
       break;
 
+    case ConfigureNotify:
     case MapNotify:
     case Expose:
     case MotionNotify:
