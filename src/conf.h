@@ -32,9 +32,14 @@
 #define BAR_LOCATION    3	/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
 #define BAR_TIMEOUT     5	/* Number of seconds before the progam bar autohides 0=don't autohide */
 
-#define PADDING_LEFT 	100	/* space not to be taken up around managed windows */
-#define PADDING_TOP 	100
-#define PADDING_RIGHT 	100
-#define PADDING_BOTTOM 	100
+#define PADDING_LEFT 	0	/* space not to be taken up around managed windows */
+#define PADDING_TOP 	0
+#define PADDING_RIGHT 	0
+#define PADDING_BOTTOM 	0
 
+/* If for some sick reason you don't want ratpoison to manage a
+   window, put its name in this list. These windows get drawn but
+   ratpoison won't have any knowledge of them and you won't be able to
+   jump to them or give them keyboard focus. This has been added
+   mostly for use with hand-helds. */
 #define UNMANAGED_WINDOW_LIST "xapm","xclock","xscribble"
