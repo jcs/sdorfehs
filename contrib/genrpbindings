@@ -136,15 +136,24 @@ while (<ACTIONS_C>) {
 	while (<ACTIONS_C>)
 	{
 	    last if (m!/\*\@end !);
-	    if (/{\"(.+)\".+},/) {
+	    if (/\s*add_command\s*\(\"([^\"]+)\",\s*[^\"]+,\s*([0-9]+),\s*[0-9]+,\s*([0-9]+)/) {
+	      my $name = $1;
+	      my $numargs = $2;
+	      my $optargs = $3;
+
+	      # Skip the arguments
+	      for (my $i=0; $i<$numargs; $i++) {
+		<ACTIONS_C>;
+	      }
+
 	      $nbindings++;
-	      print PERL "sub $1 { return command (\"$1\", \@_); }";
-	      print ELISP "(defun-ratpoison $1)";
-	      print COMMONLISP "(defun-ratpoison $1)";
-	      print RUBY "  def $1 (*args)";
-	      print RUBY "    return command (\"$1\", args)";
+	      print PERL "sub $name { return command (\"$name\", \@_); }";
+	      print ELISP "(defun-ratpoison $name)";
+	      print COMMONLISP "(defun-ratpoison $name)";
+	      print RUBY "  def $name (*args)";
+	      print RUBY "    return command (\"$name\", args)";
 	      print RUBY "  end";
-	      print RUBY "  module_function :$1\n";
+	      print RUBY "  module_function :$name\n";
 	    }
 	}
     }
