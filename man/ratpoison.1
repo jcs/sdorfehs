@@ -1,0 +1,136 @@
+.TH RATPOISON 1 "15 February, 2001" "ratpoison 0.0.6" RATPOISON
+.SH NAME
+ratpoison \- fatless X window manager
+.SH SYNOPSIS
+.B ratpoison
+.SH DESCRIPTION
+This manual page documents briefly the
+.B ratpoison
+window manager.
+
+This manual page was written for the Debian GNU/Linux distribution
+because the original program does not have a manual page.
+Instead, it has documentation in the GNU Info format; see below.
+.PP
+\fBratpoison\fP is a simple Window Manager with no fat library
+dependencies, no fancy graphics, no window decorations, and no
+flashy wank. It is largely modelled after \fIGNU Screen\fP which
+has done wonders in virtual terminal market.
+
+All interaction with the window manager is done through
+keystrokes. ratpoison has a prefix map to minimize the key
+clobbering that cripples EMACS and other quality pieces of
+software.
+.SH KEYSTROKES
+The default keystrokes are listed in the next section. However, there
+are some which are bound to complex commands, and those are listed
+here.
+.TP
+.B C\-t c
+This opens a new XTerm.
+.TP
+.B C\-t e
+This opens a new EMACS session. You will probably only need to do this
+once.
+.TP
+.B C\-t t
+Sometimes you need to send a C\-t to the current window. This command
+does just that.
+.TP
+.B C\-t :
+Enter a command line.
+.SH COMMANDS
+Ratpoison can be controlled with commands (so called colon-commands).
+The summary of available commands is listed below:
+.\" FIXME: Complete this!
+.TP
+.B abort
+This is a pretty useless command. By default, it is bound to
+\fIC\-t g\fP, and its purpose is to abort other commands.
+.TP
+.B center
+If you want to center a window, this is the command to use. This
+is not bound to any key by default.
+.TP
+.B clock
+Show current time. Disappears after 5 seconds, like all other info bars.
+In the default setup, the \fIC\-t a\fP keystroke is bound to this command.
+.TP
+.B delete
+This deletes the current window. You can access it with the \fIC\-t k\fP
+keystroke.
+.TP
+.B exec \fIcommand\fP
+Execute a shell command. By default, \fIC\-t !\fP does this.
+.TP
+.B kill
+This destroys the current window. Normally you should only need to
+use \fBdelete\fP, but just incase you need to rip the heart out of a
+misbehaving window this command should do the trick. Also available as
+\fIC\-t K\fP.
+.TP
+.B maximize
+Maximize the current window, just like \fIC\-t m\fP would do.
+.TP
+.B next
+This jumps you to the next window in the window list. This one is
+bound to three keystrokes, namely \fIC\-t n\fP, \fIC\-t space\fP,
+and \fIC\-t enter\fP.
+.TP
+.B newwm \fIwindow\-manager\fP
+This is a bad-bad command. It kills ratpoison and revives that
+ugly rotten! Yuck! Avoid!
+.TP
+.B number \fIn\fP
+This jumps you to window \fIn\fP where \fIn\fP is the window number as
+shown in the Program Bar. You can do the same trick with
+\fIC\-<n>\fP too.
+.TP
+.B other
+This toggles between the current window and the last window. By
+default, this is bound to \fIC\-t C\-t\fP.
+.TP
+.B prev
+This jumps you to the previous window in the window list. By default,
+this is bound to \fIC\-t p\fP.
+.TP
+.B resize \fIhorizontal\fP x \fIvertical\fP
+Resizes the current window to the given size.
+.TP
+.B select \fIwindow\-name\fP
+Go to a window by name. A shourcut is \fIC\-t '\fP.
+.TP
+.B title \fItitle\fP
+Rename the currently active window. This name will remain for the
+duration of the window's life, unless you change it again. By default,
+the \fIC\-t A\fP keystroke is bound to this command.
+.TP
+.B version
+Print ratpoison version. \fIC\-t v\fP! \fIC\-t v\fP!
+.TP
+.B windows
+This displays the Program Bar which displays the windows you currently
+have running. The number before each window name is used to jump to that
+window. You can do this by typing \fBC\-t C\-<n>\fP where \fI<n>\fP is the
+number of the window. Note that only windows with numbers from 0 to 9
+can be referenced.
+
+After 5 seconds the Program Bar disappears.
+
+This command is bound to \fIC\-t w\fP.
+.SH "SEE ALSO"
+The full documentation for
+.B ratpoison
+is maintained as a Texinfo manual.  If the
+.B info
+and
+.B ratpoison
+programs are properly installed at your site, the command
+.IP
+.B info ratpoison
+.PP
+should give you access to the complete manual.
+.SH AUTHOR
+Ratpoison was written by Shawn Betts <sabetts@users.sourceforge.net>.
+
+This manual page was written by Gergely Nagy <8@free.bsd.hu>.
