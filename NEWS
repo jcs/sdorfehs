@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 0.1.0
+** window borders are configurable
+WINDOW_BORDER_WIDTH has been added to conf.h. This constant determines
+the border width for all windows.
+
 ** Window list changes
 A '+' is now drawn between the window number and the window name for
 the last accessed window.
@@ -44,7 +48,7 @@ When the auto close feature is enabled, ratpoison will exit when the
 last managed window is closed. This feature can be turned on by
 uncommenting the line:
 
-//#define AUTO_CLOSE
+/* #define AUTO_CLOSE */
 
 in conf.h
 

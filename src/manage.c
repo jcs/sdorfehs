@@ -175,8 +175,6 @@ update_window_information (rp_window *win)
 {
   XWindowAttributes attr;
 
-  PRINT_DEBUG ("managing new window\n");
-
   update_window_name (win);
 
   /* Get the WM Hints */
@@ -189,6 +187,7 @@ update_window_information (rp_window *win)
   win->y = attr.y;
   win->width = attr.width;
   win->height = attr.height;
+  win->border = attr.border_width;
 }
 
 void
@@ -294,6 +293,9 @@ maximize_transient (rp_window *win)
 {
   int maxx, maxy;
 
+  /* Set the window's border */
+  win->border = WINDOW_BORDER_WIDTH;
+
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)
     {
@@ -327,8 +329,10 @@ maximize_transient (rp_window *win)
 
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
 
-  win->x = PADDING_LEFT - win->width / 2 + (win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT) / 2;;
-  win->y = PADDING_TOP - win->height / 2 + (win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM) / 2;;
+  win->x = PADDING_LEFT - win->width / 2 
+    + (win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT - win->border * 2) / 2;
+  win->y = PADDING_TOP - win->height / 2 
+    + (win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM - win->border * 2) / 2;
   win->width = maxx;
   win->height = maxy;
 }
@@ -343,6 +347,9 @@ maximize_normal (rp_window *win)
   int off_x = 0;
   int off_y = 0;
 
+  /* Set the window's border */
+  win->border = WINDOW_BORDER_WIDTH;
+
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)
     {
@@ -355,8 +362,10 @@ maximize_normal (rp_window *win)
     }
   else
     {
-      maxx = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
-      maxy = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
+      maxx = win->scr->root_attr.width 
+	- PADDING_LEFT - PADDING_RIGHT - win->border * 2;
+      maxy = win->scr->root_attr.height 
+	- PADDING_TOP - PADDING_BOTTOM - win->border * 2;
 
       /* Make sure we maximize to the nearest Resize Increment specified
 	 by the window */
@@ -406,7 +415,7 @@ maximize (rp_window *win)
 
   /* Actually do the maximizing */
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
-
+  XSetWindowBorderWidth (dpy, win->w, win->border);
   XSync (dpy, False);
 }
 
@@ -423,7 +432,7 @@ force_maximize (rp_window *win)
   /* Actually do the maximizing */
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width+1, win->height+1);
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
-
+  XSetWindowBorderWidth (dpy, win->w, win->border);
   XSync (dpy, False);
 }
 

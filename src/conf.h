@@ -34,9 +34,12 @@
 /* The minimum size of the input window */
 #define INPUT_WINDOW_SIZE 200
 
+/* The border width ratpoison configures all windows with */
+#define WINDOW_BORDER_WIDTH 0
+
 /* Pressing a key sends the mouse to the bottom right corner. This
    doesn't work very well yet. */
-//#define HIDE_MOUSE 
+/* #define HIDE_MOUSE  */
 
 #define FOREGROUND	"black"
 #define BACKGROUND	"white"
