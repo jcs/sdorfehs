@@ -64,7 +64,8 @@ new_window (XCreateWindowEvent *e)
   s = find_screen (e->parent);
   win = find_window (e->window);
 
-  if (s && !win && e->window != s->key_window && e->window != s->bar_window)
+  if (s && !win && e->window != s->key_window && e->window != s->bar_window 
+      && e->window != s->input_window)
     {
       win = add_to_window_list (s, e->window);
       win->state = STATE_UNMAPPED;
@@ -82,6 +83,10 @@ unmap_notify (XEvent *ev)
 
   if (s && win)
     {
+      /* Give back the window number. the window will get another one,
+         if it in remapped. */
+      return_window_number (win->number);
+      win->number = -1;
       win->state = STATE_UNMAPPED;
       update_window_names (s);
     }
@@ -241,6 +246,17 @@ client_msg (XClientMessageEvent *ev)
 }
 
 static void
+goto_win_by_name (screen_info *s)
+{
+  char winname[100];
+  
+  get_input (s, "Window: ", winname, 100);
+  printf ("user entered: %s\n", winname);
+
+  goto_window_name (winname);
+}
+
+static void
 handle_key (screen_info *s)
 {
   int revert;
@@ -292,6 +308,9 @@ handle_key (screen_info *s)
       break;
     case KEY_LASTWINDOW:
       last_window ();
+      break;
+    case KEY_WINBYNAME:
+      goto_win_by_name (s);
       break;
     case KEY_DELETE:
       if (ev.xkey.state & ShiftMask) kill_window ();

@@ -57,6 +57,8 @@ grab_keys (screen_info *s)
 	   GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREFIX ), AnyModifier, s->key_window, True, 
 	   GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_WINBYNAME ), AnyModifier, s->key_window, True, 
+	   GrabModeAsync, GrabModeAsync);
 }
 
 static void
@@ -163,9 +165,8 @@ scanwins(screen_info *s)
   for (i = 0; i < nwins; i++) 
     {
       XGetWindowAttributes(dpy, wins[i], &attr);
-      if (wins[i] == s->bar_window || wins[i] == s->key_window) continue;
+      if (wins[i] == s->bar_window || wins[i] == s->key_window || wins[i] == s->input_window) continue;
 
-      
       if (attr.override_redirect != True)
 	{
 	  win = add_to_window_list (s, wins[i]);

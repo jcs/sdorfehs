@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "ratpoison.h"
 
@@ -153,6 +155,45 @@ find_window_by_number (int n)
     }
 
   return NULL;
+}
+
+/* A case insensitive strncmp. */
+static int
+str_comp (char *s1, char *s2, int len)
+{
+  int i;
+
+  for (i=0; i<len; i++)
+    if (toupper (s1[i]) != toupper (s2[i])) return 0;
+
+  return 1;
+}
+
+static rp_window *
+find_window_by_name (char *name)
+{
+  rp_window *cur;
+
+  for (cur=rp_window_head; cur; cur=cur->next)
+    {
+      if (str_comp (name, cur->name, strlen (name))) return cur;
+    }
+
+  return NULL;
+}
+
+void
+goto_window_name (char *name)
+{
+  rp_window *win;
+
+  if ((win = find_window_by_name (name)) == NULL)
+    {
+      return;
+    }
+
+  rp_current_window = win;
+  set_active_window (rp_current_window);
 }
 
 void

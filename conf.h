@@ -27,6 +27,7 @@
 #define KEY_LASTWINDOW  't'	/* key to toggle between the current window and the last visitted one */
 #define KEY_TOGGLEBAR   'w'	/* key to toggle the display of the program bar */
 #define KEY_DELETE      'k'	/* delete a window SHIFT+key will Destroy the window */
+#define KEY_WINBYNAME   '\''	/* key to jump to a window by name */
 
 #define TERM_PROG       "rxvt"	/* command to boot an xterm */
 #define EMACS_PROG      "emacs"	/* command to boot emacs */
@@ -39,3 +40,4 @@
 #define BAR_PADDING     3	/* The amount of padding on the top and bottom of the program bar  */
 #define BAR_LOCATION    3	/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
 #define BAR_TIMEOUT     5	/* Number of seconds before the progam bar autohides 0=don't autohide */
+

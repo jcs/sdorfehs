@@ -49,7 +49,7 @@ struct screen_info
   GC bold_gc;
   XFontStruct *font;		/* The font we want to use. */
   XWindowAttributes root_attr;
-  Window root, bar_window, key_window;
+  Window root, bar_window, key_window, input_window;
   int bar_is_raised;
   int screen_num;		/* Our screen number as dictated my X */
   Colormap def_cmap;

@@ -28,6 +28,7 @@
 #include "bar.h"
 #include "events.h"
 #include "number.h"
+#include "input.h"
 
 void clean_up ();
 screen_info *find_screen (Window w);

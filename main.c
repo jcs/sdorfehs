@@ -233,6 +233,10 @@ init_screen (screen_info *s, int screen_num)
   XMapWindow (dpy, s->key_window);
   grab_keys (s);
 
+  /* Create the input window. */
+  s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 
+  					 1, 1, 1, fg_color.pixel, bg_color.pixel);
+  XSelectInput (dpy, s->input_window, KeyPressMask);
   scanwins (s);
 }
 
