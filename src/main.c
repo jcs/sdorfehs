@@ -477,13 +477,13 @@ init_defaults ()
   defaults.padding_top 	  = 0;
   defaults.padding_bottom = 0;
 
-  defaults.font = XLoadQueryFont (dpy, "9x15bold");
+  defaults.font = XLoadQueryFont (dpy, DEFAULT_FONT);
   if (defaults.font == NULL)
     {
-      fprintf (stderr, "ratpoison: Cannot load font %s.\n", "9x15bold");
+      fprintf (stderr, "ratpoison: Cannot load font %s.\n", DEFAULT_FONT);
       exit (EXIT_FAILURE);
     }
-  defaults.font_string = xstrdup ("9x15bold");
+  defaults.font_string = xstrdup (DEFAULT_FONT);
 
   defaults.fgcolor_string = xstrdup ("black");
   defaults.bgcolor_string = xstrdup ("white");

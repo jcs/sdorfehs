@@ -115,4 +115,7 @@
 /* The name of the top level keymap */
 #define TOP_KEYMAP "top"
 
+/* The default font */
+#define DEFAULT_FONT "9x15bold"
+
 #endif /* !_ _RATPOISON_CONF_H */

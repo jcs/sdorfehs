@@ -1,5 +1,9 @@
 2004-10-05  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/conf.h (DEFAULT_FONT): new define
+
+	* src/main.c (init_defaults): use the DEFAULT_FONT define
+
 	* src/actions.c: new command, sselect
 	(cmd_sselect): new function. added prototype.
 	(cmd_set): free 'var' at the appropriate places.
