@@ -157,7 +157,7 @@ init_user_commands()
 	       "Command: ", arg_STRING);
   add_command ("alias",		cmd_alias,	2, 2, 2,
 	       "Alias: ", arg_STRING,
-	       "Command: ", arg_STRING);
+	       "Command: ", arg_REST);
   add_command ("banish",	cmd_banish,	0, 0, 0);
   add_command ("chdir",		cmd_chdir,	1, 0, 0,
 	       "Dir: ", arg_STRING);
@@ -271,7 +271,7 @@ init_user_commands()
 	       "Select window: ", arg_STRING);
   add_command ("set",		cmd_set,	2, 0, 0,
 	       "", arg_VARIABLE,
-	       "", arg_STRING);
+	       "", arg_REST);
   add_command ("setenv",	cmd_setenv,	2, 2, 2,
 	       "Variable: ", arg_STRING,
 	       "Value: ", arg_REST);
@@ -2140,9 +2140,9 @@ parse_args (char *str, struct list_head *list, int nargs)
       /* Should we eat the whitespace? */
       if (gobble)
 	{
-	  while (*i && *i == ' ') *i++;
+	  while (*i && *i == ' ') i++;
 	  /* Did we go too far? */
-	  if (*i && *i != ' ') *i--;
+	  if (*i && *i != ' ') i--;
 	  gobble = 0;
 	}
     }
@@ -4584,8 +4584,6 @@ cmd_readkey (int interactive, struct cmdarg **args)
   int rat_grabbed = 0;
   rp_keymap *map;
 
-  PRINT_DEBUG (("hero\n"));
-
   map = ARG(0,keymap);
 
   XGrabKeyboard (dpy, current_screen()->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
@@ -4699,6 +4697,7 @@ cmd_set (int interactive, struct cmdarg **args)
       int parsed_args;
       cmdret *result = NULL;
       struct cmdarg **cmdargs;
+      char *input;
 
       INIT_LIST_HEAD (&arglist);
       INIT_LIST_HEAD (&head);
@@ -4712,17 +4711,23 @@ cmd_set (int interactive, struct cmdarg **args)
 	  }
 
       /* Parse the arguments and call the function. */
-      result = parse_args (ARG_STRING(1), &head, nargs);
+      if (args[1])
+	input = xstrdup (args[1]->string);
+      else
+	input = xstrdup ("");
+      result = parse_args (input, &head, nargs);
+      free (input);
+
       if (result)
 	goto failed;
       result = parsed_input_to_args (ARG(0,variable)->nargs, ARG(0,variable)->args,
 				     &head, &arglist, &parsed_args);
       if (result)
 	goto failed;
-      if (list_size (&arglist) < ARG(0,variable)->nargs)
+      /* 0 or nargs is acceptable */
+      if (list_size (&arglist) > 0 && list_size (&arglist) < ARG(0,variable)->nargs)
 	{
-	  result = cmdret_new_printf (RET_FAILURE, "not enough arguments. %d %d",
-				      list_size (&arglist), ARG(0,variable)->nargs);
+	  result = cmdret_new ("not enough arguments.", RET_FAILURE);
 	  goto failed;
 	}
 

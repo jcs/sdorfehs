@@ -1,3 +1,15 @@
+2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (parse_args): remove erroneous pointer dereference
+	of i when gobbling whitespace.
+	(init_user_commands): set second argument to "alias" command to
+	arg_REST.
+	(init_user_commands): likewise for "set"
+	(cmd_readkey): remove useless PRINT_DEBUG
+	(cmd_set): pass an empty string to parse_args when the args[1] is
+	NULL.
+	(cmd_set): call the set function if the arg list size is 0.
+
 2005-01-14  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/main.c (init_defaults): turn off warp by default.
