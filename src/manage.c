@@ -64,7 +64,16 @@ ungrab_prefix_key (Window w)
 screen_info*
 current_screen ()
 {
-  return &screens[rp_current_screen];
+  int i;
+
+  for (i=0; i<num_screens; i++)
+    {
+      if (screens[i].screen_num == rp_current_screen)
+	return &screens[i];
+    }
+  
+  /* This should never happen. */
+  return &screens[0];
 }
 
 void

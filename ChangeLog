@@ -1,5 +1,11 @@
 2003-04-13  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/main.c (init_screen): print the display string for
+	debugging.
+
+	* src/manage.c (current_screen): search for the current screen
+	using rp_current_screen.
+
 	* src/main.c (main): add switch case for the display command line
 	option.
 	(print_help): add --display option. Add text to demonstrate

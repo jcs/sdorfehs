@@ -2802,7 +2802,7 @@ cmd_tmpwm (int interactive, char *data)
      have it. */
   for (i=0; i<num_screens; i++)
     {
-      XSelectInput(dpy, RootWindow (dpy, i), 0);
+      XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num), 0);
       /* Unmap its key window */
       XUnmapWindow (dpy, screens[i].key_window);
     }
@@ -2843,7 +2843,7 @@ cmd_tmpwm (int interactive, char *data)
   /* Enable the event selection on the root window. */
   for (i=0; i<num_screens; i++)
     {
-      XSelectInput(dpy, RootWindow (dpy, i),
+      XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num),
 		   PropertyChangeMask | ColormapChangeMask
 		   | SubstructureRedirectMask | SubstructureNotifyMask);
       /* Map its key window */

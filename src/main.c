@@ -598,11 +598,10 @@ main (int argc, char *argv[])
   init_defaults ();
   init_window_stuff ();
 
-  /* Initialize the screens */
+  /* Get the number of screens */
   num_screens = ScreenCount (dpy);
-  screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
-  PRINT_DEBUG (("%d screens.\n", num_screens));
 
+  /* make sure the screen specified is valid. */
   if (screen_arg)
     {
       if (screen_num < 0 || screen_num >= num_screens)
@@ -610,12 +609,25 @@ main (int argc, char *argv[])
 	  fprintf (stderr, "%d is an invalid screen for the display\n", screen_num);
 	  exit (EXIT_FAILURE);
 	}
+
+      /* we're only going to use one screen. */
+      num_screens = 1;
     }
 
-  for (i=0; i<num_screens; i++)
+  /* Initialize the screens */
+  screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
+  PRINT_DEBUG (("%d screens.\n", num_screens));
+
+  if (screen_arg)
     {
-      init_screen (&screens[i], i);
-      init_frame_list (&screens[i]);
+      init_screen (&screens[0], screen_num);
+    }
+  else
+    {
+      for (i=0; i<num_screens; i++)
+	{
+	  init_screen (&screens[i], i);
+	}
     }
 
   init_frame_lists ();
@@ -626,7 +638,7 @@ main (int argc, char *argv[])
   if (screen_arg)
     {
       rp_current_screen = screen_num;
-      scanwins (&screens[screen_num]);
+      scanwins (&screens[0]);
     }
   else
     {
@@ -668,8 +680,8 @@ init_screen (screen_info *s, int screen_num)
      there is already a WM running and the X Error handler will catch
      it, terminating ratpoison. */
   XSelectInput(dpy, RootWindow (dpy, screen_num),
-               PropertyChangeMask | ColormapChangeMask
-               | SubstructureRedirectMask | SubstructureNotifyMask );
+	       PropertyChangeMask | ColormapChangeMask
+	       | SubstructureRedirectMask | SubstructureNotifyMask );
   XSync (dpy, False);
 
   /* Create the numset for the frames. */
@@ -686,6 +698,8 @@ init_screen (screen_info *s, int screen_num)
       if (dot)
 	sprintf(dot, ".%i", screen_num);
     }
+
+  PRINT_DEBUG (("%s\n", s->display_string));
 
   s->screen_num = screen_num;
   s->root = RootWindow (dpy, screen_num);
