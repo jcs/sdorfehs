@@ -7,8 +7,8 @@ determines whether windows with maxsize hints are treated like
 transient windows.
 
 ** The frame indicator
-The frame indicator only appears when the current frame is blank and
-there is more than one frame (ie when there are splits).
+The frame indicator never sticks and only appears when there is more
+than one frame (i.e. when there are splits).
 
 ** Transient window handling has changed
 Transient windows now map ontop of the current window.
