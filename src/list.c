@@ -47,7 +47,8 @@ add_to_window_list (screen_info *s, Window w)
   new_window->number = -1;	
   new_window->named = 0;
   new_window->hints = XAllocSizeHints ();
-
+  new_window->colormap = DefaultColormap (dpy, s->screen_num);
+  
   if ((new_window->name = malloc (strlen ("Unnamed") + 1)) == NULL)
     {
       PRINT_ERROR ("Out of memory!\n");
@@ -167,8 +168,7 @@ goto_window_name (char *name)
       return 0;
     }
 
-  rp_current_window = win;
-  set_active_window (rp_current_window);
+  set_active_window (win);
   return 1;
 }
 
@@ -218,6 +218,15 @@ set_active_window (rp_window *rp_w)
   XSetInputFocus (dpy, rp_w->w, 
 		  RevertToPointerRoot, CurrentTime);
   XRaiseWindow (dpy, rp_w->w);
+  
+  /* Swap colormaps */
+  if (rp_current_window != NULL)
+    {
+      XUninstallColormap (dpy, rp_current_window->colormap);
+    }
+  XInstallColormap (dpy, rp_w->colormap);
+
+  rp_current_window = rp_w;
       
   /* Make sure the program bar is always on the top */
   update_window_names (rp_w->scr);
