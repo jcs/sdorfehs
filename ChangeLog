@@ -4,6 +4,7 @@
 	* debian/control: Changed Maintainer, and added an Uploaders field
 	* debian/ratpoison.examples: added the files in contrib/
 	* doc/Makefile.am (EXTRA_DIST): removed ratpoisonrc-mode.el
+	* contrib/Makefile.am (EXTRA_DIST, pkgdata_DATA): added genrpbindigs
 
 2001-12-05  Ryan C Yeske  <rcyeske@sfu.ca>
 
