@@ -125,29 +125,40 @@ initialize_default_keybindings (void)
   add_keybinding (XK_v, ControlMask, "version");
   add_keybinding (XK_w, 0, "windows");
   add_keybinding (XK_w, ControlMask, "windows");
+  add_keybinding (XK_S, 0, "split");
+  add_keybinding (XK_S, ControlMask, "vsplit");
+  add_keybinding (XK_Tab, 0, "focus");
+  add_keybinding (XK_Q, 0, "only");
+  add_keybinding (XK_R, 0, "remove");
 }
 
 user_command user_commands[] = 
-  { {"abort",		cmd_abort,		arg_VOID},
-    {"next", 		cmd_next, 		arg_VOID},
-    {"prev", 		cmd_prev, 		arg_VOID},
-    {"exec", 		cmd_exec, 		arg_STRING},
-    {"select", 		cmd_select,		arg_STRING},
-    {"colon",	 	cmd_colon,		arg_STRING},
-    {"kill", 		cmd_kill, 		arg_VOID},
-    {"delete", 		cmd_delete, 		arg_VOID},
-    {"other", 		cmd_other, 		arg_VOID},
-    {"windows", 	cmd_windows, 		arg_VOID},
-    {"title", 		cmd_rename, 		arg_STRING},
-    {"clock", 		cmd_clock, 		arg_VOID},
-    {"maximize", 	cmd_maximize,		arg_VOID},
-    {"newwm",		cmd_newwm,		arg_STRING},
-    {"generate",	cmd_generate,		arg_STRING}, /* rename to stuff */
-    {"version",		cmd_version,		arg_VOID},
-    {"bind",		cmd_bind,		arg_VOID},
-    {"source",		cmd_source,		arg_STRING},
-    {"escape",          cmd_escape,             arg_STRING},
-    {"echo", 		cmd_echo, 		arg_STRING},
+  { {"abort",		cmd_abort,	arg_VOID},
+    {"next", 		cmd_next, 	arg_VOID},
+    {"prev", 		cmd_prev, 	arg_VOID},
+    {"exec", 		cmd_exec, 	arg_STRING},
+    {"select", 		cmd_select,	arg_STRING},
+    {"colon",	 	cmd_colon,	arg_STRING},
+    {"kill", 		cmd_kill, 	arg_VOID},
+    {"delete", 		cmd_delete, 	arg_VOID},
+    {"other", 		cmd_other, 	arg_VOID},
+    {"windows", 	cmd_windows, 	arg_VOID},
+    {"title", 		cmd_rename, 	arg_STRING},
+    {"clock", 		cmd_clock, 	arg_VOID},
+    {"maximize", 	cmd_maximize,	arg_VOID},
+    {"newwm",		cmd_newwm,	arg_STRING},
+    {"generate",	cmd_generate,	arg_STRING},	/* rename to stuff */
+    {"version",		cmd_version,	arg_VOID},
+    {"bind",		cmd_bind,	arg_VOID},
+    {"source",		cmd_source,	arg_STRING},
+    {"escape",          cmd_escape,     arg_STRING},
+    {"echo", 		cmd_echo, 	arg_STRING},
+    {"split",		cmd_h_split,	arg_VOID},
+    {"hsplit",		cmd_h_split,	arg_VOID},
+    {"vsplit",		cmd_v_split,	arg_VOID},
+    {"focus",		cmd_next_frame,	arg_VOID},
+    {"only",            cmd_only,       arg_VOID},
+    {"remove",          cmd_remove,     arg_VOID},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
@@ -172,8 +183,6 @@ user_command user_commands[] =
     {"shelltitle",	cmd_unimplemented,	arg_VOID},
     {"sleep",		cmd_unimplemented,	arg_VOID},
     {"sorendition",	cmd_unimplemented,	arg_VOID},
-    {"split",		cmd_unimplemented,	arg_VOID},
-    {"focus",		cmd_unimplemented,	arg_VOID},
     {"startup_message",	cmd_unimplemented,	arg_VOID},
     {0,			0,		0} };
 
@@ -351,6 +360,24 @@ cmd_prev (void *data)
 }
 
 void
+cmd_prev_frame (void *data)
+{
+  rp_window *w;
+
+  if (!rp_current_window)
+    message (MESSAGE_NO_MANAGED_WINDOWS);
+  else 
+    {
+      w = find_window_prev_with_frame (rp_current_window);
+
+      if (!w)
+	message (MESSAGE_NO_OTHER_WINDOW);
+      else
+	set_active_window (w);
+    }
+}
+
+void
 cmd_next (void *data)
 {
   rp_window *w;
@@ -360,6 +387,24 @@ cmd_next (void *data)
   else 
     {
       w = find_window_next (rp_current_window);
+
+      if (!w)
+	message (MESSAGE_NO_OTHER_WINDOW);
+      else
+	set_active_window (w);
+    }
+}
+
+void
+cmd_next_frame (void *data)
+{
+  rp_window *w;
+
+  if (!rp_current_window)
+    message (MESSAGE_NO_MANAGED_WINDOWS);
+  else 
+    {
+      w = find_window_next_with_frame (rp_current_window);
 
       if (!w)
 	message (MESSAGE_NO_OTHER_WINDOW);
@@ -760,4 +805,45 @@ void
 cmd_echo (void *data)
 {
   if (data) message ((char *)data);
+}
+
+void
+cmd_h_split (void *data)
+{
+  h_split_window (rp_current_window);
+}
+
+void
+cmd_v_split (void *data)
+{
+  v_split_window (rp_current_window);
+}
+
+void
+cmd_only (void *data)
+{
+  if (!rp_current_window) return;
+
+  remove_all_frames();
+  maximize (rp_current_window);
+}
+
+void
+cmd_remove (void *data)
+{
+  rp_window *win;
+
+  if (!rp_current_window) return;
+
+  remove_frame (rp_current_window);
+
+  win = find_window_next_with_frame (rp_current_window);
+  if (win)
+    {
+      set_active_window (win);
+    }
+  else
+    {
+      set_active_window (find_window_other());
+    }
 }

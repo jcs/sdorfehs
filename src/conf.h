@@ -40,7 +40,7 @@
 
 
 /* The border width ratpoison configures all windows with */
-#define WINDOW_BORDER_WIDTH 0
+#define WINDOW_BORDER_WIDTH 1
 
 /* Pressing a key sends the mouse to the bottom right corner. This
    doesn't work very well yet. */

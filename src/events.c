@@ -76,11 +76,59 @@ unmap_notify (XEvent *ev)
       win->number = -1;
       win->state = STATE_UNMAPPED;
 
+      ignore_badwindow++;
+
+      if (win->frame)
+	{
+	  rp_window *new_window;
+
+	  PRINT_DEBUG ("unmapping framed window.\n");
+
+	  new_window = find_window_for_frame (win->frame);
+	  if (new_window)
+	    {
+	      PRINT_DEBUG ("Found a window to fit the frame.\n");
+
+	      new_window->frame = xmalloc (sizeof (rp_window_frame));
+	      memcpy (new_window->frame, win->frame, sizeof (rp_window_frame));
+	      maximize (new_window);
+	      XRaiseWindow (dpy, new_window->w);
+
+	      if (win == rp_current_window)
+		{
+		  set_active_window (new_window);
+		}
+	    }
+	  else
+	    {
+	      PRINT_DEBUG ("No window to fit the frame.\n");
+
+	      /* We coudn't find a window to occupy the frame, so get
+		 rid of it. */
+	      remove_frame (win);
+	      new_window = find_window_next_with_frame (rp_current_window);
+	      if (new_window)
+		{
+		  set_active_window (new_window);
+		}
+	      else
+		{
+		  set_active_window (find_window_other());
+		}
+	    }
+
+	  free (win->frame);
+	  win->frame = NULL;
+	}
+      else if (rp_current_window == win)
+	{
+	  cmd_other (NULL);
+	}
+
       remove_from_list (win);
       append_to_list (win, rp_unmapped_window_sentinel);
       
       /* Update the state of the actual window */
-      ignore_badwindow = 1;
 
       XRemoveFromSaveSet (dpy, win->w);
       XChangeProperty(dpy, win->w, wm_state, wm_state, 32,
@@ -88,12 +136,7 @@ unmap_notify (XEvent *ev)
 
       XSync(dpy, False);
 
-      ignore_badwindow = 0;
-
-      if (rp_current_window == win)
-	{
-	  cmd_other (NULL);
-	}
+      ignore_badwindow--;
 
       update_window_names (s);
     }
@@ -164,34 +207,29 @@ destroy_window (XDestroyWindowEvent *ev)
 {
   rp_window *win;
 
+  ignore_badwindow++;
+
   win = find_window (ev->window);
 
   if (win)
     {
-      /* Goto the last accessed window. */
-      if (win == rp_current_window) 
+      if (win == rp_current_window)
 	{
-	  PRINT_DEBUG ("Destroying current window.\n");
-	  
-	  unmanage (win);
+	  PRINT_DEBUG ("Destroying the current window.\n");
 
-	  if (rp_mapped_window_sentinel->next == rp_mapped_window_sentinel
-	      && rp_mapped_window_sentinel->prev == rp_mapped_window_sentinel)
-	    {
-	      rp_current_window = NULL;
-	    }
-	  else
-	    {
-	      /* Switch to last viewed window */
-	      set_current_window( find_window_other() );
-	    }
+	  rp_current_window = NULL;
+	  set_active_window (find_window_other ());
+	  unmanage (win);
 	}
       else
 	{
 	  PRINT_DEBUG ("Destroying some other window.\n");
+
 	  unmanage (win);
 	}
     }
+
+  ignore_badwindow--;
 }
 
 void
@@ -373,11 +411,11 @@ key_press (XEvent *ev)
     { 
       if (rp_current_window)
 	{
-	  ignore_badwindow = 1;
+	  ignore_badwindow++;
 	  ev->xkey.window = rp_current_window->w;
 	  XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, ev);
 	  XSync (dpy, False);
-	  ignore_badwindow = 0;
+	  ignore_badwindow--;
 	}
     }
 }

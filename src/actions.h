@@ -52,7 +52,9 @@ void cmd_rename (void *data);
 void cmd_select (void *data);
 void cmd_last (void *data);
 void cmd_next (void *data);
+void cmd_next_frame (void *data);
 void cmd_prev (void *data);
+void cmd_prev_frame (void *data);
 void cmd_windows (void *data);
 void cmd_other (void *data);
 void cmd_clock (void *data);
@@ -63,6 +65,10 @@ void cmd_source (void* data);
 void cmd_maximize (void *data);
 void cmd_escape (void *data);
 void cmd_echo (void *data);
+void cmd_h_split (void *data);
+void cmd_v_split (void *data);
+void cmd_only (void *data);
+void cmd_remove (void *data);
 
 /* void cmd_xterm (void *data); */
 

@@ -22,6 +22,7 @@
 #ifndef _RATPOISON_LIST_H
 #define _RATPOISON_LIST_H 1
 
+void free_window (rp_window *w);
 rp_window *add_to_window_list (screen_info *s, Window w);
 void init_window_list ();
 /* void next_window (); */
@@ -35,10 +36,12 @@ void set_current_window (rp_window *win);
 /* int goto_window_name (char *name); */
 rp_window *find_window_other ();
 rp_window *find_window_by_number (int n);
-rp_window* find_window_name (char *name);
-rp_window* find_window_prev (rp_window *w);
-rp_window* find_window_next (rp_window *w);
-rp_window* find_window_number (int n);
+rp_window *find_window_name (char *name);
+rp_window *find_window_prev (rp_window *w);
+rp_window *find_window_prev_with_frame (rp_window *w);
+rp_window *find_window_next (rp_window *w);
+rp_window *find_window_next_with_frame (rp_window *w);
+rp_window *find_window_number (int n);
 void sort_window_list_by_number ();
 
 void append_to_list (rp_window *win, rp_window *sentinel);

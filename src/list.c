@@ -41,6 +41,19 @@ get_mouse_root_position (rp_window *win, int *mouse_x, int *mouse_y)
   XQueryPointer (dpy, win->scr->root, &root_win, &child_win, &win_x, &win_y, mouse_x, mouse_y, &mask);
 }
 
+void
+free_window (rp_window *w)
+{
+  if (w == NULL) return;
+
+  if (w->frame) free (w->frame);
+  free (w->name);
+  XFree (w->hints);
+  
+  free (w);
+}
+
+
 /* Allocate a new window and add it to the list of managed windows */
 rp_window *
 add_to_window_list (screen_info *s, Window w)
@@ -60,6 +73,7 @@ add_to_window_list (screen_info *s, Window w)
   new_window->colormap = DefaultColormap (dpy, s->screen_num);
   new_window->transient = XGetTransientForHint (dpy, new_window->w, &new_window->transient_for);
   PRINT_DEBUG ("transient %d\n", new_window->transient);
+  new_window->frame = NULL;
 
   get_mouse_root_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
 
@@ -179,51 +193,102 @@ find_window_name (char *name)
   return NULL;
 }
 
-/* return the previous window in the list. Assumes window is in the
+/* Return the previous window in the list. Assumes window is in the
    mapped window list. */
 rp_window*
 find_window_prev (rp_window *w)
 {
-  rp_window *prev;
+  rp_window *cur;
 
   if (!w) return NULL;
 
-  prev = w->prev;
-  
-  if (prev == rp_mapped_window_sentinel) 
+  for (cur = w->prev; 
+       cur != w;
+       cur = cur->prev)
     {
-      prev = rp_mapped_window_sentinel->prev;
-      if (prev == w)
+      if (cur == rp_mapped_window_sentinel) continue;
+
+      if (!cur->frame)
 	{
-	  return NULL;
+	  return cur;
 	}
     }
 
-  return prev;
+  return NULL;
 }
 
-/* return the next window in the list. Assumes window is in the mapped
+/* Return the next window that is contained in a frame. Assumes window
+   is in the mapped window list. */
+rp_window*
+find_window_prev_with_frame (rp_window *w)
+{
+  rp_window *cur;
+
+  if (!w) return NULL;
+
+  for (cur = w->prev; 
+       cur != w;
+       cur = cur->prev)
+    {
+      if (cur == rp_mapped_window_sentinel) continue;
+
+      if (cur->frame)
+	{
+	  return cur;
+	}
+    }
+
+  return NULL;
+}
+
+/* Return the next window in the list. Assumes window is in the mapped
    window list. */
 rp_window*
 find_window_next (rp_window *w)
 {
-  rp_window *next;
+  rp_window *cur;
 
   if (!w) return NULL;
 
-  next = w->next;
-  
-  if (next == rp_mapped_window_sentinel) 
+  for (cur = w->next; 
+       cur != w;
+       cur = cur->next)
     {
-      next = rp_mapped_window_sentinel->next;
-      if (next == w)
+      if (cur == rp_mapped_window_sentinel) continue;
+
+      if (!cur->frame)
 	{
-	  return NULL;
+	  return cur;
 	}
     }
 
-  return next;
+  return NULL;
 }
+
+/* Return the next window that is contained in a frame. Assumes window
+   is in the mapped window list. */
+rp_window*
+find_window_next_with_frame (rp_window *w)
+{
+  rp_window *cur;
+
+  if (!w) return NULL;
+
+  for (cur = w->next; 
+       cur != w;
+       cur = cur->next)
+    {
+      if (cur == rp_mapped_window_sentinel) continue;
+
+      if (cur->frame)
+	{
+	  return cur;
+	}
+    }
+
+  return NULL;
+}
+
 
 rp_window *
 find_window_other ()
@@ -237,7 +302,8 @@ find_window_other ()
        cur = cur->next)
     {
       if (cur->last_access >= last_access 
-	  && cur != rp_current_window)
+	  && cur != rp_current_window
+	  && !cur->frame)
 	{
 	  most_recent = cur;
 	  last_access = cur->last_access;
@@ -352,12 +418,12 @@ save_mouse_position (rp_window *win)
      what we store in mouse_x and mouse_y since they will never be
      used again. */
 
-  ignore_badwindow = 1;
+  ignore_badwindow++;
 
   XQueryPointer (dpy, win->w, &root_win, &child_win, 
 		 &win->mouse_x, &win->mouse_y, &win_x, &win_y, &mask);
 
-  ignore_badwindow = 0;
+  ignore_badwindow--;
 }
 
 void
@@ -368,6 +434,7 @@ set_active_window (rp_window *rp_w)
                                    which window was last accessed.  */
 
   if (rp_w == NULL) return;
+  if (rp_w == rp_current_window) return;
 
   counter++;
   rp_w->last_access = counter;
@@ -385,7 +452,6 @@ set_active_window (rp_window *rp_w)
 
   XSetInputFocus (dpy, rp_w->w, 
 		  RevertToPointerRoot, CurrentTime);
-  XRaiseWindow (dpy, rp_w->w);
   
   /* Swap colormaps */
   if (rp_current_window != NULL)
@@ -394,9 +460,20 @@ set_active_window (rp_window *rp_w)
     }
   XInstallColormap (dpy, rp_w->colormap);
 
+  /* If the new window doesn't have a frame then it inherits the frame
+     of the current window */
+  if (!rp_w->frame && rp_current_window)
+    {
+      rp_w->frame = rp_current_window->frame;
+      rp_current_window->frame = NULL;
+    }
+
   rp_current_window = rp_w;
 
-      
+  /* Make sure the window comes up full screen */
+  maximize (rp_current_window);
+  XRaiseWindow (dpy, rp_w->w);
+
   /* Make sure the program bar is always on the top */
   update_window_names (rp_w->scr);
 }

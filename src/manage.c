@@ -195,16 +195,15 @@ unmanage (rp_window *w)
 {
   return_window_number (w->number);
   remove_from_list (w);
-  XFree (w->hints);
 
-  free (w);
+  free_window (w);
 
 #ifdef AUTO_CLOSE
   if (rp_mapped_window_sentinel->next == rp_mapped_window_sentinel
       && rp_mapped_window_sentinel->prev == rp_mapped_window_sentinel)
     {
       /* If the mapped window list is empty then we have run out of
- 	 managed windows, So kill ratpoison. */
+ 	 managed windows, so kill ratpoison. */
 
       /* FIXME: The unmapped window list may also have to be checked
 	 in the case that the only mapped window in unmapped and
@@ -306,33 +305,45 @@ maximize_transient (rp_window *win)
     {
       maxx = win->width;
       maxy = win->height;
+    }
 
-      /* Make sure we maximize to the nearest Resize Increment specified
-	 by the window */
-      if (win->hints->flags & PResizeInc)
-	{
-	  int amount;
+  /* Make sure we maximize to the nearest Resize Increment specified
+     by the window */
+  if (win->hints->flags & PResizeInc)
+    {
+      int amount;
 
-	  amount = maxx - win->width;
-	  amount -= amount % win->hints->width_inc;
-	  if (amount < 0) amount -= win->hints->width_inc;
-	  PRINT_DEBUG ("amount x: %d\n", amount);
-	  maxx = amount + win->width;
+      amount = maxx - win->width;
+      amount -= amount % win->hints->width_inc;
+      if (amount < 0) amount -= win->hints->width_inc;
+      PRINT_DEBUG ("amount x: %d\n", amount);
+      maxx = amount + win->width;
 
-	  amount = maxy - win->height;
-	  amount -= amount % win->hints->height_inc;
-	  if (amount < 0) amount -= win->hints->height_inc;
-	  PRINT_DEBUG ("amount y: %d\n", amount);
-	  maxy = amount + win->height;
-	}
+      amount = maxy - win->height;
+      amount -= amount % win->hints->height_inc;
+      if (amount < 0) amount -= win->hints->height_inc;
+      PRINT_DEBUG ("amount y: %d\n", amount);
+      maxy = amount + win->height;
     }
 
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
 
-  win->x = PADDING_LEFT - win->width / 2 
-    + (win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT - win->border * 2) / 2;
-  win->y = PADDING_TOP - win->height / 2 
-    + (win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM - win->border * 2) / 2;
+  /* Fit the window inside its frame (if it has one) */
+  if (win->frame)
+    {
+      win->x = win->frame->x - win->width / 2 
+	+ (win->frame->width - win->border * 2) / 2;
+      win->y = win->frame->y - win->height / 2
+	+ (win->frame->height - win->border * 2) / 2;
+    }
+  else
+    {
+      win->x = PADDING_LEFT - win->width / 2 
+	+ (win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT - win->border * 2) / 2;
+      win->y = PADDING_TOP - win->height / 2 
+	+ (win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM - win->border * 2) / 2;
+    }
+
   win->width = maxx;
   win->height = maxy;
 }
@@ -355,10 +366,6 @@ maximize_normal (rp_window *win)
     {
       maxx = win->hints->max_width;
       maxy = win->hints->max_height;
-      
-      /* centre the non-maximized window */
-/*       off_x = ((win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT) - win->hints->max_width) / 2; */
-/*       off_y = ((win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM) - win->hints->max_height) / 2; */
     }
   else
     {
@@ -366,31 +373,50 @@ maximize_normal (rp_window *win)
 	- PADDING_LEFT - PADDING_RIGHT - win->border * 2;
       maxy = win->scr->root_attr.height 
 	- PADDING_TOP - PADDING_BOTTOM - win->border * 2;
+    }
 
-      /* Make sure we maximize to the nearest Resize Increment specified
-	 by the window */
-      if (win->hints->flags & PResizeInc)
-	{
-	  int amount;
+  /* Fit the window inside its frame (if it has one) */
+  if (win->frame)
+    {
+      if (maxx > win->frame->width) maxx = win->frame->width 
+				      - win->border * 2;
+      if (maxy > win->frame->height) maxy = win->frame->height 
+				       - win->border * 2;
+    }
 
-	  amount = maxx - win->width;
-	  amount -= amount % win->hints->width_inc;
-	  if (amount < 0) amount -= win->hints->width_inc;
-	  PRINT_DEBUG ("amount x: %d\n", amount);
-	  maxx = amount + win->width;
+  /* Make sure we maximize to the nearest Resize Increment specified
+     by the window */
+  if (win->hints->flags & PResizeInc)
+    {
+      int amount;
 
-	  amount = maxy - win->height;
-	  amount -= amount % win->hints->height_inc;
-	  if (amount < 0) amount -= win->hints->height_inc;
-	  PRINT_DEBUG ("amount y: %d\n", amount);
-	  maxy = amount + win->height;
-	}
+      amount = maxx - win->width;
+      amount -= amount % win->hints->width_inc;
+      if (amount < 0) amount -= win->hints->width_inc;
+      PRINT_DEBUG ("amount x: %d\n", amount);
+      maxx = amount + win->width;
+
+      amount = maxy - win->height;
+      amount -= amount % win->hints->height_inc;
+      if (amount < 0) amount -= win->hints->height_inc;
+      PRINT_DEBUG ("amount y: %d\n", amount);
+      maxy = amount + win->height;
     }
 
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
 
-  win->x = PADDING_LEFT + off_x;
-  win->y = PADDING_TOP + off_y;
+  /* Fit the window inside its frame (if it has one) */
+  if (win->frame)
+    {
+      win->x = win->frame->x;
+      win->y = win->frame->y;
+    }
+  else
+    {
+      win->x = PADDING_LEFT + off_x;
+      win->y = PADDING_TOP + off_y;
+    }
+
   win->width = maxx;
   win->height = maxy;
 }

@@ -1,6 +1,12 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 0.1.0
+** Split windows
+
+Well, the day is finally here. You can now split windows in
+ratpoison. Although it is currently sub-optimal it is present. Hit
+C-t S to split horizontally and C-t C-S to split vertically. Have fun!
+
 ** new command-line option --command
 
 You can now send ratpoison commands (colon-commands) to ratpoison via

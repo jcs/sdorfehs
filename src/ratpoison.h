@@ -57,6 +57,7 @@ extern XGCValues gv;
 #include "messages.h"
 #include "communications.h"
 #include "sbuf.h"
+#include "split.h"
 
 void clean_up ();
 screen_info *find_screen (Window w);

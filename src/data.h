@@ -35,6 +35,13 @@
 typedef struct rp_window rp_window;
 typedef struct screen_info screen_info;
 typedef struct rp_action rp_action;
+typedef struct rp_window_frame rp_window_frame;
+
+struct rp_window_frame
+{
+  int x, y, width, height;
+};
+
 
 struct rp_window
 {
@@ -61,6 +68,9 @@ struct rp_window
 
   /* Saved mouse position */
   int mouse_x, mouse_y;
+
+  /* Frame for split screen */
+  rp_window_frame *frame;
 
   rp_window *next, *prev;  
 };

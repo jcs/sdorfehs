@@ -1,3 +1,78 @@
+2001-03-31  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/split.h (find_window_for_frame): new function prototype
+	(find_window_for_frame): likewise
+	(find_window_for_frame): likewise
+	(find_window_for_frame): likewise
+	(find_window_for_frame): likewise
+
+	* src/split.c (window_fits_in_frame): new function
+	(find_window_for_frame): likewise
+	(split_window): likewise
+	(v_split_window): likewise
+	(h_split_window): likewise
+	(remove_all_frames): likewise
+	(frame_is_below): likewise
+	(frame_is_above): likewise
+	(frame_is_left): likewise
+	(frame_is_right): likewise
+	(total_frame_area): likewise
+	(num_frames): likewise
+	(frames_overlap): likewise
+	(frame_overlaps): likewise
+	(remove_frame): likewise
+
+	* src/ratpoison.h: includes "split.h"
+
+	* src/manage.c (unmanage): calls free_window
+	(maximize_transient): takes the window's frame into account
+	(maximize_normal): likewise
+
+	* src/list.h (find_window_prev_with_frame): new function prototype
+	(find_window_next_with_frame): likewise
+	(free_window): likewise
+
+	* src/list.c (free_window): new function
+	(add_to_window_list): initialize new window's frame to NULL.
+	(find_window_prev): skips windows with frames
+	(find_window_next): likewise
+	(find_window_other): likewise
+	(find_window_prev_with_frame): new function
+	(find_window_next_with_frame): new function
+	(set_active_window): returns if the specified window is already
+	the current window.
+	(set_active_window): If the new window has no frame it inherits
+	the current window's frame.
+	(set_active_window): maximize and raise the newly active window.
+
+	* src/events.c (unmap_notify): handles window frames.
+	(destroy_window): simplified
+
+	* src/data.h (struct rp_window_frame): new struct
+	(struct rp_window): add frame variable
+
+	* src/conf.h (WINDOW_BORDER_WIDTH): set to 1
+
+	* src/actions.h (cmd_next_frame): new function prototype
+	(cmd_prev_frame): likewise
+	(cmd_h_split): likewise
+	(cmd_v_split): likewise
+	(cmd_only): likewise
+	(cmd_remove): likewise
+
+	* src/actions.c (initialize_default_keybindings): new default
+	bindings for "split", "vsplit", "focus", "only", "remove"
+	(user_commands): new user commands "split", "vsplit", "focus",
+	"only", "remove"
+	(cmd_prev_frame): new function
+	(cmd_next_frame): likewise
+	(cmd_h_split): likewise
+	(cmd_v_split): likewise
+	(cmd_only): likewise
+	(cmd_remove): likewise
+
+	* src/Makefile.am (ratpoison_SOURCES): new files split.c split.h
+
 2001-03-31  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* doc/ipaq.ratpoisonrc: Use keysym names.
