@@ -32,6 +32,7 @@ rp_action key_actions[] = { {KEY_PREFIX, 0, 0, generate_prefix},
 			    {XK_n, -1, 0, next_window},
 			    {XK_space, -1, 0, next_window},
 			    {XK_colon, 0, 0, execute_command},
+			    {XK_exclam, 0, 0, execute_command},
 			    {KEY_PREFIX, -1, 0, last_window},
 			    {XK_w, -1, 0, toggle_bar},
 			    {XK_K, 0, 0, kill_window},
@@ -40,16 +41,16 @@ rp_action key_actions[] = { {KEY_PREFIX, 0, 0, generate_prefix},
 			    {XK_A, -1, 0, rename_current_window},
 			    {XK_a, -1, 0, show_clock},
 			    {XK_g, ControlMask, 0, abort_keypress},
-			    {XK_0, -1, 0, goto_window_0},
-			    {XK_1, -1, 0, goto_window_1},
-			    {XK_2, -1, 0, goto_window_2},
-			    {XK_3, -1, 0, goto_window_3},
-			    {XK_4, -1, 0, goto_window_4},
-			    {XK_5, -1, 0, goto_window_5},
-			    {XK_6, -1, 0, goto_window_6},
-			    {XK_7, -1, 0, goto_window_7},
-			    {XK_8, -1, 0, goto_window_8},
-			    {XK_9, -1, 0, goto_window_9},
+			    {XK_0, -1, (void*)0, goto_window_number},
+			    {XK_1, -1, (void*)1, goto_window_number},
+			    {XK_2, -1, (void*)2, goto_window_number},
+			    {XK_3, -1, (void*)3, goto_window_number},
+			    {XK_4, -1, (void*)4, goto_window_number},
+			    {XK_5, -1, (void*)5, goto_window_number},
+			    {XK_6, -1, (void*)6, goto_window_number},
+			    {XK_7, -1, (void*)7, goto_window_number},
+			    {XK_8, -1, (void*)8, goto_window_number},
+			    {XK_9, -1, (void*)9, goto_window_number},
 			    {XK_m, -1, 0, maximize},
 			    { 0, 0, 0, 0 } };
 
@@ -63,13 +64,20 @@ prev_window (void *data)
     {
       new_win = new_win->prev;
       if (new_win == NULL) 
-	{
-	  new_win = rp_window_tail;
-	}
+	new_win = rp_window_tail;
       if (new_win->state == STATE_UNMAPPED) 
 	prev_window (new_win);
       else
-	set_active_window (new_win);
+	{
+	  if (rp_current_window == new_win)
+	    display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW);
+	  else
+	    set_active_window (new_win);
+	}
+    }
+  else
+    {
+      display_msg_in_bar (&screens[0], MESSAGE_NO_MANAGED_WINDOWS);      
     }
 }
 
@@ -84,13 +92,20 @@ next_window (void *data)
     {
       new_win = new_win->next;
       if (new_win == NULL) 
-	{
-	  new_win = rp_window_head;
-	}
+	new_win = rp_window_head;
       if (new_win->state == STATE_UNMAPPED) 
 	next_window (new_win);
       else
-	set_active_window (new_win);
+	{
+	  if (rp_current_window == new_win)
+	    display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW);
+	  else
+	    set_active_window (new_win);
+	}
+    }
+  else
+    {
+      display_msg_in_bar (&screens[0], MESSAGE_NO_MANAGED_WINDOWS);
     }
 }
 
@@ -100,11 +115,13 @@ last_window (void *data)
 {
   rp_window *oldwin = rp_current_window;
 
+  /* what happens if find_last_accessed_window() returns something
+     funky? (rcy) */
   set_active_window (find_last_accessed_window ());
 
   if (rp_current_window == oldwin)
     {
-      display_msg_in_bar (&screens[0], "No other window.");
+      display_msg_in_bar (&screens[0], MESSAGE_NO_OTHER_WINDOW);
     }
 }
 
@@ -116,7 +133,7 @@ goto_win_by_name (void *data)
   
   if (rp_current_window == NULL) return;
 
-  get_input (rp_current_window->scr, "Window: ", winname, 100);
+  get_input (rp_current_window->scr, MESSAGE_PROMPT_GOTO_WINDOW_NAME, winname, 100);
   PRINT_DEBUG ("user entered: %s\n", winname);
 
   goto_window_name (winname);
@@ -129,7 +146,7 @@ rename_current_window (void *data)
   
   if (rp_current_window == NULL) return;
 
-  get_input (rp_current_window->scr, "Name: ", winname, 100);
+  get_input (rp_current_window->scr, MESSAGE_PROMPT_NEW_WINDOW_NAME, winname, 100);
   PRINT_DEBUG ("user entered: %s\n", winname);
 
   if (*winname)
@@ -141,7 +158,9 @@ rename_current_window (void *data)
 	  PRINT_ERROR ("Out of memory\n");
 	  exit (EXIT_FAILURE);
 	}
+
       strcpy (rp_current_window->name, winname);
+
       rp_current_window->named = 1;
   
       /* Update the program bar. */
@@ -189,8 +208,8 @@ execute_command (void *data)
   else
     {
       /* FIXME: We can always assume there is 1 screen, but which one
-	 is the active one? Need to test on multi-screen x-servers. */
-      get_input (&screens[0], "Command: ", cmd, 100);
+	 is the active one? Need to test on multi-screen x-servers. */  
+    get_input (&screens[0], "Command: ", cmd, 100);
     }
 
   PRINT_DEBUG ("user entered: %s\n", cmd);
@@ -211,7 +230,7 @@ spawn(void *data)
       putenv(DisplayString(dpy));
       execlp(prog, prog, 0);
 
-      PRINT_ERROR ("exec %s ", prog);
+      PRINT_ERROR ("exec %s ", prog); 
       perror(" failed");
 
       exit(EXIT_FAILURE);
@@ -299,77 +318,18 @@ goto_window_number (int n)
   set_active_window (win);
 }
 
-void
-goto_window_0 (void *data)
-{
-  goto_window_number (0);
-}
-
-void
-goto_window_1 (void *data)
-{
-  goto_window_number (1);
-}
-
-void
-goto_window_2 (void *data)
-{
-  goto_window_number (2);
-}
-
-void
-goto_window_3 (void *data)
-{
-  goto_window_number (3);
-}
-
-void
-goto_window_4 (void *data)
-{
-  goto_window_number (4);
-}
-
-void
-goto_window_5 (void *data)
-{
-  goto_window_number (5);
-}
-
-void
-goto_window_6 (void *data)
-{
-  goto_window_number (6);
-}
-
-void
-goto_window_7 (void *data)
-{
-  goto_window_number (7);
-}
-
-void
-goto_window_8 (void *data)
-{
-  goto_window_number (8);
-}
-
-void
-goto_window_9 (void *data)
-{
-  goto_window_number (9);
-}
-
 /* Toggle the display of the program bar */
 void
 toggle_bar (void *data)
 {
   screen_info *s;
 
-  if (rp_current_window) 
-    {
-      s = rp_current_window->scr;
-      if (!hide_bar (s)) show_bar (s);
-    }
+  if (rp_current_window)
+    s = rp_current_window->scr;
+  else
+    s = &screens[0];
+
+  if (!hide_bar (s)) show_bar (s);
 }
 
 
@@ -447,6 +407,10 @@ void
 maximize (void *data)
 {
   int maxx, maxy;
+
+  int off_x = 0;
+  int off_y = 0;
+
   rp_window *win = (rp_window *)data;
 
   if (!win) win = rp_current_window;
@@ -464,6 +428,10 @@ maximize (void *data)
     {
       maxx = win->hints->max_width;
       maxy = win->hints->max_height;
+      
+      /* centre the non-maximized window */
+/*       off_x = ((win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT) - win->hints->max_width) / 2; */
+/*       off_y = ((win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM) - win->hints->max_height) / 2; */
     }
   else
     {
@@ -490,6 +458,6 @@ maximize (void *data)
 
   PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
 
-  XMoveResizeWindow (dpy, win->w, PADDING_LEFT, PADDING_TOP, maxx, maxy);
+  XMoveResizeWindow (dpy, win->w, PADDING_LEFT + off_x, PADDING_TOP + off_y, maxx, maxy);
   XSync (dpy, False);
 }

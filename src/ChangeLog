@@ -1,3 +1,27 @@
+2001-02-10  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.c (prev_window): display correct message when there is
+	no other window or there are no windows at all.
+	(next_window): display correct message when there is no other
+	window or there are no windows at all.
+	(key_actions): all number keys call goto_window_number with an
+	argument instead of a dedicated function.
+	(key_actions): XK_exclam now runs execute_command
+
+	* actions.c: replaced all user message strings with #define'd
+	messages.
+
+	* actions.h (goto_window): removed
+	(goto_window_0): removed
+	(goto_window_1): removed
+	(goto_window_2): removed
+	(goto_window_3): removed
+	(goto_window_4): removed
+	(goto_window_5): removed
+	(goto_window_6): removed
+	(goto_window_7): removed
+	(goto_window_8): removed
+
 2001-02-10  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* communications.c (send_restart, send_kill): Added
