@@ -86,7 +86,7 @@ unmap_notify (XEvent *ev)
 
       if (rp_current_window == win)
 	{
-	  last_window (NULL);
+	  cmd_other (NULL);
 	}
 
       update_window_names (s);
@@ -167,7 +167,7 @@ destroy_window (XDestroyWindowEvent *ev)
 
 	  /* Switch to last viewed window */
 	  ignore_badwindow = 1;
-	  last_window (NULL);
+	  cmd_other (NULL);
 	  ignore_badwindow = 0;
 	}
       else
@@ -231,7 +231,7 @@ configure_request (XConfigureRequestEvent *e)
 	    }
 	  else if (e->detail == Below && win == rp_current_window) 
 	    {
-	      last_window (NULL);
+	      cmd_other (NULL);
 	    }
 	}
 
@@ -333,7 +333,7 @@ handle_key (screen_info *s)
 
   /* No key match, notify user. */
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
-  message (msg, 0, 0);
+  message (msg);
 
   free (msg);
 }
