@@ -1,8 +1,9 @@
 This is ratpoison.info, produced by makeinfo version 4.0 from
 ratpoison.texi.
 
+INFO-DIR-SECTION X11
 START-INFO-DIR-ENTRY
-* ratpoison: (ratpoison).                     A rat-free Window Manager.
+* ratpoison: (ratpoison).       Say good-bye to the rodent
 END-INFO-DIR-ENTRY
 
    This is the ratpoison user manual.
@@ -133,9 +134,9 @@ do:
 
 
 Tag Table:
-Node: Top1119
-Node: About1394
-Node: Contacting2112
-Node: Using ratpoison2623
+Node: Top1126
+Node: About1401
+Node: Contacting2119
+Node: Using ratpoison2630
 
 End Tag Table
