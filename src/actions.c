@@ -440,8 +440,8 @@ initialize_default_keybindings (void)
   add_keybinding (XK_r, RP_CONTROL_MASK, "resize", map);
   add_keybinding (XK_question, 0, "help " ROOT_KEYMAP, map);
 
-  add_alias ("unbind", "definekey default");
-  add_alias ("bind", "definekey default");
+  add_alias ("unbind", "definekey " ROOT_KEYMAP);
+  add_alias ("bind", "definekey " ROOT_KEYMAP);
 }
 
 void

@@ -1,3 +1,8 @@
+2003-09-04  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (initialize_default_keybindings): use ROOT_KEYMAP
+	in the bind and unbind aliases.
+
 2003-09-02  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/main.c (show_welcome_message): search the root keymap for
