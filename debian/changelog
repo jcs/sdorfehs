@@ -1,3 +1,26 @@
+ratpoison (1.0.0-1) unstable; urgency=medium
+
+  * New upstream release!
+      + Contains a fixed ratpoison.texi (Closes: #107939)
+      + Correctly maximises windows (Closes: #79073)
+
+ -- Gergely Nagy <algernon@debian.org>  Thu,  6 Sep 2001 16:41:41 +0200
+
+ratpoison (0.2.0.cvs.20010806-1) unstable; urgency=low
+
+  * CVS snapshot release as of 2001-08-06.
+  * Bumped Standards-Version to 3.5.6
+  * Changed maintainer e-mail address
+
+ -- Gergely Nagy <algernon@debian.org>  Mon,  6 Aug 2001 13:36:57 +0200
+
+ratpoison (0.1.1-3) unstable; urgency=low
+
+  * Do not try to send C-t to the underlying window if there
+  is none (Closes: #101625)
+
+ -- Gergely Nagy <8@free.bsd.hu>  Wed, 20 Jun 2001 17:02:21 +0200
+
 ratpoison (0.1.1-2) unstable; urgency=low
 
   * Build-Depend on x-terminal-emulator. (Closes: Bug#89272)
@@ -35,8 +58,3 @@ ratpoison (0.0.5-1) unstable; urgency=low
   * Initial Release.
 
  -- Gergely Nagy <8@free.bsd.hu>  Mon,  4 Dec 2000 21:52:54 +0100
-
-Local variables:
-mode: debian-changelog
-add-log-mailing-address "8@free.bsd.hu"
-End:
