@@ -113,6 +113,25 @@ update_window_name (rp_window *win)
   return 1;
 }
 
+/* Send an artificial configure event to the window. */ 
+void
+send_configure (rp_window *win)
+{
+  XConfigureEvent ce;
+
+  ce.type = ConfigureNotify;
+  ce.event = win->w;
+  ce.window = win->w;
+  ce.x = PADDING_LEFT;
+  ce.y = PADDING_TOP;
+  ce.width = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
+  ce.height = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
+  ce.border_width = 0;      
+  ce.above = None;
+  ce.override_redirect = 0;
+
+  XSendEvent (dpy, win->w, False, StructureNotifyMask, (XEvent*)&ce);
+}
 
 void
 manage (rp_window *win, screen_info *s)
@@ -121,14 +140,15 @@ manage (rp_window *win, screen_info *s)
 
   /* We successfully got the name, which means we can start managing! */
   XMapWindow (dpy, win->w);
-  XMoveResizeWindow (dpy, win->w, 
-		     PADDING_LEFT, 
-		     PADDING_TOP, 
-		     s->root_attr.width - PADDING_LEFT - PADDING_RIGHT, 
-		     s->root_attr.height - PADDING_TOP - PADDING_BOTTOM);
   XSelectInput (dpy, win->w, PropertyChangeMask);
   XAddToSaveSet(dpy, win->w);
   grab_prefix_key (win->w);
+/*   XMoveResizeWindow (dpy, win->w,  */
+/* 		     PADDING_LEFT,  */
+/* 		     PADDING_TOP,  */
+/* 		     s->root_attr.width - PADDING_LEFT - PADDING_RIGHT,  */
+/* 		     s->root_attr.height - PADDING_TOP - PADDING_BOTTOM); */
+/*   send_configure (win); */
 
   win->state = STATE_MAPPED;
   win->number = get_unique_window_number ();

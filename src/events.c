@@ -164,34 +164,49 @@ destroy_window (XDestroyWindowEvent *ev)
 }
 
 void
-configure_request (XConfigureRequestEvent *e)
+configure_notify (XConfigureEvent *e)
 {
-  XWindowChanges wc;
-  XConfigureEvent ce;
   rp_window *win;
 
   win = find_window (e->window);
+  if (win)
+    {
+      PRINT_DEBUG ("'%s' window notify: %d %d %d %d %d\n", win->name,
+		   e->x, e->y, e->width, e->height, e->border_width);
+
+      /* Once we get the notify that everything went through, try
+	 maximizing. Netscape doesn't seem to like it here. */
+/*       maximize (win); */
+    }
+}
+
+void
+configure_request (XConfigureRequestEvent *e)
+{
+/*   XWindowChanges wc; */
+  rp_window *win;
+  int need_move = 0;
+  int need_resize = 0;
+
+  win = find_window (e->window);
+
+/*   wc.x = PADDING_LEFT; */
+/*   wc.y = PADDING_TOP; */
+/*   wc.width = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT; */
+/*   wc.height = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM; */
+/*   wc.border_width = 0; */
 
   if (win)
     {
-      PRINT_DEBUG ("window req: %d %d %d %d %d\n", e->x, e->y, e->width, e->height, e->border_width);
+      PRINT_DEBUG ("'%s' window req: %d %d %d %d %d\n", win->name,
+		   e->x, e->y, e->width, e->height, e->border_width);
 
-      wc.x = PADDING_LEFT;
-      wc.y = PADDING_TOP;
-      wc.width = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
-      wc.height = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
-      wc.border_width = 0;
-
-      ce.type = ConfigureNotify;
-      ce.event = e->window;
-      ce.window = e->window;
-      ce.x = PADDING_LEFT;
-      ce.y = PADDING_TOP;
-      ce.width = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
-      ce.height = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
-      ce.border_width = 0;      
-      ce.above = None;
-      ce.override_redirect = 0;
+      /* Updated our window struct */
+      win->x = e->x;
+      win->y = e->y;
+      win->width = e->width;
+      win->height = e->height;
+      win->border = e->border_width;
 
       if (e->value_mask & CWStackMode && win->state == STATE_MAPPED) 
 	{
@@ -206,10 +221,27 @@ configure_request (XConfigureRequestEvent *e)
 	    }
 	}
 
-      XSendEvent(dpy, win->w, False, StructureNotifyMask, (XEvent*)&ce);
-      XConfigureWindow (dpy, win->w, 
-			CWX | CWY | CWWidth | CWHeight | CWBorderWidth,
-			&wc);
+      if ((e->value_mask & CWX) || (e->value_mask & CWY))
+	{
+	  XMoveWindow (dpy, win->w, e->x, e->y);
+	  need_move = 1;
+	}
+      if ((e->value_mask & CWWidth) || (e->value_mask & CWHeight))
+	{
+	  XResizeWindow (dpy, win->w, e->width, e->height);
+	  need_resize = 1;
+	}
+
+      if (need_move && !need_resize)
+	{
+	  send_configure (win);
+	}
+
+      maximize (win);
+
+/*       XConfigureWindow (dpy, win->w,  */
+/* 			CWX | CWY | CWWidth | CWHeight | CWBorderWidth, */
+/* 			&wc); */
     }
   else
     {
@@ -418,6 +450,7 @@ delegate_event (XEvent *ev)
       break;
     case ConfigureNotify:
       PRINT_DEBUG ("ConfigureNotify\n");
+      configure_notify (&ev->xconfigure);
       break;
     case MapNotify:
       PRINT_DEBUG ("MapNotify\n");

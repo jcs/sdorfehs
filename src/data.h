@@ -42,6 +42,10 @@ struct rp_window
   int state;
   int last_access;		
   int named;
+  
+  /* Dimensions */
+  int x, y, width, height, border;
+
   rp_window *next, *prev;  
 };
 

@@ -31,6 +31,7 @@ rp_action key_actions[] = { {KEY_PREFIX,	0,		0,		generate_prefix},
 			    {XK_7,		-1,		0,		goto_window_7},
 			    {XK_8,		-1,		0,		goto_window_8},
 			    {XK_9,		-1,		0,		goto_window_9},
+			    {XK_m,		-1,		0,		maximize},
 			    { 0,		0,		0,		0 } };
 
 void
@@ -326,4 +327,21 @@ generate_prefix (void *data)
   ev.xkey.state = MODIFIER_PREFIX;
   XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev);
   XSync (dpy, False);
+}
+
+/* Maximize the current window if data = 0, otherwise assume it is a
+   pointer to a window that should be maximized */
+void
+maximize (void *data)
+{
+  rp_window *win = (rp_window *)data;
+
+  if (!win) win = rp_current_window;
+  if (!win) return;
+
+  XMoveResizeWindow (dpy, win->w,
+		     PADDING_LEFT,
+		     PADDING_TOP,
+		     win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT,
+		     win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM);
 }

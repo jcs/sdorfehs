@@ -28,4 +28,5 @@ void manage (rp_window *w, screen_info *s);
 void unmanage (rp_window *w);
 int update_window_name (rp_window *win);
 void rename_current_window ();
+void send_configure (rp_window *win);
 #endif /* _MANAGE_H */

@@ -1,5 +1,18 @@
 2000-12-09  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* data.h (struct rp_window): added x, y, width, height, border;
+
+	* events.c (configure_request): Now honours request, but then
+	maximizes it afterwards.
+	(configure_request): updates the rp_window's geometry fields
+
+	* manage.c (manage): commented out XMoveResizeWindow call
+	(send_configure): added
+
+	* actions.h (maximize): added prototype
+
+	* actions.c (maximize): added
+
 	* input.c (cook_keycode): properly handle LockMask
 	(cook_keycode): updated comments
 

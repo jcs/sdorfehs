@@ -25,5 +25,6 @@ void last_window (void *data);
 void next_window (void *data);
 void prev_window (void *data);
 void toggle_bar (void *data);
+void maximize (void *data);
 
 extern rp_action key_actions[];
