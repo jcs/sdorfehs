@@ -1,5 +1,12 @@
 2001-04-06  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/split.c (maximize_frame): new function
+	(create_initial_frame): calls maximize_frame to fill in the
+	initial frame's fields.
+	(num_frames): comment out
+	(remove_frame): remove special case when there is only 1 frame
+	left.
+
 	* src/split.h (h_split_frame): renamed frome h_split_window
 	(v_split_frame): renamed frome v_split_window
 	(split_frame): renamed frome split_window

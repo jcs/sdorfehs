@@ -33,27 +33,33 @@ delete_frame_from_list (rp_window_frame *frame)
   frame->prev->next = frame->next;
 }
 
+/* Make the frame occupy the entire screen */ 
+static void
+maximize_frame (rp_window_frame *frame)
+{
+  screen_info *s;
+  s = current_screen();
+
+  frame->x = PADDING_LEFT;
+  frame->y = PADDING_TOP;
+
+  /* FIXME: what about multiple screens? */
+  frame->width = DisplayWidth (dpy, 0) - PADDING_RIGHT - PADDING_LEFT;
+  frame->height = DisplayHeight (dpy, 0) - PADDING_BOTTOM - PADDING_TOP;
+}
+
 /* Create a full screen frame */
 static void
 create_initial_frame ()
 {
-  screen_info *s;
-
-  s = current_screen();
   rp_current_frame = xmalloc (sizeof (rp_window_frame));
-
-  rp_current_frame = xmalloc (sizeof (rp_window_frame));
-  rp_current_frame->x = PADDING_LEFT;
-  rp_current_frame->y = PADDING_TOP;
-
-  /* FIXME: what about multiple screens? */
-  rp_current_frame->width = DisplayWidth (dpy, 0) - PADDING_RIGHT - PADDING_LEFT;
-  rp_current_frame->height = DisplayHeight (dpy, 0) - PADDING_BOTTOM - PADDING_TOP;
 
   rp_window_frame_sentinel->next = rp_current_frame;
   rp_window_frame_sentinel->prev = rp_current_frame;
   rp_current_frame->next = rp_window_frame_sentinel;
   rp_current_frame->prev = rp_window_frame_sentinel;
+
+  maximize_frame (rp_current_frame);
   
   rp_current_frame->win = NULL;
 }
@@ -322,21 +328,21 @@ total_frame_area ()
   return area;
 }
 
-static int
-num_frames ()
-{
-  int count = 0;
-  rp_window_frame *cur;
+/* static int */
+/* num_frames () */
+/* { */
+/*   int count = 0; */
+/*   rp_window_frame *cur; */
 
-  for (cur = rp_window_frame_sentinel->next; 
-       cur != rp_window_frame_sentinel; 
-       cur = cur->next)
-    {
-      count++;
-    }
+/*   for (cur = rp_window_frame_sentinel->next;  */
+/*        cur != rp_window_frame_sentinel;  */
+/*        cur = cur->next) */
+/*     { */
+/*       count++; */
+/*     } */
 
-  return count;
-}
+/*   return count; */
+/* } */
 
 /* Return 1 if frames f1 and f2 overlap */
 static int
@@ -382,15 +388,6 @@ remove_frame (rp_window_frame *frame)
   PRINT_DEBUG ("Total Area: %d\n", area);
 
   delete_frame_from_list (frame);
-
-  /* If there is 1 frame then we have no split screen, so get rid
-     of the remaining window frame. */
-  if (num_frames() <= 1)
-    {
-      remove_all_splits ();
-      free (frame);
-      return;
-    }
 
   for (cur = rp_window_frame_sentinel->next; 
        cur != rp_window_frame_sentinel; 
@@ -467,7 +464,7 @@ remove_frame (rp_window_frame *frame)
 	  memcpy (cur, &tmp_frame, sizeof (rp_window_frame));
 	}
     }
-  
+ 
   free (frame);
 }
 
