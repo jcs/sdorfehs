@@ -85,7 +85,7 @@ static user_command user_commands[] =
     /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
-    {"defbarloc",		cmd_defbarloc, 		arg_STRING},
+    {"defbargravity",		cmd_defbargravity,	arg_STRING},
     {"msgwait",			cmd_msgwait,	 	arg_STRING},
     {"defborder", 		cmd_defborder, 		arg_STRING},
     {"deffont", 		cmd_deffont, 		arg_STRING},
@@ -840,6 +840,8 @@ cmd_version (int interactive, void *data)
 char *
 command (int interactive, char *data)
 {
+  /* This static counter is used to exit from recursive alias calls. */
+  static int alias_recursive_depth = 0;
   char *result = NULL;
   char *cmd, *rest;
   char *input;
@@ -894,7 +896,12 @@ command (int interactive, char *data)
 	  if (rest != NULL)
 	    sbuf_printf_concat (s, " %s", rest);
 
-	  result = command (interactive, sbuf_get (s));
+	  alias_recursive_depth++;
+	  if (alias_recursive_depth >= MAX_ALIAS_RECURSIVE_DEPTH)
+	    message (" command: alias recursion has exceeded maximum depth ");
+	  else
+	    result = command (interactive, sbuf_get (s));
+	  alias_recursive_depth--;
 
 	  sbuf_free (s);
 	  goto done;
@@ -1695,37 +1702,27 @@ cmd_msgwait (int interactive, void *data)
 }
 
 char *
-cmd_defbarloc (int interactive, void *data)
+cmd_defbargravity (int interactive, void *data)
 {
-  int loc;
+  int gravity;
 
   if (data == NULL && !interactive)
     return xstrdup (wingravity_to_string (defaults.bar_location));
 
   if (data == NULL)
     {
-      message (" defbarloc: One argument required ");
+      message (" defbargravity: One argument required ");
       return NULL;
     }
 
-  if ((loc = parse_wingravity (data)) < 0)
+  if ((gravity = parse_wingravity (data)) < 0)
     {
-      message (" defbarloc: Bad location ");
+      message (" defbargravity: Bad location ");
       return NULL;
     }
-
-  switch (loc)
+  else
     {
-    case NorthWestGravity:
-    case NorthEastGravity:
-    case SouthWestGravity:
-    case SouthEastGravity:
-      defaults.bar_location = loc;
-      break;
-
-    default:
-      message (" defbarloc: Bad location ");
-      break;
+      defaults.bar_location = gravity;
     }
 
   return NULL;

@@ -82,21 +82,57 @@ show_bar (screen_info *s)
 int
 bar_x (screen_info *s, int width)
 {
-  if (defaults.bar_location == SouthEastGravity
-      || defaults.bar_location == NorthEastGravity)
-    return s->root_attr.width - width - defaults.bar_border_width * 2;
-  else
-    return 0;
+  int x = 0;
+
+  switch (defaults.bar_location)
+    {
+    case NorthWestGravity:
+    case WestGravity:
+    case SouthWestGravity:
+      x = 0;
+      break;
+    case NorthGravity:
+    case CenterGravity:
+    case SouthGravity:
+      x = (s->root_attr.width - width - defaults.bar_border_width * 2) / 2;
+      break;
+    case NorthEastGravity:
+    case EastGravity:
+    case SouthEastGravity:
+      x = s->root_attr.width - width - defaults.bar_border_width * 2;
+      break;
+    }
+
+  return x;
 }
 
 int
 bar_y (screen_info *s)
 {
-  if (defaults.bar_location == NorthWestGravity
-      || defaults.bar_location == NorthEastGravity ) 
-    return 0;
-  else
-    return s->root_attr.height - (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2) - defaults.bar_border_width * 2;
+  int y = 0;
+
+  switch (defaults.bar_location)
+    {
+    case NorthEastGravity:
+    case NorthGravity:
+    case NorthWestGravity:
+      y = 0;
+      break;
+    case EastGravity:
+    case CenterGravity:
+    case WestGravity:
+      y = (s->root_attr.height - (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2) 
+	   - defaults.bar_border_width * 2) / 2;
+      break;
+    case SouthEastGravity:
+    case SouthGravity:
+    case SouthWestGravity:
+      y = (s->root_attr.height - (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2)
+	   - defaults.bar_border_width * 2);
+      break;
+    }
+
+  return y;
 }
 
 void

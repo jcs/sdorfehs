@@ -47,6 +47,10 @@
    (don't hide the windows underneath, and center them) */
 #define MAXSIZE_WINDOWS_ARE_TRANSIENTS
 
+/* An alias command could recursively call inself infinitely. This
+   stops that behavior. */
+#define MAX_ALIAS_RECURSIVE_DEPTH 16
+
 /* Pressing a key sends the mouse to the bottom right corner. This
    doesn't work very well yet. */
 /* #define HIDE_MOUSE  */

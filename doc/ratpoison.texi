@@ -380,10 +380,8 @@ Run a ratpoison command.
 @item curframe
 Indicate which frame is the current frame.
 
-@item defbarloc @var{loc}
-Set the message bar location. @var{loc} can be one of
-@samp{northeast}, @samp{northwest}, @samp{southeast},
-@samp{southwest}, or their abbreviations.
+@item defbargravity @var{g}
+Set the default alignment for the message bar. See the @command{gravity} command.
 
 When called non-interactively with no arguments, the current setting is
 returned.

@@ -80,7 +80,7 @@ char * cmd_defwingravity (int interactive, void *data);
 char * cmd_deftransgravity (int interactive, void *data);
 char * cmd_defmaxsizegravity (int interactive, void *data);
 char * cmd_msgwait (int interactive, void *data);
-char * cmd_defbarloc (int interactive, void *data);
+char * cmd_defbargravity (int interactive, void *data);
 char * cmd_deffont (int interactive, void *data);
 char * cmd_defpadding (int interactive, void *data);
 char * cmd_defborder (int interactive, void *data);

@@ -1,10 +1,11 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** defbarloc changed to defbargravity
+
 ** defbarloc
 This command take a gravity argument just like the wingravity
-commands. Only north east, north west, south east, and south west
-locations are accepted.
+commands.
 
 ** new command defbarborder
 This command allows you to customize the border width of ratpoison's

@@ -1,3 +1,16 @@
+2002-02-01  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (command): bail out if alias recursion gets too deep.
+
+	* src/conf.h (MAX_ALIAS_RECURSIVE_DEPTH): new define
+
+	* src/bar.c (bar_x): update to work with all X11 gravity values.
+	(bar_y): likewise
+
+	* src/actions.c (cmd_defbargravity): Rename from
+	cmd_defbarloc. Dependant code updated.
+	(cmd_defbargravity): accept all gravity arguments.
+
 2002-01-26  shawn  <sabetts@vcn.bc.ca>
 
 	* configure.in: check for the vsnprintf function and stdarg.h
