@@ -1,3 +1,11 @@
+ratpoison (1.0.0.cvs.20020117-1) unstable; urgency=low
+
+  * CVS snapshot release on 2002-01-17:
+    + Documentation about `colon' corrected (Closes: #115158)
+    + BadWindow misbehaviour fixed (Closes: #123942, #123379, #128563)
+
+ -- Gergely Nagy <algernon@debian.org>  Thu, 17 Jan 2002 21:13:03 +0100
+
 ratpoison (1.0.0.cvs.20011208-1) unstable; urgency=low
 
   * CVS snapshot release on 2001-12-08
