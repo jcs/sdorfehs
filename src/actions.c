@@ -159,6 +159,7 @@ user_command user_commands[] =
     {"focus",		cmd_next_frame,	arg_VOID},
     {"only",            cmd_only,       arg_VOID},
     {"remove",          cmd_remove,     arg_VOID},
+    {"banish",          cmd_banish,     arg_VOID},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
@@ -846,4 +847,15 @@ cmd_remove (void *data)
     {
       set_active_window (find_window_other());
     }
+}
+
+/* banish the rat pointer */
+void
+cmd_banish (void *data)
+{
+  screen_info *s;
+
+  s = current_screen ();
+
+  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width - 2, s->root_attr.height - 2); 
 }

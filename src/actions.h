@@ -69,6 +69,7 @@ void cmd_h_split (void *data);
 void cmd_v_split (void *data);
 void cmd_only (void *data);
 void cmd_remove (void *data);
+void cmd_banish (void *data);
 
 /* void cmd_xterm (void *data); */
 
