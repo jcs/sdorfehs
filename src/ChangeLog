@@ -1,3 +1,26 @@
+2001-02-28  shawn  <sabetts@badbox.secure.basis.org>
+
+	* manage.c (map_window): calls update_window_information.
+
+	* manage.h (map_window): new prototype.
+
+	* events.c (new_window): calls update_window_information on new windows.
+	(map_request): calls map_window on managed unmapped windows.
+	(configure_request): removed commented out old crusty
+	code. Updates window's structure based on what bits are set in the
+	event's value_mask. Doesn't honour resize request. Windows are
+	always maximized.
+	(property_notify): doesn't call maximize when WM_NORMAL_HINTS are
+	updated.
+
+	* manage.c (manage): no longer maps the window, this code is in
+	map_window.
+	(map_window): new function
+	(maximize): no longer sends a synthetic configure event.
+	(scanwins): calls map_window on viewable windows.
+	(update_window_information): renamed from manage. dependant code
+	updated.
+
 2001-02-27  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* actions.c (cmd_escape): updates the "other" command keybinding

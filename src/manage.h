@@ -27,13 +27,15 @@
 int unmanaged_window (Window w);
 screen_info* current_screen ();
 void scanwins(screen_info *s);
-void manage (rp_window *w, screen_info *s);
 void unmanage (rp_window *w);
 int update_window_name (rp_window *win);
 void update_normal_hints (rp_window *win);
 void rename_current_window ();
 void send_configure (rp_window *win);
 void set_state (rp_window *win, int state);
+
+void update_window_information (rp_window *win);
+void map_window (rp_window *win);
 
 void maximize (rp_window *win);
 void force_maximize (rp_window *win);

@@ -174,7 +174,7 @@ send_configure (rp_window *win)
 }
 
 void
-manage (rp_window *win, screen_info *s)
+update_window_information (rp_window *win)
 {
   XWindowAttributes attr;
 
@@ -192,26 +192,6 @@ manage (rp_window *win, screen_info *s)
   win->y = attr.y;
   win->width = attr.width;
   win->height = attr.height;
-
-  /* We successfully got the name, which means we can start managing! */
-  XSelectInput (dpy, win->w, PropertyChangeMask | ColormapChangeMask);
-  XAddToSaveSet(dpy, win->w);
-  grab_prefix_key (win->w);
-
-  maximize (win);
-
-  XMapWindow (dpy, win->w);
-
-  win->state = STATE_MAPPED;
-  win->number = get_unique_window_number ();
-
-  /* Put win in the mapped window list */
-  remove_from_list (win);
-  insert_into_list (win, rp_mapped_window_sentinel);
-
-/*   sort_window_list_by_number(); */
-
-  PRINT_DEBUG ("window '%s' managed.\n", win->name);
 }
 
 void
@@ -259,10 +239,14 @@ scanwins(screen_info *s)
 
       if (attr.override_redirect != True && !unmanaged_window (wins[i]))
 	{
-	  
 	  win = add_to_window_list (s, wins[i]);
+
 	  PRINT_DEBUG ("map_state: %d\n", attr.map_state);
-	  if (attr.map_state == IsViewable) manage (win, s);
+	  if (attr.map_state == IsViewable) 
+	    {
+	      map_window (win);
+	    }
+	      
 	}
     }
   XFree((void *) wins);	/* cast is to shut stoopid compiler up */
@@ -422,9 +406,6 @@ maximize (rp_window *win)
   /* Actually do the maximizing */
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
 
-  /* I don't think this should be here, but it doesn't seem to hurt. */
-  send_configure (win);
-
   XSync (dpy, False);
 }
 
@@ -443,4 +424,27 @@ force_maximize (rp_window *win)
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
 
   XSync (dpy, False);
+}
+
+/* map the unmapped window win */
+void
+map_window (rp_window *win)
+{
+  PRINT_DEBUG ("Mapping the unmapped window %s\n", win->name);
+
+  update_window_information (win);
+  grab_prefix_key (win->w);
+
+  maximize (win);
+
+  XMapWindow (dpy, win->w);
+  set_state (win, NormalState);
+  set_active_window (win);
+
+  win->state = STATE_MAPPED;
+  win->number = get_unique_window_number ();
+
+  /* Put win in the mapped window list */
+  remove_from_list (win);
+  insert_into_list (win, rp_mapped_window_sentinel);
 }

@@ -51,7 +51,7 @@ new_window (XCreateWindowEvent *e)
       && e->window != s->input_window)
     {
       win = add_to_window_list (s, e->window);
-      win->state = STATE_UNMAPPED;
+      update_window_information (win);
     }
 }
 
@@ -119,20 +119,24 @@ map_request (XEvent *ev)
 	  if (unmanaged_window (win->w))
 	    {
 	      PRINT_DEBUG ("Unmanaged Window\n");
-	      XMapRaised (dpy, win->w);
+	      XMapWindow (dpy, win->w);
 	      break;
 	    }
 	  else
 	    {
 	      PRINT_DEBUG ("managed Window\n");
-	      manage (win, s);	/* fall through */
+
+	      map_window (win);
+	      break;
 	    }
 	case STATE_MAPPED:
 	  PRINT_DEBUG ("Mapped Window\n");
-	  XMapWindow (dpy, win->w);
+
+	  maximize (win);
 	  XMapRaised (dpy, win->w);
 	  set_state (win, NormalState);
 	  set_active_window (win);
+	  break;
 	}
     }
   else
@@ -210,64 +214,54 @@ configure_notify (XConfigureEvent *e)
 void
 configure_request (XConfigureRequestEvent *e)
 {
-/*   XWindowChanges wc; */
   rp_window *win;
-  int need_move = 0;
-  int need_resize = 0;
 
   win = find_window (e->window);
 
-/*   wc.x = PADDING_LEFT; */
-/*   wc.y = PADDING_TOP; */
-/*   wc.width = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT; */
-/*   wc.height = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM; */
-/*   wc.border_width = 0; */
-
   if (win)
     {
-      PRINT_DEBUG ("'%s' window req: %d %d %d %d %d\n", win->name,
-		   e->x, e->y, e->width, e->height, e->border_width);
-
       /* Updated our window struct */
-      win->x = e->x;
-      win->y = e->y;
-      win->width = e->width;
-      win->height = e->height;
-      win->border = e->border_width;
-
-      if (e->value_mask & CWStackMode && win->state == STATE_MAPPED) 
+      if (e->value_mask & CWX)
 	{
-	  if (e->detail == Above)
+	  win->x = e->x + win->border;
+	  PRINT_DEBUG("request CWX %d\n", e->x);
+	}
+      if (e->value_mask & CWY)
+	{
+	  win->y = e->y + win->border;
+	  PRINT_DEBUG("request CWY %d\n", e->y);
+	}
+
+
+      PRINT_DEBUG ("'%s' new window size: %d %d %d %d %d\n", win->name,
+		   win->x, win->y, win->width, win->height, win->border);
+
+      if (e->value_mask & (CWWidth|CWHeight|CWBorderWidth))
+	{
+	  if (e->value_mask & CWBorderWidth)
 	    {
-	      set_active_window (win);
+	      win->border = e->border_width;
+	      PRINT_DEBUG("request CWBorderWidth %d\n", e->border_width);
 	    }
-	  else if (e->detail == Below && win == rp_current_window) 
+	  if (e->value_mask & CWWidth)
 	    {
-	      cmd_other (NULL);
+	      win->width = e->width;
+	      PRINT_DEBUG("request CWWidth %d\n", e->width);
 	    }
-	}
+	  if (e->value_mask & CWHeight)
+	    {
+	      win->height = e->height;
+	      PRINT_DEBUG("request CWHeight %d\n", e->height);
+	    }
 
-      if ((e->value_mask & CWX) || (e->value_mask & CWY))
-	{
-	  XMoveWindow (dpy, win->w, e->x, e->y);
-	  need_move = 1;
-	}
-      if ((e->value_mask & CWWidth) || (e->value_mask & CWHeight))
-	{
-	  XResizeWindow (dpy, win->w, e->width, e->height);
-	  need_resize = 1;
-	}
-
-/*       if (need_move && !need_resize) */
-/* 	{ */
+	  maximize (win);
 	  send_configure (win);
-/* 	} */
-
-      maximize (win);
-
-/*       XConfigureWindow (dpy, win->w,  */
-/* 			CWX | CWY | CWWidth | CWHeight | CWBorderWidth, */
-/* 			&wc); */
+	}
+      else
+	{
+	  maximize (win);
+	  send_configure (win);
+	}
     }
   else
     {
@@ -397,7 +391,6 @@ property_notify (XEvent *ev)
 	case XA_WM_NORMAL_HINTS:
 	  PRINT_DEBUG ("updating window normal hints\n");
 	  update_normal_hints (win);
-	  maximize (win);
 	  break;
 
 	case XA_WM_TRANSIENT_FOR:

@@ -63,11 +63,12 @@ add_to_window_list (screen_info *s, Window w)
   new_window->hints = XAllocSizeHints ();
   new_window->colormap = DefaultColormap (dpy, s->screen_num);
   new_window->transient = XGetTransientForHint (dpy, new_window->w, &new_window->transient_for);
+  PRINT_DEBUG ("transient %d\n", new_window->transient);
 
   get_mouse_root_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
 
-  PRINT_DEBUG ("transient %d\n", new_window->transient);
-  
+  XSelectInput (dpy, new_window->w, PropertyChangeMask | ColormapChangeMask);
+
   if ((new_window->name = malloc (strlen ("Unnamed") + 1)) == NULL)
     {
       PRINT_ERROR ("Out of memory!\n");
