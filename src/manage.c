@@ -403,8 +403,6 @@ update_window_information (rp_window *win)
 void
 unmanage (rp_window *w)
 {
-  numset_release (rp_window_numset, w->number);
-
   list_del (&w->node);
   groups_del_window (w);
 

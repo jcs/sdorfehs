@@ -1,3 +1,7 @@
+2004-12-06  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/manage.c (unmanage): remove call to numset_release.
+
 2004-12-04  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/frame.c (frame_dump): use a hyphen instead of underscore for
