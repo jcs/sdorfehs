@@ -1,3 +1,8 @@
+2002-12-09  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (spawn): only add DISPLAY to the environment if it
+	isn't already there.
+
 2002-11-24  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/main.c: include sys/wait.h

@@ -980,7 +980,10 @@ spawn(void *data)
     {
       /* Some process setup to make sure the spawned process runs
 	 in its own session. */
-      putenv(current_screen()->display_string);
+      /* Only put the display env if we don't have it already. If we
+	 don't do this it core dumps on FreeBSD. */
+      if (!getenv("DISPLAY"))
+	putenv(current_screen()->display_string);
 #ifdef HAVE_SETSID
       setsid();
 #endif
