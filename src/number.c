@@ -71,6 +71,8 @@ numset_find_empty_cell (struct numset *ns)
 int
 numset_add_num (struct numset *ns, int n)
 {
+  PRINT_DEBUG(("ns=%p add_num %d\n", ns, n));
+
   if (numset_num_is_taken (ns, n)) 
     return 0; /* failed. */
   
@@ -84,11 +86,13 @@ int
 numset_request (struct numset *ns)
 {
   int i;
-  
+
   /* look for a unique number, and add it to the list of taken
      numbers. */
   i = 0;
   while (!numset_add_num (ns, i)) i++;
+
+  PRINT_DEBUG(("ns=%p request got %d\n", ns, i));
 
   return i;
 }
@@ -99,6 +103,11 @@ void
 numset_release (struct numset *ns, int n)
 {
   int i;
+
+  PRINT_DEBUG(("ns=%p release %d\n", ns, n));
+
+  if (n < 0)
+    PRINT_ERROR(("ns=%p Attempt to release %d!", ns, n));
 
   for (i=0; i<ns->num_taken; i++)
     {

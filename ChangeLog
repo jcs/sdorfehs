@@ -1,3 +1,23 @@
+2004-06-03  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/number.c (numset_add_num): add debugging output to print the args.
+	(numset_release): likewise
+	(numset_request): add debugging output to print the requested number
+
+
+	* src/manage.c (withdraw_window): Print an error when withdrawing
+	a window who's number is -1.
+
+	* src/main.c (clean_up): free the global frame numset.
+	(free_screen): don't free the screen's numset, since it's a
+	pointer to the global numset.
+
+	* src/group.c (group_del_window): don't release the window number
+	here. It's already been done in group_unmap_window.
+
+	* src/events.c (configure_request): only change the stack mode for
+	non withdrawn windows.
+
 2004-05-19  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/input.c (rp_mask_to_x11_mask): handle the shift modifier

@@ -232,7 +232,7 @@ configure_request (XConfigureRequestEvent *e)
     {
       if (e->value_mask & CWStackMode)
 	{
-	  if (e->detail == Above)
+	  if (e->detail == Above && win->state != WithdrawnState)
 	    {
 	      /* Depending on the rudeness level, actually map the
 		 window. */

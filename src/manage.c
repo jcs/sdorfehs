@@ -877,6 +877,9 @@ withdraw_window (rp_window *win)
 
   /* Give back the window number. the window will get another one,
      if it is remapped. */
+  if (win->number == -1)
+    PRINT_ERROR(("Attempting to withdraw '%s' with number -1!\n", window_name(win)));
+
   numset_release (rp_window_numset, win->number);
   win->number = -1;
 

@@ -289,7 +289,6 @@ group_del_window (rp_group *g, rp_window *win)
     {
       if (cur->win == win)
 	{
-	  numset_release (g->numset, cur->number);
 	  list_del (&cur->node);
 	  free (cur);
 	}

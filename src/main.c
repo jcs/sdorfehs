@@ -681,8 +681,6 @@ free_screen (rp_screen *s)
   XFreeGC (dpy, s->normal_gc);
 
   free (s->display_string);
-
-  numset_free (s->frames_numset);
 }
 
 void
@@ -706,6 +704,9 @@ clean_up ()
       free_screen (&screens[i]);
     }
   free (screens);
+
+  /* Free the global frame numset shared by all screens. */
+  free (rp_frame_numset);
 
   free_xinerama();
 

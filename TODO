@@ -27,3 +27,9 @@ Fix it.
 
 * window name substring matching.
 Do it.
+
+* allow letters and numbers to be used for frames (in fselect)
+
+* dump all all def* settings
+
+* get a set ... command going and create aliases for the def* stuff
