@@ -22,6 +22,7 @@
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 #define FONT_HEIGHT(f) ((f)->max_bounds.ascent + (f)->max_bounds.descent)
 
@@ -45,6 +46,9 @@ struct rp_window
   
   /* Dimensions */
   int x, y, width, height, border;
+
+  /* WM Hints */
+  XSizeHints *hints;
 
   rp_window *next, *prev;  
 };
