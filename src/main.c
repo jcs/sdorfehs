@@ -40,6 +40,7 @@ Atom wm_take_focus;
 Atom wm_colormaps;
 
 Atom rp_restart;
+Atom rp_kill;
 
 screen_info *screens;
 int num_screens;
@@ -53,6 +54,8 @@ char **myargv;
 /* Command line options */
 static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
 					      {"version", no_argument, 0, 'v'},
+					      {"restart", no_argument, 0, 'r'},
+					      {"kill", no_argument, 0, 'k'},
 					      {0, 0, 0, 0} };
 static char ratpoison_opts[] = "hv";
 
@@ -65,13 +68,56 @@ sighandler ()
 }
 
 void
+send_restart ()
+{
+  XEvent ev;
+  int status;
+
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = DefaultRootWindow (dpy);
+  ev.xclient.message_type = rp_restart;
+  ev.xclient.format = 32;
+  ev.xclient.data.l[0] = rp_restart;
+  ev.xclient.data.l[1] = CurrentTime;
+
+  status = XSendEvent (dpy, DefaultRootWindow (dpy), False, SubstructureRedirectMask, &ev); 
+  if (status == 0)
+    {
+      PRINT_ERROR ("failed to send restart event\n");
+    }
+}
+
+void
+send_kill ()
+{
+  XEvent ev;
+  int status;
+
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = DefaultRootWindow (dpy);
+  ev.xclient.message_type = rp_kill;
+  ev.xclient.format = 32;
+  ev.xclient.data.l[0] = rp_kill;
+  ev.xclient.data.l[1] = CurrentTime;
+
+  status = XSendEvent (dpy, DefaultRootWindow (dpy), False, SubstructureRedirectMask, &ev); 
+  if (status == 0)
+    {
+      PRINT_ERROR ("failed to send kill event\n");
+    }
+}
+
+
+void
 hup_handler ()
 {
-  /* This doesn't seem to restart more than once for some reason...*/
+  /* Doesn't function correctly. The event IS placed on the queue but
+     XSync() doesn't seem to sync it and until other events come in
+     the restart event won't be processed. */
+  PRINT_DEBUG ("Restarting with a fresh plate.\n"); 
 
-  fprintf (stderr, "ratpoison: Restarting with a fresh plate.\n"); 
-  clean_up ();
-  execvp(myargv[0], myargv);
+  send_restart ();
+  XSync(dpy, False); 
 }
 
 void
@@ -120,18 +166,23 @@ print_help ()
 {
   printf ("Help for %s %s\n\n", PACKAGE, VERSION);
   printf ("-h, --help            Display this help screen\n");
-  printf ("-v, --version         Display the version\n\n");
+  printf ("-v, --version         Display the version\n");
+  printf ("-r, --restart         Restart ratpoison\n");
+  printf ("-k, --kill            Kill ratpoison\n\n");
 
   printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
 
   exit (EXIT_SUCCESS);
 }
 
+
 int
 main (int argc, char *argv[])
 {
   int i;
   int c;
+  int do_kill = 0;
+  int do_restart = 0;
 
   myargv = argv;
 
@@ -151,6 +202,12 @@ main (int argc, char *argv[])
 	case 'v':
 	  print_version ();
 	  break;
+	case 'k':
+	  do_kill = 1;
+	  break;
+	case 'r':
+	  do_restart = 1;
+	  break;
 	default:
 	  exit (EXIT_FAILURE);
 	}
@@ -168,6 +225,33 @@ main (int argc, char *argv[])
   if (signal (SIGTERM, sighandler) == SIG_IGN) signal (SIGTERM, SIG_IGN);
   if (signal (SIGINT, sighandler) == SIG_IGN) signal (SIGINT, SIG_IGN);
   if (signal (SIGHUP, hup_handler) == SIG_IGN) signal (SIGHUP, SIG_IGN);
+
+  /* Set ratpoison specific Atoms. */
+  rp_restart = XInternAtom (dpy, "RP_RESTART", False);
+  rp_kill = XInternAtom (dpy, "RP_KILL", False);
+
+  if (do_kill)
+    {
+      send_kill ();
+      XSync (dpy, False);
+      clean_up ();
+      return EXIT_SUCCESS;
+    }
+  if (do_restart)
+    {
+      send_restart ();
+      XSync (dpy, False);
+      clean_up ();
+      return EXIT_SUCCESS;
+    }
+
+  /* Set our Atoms */
+  wm_state = XInternAtom(dpy, "WM_STATE", False);
+  wm_change_state = XInternAtom(dpy, "WM_CHANGE_STATE", False);
+  wm_protocols = XInternAtom(dpy, "WM_PROTOCOLS", False);
+  wm_delete = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+  wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
+  wm_colormaps = XInternAtom(dpy, "WM_COLORMAP_WINDOWS", False);
 
   init_numbers ();
   init_window_list ();
@@ -193,18 +277,6 @@ main (int argc, char *argv[])
     {
       init_screen (&screens[i], i);
     }
-
-  /* Set our Atoms */
-  wm_state = XInternAtom(dpy, "WM_STATE", False);
-  wm_change_state = XInternAtom(dpy, "WM_CHANGE_STATE", False);
-  wm_protocols = XInternAtom(dpy, "WM_PROTOCOLS", False);
-  wm_delete = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
-  wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
-  wm_colormaps = XInternAtom(dpy, "WM_COLORMAP_WINDOWS", False);
-
-  rp_restart = XInternAtom (dpy, "RP_RESTART", False);
-
-  XSync (dpy, False);
 
   /* Set an initial window as active. */
   rp_current_window = rp_window_head;
@@ -264,7 +336,6 @@ init_screen (screen_info *s, int screen_num)
                PropertyChangeMask | ColormapChangeMask
                | SubstructureRedirectMask | KeyPressMask 
                | SubstructureNotifyMask );
-  XSync (dpy, 0);
 
   /* Create the program bar window. */
   s->bar_is_raised = 0;
@@ -282,6 +353,9 @@ init_screen (screen_info *s, int screen_num)
   s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 
   					 1, 1, 1, fg_color.pixel, bg_color.pixel);
   XSelectInput (dpy, s->input_window, KeyPressMask);
+
+  XSync (dpy, 0);
+
   scanwins (s);
 }
 

@@ -63,6 +63,7 @@ extern int num_screens;
 
 extern Display *dpy;
 extern Atom rp_restart;
+extern Atom rp_kill;
 
 extern Atom wm_state;
 extern Atom wm_change_state;
@@ -74,5 +75,8 @@ extern Atom wm_colormaps;
 /* Set to 1 to indicate that the WM should exit at it's earliest
    convenience. */
 extern int exit_signal;
+
+/* Arguments passed to ratpoison. */
+extern char **myargv;
 
 #endif /* _DATA_H */

@@ -239,6 +239,19 @@ static void
 client_msg (XClientMessageEvent *ev)
 {
   PRINT_DEBUG ("Recieved client message.\n");
+
+  if (ev->message_type == rp_restart)
+    {
+      PRINT_DEBUG ("Restarting\n");
+      clean_up (); 
+      execvp(myargv[0], myargv);
+    }
+  else if (ev->message_type == rp_kill)
+    {
+      PRINT_DEBUG ("Exiting\n");
+      clean_up ();
+      exit (EXIT_SUCCESS);
+    }
 }
 
 static void
