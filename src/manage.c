@@ -588,12 +588,9 @@ maximize (rp_window *win)
 	       win->x, win->y, win->width, win->height);
 
 
-  /* Actually do the maximizing, and ignore the event created by the
-     maximizing. */
-  XSelectInput (dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
+  /* Actually do the maximizing. */
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);
-  XSelectInput (dpy, win->w, WIN_EVENTS);
 
   XSync (dpy, False);
 }
@@ -610,9 +607,6 @@ force_maximize (rp_window *win)
 
   /* Reposition the window. */
   move_window (win);
-
-  /* Don't listen to the events caused by the maximize. */
-  XSelectInput (dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
 
   /* This little dance is to force a maximize event. If the window is
      already "maximized" X11 will optimize away the event since to
@@ -633,7 +627,6 @@ force_maximize (rp_window *win)
   XMoveResizeWindow (dpy, win->w, win->x, win->y, win->width, win->height);
   XSetWindowBorderWidth (dpy, win->w, win->border);
 
-  XSelectInput (dpy, win->w, WIN_EVENTS);
   XSync (dpy, False);
 }
 
@@ -682,10 +675,7 @@ hide_window (rp_window *win)
   /* An unmapped window is not inside a frame. */
   win->frame = NULL;
 
-  /* Ignore the unmap_notify event. */
-  XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XUnmapWindow (dpy, win->w);
-  XSelectInput (dpy, win->w, WIN_EVENTS);
   set_state (win, IconicState);
 }
 
@@ -694,17 +684,12 @@ unhide_window (rp_window *win)
 {
   if (win == NULL) return;
 
-  /* Always raise the window. But ignore notify event. */
-  XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
+  /* Always raise the window. */
   XRaiseWindow (dpy, win->w);
-  XSelectInput (dpy, win->w, WIN_EVENTS);
 
   if (win->state != IconicState) return;
 
-  /* Ignore the notify event. */
-  XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XMapWindow (dpy, win->w);
-  XSelectInput (dpy, win->w, WIN_EVENTS);
   set_state (win, NormalState);
 }
 
@@ -721,10 +706,7 @@ unhide_window_below (rp_window *win)
 
   if (win->state != IconicState) return;
 
-  /* Ignore the event caused by the window mapping. */
-  XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XMapWindow (dpy, win->w);
-  XSelectInput (dpy, win->w, WIN_EVENTS);
   set_state (win, NormalState);
 }
 

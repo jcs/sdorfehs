@@ -1,3 +1,17 @@
+2002-02-16  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/manage.c (maximize): remove calls to XSelectInput.
+	(force_maximize): likewise
+	(unhide_window): likewise
+	(unhide_window_below): likewise
+
+	* src/events.c (configure_notify): remove function.
+	(configure_request): grant the request, then immediately maximize
+	the window.
+	(delegate_event): ignore ConfigureNotify events.
+	(configure_request): grant the request if ratpoison isn't managing
+	the window.
+
 2002-02-14  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_license): redraw the bar if it was visible.

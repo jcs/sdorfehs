@@ -216,47 +216,6 @@ destroy_window (XDestroyWindowEvent *ev)
 }
 
 static void
-configure_notify (XConfigureEvent *e)
-{
-  rp_window *win;
-
-  /* ignore SubstructureNotify ConfigureNotify events. */
-  if(e->event != e->window && e->send_event != True)
-    return;
-
-  win = find_window (e->window);
-
-  if (win && win->state == NormalState)
-    {
-      if (win->height != e->height
-	  || win->width != e->width
-	  || win->border != e->border_width
-	  || win->x != e->x
-	  || win->y != e->y)
-	{
-	  /* The notify event was generated from a granted configure
-	     request which means we must re-maximize the window. 
-
-	     If the window has resize increments then ratpoison has to
-	     know the real size of the window to increment properly. So,
-	     update the structure before calling maximize. */
-
-	  PRINT_DEBUG ("Notify geom: x=%d y=%d width=%d height=%d\n", e->x, e->y, e->width, e->height);
-	  PRINT_DEBUG ("Current geom: x=%d y=%d width=%d height=%d\n", win->x, win->y, win->width, win->height);
-
-	  win->x = e->x;
-	  win->y = e->y;
-	  win->width = e->width;
-	  win->height = e->height;
-	  win->border = e->border_width;
-
-	  maximize (win);
-	}
-    }
-}
-
-
-static void
 configure_request (XConfigureRequestEvent *e)
 {
   XWindowChanges changes;
@@ -266,13 +225,6 @@ configure_request (XConfigureRequestEvent *e)
 
   if (win)
     {
-      /* Initialize the XWindowChanges structure. */
-      changes.x = win->x;
-      changes.y = win->y;
-      changes.width = win->width;
-      changes.height = win->height;
-      changes.border_width = win->border;
-
       if (e->value_mask & CWStackMode)
 	{
 	  if (e->detail == Above)
@@ -309,49 +261,61 @@ configure_request (XConfigureRequestEvent *e)
       if (e->value_mask & CWBorderWidth)
 	{
 	  changes.border_width = e->border_width;
+	  win->border = e->border_width;
 	  PRINT_DEBUG("request CWBorderWidth %d\n", e->border_width);
 	}
 
       if (e->value_mask & CWWidth)
 	{
 	  changes.width = e->width;
+	  win->width = e->width;
 	  PRINT_DEBUG("request CWWidth %d\n", e->width);
 	}
 
       if (e->value_mask & CWHeight)
 	{
 	  changes.height = e->height;
+	  win->height = e->height;
 	  PRINT_DEBUG("request CWHeight %d\n", e->height);
 	}
 
       if (e->value_mask & CWX)
 	{
 	  changes.x = e->x;
+	  win->x = e->x;
 	  PRINT_DEBUG("request CWX %d\n", e->x);
 	}
 
       if (e->value_mask & CWY)
 	{
 	  changes.y = e->y;
+	  win->y = e->y;
 	  PRINT_DEBUG("request CWY %d\n", e->y);
 	}
 
       if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
 	{
-	  /* Ignore the configure notify event caused by the geometry
-	     change if the window is not mapped. */
-	  if (win->state != NormalState)
-	    XSelectInput (dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
+	  /* Grant the request, then immediately maximize it. */
 	  XConfigureWindow (dpy, win->w, 
 			    e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
 			    &changes);
-	  if (win->state != NormalState)
-	    XSelectInput (dpy, win->w, WIN_EVENTS);
+
+	  if (win->state == NormalState)
+	    maximize (win);
 	}
     }
   else
     {
-      PRINT_DEBUG ("FIXME: Don't handle this\n");
+      /* Its an unmanaged window, so give it what it wants. But don't
+	 change the stack mode.*/
+      if (e->value_mask & CWX) changes.x = e->x;
+      if (e->value_mask & CWY) changes.x = e->x;
+      if (e->value_mask & CWWidth) changes.x = e->x;
+      if (e->value_mask & CWHeight) changes.x = e->x;
+      if (e->value_mask & CWBorderWidth) changes.x = e->x;
+      XConfigureWindow (dpy, e->window, 
+			e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
+			&changes);
     }
 }
 
@@ -777,10 +741,6 @@ delegate_event (XEvent *ev)
       break;
 
     case ConfigureNotify:
-      PRINT_DEBUG ("--- Handling ConfigureNotify ---\n");
-      configure_notify (&ev->xconfigure);
-      break;
-
     case MapNotify:
     case Expose:
     case MotionNotify:
