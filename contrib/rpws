@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Workspaces for ratpoison
 # Copyright (C) 2003 Shawn Betts
@@ -26,18 +26,18 @@
 
 RATPOISON=ratpoison
 
-function rp_call ()
+function rp_call
 {
     $RATPOISON -c "$*"
 }
 
-function ws_init_ws ()
+function ws_init_ws
 {
     rp_call gnew ws$1
     rp_call setenv fs$1 `rp_call fdump`
 }
 
-function ws_init ()
+function ws_init
 {
     # Backup the frames
     FS=`rp_call fdump`
@@ -63,13 +63,13 @@ function ws_init ()
     rp_call frestore $FS
 }
 
-function ws_save ()
+function ws_save
 {
     WS=`rp_call getenv ws`
     rp_call setenv fs$WS `rp_call fdump`
 }
 
-function ws_restore ()
+function ws_restore
 {
     ws_save
     if [ $1 == 1 ]; then
@@ -82,7 +82,7 @@ function ws_restore ()
     rp_call setenv ws $1
 }
 
-function ws_bindings ()
+function ws_bindings
 {
     # Use $0 so we know the name and location of the script to call.
     rp_call bind M-1 exec $0 1

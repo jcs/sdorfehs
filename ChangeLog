@@ -1,3 +1,13 @@
+2003-06-25  Shawn Betts  <sabetts@sfu.ca>
+
+	* contrib/rpws: call /bin/bash
+	(rp_call): remove extraneous () in function declaration.
+	(ws_init_ws): likewise
+	(ws_init): likewise
+	(ws_save): likewise
+	(ws_restore): likewise
+	(ws_bindings): likewise
+
 2003-06-24  Shawn Betts  <sabetts@sfu.ca>
 
 	* contrib/rpws (rp_call): Don't print debug information.
