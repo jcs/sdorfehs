@@ -66,3 +66,18 @@ int rp_honour_transient_map = 1;
 int rp_honour_normal_map = 1;
 
 char *rp_error_msg = NULL;
+
+/* The hook dictionary globals. */
+
+LIST_HEAD (rp_prefix_hook);
+LIST_HEAD (rp_switch_win_hook);
+LIST_HEAD (rp_switch_frame_hook);
+LIST_HEAD (rp_switch_group_hook);
+
+struct rp_hook_db_entry rp_hook_db[]= 
+  {{"prefix", 		&rp_prefix_hook},
+   {"switchwin", 	&rp_switch_win_hook},
+   {"switchframe", 	&rp_switch_frame_hook},
+   {"switchgroup", 	&rp_switch_group_hook},
+   {NULL, NULL}};
+				   

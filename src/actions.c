@@ -106,6 +106,8 @@ static user_command user_commands[] =
     {"groups",		cmd_groups,		arg_VOID},
     {"gmove",		cmd_gmove,		arg_VOID},
     {"gmerge",		cmd_gmerge,		arg_VOID},
+    {"addhook",         cmd_addhook,            arg_STRING},
+    {"remhook",         cmd_remhook,            arg_STRING},
 
     /* Commands to set default behavior. */
     {"defbargravity",		cmd_defbargravity,	arg_STRING},
@@ -1343,7 +1345,13 @@ cmd_windows (int interactive, char *data)
   if (interactive)
     {
       s = current_screen ();
-      if (!hide_bar (s)) show_bar (s);
+      /* This is a yukky hack. If the bar already hidden then show the
+	 bar. This handles the case when msgwait is 0 (the bar sticks)
+	 and the user uses this command to toggle the bar on and
+	 off. OR the timeout is >0 then show the bar. Which means,
+	 always show the bar if msgwait is >0 which fixes the case
+	 when a command in the prefix hook displays the bar. */
+      if (!hide_bar (s) || defaults.bar_timeout > 0) show_bar (s);
       
       return NULL;
     }
@@ -3424,21 +3432,21 @@ cmd_defwinliststyle (int interactive, char *data)
 char *
 cmd_gnext (int interactive, char *data)
 {
-  rp_current_group = group_next_group ();
+  set_current_group (group_next_group ());
   return NULL;
 }
 
 char *
 cmd_gprev (int interactive, char *data)
 {
-  rp_current_group = group_prev_group ();
+  set_current_group (group_prev_group ());
   return NULL;
 }
 
 char *
 cmd_gnew (int interactive, char *data)
 {
-  rp_current_group = group_add_new_group (data);
+  set_current_group (group_add_new_group (data));
   return NULL;
 }
 
@@ -3521,7 +3529,7 @@ cmd_gselect (int interactive, char *data)
   g = find_group (str);
 
   if (g)
-    rp_current_group = g;
+    set_current_group (g);
   else
     return cmd_groups (interactive, NULL);
 
@@ -3644,5 +3652,91 @@ cmd_gmerge (int interactive, char *data)
   else
     message (" gmerge: cannot find group ");
 
+  return NULL;
+}
+
+char *
+cmd_addhook (int interactive, char *data)
+{
+  char *dup;
+  char *token;
+  struct list_head *hook;
+  struct sbuf *cmd;
+
+  if (data == NULL)
+    {
+      message (" addhook: two arguments required ");
+      return NULL;
+    }
+
+  dup = xstrdup (data);
+  token = strtok (dup, " ");
+  
+  hook = hook_lookup (token);
+  if (hook == NULL)
+    {
+      marked_message_printf (0, 0, " addhook: unknown hook \"%s\"", token);
+      free (dup);
+      return NULL;
+    }
+
+  token = strtok (NULL, "\0");
+  
+  if (token == NULL)
+    {
+      message (" addhook: two arguments required ");
+      free (dup);
+      return NULL;
+    }
+
+  /* Add the command to the hook  */
+  cmd = sbuf_new (0);
+  sbuf_copy (cmd, token);
+  hook_add (hook, cmd);
+
+  free (dup);
+  return NULL;
+}
+
+char *
+cmd_remhook (int interactive, char *data)
+{
+  char *dup;
+  char *token;
+  struct list_head *hook;
+  struct sbuf *cmd;
+
+  if (data == NULL)
+    {
+      message (" remhook: two arguments required ");
+      return NULL;
+    }
+
+  dup = xstrdup (data);
+  token = strtok (dup, " ");
+  
+  hook = hook_lookup (token);
+  if (hook == NULL)
+    {
+      marked_message_printf (0, 0, " addhook: unknown hook \"%s\"", token);
+      free (dup);
+      return NULL;
+    }
+
+  token = strtok (NULL, "\0");
+  
+  if (token == NULL)
+    {
+      message (" addhook: two arguments required ");
+      free (dup);
+      return NULL;
+    }
+
+  /* Add the command to the hook  */
+  cmd = sbuf_new (0);
+  sbuf_copy (cmd, token);
+  hook_remove (hook, cmd);
+
+  free (dup);
   return NULL;
 }

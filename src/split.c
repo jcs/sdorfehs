@@ -849,6 +849,10 @@ set_active_frame (rp_frame *frame)
       || s != old_s)
     {
       show_frame_indicator();
+
+      /* run the frame switch hook. We call it in here because this is
+	 when a frame switch ACTUALLY (for sure) happens. */
+      hook_run (&rp_switch_frame_hook);
     }
 
   /* If the frame has no window to give focus to, give the key window

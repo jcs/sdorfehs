@@ -132,6 +132,8 @@ char *cmd_verbexec (int interactive, char *data);
 char *cmd_version (int interactive, char *data);
 char *cmd_warp(int interactive, char *data);
 char *cmd_windows (int interactive, char *data);
+char *cmd_addhook (int interactive, char *data);
+char *cmd_remhook (int interactive, char *data);
 
 void initialize_default_keybindings (void);
 void free_keybindings ();

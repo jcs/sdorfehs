@@ -296,4 +296,11 @@ struct rp_input_line
   Atom  selection;
 };
 
+/* The hook dictionary. */
+struct rp_hook_db_entry
+{
+  char *name;
+  struct list_head *hook;
+};
+
 #endif /* _RATPOISON_DATA_H */

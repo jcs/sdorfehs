@@ -394,6 +394,9 @@ handle_key (rp_screen *s)
       rat_grabbed = 1;
     }
 
+  /* Call the prefix hook. */
+  hook_run (&rp_prefix_hook);
+
   read_key (&keysym, &mod, NULL, 0);
 
   XSetInputFocus (dpy, fwin, revert, CurrentTime);

@@ -75,6 +75,7 @@ extern XGCValues gv;
 #include "editor.h"
 #include "history.h"
 #include "completions.h"
+#include "hook.h"
 
 void clean_up ();
 rp_screen *find_screen (Window w);

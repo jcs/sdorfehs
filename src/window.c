@@ -488,6 +488,9 @@ set_active_window (rp_window *win)
   update_window_names (win->scr);
 
   XSync (dpy, False);
+
+  /* Call the switch window hook */
+  hook_run (&rp_switch_win_hook);
 }
 
 /* Go to the window, switching frames if the window is already in a

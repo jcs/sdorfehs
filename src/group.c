@@ -464,3 +464,15 @@ groups_merge (rp_group *from, rp_group *to)
       group_insert_window (&to->mapped_windows, cur);
     }
 }
+
+void
+set_current_group (rp_group *g)
+{
+  if (rp_current_group == g || g == NULL)
+    return;
+
+  rp_current_group = g;
+  
+  /* Call the switch group hook. */
+  hook_run (&rp_switch_group_hook);
+}

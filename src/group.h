@@ -36,4 +36,6 @@ rp_window_elem *group_find_window_by_number (rp_group *g, int num);
 void group_move_window (rp_group *to, rp_window *win);
 void groups_merge (rp_group *from, rp_group *to);
 
+void set_current_group (rp_group *g);
+
 #endif
