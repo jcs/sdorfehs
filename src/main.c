@@ -151,6 +151,8 @@ main (int argc, char *argv[])
 	case 'v':
 	  print_version ();
 	  break;
+	default:
+	  exit (EXIT_FAILURE);
 	}
     }
 
