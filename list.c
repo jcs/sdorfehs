@@ -121,6 +121,37 @@ prev_window ()
 }
 
 rp_window *
+find_window_by_number (int n)
+{
+  int i;
+  rp_window *cur;
+
+  for (i=0, cur=rp_window_head; cur; cur=cur->next)
+    {
+      if (cur->state != STATE_MAPPED) continue;
+
+      if (i == n) return cur;
+      else i++;
+    }
+
+  return NULL;
+}
+
+void
+goto_window_number (int n)
+{
+  rp_window *win;
+
+  if ((win = find_window_by_number (n)) == NULL)
+    {
+      return;
+    }
+
+  rp_current_window = win;
+  set_active_window (rp_current_window);
+}
+
+rp_window *
 find_last_accessed_window ()
 {
   int last_access = 0;
@@ -128,7 +159,7 @@ find_last_accessed_window ()
 
   for (cur=rp_window_head; cur; cur=cur->next)
     {
-      if (cur->last_access > last_access 
+      if (cur->last_access >= last_access 
 	  && cur != rp_current_window 
 	  && cur->state == STATE_MAPPED) 
 	{

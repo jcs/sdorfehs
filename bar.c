@@ -52,13 +52,18 @@ toggle_bar (screen_info *s)
 static int
 calc_bar_width (XFontStruct *font)
 {
+  char str[100];		/* window names are capped at 99 chars */
+  int i;
   int size = 1;
   rp_window *cur;
 
-  for (cur = rp_window_head; cur; cur = cur->next)
+  for (i=0, cur = rp_window_head; cur; cur = cur->next)
     {
       if (cur->state == STATE_UNMAPPED) continue;
-      size += 10 + XTextWidth (font, cur->name, strlen (cur->name));
+      
+      sprintf (str, "%d-%s", i, cur->name);
+      size += 10 + XTextWidth (font, str, strlen (str));
+      i++;
     }
 
   return size;
@@ -81,6 +86,8 @@ bar_y (screen_info *s)
 void
 update_window_names (screen_info *s)
 {
+  char str[100];		/* window names are capped at 99 chars */
+  int i;
   int width = calc_bar_width (s->font);
   rp_window *cur;
   int cur_x = 5;
@@ -95,23 +102,23 @@ update_window_names (screen_info *s)
   XRaiseWindow (dpy, s->bar_window);
 
   if (rp_window_head == NULL) return;
-  for (cur = rp_window_head; cur; cur = cur->next)
+  for (i=0, cur = rp_window_head; cur; cur = cur->next)
     {
       if (cur->state == STATE_UNMAPPED) continue;
 
+      sprintf (str, "%d-%s", i, cur->name);
       if ( rp_current_window == cur) 
 	{
 	  XDrawString (dpy, s->bar_window, s->bold_gc, cur_x, 
-		       BAR_PADDING + s->font->max_bounds.ascent, cur->name, strlen (cur->name));
+		       BAR_PADDING + s->font->max_bounds.ascent, str, strlen (str));
 	}
       else
 	{
 	  XDrawString (dpy, s->bar_window, s->normal_gc, cur_x, 
-		       BAR_PADDING + s->font->max_bounds.ascent, cur->name, strlen (cur->name));
+		       BAR_PADDING + s->font->max_bounds.ascent, str, strlen (str));
 	}
-      cur_x += 10 + XTextWidth (s->font, cur->name, strlen (cur->name));
+
+      cur_x += 10 + XTextWidth (s->font, str, strlen (str));
+      i++;
     }
 }
-
-
-

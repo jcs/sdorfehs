@@ -17,6 +17,12 @@ extern Atom wm_state;
 void
 grab_keys (screen_info *s)
 {
+  int i;
+
+  for (i='0'; i<='9'; i++)
+    XGrabKey(dpy, XKeysymToKeycode (dpy, i ), AnyModifier, s->key_window, True, 
+	     GrabModeAsync, GrabModeAsync);  
+
   XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_XTERM ), AnyModifier, s->key_window, True, 
 	   GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_EMACS ), AnyModifier, s->key_window, True, 

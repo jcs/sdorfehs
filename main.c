@@ -69,13 +69,17 @@ alrm_handler ()
 int
 handler (Display *d, XErrorEvent *e)
 {
+  char msg[100];
+
   if (e->request_code == X_ChangeWindowAttributes && e->error_code == BadAccess) {
     fprintf(stderr, "ratpoison: There can be only ONE.\n");
     exit(EXIT_FAILURE);
   }  
 
-  fprintf (stderr, "ratpoison: Ya some error happened, but whatever.\n");
-  return 0;
+  XGetErrorText (d, e->error_code, msg, sizeof (msg));
+  fprintf (stderr, "ratpoison: %s!\n", msg);
+
+  exit (EXIT_FAILURE);
 }
 
 int
@@ -116,11 +120,15 @@ main (int argc, char *argv[])
     }
 
   /* Setup signal handlers. */
-  //  XSetErrorHandler(handler);  
+  // XSetErrorHandler(handler);  
   if (signal (SIGALRM, alrm_handler) == SIG_IGN) signal (SIGALRM, SIG_IGN);
   if (signal (SIGTERM, sighandler) == SIG_IGN) signal (SIGTERM, SIG_IGN);
   if (signal (SIGINT, sighandler) == SIG_IGN) signal (SIGINT, SIG_IGN);
-  if (signal (SIGHUP, hup_handler) == SIG_IGN) signal (SIGHUP, SIG_IGN);
+  if (signal (SIGHUP, hup_handler) == SIG_IGN) 
+    {
+      printf ("Ignoring HUP.\n");
+      signal (SIGHUP, SIG_IGN);
+    }
 
   /* Set our Atoms */
   wm_state = XInternAtom(dpy, "WM_STATE", False);

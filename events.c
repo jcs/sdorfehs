@@ -101,8 +101,6 @@ map_request (XEvent *ev)
 void
 destroy_window (XDestroyWindowEvent *ev)
 {
-  int tmp;
-  Window fwin;
   screen_info *s;
   rp_window *win;
 
@@ -110,20 +108,10 @@ destroy_window (XDestroyWindowEvent *ev)
   win = find_window (ev->window);
   if (s && win)
     {
+      /* Goto the last accessed window. */
+      if (win->state == STATE_MAPPED) last_window (); 
+
       unmanage (win);
-    }
-
-  XGetInputFocus (dpy, &fwin, &tmp);
-  win = find_window (fwin);
-
-  if (win)
-    {
-      rp_current_window = win;
-      set_active_window (win);
-    }
-  else
-    {
-      update_window_names (s);
     }
 
 #ifdef DEBUG
@@ -135,36 +123,12 @@ void
 configure_request (XConfigureRequestEvent *e)
 {
   XConfigureEvent ce;
-  //  XWindowChanges wc;
   rp_window *win;
 
   win = find_window (e->window);
 
   if (win)
     {
-/*        if (e->value_mask & CWX) */
-/*  	wc->x = e->x; */
-/*        if (e->value_mask & CWY) */
-/*  	wc->y = e->y; */
-/*        if (e->value_mask & CWWidth) */
-/*  	wc->dx = e->width; */
-/*        if (e->value_mask & CWHeight) */
-/*  	wc->dy = e->height; */
-/*        if (e->value_mask & CWBorderWidth) */
-/*  	wc->border_width = e->border_width; */
-
-/*        if (e->value_mask & CWStackMode) { */
-/*  	if (wc.stack_mode == Above); */
-/*  	else */
-/*  	  we->value_mask &= ~CWStackMode; */
-/*        } */
-
-/*        wc.sibling = None; */
-/*        wc.stack_mode = e.detail; */
-
-/*        XConfigureWindow (dpy, e->window, e->value_mask, &wc); */
-
-
       ce.type = ConfigureNotify;
       ce.event = e->window;
       ce.window = e->window;
@@ -172,9 +136,23 @@ configure_request (XConfigureRequestEvent *e)
       ce.y = 0;
       ce.width = win->scr->root_attr.width;
       ce.height = win->scr->root_attr.height;
-      ce.border_width = 0;
+      ce.border_width = 0;      
       ce.above = None;
       ce.override_redirect = 0;
+
+      if (e->value_mask & CWStackMode && win->state == STATE_MAPPED) 
+	{
+	  if (e->detail == Above)
+	    {
+	      rp_current_window = win;
+	      set_active_window (rp_current_window);
+	    }
+	  else if (e->detail == Below && win == rp_current_window) 
+	    {
+	      last_window ();
+	    }
+	}
+
       XSendEvent(dpy, win->w, False, StructureNotifyMask, (XEvent*)&ce);
     }
 }
@@ -182,6 +160,7 @@ configure_request (XConfigureRequestEvent *e)
 static void
 client_msg (XClientMessageEvent *ev)
 {
+  printf ("Recieved client message.\n");
 }
 
 static void
@@ -207,6 +186,13 @@ handle_key (screen_info *s)
       ev.xkey.state = MODIFIER_PREFIX;
       XSendEvent (dpy, fwin, False, KeyPressMask, &ev);
       XSync (dpy, False);
+      return;
+    }
+
+  if (XLookupKeysym((XKeyEvent *) &ev, 0) >= '0' 
+      && XLookupKeysym((XKeyEvent *) &ev, 0) <= '9')
+    {
+      goto_window_number (XLookupKeysym((XKeyEvent *) &ev, 0) - '0');
       return;
     }
 

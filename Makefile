@@ -1,18 +1,25 @@
+# Where to install the ratpoison executable
+INSTALL_DIR=/usr/local/bin
+
+
+# Spew lots of debug messages 
+DEBUG = -DDEBUG
+
 CC = gcc
-
-SRC = main.o events.o manage.o list.o bar.o
-
 LIBS = -lX11
-
 LDFLAGS = -L/usr/X11R6/lib
 CFLAGS = -g -Wall -I/usr/X11R6/include 
 
-DEBUG = -DDEBUG
+SRC = main.o events.o manage.o list.o bar.o
+HEADERS = bar.h conf.h data.h events.h list.h manage.h ratpoison.h
 
 ratpoison: $(SRC)
 	gcc $(SRC) -o $@ $(CFLAGS) $(LDFLAGS) $(LIBS) 
 
-%.o : %.c ratpoison.h conf.h
+install: ratpoison
+	cp ratpoison $(INSTALL_DIR)
+
+%.o : %.c $(HEADERS)
 	$(CC) -c $(CFLAGS) $(DEBUG) $< -o $@
 
 clean :
