@@ -1,3 +1,8 @@
+2004-01-15  Bernhard R. Link <brlink@debian.org>
+
+	* actions.c (cmd_focusleft,cmd_focusright,cmd_focusup,cmd_focusdown): show
+	currectframe if movement not possible.
+
 2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/frame.c (frame_read): correctly determine if the input

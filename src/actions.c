@@ -3712,6 +3712,8 @@ cmd_focusup (int interactive, struct cmdarg **args)
 
   if ((frame = find_frame_up (current_frame())))
     set_active_frame (frame);
+  else
+    show_frame_indicator();
 
   return cmdret_new (NULL, RET_SUCCESS);
 }
@@ -3723,6 +3725,8 @@ cmd_focusdown (int interactive, struct cmdarg **args)
 
   if ((frame = find_frame_down (current_frame())))
     set_active_frame (frame);
+  else
+    show_frame_indicator();
 
   return cmdret_new (NULL, RET_SUCCESS);
 }
@@ -3734,6 +3738,8 @@ cmd_focusleft (int interactive, struct cmdarg **args)
 
   if ((frame = find_frame_left (current_frame())))
     set_active_frame (frame);
+  else
+    show_frame_indicator();
 
   return cmdret_new (NULL, RET_SUCCESS);
 }
@@ -3745,6 +3751,8 @@ cmd_focusright (int interactive, struct cmdarg **args)
 
   if ((frame = find_frame_right (current_frame())))
     set_active_frame (frame);
+  else
+    show_frame_indicator();
 
   return cmdret_new (NULL, RET_SUCCESS);
 }
