@@ -1,3 +1,9 @@
+2001-01-02  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* actions.h (show_clock): added prototype
+
+	* actions.c (show_clock): added
+
 2000-12-15  shawn  <sabetts@badbox.secure.basis.org>
 
 	* actions.c (maximize): increment size in hints->width_inc and hints->height_inc intervals

@@ -4,12 +4,14 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <X11/keysym.h>
+#include <string.h>
+#include <time.h>
 
 #include "ratpoison.h"
 
 /* Initialization of the key structure */
 rp_action key_actions[] = { {KEY_PREFIX, 0, 0, generate_prefix},
-                            {XK_c, -1, "xterm", spawn},
+                            {XK_c, -1, TERM_PROG, spawn},
 			    {XK_e, -1, "emacs", spawn},
 			    {XK_p, -1, 0, prev_window},
 			    {XK_n, -1, 0, next_window},
@@ -224,6 +226,40 @@ bye(void *dummy)
   PRINT_DEBUG ("Exiting\n");
   clean_up ();
   exit (EXIT_SUCCESS);
+}
+
+/* Show the current time on the bar. Thanks to 
+   Martin Samuelsson <cosis@lysator.liu.se> for the patch. */
+void
+show_clock (void *data)
+{
+  screen_info *s;
+  char *msg;
+  time_t timep;
+ 
+  msg = malloc(9);
+  if(msg == NULL)
+    {
+      PRINT_DEBUG ("Error allocation memory in show_clock()\n");
+      return;
+    }
+ 
+  timep = time(NULL);
+  if(timep == ((time_t)-1))
+    {
+      perror("In show_clock() ");
+      return;
+    }
+ 
+  strncpy(msg, ctime(&timep) + 11, 8); /* FIXME: a little bit hardcoded looking */
+  msg[8] = '\0';
+ 
+  if (rp_current_window) 
+    {
+      s = rp_current_window->scr;
+      display_msg_in_bar (s, msg);
+    }
+  free(msg);
 }
 
 void
