@@ -390,7 +390,6 @@ static void
 handle_key (screen_info *s)
 {
   char *keysym_name;
-  char *msg;
   rp_action *key_action;
   int revert;			
   Window fwin;			/* Window currently in focus */
@@ -430,19 +429,12 @@ handle_key (screen_info *s)
     }
   else
     {
-      keysym_name = keysym_to_string (keysym, mod);
-      msg = (char *) xmalloc ( strlen ( keysym_name ) + 20 );
-
-      snprintf (msg, strlen (keysym_name) + 13, "%s unbound key!", keysym_name);
-      free (keysym_name);
-
-      PRINT_DEBUG ("%s\n", msg);
-
       /* No key match, notify user. */
       XSetInputFocus (dpy, fwin, revert, CurrentTime);
-      message (msg);
 
-      free (msg);
+      keysym_name = keysym_to_string (keysym, mod);
+      marked_message_printf (0, 0, " %s unbound key ", keysym_name);
+      free (keysym_name);
     }
 
 #ifdef USE_WAITFORKEY_CURSOR

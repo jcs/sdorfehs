@@ -1,5 +1,8 @@
 2001-08-27  Shawn  <sabetts@hotdog>
 
+	* src/events.c (handle_key): use marked_message_printf to notify
+	user of an unbound key.
+
 	* src/messages.h (MESSAGE_RAISE_TRANSIENT): new message
 	(MESSAGE_RAISE_WINDOW): likewise
 	(MESSAGE_MAP_TRANSIENT): likewise
