@@ -184,7 +184,7 @@ load_rc_file (char *filename)
 
   if ((rcfile = fopen (filename, "r")) == NULL)
     {
-      fprintf (stderr, "ratpoison: could not open %s\n", filename);
+      PRINT_DEBUG ("ratpoison: could not open %s\n", filename);
     }
   else
     {
@@ -209,7 +209,7 @@ load_rc_file (char *filename)
 
 	  if (feof(rcfile) || (*(line + strlen(line) - 1) == '\n'))
 	    {
-	      fprintf (stderr, "read line: %s\n", line);
+	      PRINT_DEBUG ("rcfile line: %s\n", line);
 
 	      /* do it */
 	      command (line);
