@@ -455,11 +455,21 @@ is_transient_ancestor (rp_window *win, rp_window *transient_for)
 #endif
 
 /* In the current frame, set the active window to win. win will have focus. */
+void set_active_window (rp_window *win)
+{
+  set_active_window_body(win, 0); 
+}
+
+void set_active_window_force (rp_window *win)
+{
+  set_active_window_body(win, 1);
+}
+
 void
-set_active_window (rp_window *win)
+set_active_window_body (rp_window *win, int force)
 {
   rp_window *last_win;
-  rp_frame *frame;
+  rp_frame *frame, *last_frame = NULL;
 
   if (win == NULL) return;
 
@@ -474,6 +484,54 @@ set_active_window (rp_window *win)
     {
       frame = screen_get_frame (win->scr, win->scr->current_frame);
     }
+
+  if (frame->dedicated && !force)
+    {
+      /* Try to find a non-dedicated frame.  */
+      rp_frame *cur;
+      rp_screen *scr;
+      int done;	  
+
+      scr = (rp_have_xinerama)?&screens[rp_current_screen]:win->scr;
+      done = 0;
+
+      /* Try the only / current screen... */
+      for (cur = list_next_entry (frame, &scr->frames, node); 
+	   cur != frame && !done; 
+	   cur = list_next_entry (cur, &scr->frames, node))
+	{
+	  if (!cur->dedicated)
+	    {
+	      set_active_frame (cur);
+	      last_frame = frame;
+	      frame = cur;
+	      done = 1;
+	    }
+	}
+
+      /* If we have Xinerama, we can check *all* screens... */
+      if (rp_have_xinerama && !done)
+	{
+	  int i;
+
+	  for (i=0; i<num_screens && !done; i++)
+	    {
+	      if (scr == &screens[i]) continue;
+	      list_for_each_entry (cur,&screens[i].frames,node)
+		{
+		  if (!cur->dedicated)
+		    {
+		      set_active_frame (cur);
+		      last_frame = frame;
+		      frame = cur;
+		      done = 1;	/* Break outer loop. */
+		      break;	/* Break inner loop. */
+		    }
+		}
+	    }
+	}
+    }
+
   last_win = set_frames_window (frame, win);
 
   if (last_win) PRINT_DEBUG (("last window: %s\n", window_name (last_win)));
@@ -501,6 +559,10 @@ set_active_window (rp_window *win)
   update_window_names (win->scr);
 
   XSync (dpy, False);
+
+  /* If we switched frame, go back to the old one. */
+  if (last_frame)
+    set_active_frame (last_frame);
 
   /* Call the switch window hook */
   hook_run (&rp_switch_win_hook);

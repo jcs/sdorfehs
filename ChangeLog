@@ -1,5 +1,76 @@
 2004-11-18  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/actions.c (set_vars): add maxundos
+	(push_frame_undo): new function
+	(pop_frame_undo): likewise
+	(initialize_default_keybindings): add binding for "undo"
+	(initialize_default_keybindings): add def alias for maxundos
+	(cmd_other): call set_active_window_force instead of
+	set_active_window
+	(cmd_v_split): push the frame set
+	(cmd_h_split): likewise
+	(cmd_only): likewise
+	(cmd_remove): likewise
+	(cmd_shrink): likewise
+	(cmd_tmpwm): likewise
+	(cmd_license): update copyright. Add build date and time.
+	(cmd_fselect): simplify code that returns the frame selected.
+	(fdump): new function
+	(cmd_fdump): call fdump to dump the screen's frame set.
+	(frestore): new function
+	(cmd_frestore): call frestore to restore the screen's frame set.
+	(cmd_sfdump): new function
+	(cmd_sdump): likewise
+	(set_maxundos): likewise
+	(cmd_cnext): likewise
+	(cmd_cprev): likewise
+	(cmd_inext): likewise
+	(cmd_iprev): likewise
+	(cmd_cother): likewise
+	(cmd_iother): likewise
+	(cmd_undo): likewise
+	(cmd_prompt): likewise
+	(cmd_describekey): likewise
+	(cmd_dedicate): likewise
+
+	* src/main.c (init_defaults): init maxundos to 20
+	(clean_up): free the undo history lists
+
+	* src/window.h (set_active_window_body): new function
+	(set_active_window_force): likewise
+
+	* src/window.c (set_active_window): new function
+	(set_active_window_force): likewise
+	(set_active_window_body): renamed from set_active_window
+	(set_active_window_body): Add code to handle dedicated frames.
+
+
+	* src/screen.h (screen_dump): new prototype
+
+	* src/screen.c (screen_dump): new function
+
+	* src/linkedlist.h (list_last): new macro
+
+	* src/group.h (group_last_window_by_class_complement): new prototype
+	(group_last_window_by_class): likewise
+
+	* src/group.c (group_last_window_by_class): new function
+	(group_last_window_by_class_complement): likewise
+
+	* src/globals.h (rp_frame_undos): new extern.
+	(rp_num_frame_undos): likewise
+
+	* src/globals.c (rp_frame_undos): new list.
+	(rp_num_frame_undos): new global
+
+	* src/frame.c (frame_new): init f->dedicated to 0.
+
+	* src/data.h (struct rp_frame): add dedicated member.
+	(struct rp_defaults): add maxundos member.
+	(struct rp_frame_undo): new struct.
+
+	* src/actions.c: new commands, cnext, cother, cprev, 
+
 	* src/window.c (print_window_information): add argument,
 	group. print the window's number in the group. All callers
 	updated.

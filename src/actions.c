@@ -120,6 +120,19 @@ static user_command user_commands[] =
     {"vsplit",		cmd_v_split,		arg_STRING},
     {"warp",		cmd_warp,		arg_STRING},
     {"windows", 	cmd_windows, 		arg_VOID},
+    {"cnext",           cmd_cnext,              arg_VOID},
+    {"cother",          cmd_cother,             arg_VOID},
+    {"cprev",           cmd_cprev,              arg_VOID},
+    {"dedicate",        cmd_dedicate,           arg_VOID},
+    {"describekey",     cmd_describekey,        arg_STRING},
+    {"focusprev",       cmd_prev_frame,         arg_VOID},
+    {"inext",           cmd_inext,              arg_VOID},
+    {"iother",          cmd_iother,             arg_VOID},
+    {"iprev",           cmd_iprev,              arg_VOID},
+    {"prompt",          cmd_prompt,              arg_STRING},
+    {"sdump",           cmd_sdump,              arg_VOID},
+    {"sfdump",          cmd_sfdump,             arg_VOID},
+    {"undo",            cmd_undo,               arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to help debug ratpoison. */
@@ -161,8 +174,10 @@ static char * set_bgcolor (char *data);
 static char * set_barpadding (char *data);
 static char * set_winliststyle (char *data);
 static char * set_framesels (char *data);
+static char * set_maxundos (char *data);
 static struct set_var set_vars[] =
   { {"resizeunit", 	set_resizeunit},
+    {"maxundos", 	set_maxundos},
     {"wingravity", 	set_wingravity},
     {"transgravity", 	set_transgravity},
     {"maxsizegravity", 	set_maxsizegravity},
@@ -191,6 +206,35 @@ typedef struct
 static alias_t *alias_list;
 static int alias_list_size;
 static int alias_list_last;
+
+static char *frestore (char *data, rp_screen *s);
+static char *fdump (rp_screen *screen);
+
+static void 
+push_frame_undo(rp_screen *screen)
+{
+  rp_frame_undo *cur;
+  if (rp_num_frame_undos > defaults.maxundos)
+    {
+      /* Delete the oldest node */
+      list_last (cur, &rp_frame_undos, node);
+      pop_frame_undo (cur);
+    }
+  cur = xmalloc (sizeof(rp_frame_undo));
+  cur->frames = fdump (screen);
+  cur->screen = screen;
+  list_add (&cur->node, &rp_frame_undos);
+  rp_num_frame_undos++;		/* increment counter */
+}
+
+void
+pop_frame_undo (rp_frame_undo *u)
+{
+  if (!u) return;
+  if (u->frames) free (u->frames);
+  list_del (&(u->node));
+  rp_num_frame_undos--;		/* decrement counter */
+}
 
 rp_action*
 find_keybinding_by_action (char *action, rp_keymap *map)
@@ -483,6 +527,7 @@ initialize_default_keybindings (void)
   add_keybinding (XK_r, 0, "resize", map);
   add_keybinding (XK_r, RP_CONTROL_MASK, "resize", map);
   add_keybinding (XK_question, 0, "help " ROOT_KEYMAP, map);
+  add_keybinding (XK_underscore, RP_CONTROL_MASK, "undo", map);
 
   add_alias ("unbind", "definekey " ROOT_KEYMAP);
   add_alias ("bind", "definekey " ROOT_KEYMAP);
@@ -504,6 +549,7 @@ initialize_default_keybindings (void)
   add_alias ("defbarpadding", "set barpadding");
   add_alias ("defwinliststyle", "set winliststyle");
   add_alias ("defframesels", "set framesels");
+  add_alias ("defmaxundos", "set maxundos");
 }
 
 void
@@ -922,7 +968,7 @@ cmd_other (int interactive, char *data)
   if (!w)
     message (MESSAGE_NO_OTHER_WINDOW);
   else
-    set_active_window (w);
+    set_active_window_force (w);
 
   return NULL;
 }
@@ -1674,6 +1720,7 @@ cmd_v_split (int interactive, char *data)
   rp_frame *frame;
   int pixels;
 
+  push_frame_undo (current_screen()); /* fdump to stack */
   frame = current_frame();
 
   /* Default to dividing the frame in half. */
@@ -1696,6 +1743,7 @@ cmd_h_split (int interactive, char *data)
   rp_frame *frame;
   int pixels;
 
+  push_frame_undo (current_screen()); /* fdump to stack */
   frame = current_frame();
 
   /* Default to dividing the frame in half. */
@@ -1715,6 +1763,7 @@ cmd_h_split (int interactive, char *data)
 char *
 cmd_only (int interactive, char *data)
 {
+  push_frame_undo (current_screen()); /* fdump to stack */
   remove_all_splits();
   maximize (current_window());
 
@@ -1726,6 +1775,8 @@ cmd_remove (int interactive, char *data)
 {
   rp_screen *s = current_screen();
   rp_frame *frame;
+
+  push_frame_undo (current_screen()); /* fdump to stack */
 
   if (num_frames(s) <= 1)
     {
@@ -1748,6 +1799,7 @@ cmd_remove (int interactive, char *data)
 char *
 cmd_shrink (int interactive, char *data)
 {
+  push_frame_undo (current_screen()); /* fdump to stack */
   resize_shrink_to_window (current_frame());
   return NULL;
 }
@@ -2036,9 +2088,9 @@ cmd_license (int interactive, char *data)
   int y = 10;
   int i;
   int max_width = 0;
-  char *license_text[] = { PACKAGE " " VERSION,
+  char *license_text[] = { PACKAGE " " VERSION, "(built " __DATE__ " " __TIME__ ")",
 			   "",
-			   "Copyright (C) 2000, 2001 Shawn Betts",
+			   "Copyright (C) 2000-2004 Shawn Betts",
 			   "",
 			   "ratpoison is free software; you can redistribute it and/or modify ",
 			   "it under the terms of the GNU General Public License as published by ",
@@ -3418,6 +3470,7 @@ cmd_tmpwm (int interactive, char *data)
   int pid;
   int i;
 
+  push_frame_undo (current_screen()); /* fdump to stack */
   if (data == NULL)
     {
       message (" tmpwm: one argument required ");
@@ -3642,17 +3695,8 @@ cmd_fselect (int interactive, char *data)
   frame = find_frame_number (fnum);
   if (frame)
     {
-      char *s;
-      struct sbuf *sb;
-
-      /* Return the frame number that was selected. */
-      sb = sbuf_new(0);
-      sbuf_printf (sb, "%d", fnum);
-      s = sbuf_get(sb);
-      free (sb);
-
       set_active_frame (frame);
-      return s;
+      return xsprintf("%d", frame->number);
     }
   else
     {
@@ -3661,8 +3705,8 @@ cmd_fselect (int interactive, char *data)
     }
 }
 
-char *
-cmd_fdump (int interactively, char *data)
+static char *
+fdump (rp_screen *screen)
 {
   struct sbuf *s;
   char *tmp;
@@ -3671,7 +3715,7 @@ cmd_fdump (int interactively, char *data)
   s = sbuf_new (0);
 
   /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
-  list_for_each_entry (cur, &current_screen()->frames, node)
+  list_for_each_entry (cur, &(screen->frames), node)
     {
       char *tmp;
 
@@ -3687,9 +3731,33 @@ cmd_fdump (int interactively, char *data)
 }
 
 char *
-cmd_frestore (int interactively, char *data)
+cmd_fdump (int interactively, char *data)
 {
-  rp_screen *s = current_screen();
+  if (!data)
+    {
+      return fdump (current_screen());
+    }
+  else
+    {
+      /* assert (NULL != data); */
+      int snum;
+      if (1 != sscanf (data, "%d", &snum) 
+	  || snum < 0 
+	  || num_screens <= snum)
+	{
+	  message (" fdump: invalid argument ");    
+	  return NULL;
+	}
+      else
+	{
+	  return fdump (&screens[snum]);
+	}
+    }
+}
+
+static char *
+frestore (char *data, rp_screen *s)
+{
   char *token;
   char *dup;
   rp_frame *new, *cur;
@@ -3788,6 +3856,13 @@ cmd_frestore (int interactively, char *data)
 
   PRINT_DEBUG (("Done.\n"));
   return NULL;
+}
+
+char *
+cmd_frestore (int interactively, char *data)
+{
+  push_frame_undo (current_screen()); /* fdump to stack */
+  return frestore (data, current_screen());
 }
 
 char *
@@ -4517,3 +4592,373 @@ cmd_set (int interactive, char *data)
     free (rest);
   return NULL;
 }
+
+char *
+cmd_sfdump (int interactively, char *data)
+{
+  struct sbuf *s;
+  char *tmp, *tmp2;
+  rp_frame *cur;
+
+  s = sbuf_new (0);
+
+  register int i;
+  for (i=0; i<num_screens; i++)
+    {
+      tmp2 = xsprintf (" %d,", (rp_have_xinerama)?(screens[i].xine_screen_num):(screens[i].screen_num));
+
+      /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
+      list_for_each_entry (cur, &(screens[i].frames), node)
+	{
+	  char *tmp;
+
+	  tmp = frame_dump (cur);
+	  sbuf_concat (s, tmp);
+	  sbuf_concat (s, tmp2);
+	  free (tmp);
+	}
+
+      free (tmp2);
+    }
+  tmp = sbuf_get (s);
+  free (s);
+  return tmp;
+}
+
+char *
+cmd_sdump (int interactive, char *data)
+{
+  /* assert(!data); */
+  struct sbuf *s;
+  char *tmp;
+  register int i;
+
+  s = sbuf_new (0);
+  for (i=0; i<num_screens; ++i)
+  {
+    tmp = screen_dump (&screens[i]);
+    sbuf_concat (s, tmp);
+    if (i + 1 != num_screens)	/* No trailing comma. */
+      sbuf_concat (s, ",");
+    free (tmp);
+  }
+
+  tmp = sbuf_get (s);
+  free (s);
+  return tmp;
+}
+
+static char *
+set_maxundos (char *data)
+{
+  int tmp;
+  rp_frame_undo *cur;
+
+  if (!data)
+    return xsprintf ("%d", defaults.maxundos);
+
+  if (1 != sscanf (data, "%d", &tmp) || tmp < 0)
+    {
+      message (" defmaxundos: invalid argument ");
+      return NULL;
+    }
+
+  defaults.maxundos = tmp;
+
+  /* Delete any superfluous undos */
+  while (rp_num_frame_undos > defaults.maxundos)
+    {
+      /* Delete the oldest node */
+      list_last (cur, &rp_frame_undos, node);
+      pop_frame_undo (cur);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_cnext (int interactive, char *data)
+{
+  rp_window *cur, *last, *win;
+
+  cur = current_window();
+  if (!cur || !cur->res_class)	/* Can't be done. */
+    return cmd_next (interactive, data);
+
+  /* CUR !in cycle list, so LAST marks last node. */
+  last = group_prev_window (rp_current_group, cur);
+
+  if (last)		
+    for (win = group_next_window (rp_current_group, cur);
+	 win;
+	 win = group_next_window (rp_current_group, win))
+      {
+	if (win->res_class
+	    && strcmp (cur->res_class, win->res_class))
+	  {
+	    set_active_window_force (win);
+	    return NULL;
+	  }
+
+	if (win == last) break;
+      }
+
+  message (MESSAGE_NO_OTHER_WINDOW);
+  return NULL;
+}
+
+char *
+cmd_cprev (int interactive, char *data)
+{
+  rp_window *cur, *last, *win;
+
+  cur = current_window();
+  if (!cur || !cur->res_class)	/* Can't be done. */
+    return cmd_next (interactive, data);
+
+  /* CUR !in cycle list, so LAST marks last node. */
+  last = group_next_window (rp_current_group, cur);
+
+  if (last)		
+    for (win = group_prev_window (rp_current_group, cur);
+	 win;
+	 win = group_prev_window (rp_current_group, win))
+      {
+	if (win->res_class
+	    && strcmp (cur->res_class, win->res_class))
+	  {
+	    set_active_window_force (win);
+	    return NULL;
+	  }
+
+	if (win == last) break;
+      }
+
+  message (MESSAGE_NO_OTHER_WINDOW);
+  return NULL;
+}
+
+char *
+cmd_inext (int interactive, char *data)
+{
+  rp_window *cur, *last, *win;
+
+  cur = current_window();
+  if (!cur || !cur->res_class)	/* Can't be done. */
+    return cmd_next (interactive, data);
+
+  /* CUR !in cycle list, so LAST marks last node. */
+  last = group_prev_window (rp_current_group, cur);
+
+  if (last)		
+    for (win = group_next_window (rp_current_group, cur);
+	 win;
+	 win = group_next_window (rp_current_group, win))
+      {
+	if (win->res_class
+	    && !strcmp (cur->res_class, win->res_class))
+	  {
+	    set_active_window_force (win);
+	    return NULL;
+	  }
+
+	if (win == last) break;
+      }
+
+  message (MESSAGE_NO_OTHER_WINDOW);
+  return NULL;
+}
+
+char *
+cmd_iprev (int interactive, char *data)
+{
+  rp_window *cur, *last, *win;
+
+  cur = current_window();
+  if (!cur || !cur->res_class)	/* Can't be done. */
+    return cmd_next (interactive, data);
+
+  /* CUR !in cycle list, so LAST marks last node. */
+  last = group_next_window (rp_current_group, cur);
+
+  if (last)		
+    for (win = group_prev_window (rp_current_group, cur);
+	 win;
+	 win = group_prev_window (rp_current_group, win))
+      {
+	if (win->res_class
+	    && !strcmp (cur->res_class, win->res_class))
+	  {
+	    set_active_window_force (win);
+	    return NULL;
+	  }
+	
+	if (win == last) break;
+      }
+
+  message (MESSAGE_NO_OTHER_WINDOW);
+  return NULL;
+}
+
+char *
+cmd_cother (int interactive, char *data)
+{
+  rp_window *cur, *w;
+
+  cur = current_window();
+  w = group_last_window_by_class (rp_current_group, cur->res_class);
+
+  if (!w)
+    message (MESSAGE_NO_OTHER_WINDOW);
+  else
+    set_active_window_force (w);
+
+  return NULL;
+}
+
+char *
+cmd_iother (int interactive, char *data)
+{
+  rp_window *cur, *w;
+
+  cur = current_window();
+  w = group_last_window_by_class_complement (rp_current_group, cur->res_class);
+
+  if (!w)
+    message (MESSAGE_NO_OTHER_WINDOW);
+  else
+    set_active_window_force (w);
+
+  return NULL;
+}
+
+char *
+cmd_undo (int interactive, char *data)
+{
+  rp_frame_undo *cur;
+
+  list_first (cur, &rp_frame_undos, node);
+  if (!cur)
+    {
+      message (" No more undo information available ");
+      return NULL;
+    }
+  else
+    {
+      char *ret;
+
+      ret = frestore (cur->frames, cur->screen);
+      /* Delete the newest node */
+      pop_frame_undo (cur);
+      return ret;
+    }
+}
+
+char *
+cmd_prompt (int interactive, char *data)
+{
+  char *query, *ret, *prefix;
+
+  if (interactive) return NULL;
+
+  if (NULL == data)
+    ret = get_input(MESSAGE_PROMPT_COMMAND, trivial_completions);
+  else 
+    {
+      prefix = strchr (data, ':');
+      if (prefix)
+	{
+	  prefix++; 		/* Don't return the colon. */
+	  query = xmalloc (prefix - data + 1);
+	  strncpy (query, data, prefix - data);
+	  query[prefix - data] = 0;	/* null terminate */
+	  ret = get_more_input (query, prefix, trivial_completions);
+	  free (query);
+	}
+      else
+	{
+	  ret = get_input (data, trivial_completions);
+	}
+    }
+  return ret;
+}
+
+char *
+cmd_describekey (int interactive, char *data)
+{
+  char *keysym_name;
+  rp_action *key_action;
+  KeySym keysym;		/* Key pressed */
+  unsigned int mod;		/* Modifiers */
+  int rat_grabbed = 0;
+  rp_keymap *map;
+
+  if (data == NULL)
+    {
+      message (" readkey: keymap expected ");
+      return NULL;
+    }
+
+  map = find_keymap (data);
+  if (map == NULL)
+    {
+      marked_message_printf (0, 0, " readkey: Unknown keymap '%s' ", data);
+      return NULL;
+    }
+
+  XGrabKeyboard (dpy, current_screen()->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
+
+  /* Change the mouse icon to indicate to the user we are waiting for
+     more keystrokes */
+  if (defaults.wait_for_key_cursor)
+    {
+      grab_rat();
+      rat_grabbed = 1;
+    }
+
+  read_key (&keysym, &mod, NULL, 0);
+  XUngrabKeyboard (dpy, CurrentTime);
+
+  if (rat_grabbed)
+    ungrab_rat();
+
+  if ((key_action = find_keybinding (keysym, x11_mask_to_rp_mask (mod), map)))
+    {
+      char *result;
+      result = cmd_echo (1, key_action->data);
+      
+      /* Gobble the result. */
+      if (result)
+	free (result);
+    }
+  else
+    {
+      /* No key match, notify user. */
+      keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
+      marked_message_printf (0, 0, " %s unbound key ", keysym_name);
+      free (keysym_name);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_dedicate (int interactive, char *data)
+{
+  rp_frame *f;
+  
+  f = current_frame();
+  if (!f) return NULL;
+
+  if (data)
+    /* Whatever you set it to. */
+    f->dedicated = atoi(data);
+  else
+    /* Just toggle it, rather than on or off. */
+    f->dedicated = !(f->dedicated);
+
+  marked_message_printf (0, 0, " Consider this frame %s. ", (f->dedicated)?"chaste":"promiscuous");
+
+  return NULL;
+}
+

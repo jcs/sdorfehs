@@ -499,6 +499,7 @@ init_defaults ()
 
   defaults.history_size = 20;
   defaults.frame_selectors = xstrdup ("");
+  defaults.maxundos = 20;
 }
 
 int
@@ -704,6 +705,15 @@ clean_up ()
       free_screen (&screens[i]);
     }
   free (screens);
+
+  /* Delete the undo histories */
+  while (rp_num_frame_undos > 0)
+    {
+      /* Delete the oldest node */
+      rp_frame_undo *cur;
+      list_last (cur, &rp_frame_undos, node);
+      pop_frame_undo (cur);
+    }
 
   /* Free the global frame numset shared by all screens. */
   free (rp_frame_numset);

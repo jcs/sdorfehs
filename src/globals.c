@@ -87,7 +87,7 @@ struct rp_hook_db_entry rp_hook_db[]=
    {"quit", 		&rp_quit_hook},
    {"restart", 		&rp_restart_hook},
    {NULL, NULL}};
-				   
+
 void
 set_rp_window_focus (rp_window *win)
 {
@@ -103,3 +103,6 @@ set_window_focus (Window window)
   XSetInputFocus (dpy, window, 
 		  RevertToPointerRoot, CurrentTime);
 }
+
+LIST_HEAD (rp_frame_undos);
+int rp_num_frame_undos = 0;

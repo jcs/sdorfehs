@@ -65,4 +65,6 @@ void free_window_stuff ();
 
 rp_frame *win_get_frame (rp_window *win);
 
+void set_active_window_force (rp_window *win);
+void set_active_window_body (rp_window *win, int force);
 #endif /* ! _RATPOISON_LIST_H */

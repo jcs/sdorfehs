@@ -50,7 +50,11 @@ struct rp_frame
 
   /* For determining the last frame. */
   int last_access;
-  
+
+  /* Boolean that is set when a frame is 
+     `dedicated' (a.k.a. glued) to one window. */
+  unsigned int dedicated;
+
   struct list_head node;
 };
 
@@ -237,6 +241,9 @@ struct rp_defaults
   int history_size;
 
   char *frame_selectors;
+
+  /* How many frame sets to remember when undoing. */
+  int maxundos;
 };
 
 /* Information about a child process. */
@@ -324,5 +331,14 @@ struct rp_hook_db_entry
   char *name;
   struct list_head *hook;
 };
+
+typedef struct rp_frame_undo rp_frame_undo;
+struct rp_frame_undo
+{
+  char *frames;
+  rp_screen *screen;
+  struct list_head node;
+};
+
 
 #endif /* _RATPOISON_DATA_H */

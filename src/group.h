@@ -39,4 +39,6 @@ void groups_merge (rp_group *from, rp_group *to);
 
 void set_current_group (rp_group *g);
 
+rp_window *group_last_window_by_class (rp_group *g, char *class);
+rp_window *group_last_window_by_class_complement (rp_group *g, char *class);
 #endif

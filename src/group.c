@@ -508,3 +508,58 @@ group_delete_group (rp_group *g)
     }
 }
 
+/* Used by :cother / :iother  */
+rp_window *
+group_last_window_by_class (rp_group *g, char *class)
+{
+  int last_access = 0;
+  rp_window_elem *most_recent = NULL;
+  rp_window_elem *cur;
+  rp_screen *s = current_screen();
+
+  list_for_each_entry (cur, &g->mapped_windows, node)
+    {
+      if (cur->win->last_access >= last_access 
+	  && cur->win != current_window()
+	  && !find_windows_frame (cur->win)
+	  && (cur->win->scr == s || rp_have_xinerama)
+	  && strcmp(class, cur->win->res_class))
+	{
+	  most_recent = cur;
+	  last_access = cur->win->last_access;
+	}
+    }
+
+  if (most_recent)
+    return most_recent->win;
+  
+  return NULL;
+}
+
+/* Used by :cother / :iother  */
+rp_window *
+group_last_window_by_class_complement (rp_group *g, char *class)
+{
+  int last_access = 0;
+  rp_window_elem *most_recent = NULL;
+  rp_window_elem *cur;
+  rp_screen *s = current_screen();
+
+  list_for_each_entry (cur, &g->mapped_windows, node)
+    {
+      if (cur->win->last_access >= last_access 
+	  && cur->win != current_window()
+	  && !find_windows_frame (cur->win)
+	  && (cur->win->scr == s || rp_have_xinerama)
+	  && !strcmp(class, cur->win->res_class))
+	{
+	  most_recent = cur;
+	  last_access = cur->win->last_access;
+	}
+    }
+
+  if (most_recent)
+    return most_recent->win;
+  
+  return NULL;
+}

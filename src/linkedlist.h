@@ -57,6 +57,14 @@ void __list_add(struct list_head *new,
 		struct list_head *next);
 void prefetch(const void *x);
 
+/* Return the last element in the list. */
+#define list_last(last, head, member)				\
+{								\
+  last = list_entry((head)->prev, typeof(*last), member);	\
+  if (&last->member == (head))					\
+    last = NULL;						\
+}
+
 
 /**
  * container_of - cast a member of a structure out to the containing structure
@@ -180,3 +188,4 @@ void prefetch(const void *x);
   if (&first->member == (head))					\
     first = NULL;						\
 }
+

@@ -115,6 +115,7 @@ frame_new (rp_screen *s)
   f = xmalloc (sizeof (rp_frame));
   f->number = numset_request (s->frames_numset);
   f->last_access = 0;
+  f->dedicated = 0;
 
   return f;
 }

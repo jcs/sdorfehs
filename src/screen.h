@@ -39,4 +39,6 @@ void init_screens (int screen_arg, int screen_num);
 int is_rp_window_for_screen (Window w, rp_screen *s);
 int is_a_root_window (int w);
 
+char *screen_dump (rp_screen *screen);
+
 #endif

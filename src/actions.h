@@ -129,6 +129,20 @@ char *cmd_ratwarp (int interactive, char *data);
 char *cmd_ratclick (int interactive, char *data);
 char *cmd_ratrelwarp (int interactive, char *data);
 char *cmd_rathold (int interactive, char *data);
+char *cmd_cnext (int interactive, char *data);
+char *cmd_cother (int interactive, char *data);
+char *cmd_cprev (int interactive, char *data);
+char *cmd_dedicate (int interactive, char *data);
+char *cmd_describekey (int interactive, char *data);
+char *cmd_inext (int interactive, char *data);
+char *cmd_iother (int interactive, char *data);
+char *cmd_iprev (int interactive, char *data);
+char *cmd_prompt (int interactive, char *data);
+char *cmd_sdump (int interactive, char *data);
+char *cmd_sfdump (int interactively, char *data);
+char *cmd_undo (int interactive, char *data);
+void pop_frame_undo (rp_frame_undo *u);
+
 
 rp_keymap *find_keymap (char *name);
 void initialize_default_keybindings (void);

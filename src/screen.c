@@ -354,3 +354,24 @@ is_rp_window_for_screen(Window w, rp_screen *s)
     }
 }
 
+char *
+screen_dump (rp_screen *screen)
+{
+  char *tmp;
+  struct sbuf *s;
+  
+  s = sbuf_new (0);
+  sbuf_printf (s, "%d %d %d %d %d %d", 
+	       (rp_have_xinerama)?screen->xine_screen_num:screen->screen_num,
+	       screen->left,
+	       screen->top,
+	       screen->width,
+	       screen->height,
+	       (current_screen() == screen)?1:0 /* is current? */
+	       );
+
+  /* Extract the string and return it, and don't forget to free s. */
+  tmp = sbuf_get (s);
+  free (s);
+  return tmp;
+}
