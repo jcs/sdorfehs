@@ -1,9 +1,10 @@
 Source: ratpoison
 Section: x11
 Priority: extra
-Maintainer: Gergely Nagy <algernon@debian.org>
+Maintainer: Gergely Nagy and Jonathan Walther <algernon-krooger@people.debian.org>
 Build-Depends: debhelper (>= 2.0.89), xlibs-dev | xlib6g-dev
 Standards-Version: 3.5.6
+Uploaders: Gergely Nagy <algernon@debian.org>, Jonathan Walther <krooger@debian.org>
 
 Package: ratpoison
 Architecture: any
