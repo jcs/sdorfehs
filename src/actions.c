@@ -1565,19 +1565,17 @@ cmd_resize (int interactive, char *data)
      non-interactive version. */
   if (interactive && data == NULL)
     {
-      int nbytes, revert;
+      int nbytes;
       char buffer[513];
       unsigned int mod;
       KeySym c;
-      Window fwin;
       struct list_head *bk;
 
       /* If we haven't got at least 2 frames, there isn't anything to
 	 scale. */
       if (num_frames (s) < 2) return NULL;
 
-      XGetInputFocus (dpy, &fwin, &revert);
-      set_window_focus (s->key_window);
+      XGrabKeyboard (dpy, s->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
       /* Save the frameset in case the user aborts. */
       bk = screen_copy_frameset (s);
@@ -1623,7 +1621,7 @@ cmd_resize (int interactive, char *data)
       free (bk);
 
       hide_frame_indicator ();
-      set_window_focus (fwin);
+      XUngrabKeyboard (dpy, CurrentTime);
     }
   else
     {
@@ -1696,8 +1694,6 @@ cmd_license (int interactive, char *data)
 {
   rp_screen *s = current_screen();
   XEvent ev;
-  Window fwin;			/* Window currently in focus */
-  int revert;			
   int x = 10;
   int y = 10;
   int i;
@@ -1729,9 +1725,7 @@ cmd_license (int interactive, char *data)
 			   NULL};
 
   XMapRaised (dpy, s->help_window);
-
-  XGetInputFocus (dpy, &fwin, &revert);
-  set_window_focus (s->help_window);
+  XGrabKeyboard (dpy, s->help_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
   /* Find the longest line. */
   for(i=0; license_text[i]; i++)
@@ -1761,8 +1755,10 @@ cmd_license (int interactive, char *data)
 
   /* Wait for a key press. */
   XMaskEvent (dpy, KeyPressMask, &ev);
+
+  /* Revert focus. */
+  XUngrabKeyboard (dpy, CurrentTime);
   XUnmapWindow (dpy, s->help_window);
-  set_window_focus (fwin);
 
   /* The help window overlaps the bar, so redraw it. */
   if (current_screen()->bar_is_raised)
@@ -1778,8 +1774,6 @@ cmd_help (int interactive, char *data)
     {
       rp_screen *s = current_screen();
       XEvent ev;
-      Window fwin;			/* Window currently in focus */
-      int revert;			
       int i, old_i;
       int x = 10;
       int y = 0;
@@ -1788,9 +1782,7 @@ cmd_help (int interactive, char *data)
       char *keysym_name;
 
       XMapRaised (dpy, s->help_window);
-
-      XGetInputFocus (dpy, &fwin, &revert);
-      set_window_focus (s->help_window);
+      XGrabKeyboard (dpy, s->help_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
       XDrawString (dpy, s->help_window, s->normal_gc,
                    10, y + defaults.font->max_bounds.ascent,
@@ -1876,8 +1868,8 @@ cmd_help (int interactive, char *data)
         }
 
       XMaskEvent (dpy, KeyPressMask, &ev);
+      XUngrabKeyboard (dpy, CurrentTime);
       XUnmapWindow (dpy, s->help_window);
-      set_window_focus (fwin);
 
       /* The help window overlaps the bar, so redraw it. */
       if (current_screen()->bar_is_raised)
@@ -3191,8 +3183,6 @@ cmd_fselect (int interactive, char *data)
     {
       KeySym c;
       unsigned int mod;
-      Window fwin;
-      int revert;
       Window *wins;
       XSetWindowAttributes attr;
       int i;
@@ -3239,10 +3229,9 @@ cmd_fselect (int interactive, char *data)
       XSync (dpy, False);
 
       /* Read a key. */
-      XGetInputFocus (dpy, &fwin, &revert);
-      set_window_focus (s->key_window);
+      XGrabKeyboard (dpy, s->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
       read_key (&c, &mod, NULL, 0);
-      set_window_focus (fwin);
+      XUngrabKeyboard (dpy, CurrentTime);
 
       /* Destroy our number windows and free the array. */
       for (i=0; i<num_frames (s); i++)

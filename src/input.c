@@ -377,8 +377,6 @@ get_more_input (char *prompt, char *preinput,
   rp_screen *s = current_screen ();
   KeySym ch;
   unsigned int modifier;
-  int revert;
-  Window fwin;
   rp_input_line *line;
   char *final_input;
   edit_status status;
@@ -396,9 +394,7 @@ get_more_input (char *prompt, char *preinput,
 
   update_input_window (s, line);
 
-  XGetInputFocus (dpy, &fwin, &revert);
-  set_window_focus (s->input_window);
-  /* XSync (dpy, False); */
+  XGrabKeyboard (dpy, s->input_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
   for (;;)
     {
@@ -437,7 +433,8 @@ get_more_input (char *prompt, char *preinput,
   /* Clean up our line structure */
   input_line_free (line);
 
-  set_window_focus (fwin);
+  /* Revert focus. */
+  XUngrabKeyboard (dpy, CurrentTime);
   XUnmapWindow (dpy, s->input_window);
 
   return final_input;

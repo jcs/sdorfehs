@@ -1,3 +1,17 @@
+2003-08-30  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/input.c (get_more_input): use XGrabKeyboard and XUngrabKeyboard
+	for changing focus to read key presses.
+
+	* src/events.c (handle_key): use XGrabKeyboard and XUngrabKeyboard
+	for changing focus to read key presses.
+
+	* src/actions.c (cmd_resize): use XGrabKeyboard and
+	XUngrabKeyboard for changing focus to read key presses.
+	(cmd_license): likewise
+	(cmd_help): likewise
+	(cmd_fselect): likewise
+
 2003-08-29  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/window.c (give_window_focus): use set_rp_window_focus.

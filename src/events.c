@@ -367,8 +367,6 @@ handle_key (rp_screen *s)
 {
   char *keysym_name;
   rp_action *key_action;
-  int revert;			
-  Window fwin;			/* Window currently in focus */
   KeySym keysym;		/* Key pressed */
   unsigned int mod;		/* Modifiers */
   int rat_grabbed = 0;
@@ -383,8 +381,7 @@ handle_key (rp_screen *s)
   alarm (0);
   alarm_signalled = 0;
 
-  XGetInputFocus (dpy, &fwin, &revert);
-  set_window_focus (s->key_window);
+  XGrabKeyboard (dpy, s->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
   /* Change the mouse icon to indicate to the user we are waiting for
      more keystrokes */
@@ -398,8 +395,8 @@ handle_key (rp_screen *s)
   hook_run (&rp_prefix_hook);
 
   read_key (&keysym, &mod, NULL, 0);
+  XUngrabKeyboard (dpy, CurrentTime);
 
-  set_window_focus (fwin);
   if (rat_grabbed)
     ungrab_rat();
 
