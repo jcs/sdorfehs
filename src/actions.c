@@ -715,6 +715,15 @@ cmd_escape (void *data)
 	  action->state = 0;
 	}
 
+      /* Update the "other" keybinding */
+      action = find_keybinding(prefix_key.sym, prefix_key.state);
+      if (action != NULL)
+	{
+	  action->key = key->sym;
+	  action->state = key->state;
+	}
+
+
       /* Remove the grab on the current prefix key */
       for (cur = rp_mapped_window_sentinel->next; 
 	   cur != rp_mapped_window_sentinel; 

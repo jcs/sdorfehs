@@ -1,5 +1,7 @@
 2001-02-27  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* actions.c (cmd_escape): updates the "other" command keybinding
+
 	* manage.h (ungrab_prefix_key): new prototype
 	(grab_prefix_key): likewise
 
