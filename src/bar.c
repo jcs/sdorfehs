@@ -104,11 +104,11 @@ update_window_names (screen_info *s)
 
   sbuf_clear (bar_buffer);
 
-  for (w = rp_window_head; w; w = w->next)
+  for (w = rp_mapped_window_sentinel->next; 
+       w != rp_mapped_window_sentinel; 
+       w = w->next)
     {
       PRINT_DEBUG ("%d-%s\n", w->number, w->name);
-
-      if (w->state == STATE_UNMAPPED) continue;
 
       if (w == rp_current_window)
 	mark_start = strlen (sbuf_get (bar_buffer));

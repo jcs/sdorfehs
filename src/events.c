@@ -44,6 +44,7 @@ new_window (XCreateWindowEvent *e)
   if (e->override_redirect) return;
 
   s = find_screen (e->parent);
+
   win = find_window (e->window);
 
   if (s && !win && e->window != s->key_window && e->window != s->bar_window 
@@ -61,7 +62,9 @@ unmap_notify (XEvent *ev)
   rp_window *win;
 
   s = find_screen (ev->xunmap.event);
-  win = find_window (ev->xunmap.window);
+
+  /* FIXME: Should we only look in the mapped window list? */
+  win = find_window_in_list (ev->xunmap.window, rp_mapped_window_sentinel);
 
   if (s && win)
     {
@@ -72,6 +75,9 @@ unmap_notify (XEvent *ev)
       return_window_number (win->number);
       win->number = -1;
       win->state = STATE_UNMAPPED;
+
+      remove_from_list (win);
+      append_to_list (win, rp_unmapped_window_sentinel);
       
       /* Update the state of the actual window */
       ignore_badwindow = 1;

@@ -1,3 +1,39 @@
+2001-02-23  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* main.c (main): passes return value of find_window_other() to
+	set_active_window().
+
+	* list.h (remove_from_window_list): removed prototype
+	(find_window_in_list): new prototype
+	(append_to_list): likewise
+	(insert_into_list): likewise
+	(remove_from_list): likewise
+
+	* list.c: propogated use of rp_unmapped_window_sentinel and
+	rp_mapped_window_sentinel.
+	(find_window_in_list): new function
+	(find_window): calls find_window_in_list to search mapped and
+	unmapped window lists.
+	(remove_from_window_list): removed function
+	(init_window_list): initialized sentinels
+	(find_window_prev): searches only the mapped window list.
+	(find_window_next): likewise
+	(find_window_other): likewise
+	(append_to_list): new function
+	(insert_into_list): new function
+	(remove_from_list): new function
+
+	* events.c (unmap_notify): Searches only the mapped window
+	list. moves the window from the unmapped window list to the mapped
+	window list.
+
+	* data.h: removed rp_window_head and rp_window_tail, updated
+	dependant files.  Added rp_mapped_window_sentinel and
+	rp_unmapped_window_sentinel globals.
+
+	* bar.c (update_window_names): loops only through mapped window
+	list.
+
 2001-02-21  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* manage.c (manage): comment out broken sort_window_list_by_number

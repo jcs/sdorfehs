@@ -84,8 +84,28 @@ struct rp_action
 /*   void (*func)(void *); */
 };
 
-extern  rp_window *rp_window_head, *rp_window_tail;
-extern  rp_window *rp_current_window;
+/* These _sentinel pointers point to a special rp_window whose next
+   pointer points to the head of the list and whose prev pointer
+   points to the tail. This is done to simplify removing an element
+   from the list: since there are no head and tail global variable
+   pointers that need to be updated, functions that manipulate
+   elements in a list don't need to know what list they belong to. The
+   last element's next pointer points to the sentinel as does the
+   first element's prev pointer. An empty list is represented by the
+   sentinel's prev and next pointers pointing to itself. */
+
+/* A list of mapped windows. These windows show up in the window
+   list and have a number assigned to them. */
+extern rp_window *rp_mapped_window_sentinel;
+
+/* A list of unmapped windows. These windows do not have a number
+   assigned to them and are not visible/active. */
+extern rp_window *rp_unmapped_window_sentinel;
+
+/* Pointer to the currently focused window. Points to an element in
+   the mapped window list. NULL if there are no mapped windows. */
+extern rp_window *rp_current_window;
+
 extern screen_info *screens;
 extern int num_screens;
 

@@ -282,7 +282,7 @@ main (int argc, char *argv[])
   initialize_default_keybindings ();
 
   /* Set an initial window as active. */
-  set_active_window (rp_window_head);
+  set_active_window (find_window_other ());
   
   handle_events ();
 

@@ -26,7 +26,8 @@
 
 #include "ratpoison.h"
 
-rp_window *rp_window_head, *rp_window_tail;
+rp_window *rp_unmapped_window_sentinel;
+rp_window *rp_mapped_window_sentinel;
 rp_window *rp_current_window;
 
 /* Get the mouse position relative to the root of the specified window */
@@ -74,52 +75,43 @@ add_to_window_list (screen_info *s, Window w)
     }
   strcpy (new_window->name, "Unnamed");
 
-  if (rp_window_head == NULL)
-    {
-      /* The list is empty. */
-      rp_window_head = new_window;
-      rp_window_tail = new_window;
-      new_window->next = NULL;
-      return new_window;
-    }
-
-  /* Add the window to the head of the list. */
-  new_window->next = rp_window_head;
-  rp_window_head->prev = new_window;
-  rp_window_head = new_window;
+  /* Add the window to the end of the unmapped list. */
+  append_to_list (new_window, rp_unmapped_window_sentinel);
 
   return new_window;
 }
 
-/* Check to see if the window is already in our list of managed windows. */
+/* Check to see if the window is in the list of windows. */
 rp_window *
-find_window (Window w)
+find_window_in_list (Window w, rp_window *sentinel)
 {
   rp_window *cur;
 
-  for (cur = rp_window_head; cur; cur = cur->next)
-    if (cur->w == w) return cur;
+  for (cur = sentinel->next; cur != sentinel; cur = cur->next)
+    {
+      if (cur->w == w) return cur;
+    }
 
   return NULL;
 }
-      
-void
-remove_from_window_list (rp_window *w)
+
+/* Check to see if the window is in any of the lists of windows. */
+rp_window *
+find_window (Window w)
 {
-  if (rp_window_head == w) rp_window_head = w->next;
-  if (rp_window_tail == w) rp_window_tail = w->prev;
+  rp_window *win = NULL;
 
-  if (w->prev != NULL) w->prev->next = w->next;
-  if (w->next != NULL) w->next->prev = w->prev;
+  win = find_window_in_list (w, rp_mapped_window_sentinel);
 
-  /* set rp_current_window to NULL, so a dangling pointer is not
-     left. */
-  if (rp_current_window == w) rp_current_window = NULL;
+  if (!win) 
+    {
+      win = find_window_in_list (w, rp_unmapped_window_sentinel);
+    }
 
-  XFree (w->hints);
-  free (w);
-  PRINT_DEBUG ("Removed window from list.\n");
+  return win;
 }
+
+
 
 void
 set_current_window (rp_window *win)
@@ -130,7 +122,22 @@ set_current_window (rp_window *win)
 void
 init_window_list ()
 {
-  rp_window_head = rp_window_tail = NULL;
+  rp_mapped_window_sentinel = malloc (sizeof (rp_window));
+  rp_unmapped_window_sentinel = malloc (sizeof (rp_window));
+
+  if (!rp_mapped_window_sentinel
+      || !rp_unmapped_window_sentinel)
+    {
+      PRINT_ERROR ("Out of memory!\n");
+      exit (EXIT_FAILURE);
+    }
+
+  rp_mapped_window_sentinel->next = rp_mapped_window_sentinel;
+  rp_mapped_window_sentinel->prev = rp_mapped_window_sentinel;
+
+  rp_unmapped_window_sentinel->next = rp_unmapped_window_sentinel;
+  rp_unmapped_window_sentinel->prev = rp_unmapped_window_sentinel;
+
   rp_current_window = NULL;
 }
 
@@ -139,9 +146,11 @@ find_window_number (int n)
 {
   rp_window *cur;
 
-  for (cur=rp_window_head; cur; cur=cur->next)
+  for (cur = rp_mapped_window_sentinel->next; 
+       cur != rp_mapped_window_sentinel; 
+       cur = cur->next)
     {
-      if (cur->state == STATE_UNMAPPED) continue;
+/*       if (cur->state == STATE_UNMAPPED) continue; */
 
       if (n == cur->number) return cur;
     }
@@ -167,10 +176,12 @@ find_window_name (char *name)
 {
   rp_window *w;
 
-  for (w = rp_window_head; w; w = w->next)
+  for (w = rp_mapped_window_sentinel->next; 
+       w != rp_mapped_window_sentinel; 
+       w = w->next)
     {
-      if (w->state == STATE_UNMAPPED) 
-	continue;
+/*       if (w->state == STATE_UNMAPPED)  */
+/* 	continue; */
 
       if (str_comp (name, w->name, strlen (name))) 
 	return w;
@@ -180,58 +191,65 @@ find_window_name (char *name)
   return NULL;
 }
 
-/* return the previous window in the list */
+/* return the previous window in the list. Assumes window is in the
+   mapped window list. */
 rp_window*
 find_window_prev (rp_window *w)
 {
-  if (!(w || (w = rp_current_window)))
-    return NULL;
+  rp_window *prev;
 
-  w = w->prev;
-  if (w == NULL) 
-    w = rp_window_tail;
-  if (w->state == STATE_UNMAPPED) 
-    return find_window_prev (w);
-  else
-    return w;
+  if (!w) return NULL;
+
+  prev = w->prev;
+  
+  if (prev == rp_mapped_window_sentinel) 
+    {
+      prev = rp_mapped_window_sentinel->prev;
+      if (prev == w)
+	{
+	  return NULL;
+	}
+    }
+
+  return prev;
 }
 
-/* return the next window in the list */
+/* return the next window in the list. Assumes window is in the mapped
+   window list. */
 rp_window*
 find_window_next (rp_window *w)
 {
-  if (!(w || (w = rp_current_window)))
-    return NULL;
+  rp_window *next;
 
-  w = w->next;
-  if (w == NULL) 
-    w = rp_window_head;
-  if (w->state == STATE_UNMAPPED) 
-    return find_window_next (w);
-  else
-    return w;
+  if (!w) return NULL;
+
+  next = w->next;
+  
+  if (next == rp_mapped_window_sentinel) 
+    {
+      next = rp_mapped_window_sentinel->next;
+      if (next == w)
+	{
+	  return NULL;
+	}
+    }
+
+  return next;
 }
 
 rp_window *
 find_window_other ()
 {
   int last_access = 0;
-  rp_window *cur, *most_recent;
+  rp_window *most_recent = NULL;
+  rp_window *cur;
 
-  /* Find the first mapped window */
-  for (most_recent = rp_window_head; most_recent; most_recent=most_recent->next)
-    {
-      if (most_recent->state == STATE_MAPPED) break;
-    }
-
-  /* If there are no mapped windows, don't bother with the next part */
-  if (most_recent == NULL) return NULL;
-
-  for (cur=rp_window_head; cur; cur=cur->next)
+  for (cur = rp_mapped_window_sentinel->next; 
+       cur != rp_mapped_window_sentinel; 
+       cur = cur->next)
     {
       if (cur->last_access >= last_access 
-	  && cur != rp_current_window 
-	  && cur->state == STATE_MAPPED) 
+	  && cur != rp_current_window)
 	{
 	  most_recent = cur;
 	  last_access = cur->last_access;
@@ -293,6 +311,46 @@ find_window_other ()
 /*       swap_list_elements (i, smallest); */
 /*     } */
 /* } */
+
+void
+append_to_list (rp_window *win, rp_window *sentinel)
+{
+  win->prev = sentinel->prev;
+  sentinel->prev->next = win;
+  sentinel->prev = win;
+  win->next = sentinel;
+}
+
+/* Assumes the list is sorted by increasing number. Inserts win into
+   to Right place to keep the list sorted. */
+void
+insert_into_list (rp_window *win, rp_window *sentinel)
+{
+  rp_window *cur;
+
+  for (cur = sentinel->next; cur != sentinel; cur = cur->next)
+    {
+      if (cur->number > win->number)
+	{
+	  win->next = cur;
+	  win->prev = cur->prev;
+
+	  cur->prev->next = win;
+	  cur->prev = win;
+
+	  return;
+	}
+    }
+
+  append_to_list (win, sentinel);
+}
+
+void
+remove_from_list (rp_window *win)
+{
+  win->next->prev = win->prev;
+  win->prev->next = win->next;
+}
 
 static void
 save_mouse_position (rp_window *win)

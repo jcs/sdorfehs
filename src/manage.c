@@ -196,6 +196,10 @@ manage (rp_window *win, screen_info *s)
   win->state = STATE_MAPPED;
   win->number = get_unique_window_number ();
 
+  /* Put win in the mapped window list */
+  remove_from_list (win);
+  insert_into_list (win, rp_mapped_window_sentinel);
+
 /*   sort_window_list_by_number(); */
 
   PRINT_DEBUG ("window '%s' managed.\n", win->name);
@@ -205,13 +209,23 @@ void
 unmanage (rp_window *w)
 {
   return_window_number (w->number);
-  remove_from_window_list (w);
+  remove_from_list (w);
+  XFree (w->hints);
+
+  free (w);
 
 #ifdef AUTO_CLOSE
-  if (!rp_current_window)
+  if (rp_mapped_window_sentinel->next == rp_mapped_window_sentinel
+      && rp_mapped_window_sentinel->prev == rp_mapped_window_sentinel)
     {
-      /* If rp_current_window is NULL then we have run out of managed
-	 windows, So kill ratpoison. */
+      /* If the mapped window list is empty then we have run out of
+ 	 managed windows, So kill ratpoison. */
+
+      /* FIXME: The unmapped window list may also have to be checked
+	 in the case that the only mapped window in unmapped and
+	 shortly after another window is mapped most likely by the
+	 same app. */
+
       send_kill();
     }
 #endif
