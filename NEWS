@@ -1,5 +1,11 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes since 1.2.0-beta5
+** command return status
+If a command the user executed (with the exec command) returns with a
+non-zero exit status, the command and exit status are reported in a
+message.
+
 * Changes since 1.2.0-beta4
 ** new commands unmanage and clrunmanaged
 Instead of editing conf.h you can use these commands to dynamically
