@@ -5,9 +5,9 @@
 # Tue Dec  4 16:15:53 PST 2001
 #
 # currently generates bindings for:
-# * Perl        (Ratpoison.pm)
-# * Emacs Lisp  (ratpoison-cmd.el)
-#
+# * Perl       (Ratpoison.pm)
+# * Emacs Lisp (ratpoison-cmd.el)
+# * Ruby       (ratpoison.rb) [Doug Kearns <djkea2@mugc.its.monash.edu.au>]
 # add more languages!
 #
 # Bindings are just very thin wrappers, no argument checking is done.
@@ -22,6 +22,11 @@
 # ;;; elisp
 # (require 'ratpoison-cmd)
 # (ratpoison-echo "hello world")
+#
+# #!ruby
+# require "ratpoison"
+# Ratpoison.echo ("hello world")
+#
 
 $\="\n";
 
@@ -35,13 +40,15 @@ open ACTIONS_C or die "Can't open $ACTIONS_C";
 # open target files
 $PERL_FILE="./Ratpoison.pm";
 $ELISP_FILE="./ratpoison-cmd.el";
+$RUBY_FILE="./ratpoison.rb";
 open PERL, ">$PERL_FILE" or die "Can't create $PERL_FILE";
 open ELISP, ">$ELISP_FILE" or die "Can't create $ELISP_FILE";
+open RUBY, ">$RUBY_FILE" or die "Can't create $RUBY_FILE";
 
 # PERL preamble
 print PERL 'package Ratpoison;';
 print PERL '$RATPOISON="',$RATPOISON,'";';
-print PERL 'sub rp_cmd { return `$RATPOISON -c "@_"`; }';
+print PERL 'sub command { return `$RATPOISON -c "@_"`; }';
 
 # ELISP preamble
 print ELISP '(defvar ratpoison-program "',$RATPOISON,'")';
@@ -66,6 +73,18 @@ print ELISP <<PREAMBLE;
 				    (point-max)))))
 PREAMBLE
 
+# RUBY preamble
+print RUBY  <<PREAMBLE;
+module Ratpoison
+
+  RATPOISON="$RATPOISON"
+
+  def command (command, *args)
+    return `#{RATPOISON} -c "#{command} #{args.join(' ')}"`
+  end
+  module_function :command
+PREAMBLE
+
 # bindings
 while (<ACTIONS_C>) {
     if (m!/\*\@begin !) {
@@ -74,8 +93,12 @@ while (<ACTIONS_C>) {
 	    last if (m!/\*\@end !);
 	    if (/{\"(.+)\".+},/) {
 	      $nbindings++;
-	      print PERL "sub $1 { return rp_cmd (\"$1\", \@_); }";
+	      print PERL "sub $1 { return command (\"$1\", \@_); }";
 	      print ELISP "(defun-ratpoison $1)";
+	      print RUBY "  def $1 (*args)";
+	      print RUBY "    return command (\"$1\", args)";
+	      print RUBY "  end";
+	      print RUBY "  module_function :$1\n";
 	    }
 	}
     }
@@ -83,11 +106,17 @@ while (<ACTIONS_C>) {
 print "$nbindings bindings.";
 
 # PERL postamble
+# nothing
 
 # ELISP postamble
 print ELISP '(provide \'ratpoison-cmd)';
+
+# RUBY postamble
+print RUBY "end";
 
 close PERL;
 print "Created $PERL_FILE";
 close ELISP;
 print "Created $ELISP_FILE";
+close RUBY;
+print "Created $RUBY_FILE";
