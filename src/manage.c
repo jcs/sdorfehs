@@ -42,10 +42,13 @@ extern Atom wm_state;
 static void
 grab_prefix_key (Window w)
 {
+#ifdef HIDE_MOUSE
   XGrabKey(dpy, AnyKey, AnyModifier, w, True, 
 	   GrabModeAsync, GrabModeAsync);
-/*    XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREFIX ), MODIFIER_PREFIX, w, True,  */
-/*  	   GrabModeAsync, GrabModeAsync); */
+#else
+  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREFIX ), MODIFIER_PREFIX, w, True, 
+	   GrabModeAsync, GrabModeAsync);
+#endif
 }
 
 char *

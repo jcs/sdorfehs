@@ -23,6 +23,8 @@
 #define KEY_PREFIX      't'
 #define MODIFIER_PREFIX ControlMask
 
+//#define HIDE_MOUSE		/* Pressing a key sends the mouse to the bottom right corner */
+
 #define BAR_FG_COLOR    "Gray60"
 #define BAR_BG_COLOR    "Lightgreen"
 #define BAR_BOLD_COLOR  "Black" /* To indicate the current window */

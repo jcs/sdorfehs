@@ -1,3 +1,7 @@
+2000-10-30  shawn  <sabetts@badbox.secure.basis.org>
+
+	* conf.h: added HIDE_MOUSE
+
 2000-10-24  Ryan Yeske  <rcyeske@vcn.bc.ca>
 
 	* bar.c (bar_x): rightmost border is no longer off screen

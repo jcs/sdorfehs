@@ -302,11 +302,9 @@ key_press (XEvent *ev)
 
   s = find_screen (ev->xkey.root);
 
-  if (rat_visible)
-    {
-      XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width - 2, s->root_attr.height - 2);
-      rat_visible = 0; 
-    }
+#ifdef HIDE_MOUSE
+  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->root_attr.width - 2, s->root_attr.height - 2); 
+#endif
 
   if (!s) return;
 
@@ -345,25 +343,6 @@ property_notify (XEvent *ev)
 	    }
 	}
     }
-}
-
-void
-rat_motion (XMotionEvent *ev)
-{
-  screen_info *s;  
-  s = find_screen (ev->root);
-  if (!s) return;
-
-  if (ev->x_root == s->root_attr.width - 2 && ev->y_root == s->root_attr.height - 2) return;
-
-  if (!rat_visible)
-    {
-      XWarpPointer (dpy, None, rp_current_window->w, 0, 0, 0, 0, rat_x, rat_y);
-      rat_visible = 1;
-    }
-
-  rat_x = ev->x_root;
-  rat_y = ev->y_root;
 }
 
 /* Given an event, call the correct function to handle it. */
@@ -434,7 +413,6 @@ delegate_event (XEvent *ev)
 
     case MotionNotify:
       PRINT_DEBUG ("MotionNotify\n");
-      rat_motion (&ev->xmotion);
       break;
 
     case Expose:
