@@ -1,3 +1,9 @@
+2001-02-04  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.c (prev_window): do not set active window when
+	recursing.
+	(next_window): do not set active window when recursing.
+
 2001-01-28  Ryan Yeske  <rcyeske@soya.hotdog.tmp>
 
 	* actions.c: changed rename_current_window key to `A', bound `a'
