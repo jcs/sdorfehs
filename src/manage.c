@@ -103,23 +103,74 @@ add_unmanaged_window (char *name)
 extern Atom wm_state;
 
 void
-grab_prefix_key (Window w)
+grab_top_level_keys (Window w)
 {
 #ifdef HIDE_MOUSE
   XGrabKey(dpy, AnyKey, AnyModifier, w, True, 
 	   GrabModeAsync, GrabModeAsync);
 #else
-  grab_key (XKeysymToKeycode (dpy, prefix_key.sym), prefix_key.state, w);
+  rp_keymap *map = find_keymap (TOP_KEYMAP);
+  int i;
+
+  if (map == NULL)
+    {
+      PRINT_ERROR (("Unable to find " TOP_KEYMAP " keymap\n"));
+      return;
+    }
+
+  PRINT_DEBUG(("grabbing top level key\n"));
+  for (i=0; i<map->actions_last; i++)
+    {
+      PRINT_DEBUG(("%d\n", i));
+      grab_key (XKeysymToKeycode (dpy, map->actions[i].key), map->actions[i].state, w);
+    }
 #endif
 }
 
 void
-ungrab_prefix_key (Window w)
+ungrab_top_level_keys (Window w)
 {
 #ifdef HIDE_MOUSE
 #else
-  XUngrabKey(dpy, XKeysymToKeycode (dpy, prefix_key.sym), AnyModifier, w);
+  rp_keymap *map = find_keymap (TOP_KEYMAP);
+  int i;
+
+  if (map == NULL)
+    {
+      PRINT_ERROR (("Unable to find " TOP_KEYMAP " keymap\n"));
+      return;
+    }
+
+  for (i=0; i<map->actions_last; i++)
+    {
+      PRINT_DEBUG(("%d\n", i));
+      XUngrabKey(dpy, XKeysymToKeycode (dpy, map->actions[i].key), AnyModifier, w);
+    }
 #endif
+}
+
+void
+ungrab_keys_all_wins ()
+{
+  rp_window *cur;
+
+  /* Remove the grab on the current prefix key */
+  list_for_each_entry (cur, &rp_mapped_window, node)
+    {
+      ungrab_top_level_keys (cur->w);
+    }
+}
+
+void
+grab_keys_all_wins ()
+{
+  rp_window *cur;
+
+  /* Remove the grab on the current prefix key */
+  list_for_each_entry (cur, &rp_mapped_window, node)
+    {
+      grab_top_level_keys (cur->w);
+    }
 }
 
 rp_screen*
@@ -735,7 +786,7 @@ map_window (rp_window *win)
   /* Fill in the necessary data about the window */
   update_window_information (win);
   win->number = numset_request (rp_window_numset);
-  grab_prefix_key (win->w);
+  grab_top_level_keys (win->w);
 
   /* Put win in the mapped window list */
   list_del (&win->node);

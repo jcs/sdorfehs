@@ -129,7 +129,7 @@ extern char *rp_error_msg;
 /* Number sets for windows. */
 extern struct numset *rp_window_numset;
 
-extern struct list_head rp_prefix_hook;
+extern struct list_head rp_key_hook;
 extern struct list_head rp_switch_win_hook;
 extern struct list_head rp_switch_frame_hook;
 extern struct list_head rp_switch_group_hook;

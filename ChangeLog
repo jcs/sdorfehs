@@ -1,7 +1,32 @@
 2004-04-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/manage.h (ungrab_keys_all_wins): new prototype
+	(grab_keys_all_wins): likewise
+
+	* src/manage.c (grab_top_level_keys): renamed from
+	grab_prefix_key (all callers updated). Grab all keys in the top level keymap.
+	(ungrab_top_level_keys): renamed from ungrab_prefix_key (all callers updated). ungrab
+	all keys in the top level keymap.
+	(ungrab_keys_all_wins): new function
+	(grab_keys_all_wins): likewise
+
+	* src/globals.c: (rp_key_hook): rename from
+	rp_prefix_hook. Dependant code updated.
+	(set_rp_window_focus): change 'prefix' hook to 'key' hook.
+
+	* src/events.c (handle_key): handle a top level key press.
+	(handle_key): new arguments ks, and mod.
+	(key_press): pass the keysym and modifier to handle_key
+
+	* src/conf.h (TOP_KEYMAP): new define
+
 	* src/actions.c (cmd_v_split, cmd_h_split): swap names.
 	(user_commands): bind split to cmd_v_split.
+	(initialize_default_keybindings): initialize the top level keymap
+	(cmd_definekey): update the keys grabbed when changing a key on
+	the top level keymap.
+	(cmd_escape): update the escape key in the top level map.
+	(cmd_delkmap): don't allow the deletion of the top level keymap.
 
 2004-04-03  Shawn Betts  <sabetts@vcn.bc.ca>
 

@@ -362,8 +362,17 @@ client_msg (XClientMessageEvent *ev)
 }
 
 static void
-handle_key (rp_screen *s)
+handle_key (KeySym ks, unsigned int mod, rp_screen *s)
 {
+  rp_action *key_action;
+  rp_keymap *map = find_keymap (TOP_KEYMAP);
+
+  if (map == NULL)
+    {
+      PRINT_ERROR (("Unable to find " TOP_KEYMAP " keymap\n"));
+      return;
+    }
+
   PRINT_DEBUG (("handling key...\n"));
 
   /* All functions hide the program bar and the frame indicator. */
@@ -374,12 +383,26 @@ handle_key (rp_screen *s)
   alarm (0);
   alarm_signalled = 0;
 
-  /* Call the prefix hook. */
-  hook_run (&rp_prefix_hook);
+  /* Call the top level key pressed hook. */
+  hook_run (&rp_key_hook);
+
+  PRINT_DEBUG (("handle_key\n"));
 
   /* Read a key and execute the command associated with it on the
-     default keymap. */
-  cmd_readkey (1, ROOT_KEYMAP);
+     default keymap. Ignore the key if it doesn't have a binding. */
+  if ((key_action = find_keybinding (ks, x11_mask_to_rp_mask (mod), map)))
+    {
+      char *result;
+      result = command (1, key_action->data);
+      
+      /* Gobble the result. */
+      if (result)
+	free (result);
+    }
+  else
+    {
+      PRINT_ERROR(("Impossible: No matching key\n"));
+    }
 }
 
 static void
@@ -403,21 +426,7 @@ key_press (XEvent *ev)
   modifier = ev->xkey.state;
   cook_keycode ( &ev->xkey, &ks, &modifier, NULL, 0, 1);
 
-  if (ks == prefix_key.sym && (x11_mask_to_rp_mask (modifier) == prefix_key.state))
-    {
-      handle_key (s);
-    }
-  else
-    { 
-      if (current_window())
-	{
-	  ignore_badwindow++;
-	  ev->xkey.window = current_window()->w;
-	  XSendEvent (dpy, current_window()->w, False, KeyPressMask, ev);
-	  XSync (dpy, False);
-	  ignore_badwindow--;
-	}
-    }
+  handle_key (ks, modifier, s);
 }
 
 /* Read a command off the window and execute it. Some commands return
@@ -630,7 +639,7 @@ focus_change (XFocusChangeEvent *ev)
   if (win != NULL)
     {
       PRINT_DEBUG (("Re-grabbing prefix key\n"));
-      grab_prefix_key (win->w);
+      grab_top_level_keys (win->w);
     }
 }
 
@@ -642,7 +651,7 @@ mapping_notify (XMappingEvent *ev)
   /* Remove the grab on the current prefix key */
   list_for_each_entry (cur,&rp_mapped_window,node)
     {
-      ungrab_prefix_key (cur->w);
+      ungrab_top_level_keys (cur->w);
     }
 
   switch (ev->request)
@@ -658,7 +667,7 @@ mapping_notify (XMappingEvent *ev)
   /* Add the grab on the current prefix key */
   list_for_each_entry (cur, &rp_mapped_window,node)
     {
-      grab_prefix_key (cur->w);
+      grab_top_level_keys (cur->w);
     }
 }
 

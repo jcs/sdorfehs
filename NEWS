@@ -1,6 +1,11 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.3.0-rc2
+** Top level keymap
+The keymap named 'top' is now a top level keymap. No prefix key need
+be pressed to access its bindings. In fact, the prefix key is now a
+binding in the 'top' keymap.
+
 ** hsplit and vsplit switched
 To be compatible with emacs these command names have been
 switched. The bindings are the same but custom scripts and aliases

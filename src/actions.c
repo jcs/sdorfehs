@@ -362,10 +362,13 @@ add_alias (char *name, char *alias)
 void
 initialize_default_keybindings (void)
 {
-  rp_keymap *map;
+  rp_keymap *map, *top;
 
   map = keymap_new (ROOT_KEYMAP);
   list_add (&map->node, &rp_keymaps);
+
+  top = keymap_new (TOP_KEYMAP);
+  list_add (&top->node, &rp_keymaps);
 
   /* Initialive the alias list. */
   alias_list_size = 5;
@@ -374,6 +377,9 @@ initialize_default_keybindings (void)
 
   prefix_key.sym = KEY_PREFIX;
   prefix_key.state = MODIFIER_PREFIX;
+
+  /* Add the prefix key to the top-level map. */
+  add_keybinding (prefix_key.sym, prefix_key.state, "readkey " ROOT_KEYMAP, top);
 
   add_keybinding (prefix_key.sym, prefix_key.state, "other", map);
   add_keybinding (prefix_key.sym, 0, "meta", map);
@@ -697,6 +703,11 @@ cmd_definekey (int interactive, char *data)
       free (tmp);
     }
 
+  /* If we're updating the top level map, we'll need to update the
+     keys grabbed. */
+  if (map == find_keymap (TOP_KEYMAP))
+    ungrab_keys_all_wins ();
+
   if (!cmd || !*cmd)
     {
       /* If no comand is specified, then unbind the key. */
@@ -712,6 +723,11 @@ cmd_definekey (int interactive, char *data)
       else
 	add_keybinding (key->sym, key->state, cmd, map);
     }
+
+  /* Update the grabbed keys. */
+  if (map == find_keymap (TOP_KEYMAP))
+    grab_keys_all_wins ();
+  XSync (dpy, False);
 
   free (keydesc);
   if (cmd)
@@ -1504,11 +1520,11 @@ cmd_redisplay (int interactive, char *data)
 char *
 cmd_escape (int interactive, char *data)
 {
-  rp_window *cur;
   struct rp_key *key;
   rp_action *action;
-  rp_keymap *map;
+  rp_keymap *map, *top;
 
+  top = find_keymap (TOP_KEYMAP);
   map = find_keymap (ROOT_KEYMAP);
   key = parse_keydesc (data);
 
@@ -1531,19 +1547,21 @@ cmd_escape (int interactive, char *data)
 	}
 
       /* Remove the grab on the current prefix key */
-      list_for_each_entry (cur, &rp_mapped_window, node)
-	{
-	  ungrab_prefix_key (cur->w);
-	}
+      ungrab_keys_all_wins();
 
-      prefix_key.sym = key->sym;
-      prefix_key.state = key->state;
+      action = find_keybinding(prefix_key.sym, prefix_key.state, top);
+      if (action != NULL && !strcmp (action->data, "readkey " ROOT_KEYMAP))
+	{
+	  action->key = key->sym;
+	  action->state = key->state;
+	}
 
       /* Add the grab for the new prefix key */
-      list_for_each_entry (cur,&rp_mapped_window,node)
-	{
-	  grab_prefix_key (cur->w);
-	}
+      grab_keys_all_wins();
+
+      /* Finally, keep track of the current prefix. */
+      prefix_key.sym = key->sym;
+      prefix_key.state = key->state;
     }
   else
     {
@@ -4126,9 +4144,9 @@ cmd_delkmap (int interactive, char *data)
       return NULL;
     }
 
-  if (!strcmp (data, ROOT_KEYMAP))
+  if (!strcmp (data, ROOT_KEYMAP) || !strcmp (data, TOP_KEYMAP))
     {
-      message (" delkmap: Cannot delete '" ROOT_KEYMAP "' keymap ");
+      marked_message_printf (0, 0, " delkmap: Cannot delete '%s' keymap ", data);
       return NULL;
     }
 

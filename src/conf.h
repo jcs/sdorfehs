@@ -112,4 +112,7 @@
 /* The name of the root keymap */
 #define ROOT_KEYMAP "root"
 
+/* The name of the top level keymap */
+#define TOP_KEYMAP "top"
+
 #endif /* !_ _RATPOISON_CONF_H */

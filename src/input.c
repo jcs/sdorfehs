@@ -66,7 +66,7 @@ rp_mask_to_x11_mask (unsigned int mask)
   result |= mask & RP_HYPER_MASK ? rp_modifier_info.hyper_mod_mask:0;
   result |= mask & RP_SUPER_MASK ? rp_modifier_info.super_mod_mask:0;
 
-  PRINT_DEBUG (("x11 mask = %x\n", mask));
+  PRINT_DEBUG (("x11 mask = %x\n", result));
 
   return result;
 }

@@ -477,8 +477,9 @@ will be executed.
 The following hooks are available:
 
 @table @asis
-@item prefix
-Run when the prefix key is pressed
+@item key
+Run when a top level key is pressed (by default the only top level key
+is the prefix key).
 @item switchwin
 Run when the user switches to a different window in the current frame.
 @item switchframe

@@ -72,7 +72,7 @@ struct numset *rp_frame_numset;
 
 /* The hook dictionary globals. */
 
-LIST_HEAD (rp_prefix_hook);
+LIST_HEAD (rp_key_hook);
 LIST_HEAD (rp_switch_win_hook);
 LIST_HEAD (rp_switch_frame_hook);
 LIST_HEAD (rp_switch_group_hook);
@@ -80,7 +80,7 @@ LIST_HEAD (rp_quit_hook);
 LIST_HEAD (rp_restart_hook);
 
 struct rp_hook_db_entry rp_hook_db[]= 
-  {{"prefix", 		&rp_prefix_hook},
+  {{"key", 		&rp_key_hook},
    {"switchwin", 	&rp_switch_win_hook},
    {"switchframe", 	&rp_switch_frame_hook},
    {"switchgroup", 	&rp_switch_group_hook},

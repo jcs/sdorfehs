@@ -44,8 +44,10 @@ void map_window (rp_window *win);
 void maximize (rp_window *win);
 void force_maximize (rp_window *win);
 
-void grab_prefix_key (Window w);
-void ungrab_prefix_key (Window w);
+void grab_top_level_keys (Window w);
+void ungrab_top_level_keys (Window w);
+void ungrab_keys_all_wins ();
+void grab_keys_all_wins ();
 
 void hide_window (rp_window *win);
 void unhide_window (rp_window *win);
