@@ -1,20 +1,43 @@
 -*- outline -*-
 Ratpoison Frequently Asked Questions
 
-* Where does the name `ratpoison' come from?
+* Conceptual Questions
+** Where does the name `ratpoison' come from?
 
-* Where are the window decorations?
+** Where are the window decorations?
 
-* So, what is wrong with the mouse?
+** So, what is wrong with the mouse?
 
-* Why can't I move the windows around?
+** Why can't I move the windows around?
+There's no point.
 
-* The Gimp is impossible to use under ratpoison!
+* Usability & Customization Questions
+** The Gimp is impossible to use under ratpoison!
 
-* How do I bind something to a single keystroke?
+** How do I bind a command to a single keystroke?
+Pressing C-t is too much work for you, eh? There are plenty of 3rd
+party programs that you can look into. xbindkeys seems to be a good
+choice. Use ratpoison's -c command-line argument to send a command to
+ratpoison.
 
-* What about workspaces?
+** What about workspaces?
+Windows can be divided into different groups. Each group of windows
+has a number and optionally a name. With a bit of glue code, you can
+create workspaces.
 
-* Can I save and restore frame configurations?
+** Can I save and restore frame configurations?
+Yes you can! Look at fdump and frestore.
 
-* How do I get rid of that 1 pixel border around some of the windows?
+** How do I get rid of that 1 pixel border around some of the windows?
+Put this line in your .ratpoisonrc file:
+
+defborder 0
+
+** I want feature XYZ
+What you want is probably already in Emacs. If you don't use Emacs,
+start. If do use Emacs, use it more. If you *still* can't do what you
+want to do, you probably shouldn't do it. 
+
+If you're stubborn enough to keep trying, patch ratpoison and post the
+patch on the mailing list. Don't forget to read the README.developers
+file.
