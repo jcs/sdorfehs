@@ -1,3 +1,11 @@
+2001-02-14  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* actions.h (generate_key_event): added prototype
+
+	* actions.c (key_actions): added additional keybindings to include
+	C- versions for all keys.
+	(generate_key_event): added command
+
 2001-02-13  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* bar.c (update_window_names): get indexes around current window
