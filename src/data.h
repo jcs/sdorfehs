@@ -123,6 +123,7 @@ extern XEvent *rp_current_event;
 extern Display *dpy;
 extern Atom rp_restart;
 extern Atom rp_kill;
+extern Atom rp_command;
 
 extern Atom wm_state;
 extern Atom wm_change_state;

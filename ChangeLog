@@ -1,3 +1,20 @@
+2001-03-19  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/main.c (ratpoison_longopts): add --command to recognized
+	command-line options.
+
+	* src/communications.h (send_command): new function prototype
+
+	* src/data.h (rp_command): new global variable
+
+	* src/events.c (receive_command): new function
+	(property_notify): handles rp_command Atoms
+
+	* src/communications.c (send_command): new function
+
+	* src/main.c (print_help): prints help for --command
+	(main): handles --command command-line option
+
 2001-03-14  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/events.c (delegate_event): calls focus_change on FocusOut

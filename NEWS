@@ -1,6 +1,14 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 0.1.0
+** new command-line option --command
+
+You can now send ratpoison commands (colon-commands) to ratpoison via
+the command line. for example to tell ratpoison to go to the next
+window type this:
+
+$ ratpoison --command next
+
 ** window borders are configurable
 WINDOW_BORDER_WIDTH has been added to conf.h. This constant determines
 the border width for all windows.

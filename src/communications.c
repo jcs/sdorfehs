@@ -66,3 +66,10 @@ send_kill ()
       PRINT_ERROR ("failed to send kill event\n");
     }
 }
+
+int
+send_command (unsigned char *cmd)
+{
+  return XChangeProperty (dpy, DefaultRootWindow (dpy), rp_command, XA_STRING,
+			  8, PropModeAppend, cmd, strlen (cmd) + 1);
+}

@@ -50,6 +50,7 @@ Atom wm_colormaps;
 
 Atom rp_restart;
 Atom rp_kill;
+Atom rp_command;
 
 screen_info *screens;
 int num_screens;
@@ -68,12 +69,15 @@ struct rp_key prefix_key;
 struct modifier_info rp_modifier_info;
 
 /* Command line options */
-static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
-					      {"version", no_argument, 0, 'v'},
-					      {"restart", no_argument, 0, 'r'},
-					      {"kill", no_argument, 0, 'k'},
-					      {0, 0, 0, 0} };
-static char ratpoison_opts[] = "hvrk";
+static struct option ratpoison_longopts[] = 
+  { {"help", 	no_argument, 		0, 	'h'},
+    {"version", no_argument, 		0, 	'v'},
+    {"restart", no_argument, 		0, 	'r'},
+    {"kill", 	no_argument, 		0, 	'k'},
+    {"command", required_argument, 	0, 	'c'},
+    {0, 	0, 			0, 	0} };
+
+static char ratpoison_opts[] = "hvrkc:";
 
 void
 fatal (const char *msg)
@@ -205,7 +209,8 @@ print_help ()
   printf ("-h, --help            Display this help screen\n");
   printf ("-v, --version         Display the version\n");
   printf ("-r, --restart         Restart ratpoison\n");
-  printf ("-k, --kill            Kill ratpoison\n\n");
+  printf ("-k, --kill            Kill ratpoison\n");
+  printf ("-c, --command         Send ratpoison a colon-command\n\n");
 
   printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
 
@@ -306,6 +311,8 @@ main (int argc, char *argv[])
   int c;
   int do_kill = 0;
   int do_restart = 0;
+  int do_command = 0;
+  char *command;
 
   myargv = argv;
 
@@ -331,6 +338,11 @@ main (int argc, char *argv[])
 	case 'r':
 	  do_restart = 1;
 	  break;
+	case 'c':
+	  command = xmalloc (strlen (optarg) + 1);
+	  strcpy (command, optarg);
+	  do_command = 1;
+	  break;
 	default:
 	  exit (EXIT_FAILURE);
 	}
@@ -352,6 +364,7 @@ main (int argc, char *argv[])
   /* Set ratpoison specific Atoms. */
   rp_restart = XInternAtom (dpy, "RP_RESTART", False);
   rp_kill = XInternAtom (dpy, "RP_KILL", False);
+  rp_command = XInternAtom (dpy, "RP_COMMAND", False);
 
   if (do_kill)
     {
@@ -365,6 +378,13 @@ main (int argc, char *argv[])
       send_restart ();
       XSync (dpy, False);
       clean_up ();
+      return EXIT_SUCCESS;
+    }
+  if (do_command)
+    {
+      send_command (command);
+      free (command);
+      clean_up();
       return EXIT_SUCCESS;
     }
 

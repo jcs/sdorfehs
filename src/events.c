@@ -383,11 +383,50 @@ key_press (XEvent *ev)
 }
 
 void
+receive_command()
+{
+  Atom type_ret;
+  int format_ret;
+  unsigned long nitems;
+  unsigned long bytes_after;
+  unsigned char *req;
+
+  if (XGetWindowProperty (dpy, DefaultRootWindow (dpy), rp_command,
+			  0, 0, False, XA_STRING,
+			  &type_ret, &format_ret, &nitems, &bytes_after,
+			  &req) == Success
+      &&
+      XGetWindowProperty (dpy, DefaultRootWindow (dpy), rp_command,
+			  0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+			  True, XA_STRING, &type_ret, &format_ret, &nitems, 
+			  &bytes_after, &req) == Success)
+    {
+      if (req)
+	{
+	  PRINT_DEBUG ("command: %s\n", req);
+	  command (req);
+	}
+      XFree (req);
+    }
+  else
+    {
+      PRINT_DEBUG ("Couldn't get RP_COMMAND Property\n");
+    }
+}
+
+void
 property_notify (XEvent *ev)
 {
   rp_window *win;
 
   PRINT_DEBUG ("atom: %ld\n", ev->xproperty.atom);
+
+  if (ev->xproperty.atom == rp_command
+      && ev->xproperty.window == DefaultRootWindow (dpy))
+    {
+      PRINT_DEBUG ("ratpoison command\n");
+      receive_command();
+    }
 
   win = find_window (ev->xproperty.window);
   
