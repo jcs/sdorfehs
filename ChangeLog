@@ -1,5 +1,7 @@
 2003-07-16  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/hook.c: include string.h
+
 	* src/window.c (set_active_window): run the switch window hook.
 
 	* src/split.c (set_active_frame): run the switch frame hook.
