@@ -11,9 +11,20 @@ if test "$enable_debugging" = yes; then
    AC_DEFINE(DEBUG)
 fi
 
+AC_ARG_WITH(xterm, [ --with-xterm=PROG        set the x terminal emulator used by ratpoison ],
+term_prog=$withval, term_prog="xterm")
+
+AC_DEFINE_UNQUOTED(TERM_PROG,"$term_prog")
+
 dnl Checks for programs.
 CFLAGS="$CFLAGS -Wall"
 AC_PROG_CC
+
+dnl check for an x terminal emulator
+AC_CHECK_PROG(result,$term_prog,yes,no)
+if test $result = no; then
+   AC_MSG_ERROR([*** Can't find x terminal emulator \`$term_prog'])
+fi
 
 dnl Check for the X libs
 AC_PATH_X
