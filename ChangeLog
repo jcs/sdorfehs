@@ -1,3 +1,7 @@
+2004-10-28  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (set_padding): fix the padding order in xsprintf.
+
 2002-02-05  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_set): check if var is NULL before checking strlen(var)

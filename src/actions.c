@@ -2389,8 +2389,8 @@ set_padding (char *data)
   if (data == NULL)
     return xsprintf ("%d %d %d %d", 
 		     defaults.padding_left,
-		     defaults.padding_right,
 		     defaults.padding_top,
+		     defaults.padding_right,
 		     defaults.padding_bottom);
 
   if (sscanf (data, "%d %d %d %d", &l, &t, &r, &b) < 4)
