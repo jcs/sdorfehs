@@ -208,7 +208,7 @@ frame_read (char *str)
   tmp = strtok (dup, " ");
 
   /* Verify it starts with '(frame ' */
-  if (strcmp(tmp, "(frame "))
+  if (strcmp(tmp, "(frame"))
     {
       PRINT_DEBUG(("Doesn't start with '(frame '\n"));
       free (dup);

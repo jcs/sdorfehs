@@ -1,3 +1,7 @@
+2005-01-17  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/frame.c (frame_read): remove space in "(frame " string.
+
 2005-01-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (spawn): Prepend cmd with exec.
