@@ -2,6 +2,7 @@
 
 	* main.c (read_rc_file): rename from load_rc_file.  Remove static
 	keyword.
+	(read_startup_files): rename from read_initialization_files.
 
 	* actions.c (cmd_prev): Handle situation when there is no other
 	window.
