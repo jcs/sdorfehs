@@ -345,12 +345,14 @@ property_notify (XEvent *ev)
   printf ("atom: %ld\n", ev->xproperty.atom);
 
   win = find_window (ev->xproperty.window);
+  
   if (win)
     {
       if (ev->xproperty.atom == XA_WM_NAME) 
 	{
 	  printf ("updating window name\n");
-	  update_window_name (win);      
+	  update_window_name (win);
+	  update_window_names (win->scr);
 	}
     }
 }
