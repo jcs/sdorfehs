@@ -1,6 +1,6 @@
 # This is a sample .ratpoisonrc file
 #
-# $Id: sample.ratpoisonrc,v 1.4 2003/04/05 04:02:17 sabetts Exp $
+# $Id: sample.ratpoisonrc,v 1.5 2003/04/06 10:28:10 sabetts Exp $
 
 # Set the prefix key to that of screen's default
 escape C-a
@@ -20,6 +20,9 @@ bind s colon exec xterm -e freshmeat
 
 # bind b (`b' for browse) to interactively ask for an URL to open
 bind b colon exec mozilla http://www.
+
+# Use the name of the program rather than the title in the window list
+defwinname name
 
 # bind M-! to store the current frame layout in slot #1
 bind M-exclam exec ratpoison -c "setenv fs1 `ratpoison -c 'fdump'`"

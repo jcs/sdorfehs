@@ -255,17 +255,12 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
   int num_lines;
   int line_no=0;
   char tmp_buf[100];
-
-
-
   int width = defaults.bar_x_padding * 2 + max_line_length(msg);
-    /* XTextWidth (defaults.font, msg, strlen (msg)); */
-  int line_height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
+  int line_height = (FONT_HEIGHT (defaults.font));
   int height;
 
   PRINT_DEBUG (("msg = %s\n", msg));
   PRINT_DEBUG (("mark_start = %d, mark_end = %d\n", mark_start, mark_end));
-
 
   num_lines = count_lines(msg, strlen(msg));
   height = line_height * num_lines;
@@ -284,33 +279,35 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
   XMoveResizeWindow (dpy, s->bar_window, 
 		     bar_x (s, width), bar_y (s, height),
 		     width,
-		     height);
+		     height + defaults.bar_y_padding * 2);
 
   XRaiseWindow (dpy, s->bar_window);
   XClearWindow (dpy, s->bar_window);
   XSync (dpy, False);
 
   /*  if(!defaults.wrap_window_list){
-    XDrawString (dpy, s->bar_window, s->normal_gc, 
-		 defaults.bar_x_padding, 
-		 defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-		 msg, strlen (msg));
-		 } else { */
+      XDrawString (dpy, s->bar_window, s->normal_gc, 
+      defaults.bar_x_padding, 
+      defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+      msg, strlen (msg));
+      } else { */
   for(i=0; i<=strlen(msg); ++i) {
-    if (msg[i]!='\0' && msg[i]!='\n') {
-      tmp_buf[j]=msg[i];
-      j++;
-    }
-    else {
-      tmp_buf[j]='\0';
-      XDrawString (dpy, s->bar_window, s->normal_gc,
-		   defaults.bar_x_padding,
-		   defaults.bar_y_padding + defaults.font->max_bounds.ascent
-		   +  line_no * line_height,
-		   tmp_buf, strlen(tmp_buf));
-      j=0;
-      line_no++; 
-    }
+    if (msg[i]!='\0' && msg[i]!='\n') 
+      {
+	tmp_buf[j]=msg[i];
+	j++;
+      }
+    else 
+      {
+	tmp_buf[j]='\0';
+	XDrawString (dpy, s->bar_window, s->normal_gc,
+		     defaults.bar_x_padding,
+		     defaults.bar_y_padding + defaults.font->max_bounds.ascent
+		     +  line_no * line_height,
+		     tmp_buf, strlen(tmp_buf));
+	j=0;
+	line_no++; 
+      }
   }
  
 
@@ -360,7 +357,7 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
       PRINT_DEBUG (("start_line = %d, end_line = %d\n", start_line, end_line));
 
       if (mark_start == 0 || start_pos_in_line == 0)
-	start = 0;
+	start = defaults.bar_x_padding;
       else
 	start = XTextWidth (defaults.font, 
 			    &msg[start_line_beginning], 
@@ -373,7 +370,8 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
       
       if (mark_end != strlen (msg))   	end -= defaults.bar_x_padding;
 
-      width = end - start;
+/*       width = end - start; */
+      width = max_line_length(msg);
 
       PRINT_DEBUG (("start = %d, end = %d, width = %d\n", start, end, width));
 
@@ -382,12 +380,16 @@ marked_wrapped_message (char *msg, int mark_start, int mark_end)
       mask = GCForeground | GCFunction;
       lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
-      XFillRectangle (dpy, s->bar_window, lgc, start, (start_line-1)*line_height, width, (end_line-start_line+1)*line_height);
+      XFillRectangle (dpy, s->bar_window, lgc, 
+		      start, (start_line-1)*line_height + defaults.bar_y_padding, 
+		      width, (end_line-start_line+1)*line_height);
 
       lgv.foreground = s->bg_color;
       lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
-      XFillRectangle (dpy, s->bar_window, lgc, start, (start_line-1)*line_height, width, (end_line-start_line+1)*line_height);
+      XFillRectangle (dpy, s->bar_window, lgc, 
+		      start, (start_line-1)*line_height + defaults.bar_y_padding, 
+		      width, (end_line-start_line+1)*line_height);
     }
 
   /* Keep a record of the message. */

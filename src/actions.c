@@ -1112,6 +1112,7 @@ cmd_time (int interactive, void *data)
 char *
 cmd_number (int interactive, void *data)
 {
+  rp_window_frame *frame;
   int old_number, new_number;
   rp_window *other_win, *win;
   char *str;
@@ -1180,7 +1181,14 @@ cmd_number (int interactive, void *data)
 	  old_number = win->number;
 	  other_win->number = old_number;
 
-	  /* Resort the the window in the list */
+	  /* Update the frame containing the window. */
+	  if (other_win->frame_number != EMPTY)
+	    {
+	      frame = screen_get_frame (other_win->scr, other_win->frame_number);
+	      frame->win_number = old_number;
+	    }
+
+	  /* Resort the window in the list */
 	  list_del (&other_win->node);
 	  insert_into_list (other_win, &rp_mapped_window);
 	}
@@ -1191,6 +1199,13 @@ cmd_number (int interactive, void *data)
 
       win->number = new_number;
       numset_add_num (rp_window_numset, new_number);
+
+      /* Update the frame containing the window. */
+      if (win->frame_number != EMPTY)
+	{
+	  frame = screen_get_frame (win->scr, win->frame_number);
+	  frame->win_number = new_number;
+	}
 
       /* resort the the window in the list */
       list_del (&win->node);

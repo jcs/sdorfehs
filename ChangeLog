@@ -1,3 +1,11 @@
+2003-04-06  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/bar.c (marked_wrapped_message): make the marked line span
+	the whole line.
+
+	* src/actions.c (cmd_number): update any frames pointing to the
+	windows that have changed.
+
 2003-04-05  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/window.c (get_window_list): if window_list_style is STYLE_COLUMN then
