@@ -1,3 +1,8 @@
+2000-11-04  Ryan Yeske  <rcyeske@vcn.bc.ca>
+
+	* Makefile.am (ratpoison_SOURCES): added getopt.c, getopt1.c and
+	getopt.h
+
 2000-10-30  Ryan Yeske  <rcyeske@vcn.bc.ca>
 
 	* actions.h (execute_command): added prototype
