@@ -246,7 +246,7 @@ configure_request (XConfigureRequestEvent *e)
 	{
 	  if (e->detail == Above)
 	    {
-	      set_active_window (win);
+	      goto_window (win);
 	    }
 	  else if (e->detail == Below)
 	    {
