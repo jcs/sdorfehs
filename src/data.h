@@ -50,6 +50,9 @@ struct rp_window
   /* WM Hints */
   XSizeHints *hints;
 
+  /* Colormap */
+  Colormap colormap;
+
   rp_window *next, *prev;  
 };
 
