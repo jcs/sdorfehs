@@ -1,3 +1,7 @@
+2000-10-19  shawn  <sabetts@badbox.secure.basis.org>
+
+	* manage.c (get_window_name): added
+
 2000-10-17  shawn  <sabetts@vcn.bc.ca>
 
 	* events.c (configure_request): resize windows to the max-1. Call
