@@ -500,27 +500,6 @@ blank_frame (rp_window_frame *frame)
     }
 }
 
-static void
-update_frame_indicator ()
-{
-  screen_info *s = current_screen ();
-  int width, height;
-
-  width = BAR_X_PADDING * 2 + XTextWidth (s->font, FRAME_STRING, strlen (FRAME_STRING));
-  height = (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2);
-
-  XMoveResizeWindow (dpy, current_screen()->frame_window,
-		     rp_current_frame->x + rp_current_frame->width / 2 - width / 2, 
-		     rp_current_frame->y + rp_current_frame->height / 2 - height / 2,
-		     width, height);
-
-  XClearWindow (dpy, s->frame_window);
-  XDrawString (dpy, s->frame_window, s->normal_gc, 
-	       BAR_X_PADDING, 
-	       BAR_Y_PADDING + s->font->max_bounds.ascent,
-	       FRAME_STRING, strlen (FRAME_STRING));
-}
-
 void
 hide_frame_indicator ()
 {
@@ -534,8 +513,24 @@ hide_frame_indicator ()
 void
 show_frame_indicator ()
 {
+  screen_info *s = current_screen ();
+  int width, height;
+
+  width = BAR_X_PADDING * 2 + XTextWidth (s->font, FRAME_STRING, strlen (FRAME_STRING));
+  height = (FONT_HEIGHT (s->font) + BAR_Y_PADDING * 2);
+
+  XMoveResizeWindow (dpy, current_screen()->frame_window,
+		     rp_current_frame->x + rp_current_frame->width / 2 - width / 2, 
+		     rp_current_frame->y + rp_current_frame->height / 2 - height / 2,
+		     width, height);
+
   XMapRaised (dpy, current_screen()->frame_window);
 
-  update_frame_indicator();
+  XClearWindow (dpy, s->frame_window);
+  XDrawString (dpy, s->frame_window, s->normal_gc, 
+	       BAR_X_PADDING, 
+	       BAR_Y_PADDING + s->font->max_bounds.ascent,
+	       FRAME_STRING, strlen (FRAME_STRING));
+
   alarm (FRAME_INDICATOR_TIMEOUT);
 }

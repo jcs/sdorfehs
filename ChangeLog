@@ -1,5 +1,9 @@
 2001-04-15  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/split.c (show_frame_indicator): contents of
+	update_frame_indicator merged into here.
+	(update_frame_indicator): remove function
+
 	* src/number.h (add_window_number): new prototype
 
 	* src/number.c (add_window_number): renamed from
