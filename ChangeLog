@@ -1,3 +1,23 @@
+2003-03-25  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/split.h (show_frame_message): new prototype
+
+	* src/split.c (show_frame_message): new function
+
+	* src/main.c (init_screen): listen for key release events in the
+	key_window and input_window.
+
+	* src/input.c (read_key): new argument, gobble_rel. All callers
+	updated.
+
+	* src/actions.c (cmd_remove): only remove the current frame if it
+	isn't the ONLY one.
+	(cmd_remove): display a message informing the user if the frame
+	cannot be removed.
+	(cmd_resize): clean up resize loop.
+	(cmd_resize): display a window indicating which frame is being
+	resized.
+
 2003-03-23  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/split.c (resize_frame_vertically): fix typo error (frame_top

@@ -258,17 +258,32 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
 }
 
 int
-read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
+read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len, int gobble_rel)
 {
+  int key_presses = 0;
   XEvent ev;
   int nbytes;
+  unsigned int keycode;
 
+  /* Read a key from the keyboard. */
   do
     {
       XMaskEvent (dpy, KeyPressMask, &ev);
+      /* Store the keycode so we can wait for it's corresponding key
+	 release event. */
+      keycode = ev.xkey.keycode;
       *modifiers = ev.xkey.state;
       nbytes = cook_keycode (&ev.xkey, keysym, modifiers, keysym_name, len, 0);
     } while (IsModifierKey (*keysym));
+
+  PRINT_DEBUG (("key press events: %d\n", key_presses));
+
+  /* Gobble the release event for the key we pressed. */
+  if (gobble_rel)
+    do
+      {
+	XMaskEvent (dpy, KeyReleaseMask, &ev);
+      } while (ev.xkey.keycode != keycode);
 
   return nbytes;
 }
@@ -357,7 +372,7 @@ get_more_input (char *prompt, char *preinput)
   /* XSync (dpy, False); */
 
 
-  nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize);
+  nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize, 0);
   while (ch != XK_Return) 
     {
       PRINT_DEBUG (("key %ld\n", ch));
@@ -429,7 +444,7 @@ get_more_input (char *prompt, char *preinput)
 	  update_input_window(s, prompt, str, cur_len);
 	}
 
-      nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize);
+      nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize, 0);
     }
 
   str[cur_len] = 0;

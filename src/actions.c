@@ -1381,9 +1381,16 @@ cmd_only (int interactive, void *data)
 char *
 cmd_remove (int interactive, void *data)
 {
+  screen_info *s = current_screen();
   rp_window_frame *frame;
 
-  frame = find_frame_next (current_screen()->rp_current_frame);
+  if (num_frames(s) <= 1)
+    {
+      message (" remove: cannot remove only frame ");
+      return NULL;
+    }
+
+  frame = find_frame_next (s->rp_current_frame);
 
   if (frame)
     {
@@ -1425,9 +1432,11 @@ cmd_resize (int interactive, void *data)
       XGetInputFocus (dpy, &fwin, &revert);
       XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
 
-      nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
       while (1)
 	{
+	  show_frame_message (" Resize frame ");
+	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer), 1);
+
 	  if (c == RESIZE_VGROW_KEY && mod == RESIZE_VGROW_MODIFIER)
 	    resize_frame_vertically (s->rp_current_frame, defaults.frame_resize_unit);
 	  else if (c == RESIZE_VSHRINK_KEY && mod == RESIZE_VSHRINK_MODIFIER)
@@ -1441,10 +1450,9 @@ cmd_resize (int interactive, void *data)
 	    resize_shrink_to_window (s->rp_current_frame);
 	  else if (c == RESIZE_END_KEY && mod == RESIZE_END_MODIFIER)
 	    break;
-
-	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
 	}
 
+      hide_frame_indicator ();
       XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
     }
   else
@@ -2914,7 +2922,7 @@ cmd_fselect (int interactive, void *data)
       /* Read a key. */
       XGetInputFocus (dpy, &fwin, &revert);
       XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
-      read_key (&c, &mod, NULL, 0);
+      read_key (&c, &mod, NULL, 0, 1);
       XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
 
       /* Destroy our number windows and free the array. */

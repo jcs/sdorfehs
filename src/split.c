@@ -788,10 +788,17 @@ hide_frame_indicator ()
 void
 show_frame_indicator ()
 {
+  show_frame_message (MESSAGE_FRAME_STRING);
+  alarm (defaults.frame_indicator_timeout);
+}
+
+void
+show_frame_message (char *msg)
+{
   screen_info *s = current_screen ();
   int width, height;
 
-  width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, MESSAGE_FRAME_STRING, strlen (MESSAGE_FRAME_STRING));
+  width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
   height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
   XMoveResizeWindow (dpy, current_screen()->frame_window,
@@ -808,9 +815,7 @@ show_frame_indicator ()
   XDrawString (dpy, s->frame_window, s->normal_gc,
 	       defaults.bar_x_padding,
 	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-	       MESSAGE_FRAME_STRING, strlen (MESSAGE_FRAME_STRING));
-
-  alarm (defaults.frame_indicator_timeout);
+	       msg, strlen (msg));
 }
 
 rp_window_frame *

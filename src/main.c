@@ -680,14 +680,14 @@ init_screen (screen_info *s, int screen_num)
   s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, 
 				       WhitePixel (dpy, s->screen_num), 
 				       BlackPixel (dpy, s->screen_num));
-  XSelectInput (dpy, s->key_window, KeyPressMask );
+  XSelectInput (dpy, s->key_window, KeyPressMask | KeyReleaseMask);
   XMapWindow (dpy, s->key_window);
 
   /* Create the input window. */
   s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 
 					 defaults.bar_border_width, 
 					 s->fg_color, s->bg_color);
-  XSelectInput (dpy, s->input_window, KeyPressMask );
+  XSelectInput (dpy, s->input_window, KeyPressMask | KeyReleaseMask);
 
   /* Create the frame indicator window */
   s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, defaults.bar_border_width, 

@@ -1,6 +1,9 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.1.1
+** key presses
+All actions now occur after the user has released the key.
+
 ** keybinding changes
 fselect is bound to C-t C-f and C-t f, curframe is now bound to C-t F,
 and resize is bound to C-t C-r and C-t r.

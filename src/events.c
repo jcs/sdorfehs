@@ -375,7 +375,7 @@ handle_key (screen_info *s)
       rat_grabbed = 1;
     }
 
-  read_key (&keysym, &mod, NULL, 0);
+  read_key (&keysym, &mod, NULL, 0, 1);
 
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
   if (rat_grabbed)
