@@ -1,5 +1,16 @@
 2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/actions.c (cmd_prev): return a cmdret*. same for error
+	messages.
+	(cmd_select): likewise.
+	(command): use cmdret* to report when alias recursion has hit the
+	limit.
+	(cmd_resize): return a cmdret when num frames is < 2.
+	(set_padding): return a cmdret*, not NULL.
+	(cmd_nextscreen): likewise
+	(cmd_prevscreen): likewise
+	(cmd_addhook): likewise
+
 	* src/main.c (main): Report extra unparsed arguments.
 
 	* src/actions.c (init_user_commands): set the last argument of the

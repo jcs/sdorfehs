@@ -1023,11 +1023,11 @@ cmd_prev (int interactive, struct cmdarg **args)
   if (win)
     set_active_window (win);
   else if (cur)
-    message (MESSAGE_NO_OTHER_WINDOW);
+    return cmdret_new (MESSAGE_NO_OTHER_WINDOW, RET_FAILURE);
   else
-    message (MESSAGE_NO_MANAGED_WINDOWS);
+    return cmdret_new (MESSAGE_NO_MANAGED_WINDOWS, RET_FAILURE);
 
-  return NULL;
+  return cmdret_new (NULL, RET_SUCCESS);
 }
 
 cmdret *
@@ -1168,6 +1168,7 @@ window_completions (char* str)
 cmdret *
 cmd_select (int interactive, struct cmdarg **args)
 {
+  cmdret *ret = NULL;
   char *str;
   int n;
 
@@ -1180,7 +1181,7 @@ cmd_select (int interactive, struct cmdarg **args)
 
   /* User aborted. */
   if (str == NULL)
-    return NULL;
+    return cmdret_new (NULL, RET_FAILURE);
 
   /* Only search if the string contains something to search for. */
   if (strlen (str) > 0)
@@ -1208,13 +1209,16 @@ cmd_select (int interactive, struct cmdarg **args)
 	  if (win)
 	    goto_window (win);
 	  else
-	    marked_message_printf (0, 0, "select: unknown window '%s'", str);
+	    ret = cmdret_new_printf (RET_FAILURE, "select: unknown window '%s'", str);
 	}
     }
 
   free (str);
 
-  return NULL;
+  if (ret)
+    return ret;
+  else
+    return cmdret_new (NULL, RET_SUCCESS);
 }
 
 cmdret *
@@ -2251,7 +2255,7 @@ command (int interactive, char *data)
 
 	  alias_recursive_depth++;
 	  if (alias_recursive_depth >= MAX_ALIAS_RECURSIVE_DEPTH)
-	    message ("command: alias recursion has exceeded maximum depth");
+	    result = cmdret_new ("command: alias recursion has exceeded maximum depth", RET_FAILURE);
 	  else
 	    result = command (interactive, sbuf_get (s));
 	  alias_recursive_depth--;
@@ -2776,7 +2780,8 @@ cmd_resize (int interactive, struct cmdarg **args)
 
       /* If we haven't got at least 2 frames, there isn't anything to
 	 scale. */
-      if (num_frames (s) < 2) return NULL;
+      if (num_frames (s) < 2)
+	return cmdret_new (NULL, RET_FAILURE);
 
       XGrabKeyboard (dpy, s->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
@@ -3413,7 +3418,7 @@ set_padding (struct cmdarg **args)
   defaults.padding_top 	  = t;
   defaults.padding_bottom = b;
 
-  return NULL;
+  return cmdret_new (NULL, RET_SUCCESS);
 }
 
 static cmdret *
@@ -3879,7 +3884,7 @@ cmd_nextscreen (int interactive, struct cmdarg **args)
 
   set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
 
-  return NULL;
+  return cmdret_new (NULL, RET_SUCCESS);
 }
 
 cmdret *
@@ -3897,7 +3902,7 @@ cmd_prevscreen (int interactive, struct cmdarg **args)
 
   set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
 
-  return NULL;
+  return cmdret_new (NULL, RET_SUCCESS);
 }
 
 cmdret *
@@ -4486,7 +4491,7 @@ cmd_addhook (int interactive, struct cmdarg **args)
   hook_add (hook, cmd);
 
   free (dup);
-  return NULL;
+  return cmdret_new (NULL, RET_SUCCESS);
 }
 
 cmdret *
