@@ -320,7 +320,8 @@ This deletes the current window. You can access it with the @kbd{C-t k}
 keystroke.
 @end deffn
 
-@deffn Command defwinname @var{name}
+@deffn Command {set winname} @var{name}
+@deffnx Command defwinname @var{name}
 There are three resources ratpoison can get a window's name from: the
 WMNAME hint, the res_name from the WMCLASS hint, or the res_class from
 the WMCLASS hint. @var{name} can be @samp{title} which is what most
@@ -331,7 +332,8 @@ When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command defwingravity @var{g}
+@deffn Command {set wingravity} @var{g}
+@deffnx Command defwingravity @var{g}
 Set the default gravity for normal windows. See the
 @command{gravity} command.
 
@@ -339,12 +341,14 @@ When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command defwinliststyle @var{setting}
+@deffn Command {set winliststyle} @var{setting}
+@deffnx Command defwinliststyle @var{setting}
 The window list can be displayed in a row or a column. @var{setting}
 can be @samp{row} or @samp{column}.
 @end deffn
 
-@deffn Command defwinfmt @var{fmt}
+@deffn Command {set winfmt} @var{fmt}
+@deffnx Command defwinfmt @var{fmt}
 Set the default window format for the @command{windows} command. By
 default it is @samp{%n%s%t}. The following is a list of valid format
 characters:
@@ -380,7 +384,8 @@ number of the window whose number will be changed. If @var{target} is
 omitted ratpoison defaults to the current window.
 @end deffn
 
-@deffn Command deftransgravity @var{g}
+@deffn Command {set transgravity} @var{g}
+@deffnx Command deftransgravity @var{g}
 Set the default alignment for transient windows. See the
 @command{gravity} command.
 
@@ -388,7 +393,8 @@ When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command defmaxsizegravity @var{g}
+@deffn Command {set maxsizegravity} @var{g}
+@deffnx Command defmaxsizegravity @var{g}
 Set the default alignment for windows with maxsize hints. See the
 @command{gravity} command.
 
@@ -396,7 +402,8 @@ When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command defborder @var{n}
+@deffn Command {set border} @var{n}
+@deffnx Command defborder @var{n}
 Set the border width for all windows.
 
 When called non-interactively with no arguments, the current setting is
@@ -646,7 +653,8 @@ Abort and restore the frame to its original size.
 The increment size used to resize the frame interactively is
 customized with the command @command{defresizeunit}.
 
-@deffn Command defresizeunit @var{pixels}
+@deffn Command {set resizeunit} @var{pixels}
+@deffnx Command defresizeunit @var{pixels}
 Set the number of pixels a frame will grow or shrink by when being
 dynamically resized.
 @end deffn
@@ -1064,35 +1072,41 @@ Display the last message.
 Display @var{text} as a message.
 @end deffn
 
-@deffn Command definputwidth @var{n}
+@deffn Command {set inputwidth} @var{n}
+@deffnx Command definputwidth @var{n}
 Set the width of the input window.
 
 When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command deffont @var{font}
+@deffn Command {set font} @var{font}
+@deffnx Command deffont @var{font}
 Set the font. @var{font} is a font string like @samp{9x15bold}.
 @end deffn
 
-@deffn Command deffgcolor @var{color}
+@deffn Command {set fgcolor} @var{color}
+@deffnx Command deffgcolor @var{color}
 Set the foreground color for all text ratpoison displays. @var{color}
 is any valid X11 color.
 @end deffn
 
-@deffn Command defbgcolor @var{color}
+@deffn Command {set bgcolor} @var{color}
+@deffnx Command defbgcolor @var{color}
 Set the background color for all text ratpoison displays. @var{color}
 is any valid X11 color.
 @end deffn
 
-@deffn Command defbarpadding @var{x} @var{y}
+@deffn Command {set barpadding} @var{x} @var{y}
+@deffnx Command defbarpadding @var{x} @var{y}
 Set the horizontal and vertical padding inside the bar.
 
 When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command defbargravity @var{g}
+@deffn Command {set bargravity} @var{g}
+@deffnx Command defbargravity @var{g}
 Set the default alignment for the message bar. See the @command{gravity} command.
 
 When called non-interactively with no arguments, the current setting is
@@ -1100,7 +1114,8 @@ returned.
 @end deffn
 
 
-@deffn Command defbarborder @var{n}
+@deffn Command {set barborder} @var{n}
+@deffnx Command defbarborder @var{n}
 Set the border width for the bar window.
 @end deffn
 
@@ -1178,14 +1193,16 @@ Change the current directory for ratpoison.
 Run a ratpoison command.
 @end deffn
 
-@deffn Command defpadding @var{left} @var{top} @var{right} @var{bottom}
+@deffn Command {set padding} @var{left} @var{top} @var{right} @var{bottom}
+@deffnx Command defpadding @var{left} @var{top} @var{right} @var{bottom}
 Set the padding around the edge of the screen.
 
 When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@deffn Command defwaitcursor @var{n}
+@deffn Command {set waitcursor} @var{n}
+@deffnx Command defwaitcursor @var{n}
 Set whether the rat cursor should change into a square when waiting
 for a key. A non-zero number means change the cursor. Zero means don't
 change the cursor.
@@ -1230,6 +1247,33 @@ didn't catch ratpoison's initial maximize event.
 
 @deffn Command restart
 Restart ratpoison.
+@end deffn
+
+@deffn Command set @var{var} @var{value}
+Set the value of a ratpoison variable. This command replaces the older
+@samp{def*} variable get/set style.
+
+Here is a list of variables that can be set:
+
+@itemize @bullet
+@item resizeunit
+@item wingravity
+@item transgravity
+@item maxsizegravity
+@item bargravity
+@item font
+@item padding
+@item border
+@item barborder
+@item inputwidth
+@item waitcursor
+@item winfmt
+@item winname
+@item fgcolor
+@item bgcolor
+@item barpadding
+@item winliststyle
+@end itemize
 @end deffn
 
 @deffn Command setenv @var{env} @var{value}

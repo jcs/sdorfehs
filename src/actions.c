@@ -4188,27 +4188,53 @@ cmd_set (int interactive, char *data)
 
   if (data == NULL) 
     {
-      char *tmp;
-      var = get_input (MESSAGE_PROMPT_SELECT_VAR, var_completions);
-      if (strlen (var) == 0)
+      if (interactive)
 	{
-	  free (var);
-	  return NULL;
+	  char *tmp;
+	  var = get_input (MESSAGE_PROMPT_SELECT_VAR, var_completions);
+	  if (strlen (var) == 0)
+	    {
+	      free (var);
+	      return NULL;
+	    }
+	  tmp = get_input (MESSAGE_PROMPT_VAR_VALUE, trivial_completions);
+	  /* Gobble whitespace */
+	  rest = tmp;
+	  if (rest)
+	    {
+	      while (*rest == ' ')
+		rest++;
+	      /* If rest is empty, then we have no argument. */
+	      if (*rest == '\0')
+		rest = NULL;
+	    }
+	  if (rest)
+	    rest = xstrdup (rest);
+	  free (tmp);
 	}
-      tmp = get_input (MESSAGE_PROMPT_VAR_VALUE, trivial_completions);
-      /* Gobble whitespace */
-      rest = tmp;
-      if (rest)
+      else
 	{
-	  while (*rest == ' ')
-	    rest++;
-	  /* If rest is empty, then we have no argument. */
-	  if (*rest == '\0')
-	    rest = NULL;
+	  /* In non-interactive mode, list all the settings. */
+	  struct sbuf *s = sbuf_new(0);
+	  int i;
+	  char *tmp;
+
+	  for (i=0; set_vars[i].var; i++)
+	    {
+	      char *val;
+	      val = set_vars[i].set_fn (NULL);
+	      sbuf_printf_concat (s, "%s: %s", set_vars[i].var, val);
+	      /* Skip a newline on the last line. */
+	      if (set_vars[i+1].var) 
+		sbuf_concat (s, "\n");
+	      free (val);
+	    }
+	  
+	  /* Return the accumulated string. */
+	  tmp = sbuf_get (s);
+	  free (s);
+	  return tmp;
 	}
-      if (rest)
-	rest = xstrdup (rest);
-      free (tmp);
     }
   else
     {

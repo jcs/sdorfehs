@@ -1,5 +1,8 @@
 2004-04-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (cmd_set): if non-interactive and no arguments are
+	specified, then output the current value of all variables.
+ 
 	* src/messages.h (MESSAGE_PROMPT_SELECT_VAR): new define
 	(MESSAGE_PROMPT_VAR_VALUE): likewise
 
