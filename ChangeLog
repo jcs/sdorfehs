@@ -1,5 +1,7 @@
 2003-06-24  Shawn Betts  <sabetts@sfu.ca>
 
+	* contrib/rpws (rp_call): Don't print debug information.
+
 	* src/actions.c (cmd_resize): fix error message text
 	(cmd_resize): likewise
 	(cmd_defresizeunit): likewise

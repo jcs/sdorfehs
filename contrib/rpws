@@ -28,7 +28,6 @@ RATPOISON=ratpoison
 
 function rp_call ()
 {
-    echo "$RATPOISON -c \"$*\"" >/tmp/cmds
     $RATPOISON -c "$*"
 }
 
