@@ -1,3 +1,13 @@
+2001-03-04  Gergely Nagy <8@free.bsd.hu>
+
+	* debian/changelog: bumped version number to 0.1.0
+
+	* debian/rules: fixed clean target, it failed when there
+	was no Makefile
+
+	* doc/ratpoison.1: some indentitation fixes, removed the note
+	that upstream doesn't have a manpage, because it has
+
 2001-03-02  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* configure.in: adds -g to CFLAGS when debugging is turned on.
