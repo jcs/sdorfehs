@@ -1,6 +1,10 @@
 #! /usr/bin/make -f
 ## debian/rules for ratpoison
-## Copyright (C) 2001 Gergely Nagy <8@free.bsd.hu>
+## Copyright (C) 2001 Gergely Nagy <algernon@debian.org>
+##
+## Released under the GNU GPL v2
+##
+## $Id: rules,v 1.6 2001/04/10 11:54:09 algernon Exp $
 
 export DH_COMPAT  = 2
 DEBHELPER_OPTIONS = -p$@ -Pdebian/$(DEB_HOST_ARCH)/$@
@@ -13,7 +17,10 @@ DEB_HOST_ARCH	   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 CFLAGS		    = -O2
 
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -g
+	CFLAGS		+= -g
+	CONFIG_FLAGS	+= --enable-debug
+else
+	CONFIG_FLAGS	+= --disable-debug
 endif
 
 # bootstrap - for building from CVS snapshots
@@ -33,9 +40,9 @@ build-deb/$(DEB_HOST_ARCH)/config-stamp:
 			--infodir=/usr/share/info \
 			--mandir=/usr/share/man \
 			--with-xterm=x-terminal-emulator \
-			--disable-debug \
 			--build=$(DEB_BUILD_GNU_TYPE) \
-			--host=$(DEB_HOST_GNU_TYPE)
+			--host=$(DEB_HOST_GNU_TYPE) \
+			$(CONFIG_FLAGS)
 	touch $@
 
 # build - build the package
@@ -86,7 +93,7 @@ ratpoison: install
 	dh_installmanpages $(DEBHELPER_OPTIONS)
 	dh_installinfo $(DEBHELPER_OPTIONS)
 #	dh_undocumented $(DEBHELPER_OPTIONS)
-	dh_installchangelogs src/ChangeLog $(DEBHELPER_OPTIONS)
+	dh_installchangelogs ChangeLog $(DEBHELPER_OPTIONS)
 	dh_installwm $(DEBHELPER_OPTIONS)
 	dh_link $(DEBHELPER_OPTIONS)
 	dh_strip $(DEBHELPER_OPTIONS)
