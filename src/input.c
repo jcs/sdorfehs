@@ -22,15 +22,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
 
 #include "ratpoison.h"
-
-/* Variables to keep track of input history. */
-static char *input_history[INPUT_MAX_HISTORY];
-static int input_num_history_entries = 0;
 
 /* Convert an X11 modifier mask to the rp modifier mask equivalent, as
    best it can (the X server may not have a hyper key defined, for
@@ -275,73 +272,119 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
 }
 
 static void
-update_input_window (rp_screen *s, char *prompt, char *input, int input_len)
+update_input_window (rp_screen *s, rp_input_line *line)
 {
-  int 	prompt_width = XTextWidth (defaults.font, prompt, strlen (prompt));
-  int 	input_width  = XTextWidth (defaults.font, input, input_len);
-  int 	width, height;
+  int 	prompt_width = XTextWidth (defaults.font, line->prompt, strlen (line->prompt));
+  int 	input_width  = XTextWidth (defaults.font, line->buffer, line->length);
+  int 	total_width;
+  GC lgc;
+  XGCValues gv;
+  int height;
 
-  width = defaults.bar_x_padding * 2 + prompt_width + input_width;
+  total_width = defaults.bar_x_padding * 2 + prompt_width + input_width + MAX_FONT_WIDTH (defaults.font);
   height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
-  if (width < defaults.input_window_size + prompt_width)
+  if (total_width < defaults.input_window_size + prompt_width)
     {
-      width = defaults.input_window_size + prompt_width;
+      total_width = defaults.input_window_size + prompt_width;
     }
 
   XMoveResizeWindow (dpy, s->input_window, 
-		     bar_x (s, width), bar_y (s, height), width, height);
+		     bar_x (s, total_width), bar_y (s, height), total_width,
+ 		     (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2));
 
   XClearWindow (dpy, s->input_window);
   XSync (dpy, False);
 
   XDrawString (dpy, s->input_window, s->normal_gc, 
-	       defaults.bar_x_padding, 
-	       defaults.bar_y_padding + defaults.font->max_bounds.ascent, prompt, 
-	       strlen (prompt));
-
+ 	       defaults.bar_x_padding, 
+	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+	       line->prompt, 
+	       strlen (line->prompt));
+ 
   XDrawString (dpy, s->input_window, s->normal_gc, 
-	       defaults.bar_x_padding + prompt_width,
-	       defaults.bar_y_padding + defaults.font->max_bounds.ascent, input, 
-	       input_len);
+ 	       defaults.bar_x_padding + prompt_width,
+	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+	       line->buffer, 
+	       line->length);
 
-  /* Draw a cheap-o cursor. */
-  XDrawLine (dpy, s->input_window, s->normal_gc, 
-	     defaults.bar_x_padding + prompt_width + input_width + 2, 
-	     defaults.bar_y_padding + 1, 
-	     defaults.bar_x_padding + prompt_width + input_width + 2,
-	     defaults.bar_y_padding + FONT_HEIGHT (defaults.font) - 1);
+  gv.function = GXxor;
+  gv.foreground = s->fg_color ^ s->bg_color;
+  lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gv);
+
+  /* Draw a cheap-o cursor - MkII */
+  XFillRectangle (dpy, s->input_window, lgc, 
+		  defaults.bar_x_padding + prompt_width + XTextWidth (defaults.font, line->buffer, line->position),
+		  defaults.bar_y_padding, 
+		  XTextWidth (defaults.font, &line->buffer[line->position], 1),
+		  FONT_HEIGHT (defaults.font));
+
+  XFlush (dpy);
+  XFreeGC (dpy, lgc);
 }
 
-char *
-get_input (char *prompt)
+void
+ring_bell ()
 {
-  return get_more_input (prompt, "");
+#ifdef VISUAL_BELL
+  GC lgc;
+  XGCValues gv;
+  XWindowAttributes attr;
+  rp_screen *s = current_screen ();
+
+  XGetWindowAttributes (dpy, s->input_window, &attr);
+
+  gv.function = GXxor;
+  gv.foreground = s->fg_color ^ s->bg_color;
+  lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gv);
+
+  XFillRectangle (dpy, s->input_window, lgc, 0, 0, attr.width, attr.height);
+  XFlush (dpy);
+
+#ifdef HAVE_USLEEP
+  usleep (15000);
+#else
+  {
+    struct timeval tv;
+
+    tv.tv_sec = 0;
+    tv.tv_usec = 15000;
+    select (0, NULL, NULL, NULL, &tv);
+  }
+#endif
+  XFillRectangle (dpy, s->input_window, lgc, 0, 0, attr.width, attr.height);
+  XFlush (dpy);
+  XFreeGC (dpy, lgc);
+#else
+  XBell (dpy, 0);
+#endif
 }
 
 char *
-get_more_input (char *prompt, char *preinput)
+get_input (char *prompt, completion_fn fn)
+{
+  return get_more_input (prompt, "", fn);
+}
+
+char *
+get_more_input (char *prompt, char *preinput, 
+		completion_fn compl_fn)
 {
   /* Emacs 21 uses a 513 byte string to store the keysym name. */
   char keysym_buf[513];	
   int keysym_bufsize = sizeof (keysym_buf);
   int nbytes;
   rp_screen *s = current_screen ();
-  int cur_len = 0;		/* Current length of the string. */
-  int allocated_len=100; /* The amount of memory we allocated for str */
   KeySym ch;
   unsigned int modifier;
   int revert;
   Window fwin;
-  char *str;
-  int history_index = input_num_history_entries;
+  rp_input_line *line;
+  char *final_input;
+  edit_status status;
 
-  /* Allocate some memory to start with. */
-  str = (char *) xmalloc ( allocated_len );
-
-  /* load in the preinput */
-  strcpy (str, preinput);
-  cur_len = strlen (preinput);
+  /* Create our line structure */
+  line = input_line_new (prompt, preinput, compl_fn);
 
   /* We don't want to draw overtop of the program bar. */
   hide_bar (s);
@@ -351,117 +394,51 @@ get_more_input (char *prompt, char *preinput)
   XClearWindow (dpy, s->input_window);
   XSync (dpy, False);
 
-  update_input_window (s, prompt, str, cur_len);
+  update_input_window (s, line);
 
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->input_window, RevertToPointerRoot, CurrentTime);
   /* XSync (dpy, False); */
 
-
-  nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize);
-  while (ch != XK_Return) 
+  for (;;)
     {
-      PRINT_DEBUG (("key %ld\n", ch));
-      if (ch == XK_BackSpace)
-	{
-	  if (cur_len > 0) cur_len--;
-	  update_input_window(s, prompt, str, cur_len);
-	}
-      else if (ch == INPUT_PREV_HISTORY_KEY 
-	       && modifier == INPUT_PREV_HISTORY_MODIFIER)
-	{
-	  /* Cycle through the history. */
-	  if (input_num_history_entries > 0)
-	    {
-	      history_index--;
-	      if (history_index < 0)
-		{
-		  history_index = input_num_history_entries - 1;
-		}
-
-	      free (str);
-	      str = xstrdup (input_history[history_index]);
-	      allocated_len = strlen (str) + 1;
-	      cur_len = allocated_len - 1;
-
-	      update_input_window (s, prompt, str, cur_len);
-	    }
-	}
-      else if (ch == INPUT_NEXT_HISTORY_KEY 
-	       && modifier == INPUT_NEXT_HISTORY_MODIFIER)
-	{
-	  /* Cycle through the history. */
-	  if (input_num_history_entries > 0)
-	    {
-	      history_index++;
-	      if (history_index >= input_num_history_entries)
-		{
-		  history_index = 0;
-		}
-
-	      free (str);
-	      str = xstrdup (input_history[history_index]);
-	      allocated_len = strlen (str) + 1;
-	      cur_len = allocated_len - 1;
-
-	      update_input_window (s, prompt, str, cur_len);
-	    }
-	}
-      else if (ch == INPUT_ABORT_KEY && modifier == INPUT_ABORT_MODIFIER)
-	{
-	  /* User aborted. */
-	  free (str);
-	  XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
-	  XUnmapWindow (dpy, s->input_window);
-	  return NULL;
-	}
-      else
-	{
-	  if (cur_len + nbytes > allocated_len - 1)
-	    {
-	      allocated_len += nbytes + 100;
-	      str = xrealloc ( str, allocated_len );
-	    }
-
-	  strncpy (&str[cur_len], keysym_buf, nbytes);
-/* 	  str[cur_len] = ch; */
-	  cur_len+=nbytes;
-
-	  update_input_window(s, prompt, str, cur_len);
-	}
-
       nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize);
+      modifier = x11_mask_to_rp_mask (modifier);
+      PRINT_DEBUG (("ch = %ld, modifier = %d, keysym_buf = %s, keysym_bufsize = %d\n", 
+		    ch, modifier, keysym_buf, keysym_bufsize));
+      status = execute_edit_action (line, ch, modifier, keysym_buf);
+
+      if (status == EDIT_DELETE || status == EDIT_INSERT || status == EDIT_MOVE
+	  || status == EDIT_COMPLETE)
+        {
+	  /* If the text changed (and we didn't just complete
+	     something) then set the virgin bit. */
+	  if (status != EDIT_COMPLETE)
+	    line->compl->virgin = 1;
+	  /* In all cases, we need to redisplay the input string. */
+          update_input_window (s, line);
+        }
+      else if (status == EDIT_NO_OP)
+        {
+          ring_bell ();
+        }
+      else if (status == EDIT_ABORT)
+        {
+          final_input = NULL;
+          break;
+        }
+      else if (status == EDIT_DONE)
+        {
+          final_input = xstrdup (line->buffer);
+          break;
+        }
     }
 
-  str[cur_len] = 0;
-
-  /* Push the history entries down. */
-  if (input_num_history_entries >= INPUT_MAX_HISTORY)
-    {
-      int i;
-      free (input_history[0]);
-      for (i=0; i<INPUT_MAX_HISTORY-1; i++)
-	{
-	  input_history[i] = input_history[i+1];
-	}
-
-      input_num_history_entries--;
-    }
-
-  /* Store the string in the history. */
-  input_history[input_num_history_entries] = xstrdup (str);
-  input_num_history_entries++;
+  /* Clean up our line structure */
+  input_line_free (line);
 
   XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
   XUnmapWindow (dpy, s->input_window);
-  return str;
+
+  return final_input;
 }  
-
-void
-free_history ()
-{
-  int i;
-
-  for (i=0; i<input_num_history_entries; i++)
-    free (input_history[i]);
-}

@@ -24,13 +24,14 @@
 
 char *keysym_to_string (KeySym keysym, unsigned int modifier);
 int cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_name, int len, int ignore_bad_mods);
-char *get_input (char *prompt);
-char *get_more_input (char *prompt, char *preinput);
+char *get_input (char *prompt, completion_fn fn);
+char *get_more_input (char *prompt, char *preinput, completion_fn fn);
 int read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len);
 unsigned int x11_mask_to_rp_mask (unsigned int mask);
 unsigned int rp_mask_to_x11_mask (unsigned int mask);
 void update_modifier_map ();
 void grab_key (int keycode, unsigned int modifiers, Window grab_window);
-void free_history ();
+
+void ring_bell ();
 
 #endif /* ! _RATPOISON_INPUT_H */

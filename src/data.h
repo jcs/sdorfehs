@@ -36,6 +36,8 @@ typedef struct rp_frame rp_frame;
 typedef struct rp_child_info rp_child_info;
 typedef struct rp_group rp_group;
 typedef struct rp_window_elem rp_window_elem;
+typedef struct rp_completions rp_completions;
+typedef struct rp_input_line rp_input_line;
 
 struct rp_frame
 {
@@ -212,6 +214,8 @@ struct rp_defaults
 
   /* Pointer warping toggle. */
   int warp;
+
+  int history_size;
 };
 
 /* Information about a child process. */
@@ -254,6 +258,42 @@ struct modifier_info
      ignored. */  
   unsigned int num_lock_mask;
   unsigned int scroll_lock_mask; 
+};
+
+typedef struct list_head *(*completion_fn)(char *string);
+
+struct rp_completions
+{
+  /* A pointer to the partial string that is being completed. We need
+     to store this so that the user can cycle through all possible
+     completions. */
+  char *partial;
+
+  /* A pointer to the string that was last matched string. Used to
+     keep track of where we are in the completion list. */
+  struct sbuf *last_match;
+
+  /* A list of sbuf's which are possible completions. */
+  struct list_head completion_list;
+
+  /* The function that generates the completions. */
+  completion_fn complete_fn;
+
+  /* virgin = 1 means no completions have been attempted on the input
+     string. */
+  unsigned short int virgin;
+};
+
+struct rp_input_line
+{
+  char *buffer;
+  char *prompt;
+  char *saved;
+  int   position;
+  int   length;
+  int   size;
+  rp_completions *compl;
+  Atom  selection;
 };
 
 #endif /* _RATPOISON_DATA_H */

@@ -30,6 +30,9 @@ sbuf
   char *data;
   size_t len;
   size_t maxsz;
+
+  /* sbuf can exist in a list. */
+  struct list_head node;
 };
 
 struct sbuf *sbuf_new (size_t initsz);

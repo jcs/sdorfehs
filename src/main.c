@@ -79,7 +79,6 @@ xrealloc (void *ptr, size_t size)
   register void *value = realloc (ptr, size);
   if (value == 0)
     fatal ("Virtual memory exhausted");
-  PRINT_DEBUG (("realloc: %d\n", size));
   return value;
 }
 
@@ -468,6 +467,8 @@ init_defaults ()
   defaults.startup_message = 1;
   defaults.warp = 1;
   defaults.window_list_style = STYLE_ROW;
+
+  defaults.history_size = 20;
 }
 
 int
@@ -536,6 +537,7 @@ main (int argc, char *argv[])
   rp_command = XInternAtom (dpy, "RP_COMMAND", False);
   rp_command_request = XInternAtom (dpy, "RP_COMMAND_REQUEST", False);
   rp_command_result = XInternAtom (dpy, "RP_COMMAND_RESULT", False);
+  rp_selection = XInternAtom (dpy, "RP_SELECTION", False);
 
   if (cmd_count > 0)
     {
@@ -613,6 +615,7 @@ main (int argc, char *argv[])
   init_frame_lists ();
   update_modifier_map ();
   initialize_default_keybindings ();
+  history_load ();
 
   /* Scan for windows */
   if (screen_arg)
@@ -766,10 +769,12 @@ clean_up ()
 {
   int i;
 
+  history_save ();
+
   free_keybindings ();
   free_aliases ();
   free_bar ();
-  free_history ();
+/*   free_history (); */
 
   free_window_stuff ();
   

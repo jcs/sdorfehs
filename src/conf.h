@@ -30,31 +30,31 @@
 
 /* This is the abort key when typing input. */
 #define INPUT_ABORT_KEY      XK_g
-#define INPUT_ABORT_MODIFIER ControlMask
+#define INPUT_ABORT_MODIFIER RP_CONTROL_MASK
 
 /* This is the previous history entry key when typing input. */
 #define INPUT_PREV_HISTORY_KEY      XK_p
-#define INPUT_PREV_HISTORY_MODIFIER ControlMask
+#define INPUT_PREV_HISTORY_MODIFIER RP_CONTROL_MASK
 
 /* This is the next history entry key when typing input. */
 #define INPUT_NEXT_HISTORY_KEY      XK_n
-#define INPUT_NEXT_HISTORY_MODIFIER ControlMask
+#define INPUT_NEXT_HISTORY_MODIFIER RP_CONTROL_MASK
 
 /* Key used to enlarge frame vertically when in resize mode.  */
 #define RESIZE_VGROW_KEY      XK_n
-#define RESIZE_VGROW_MODIFIER ControlMask
+#define RESIZE_VGROW_MODIFIER RP_CONTROL_MASK
 
 /* Key used to shrink frame vertically when in resize mode.  */
 #define RESIZE_VSHRINK_KEY	XK_p
-#define RESIZE_VSHRINK_MODIFIER ControlMask
+#define RESIZE_VSHRINK_MODIFIER RP_CONTROL_MASK
 
 /* Key used to enlarge frame horizontally when in resize mode.  */
 #define RESIZE_HGROW_KEY      XK_f
-#define RESIZE_HGROW_MODIFIER ControlMask
+#define RESIZE_HGROW_MODIFIER RP_CONTROL_MASK
 
 /* Key used to shrink frame horizontally when in resize mode.  */
 #define RESIZE_HSHRINK_KEY	XK_b
-#define RESIZE_HSHRINK_MODIFIER ControlMask
+#define RESIZE_HSHRINK_MODIFIER RP_CONTROL_MASK
 
 /* Key used to shrink frame to fit it's current window.  */
 #define RESIZE_SHRINK_TO_WINDOW_KEY		XK_s
@@ -99,5 +99,14 @@
 
 /* This is the name of the first group that is created. */
 #define DEFAULT_GROUP_NAME "default"
+
+/* Maximum allowed history size */
+#define MAX_HISTORY_SIZE 100
+
+/* The default filename in which to store the history */
+#define HISTORY_FILE ".ratpoison_history"
+
+/* Use a visual bell in the input window */
+#define VISUAL_BELL 1
 
 #endif /* !_ _RATPOISON_CONF_H */

@@ -755,6 +755,42 @@ string_to_window_number (char *str)
   return *s ? -1 : i;
 }
 
+
+struct list_head *
+trivial_completions (char* str)
+{
+  struct list_head *list;
+
+  /* Initialize our list. */
+  list = xmalloc (sizeof (struct list_head));
+  INIT_LIST_HEAD (list);
+
+  return list;
+}
+
+struct list_head *
+window_completions (char* str)
+{
+  rp_window_elem *cur;
+  struct list_head *list;
+
+  /* Initialize our list. */
+  list = xmalloc (sizeof (struct list_head));
+  INIT_LIST_HEAD (list);
+
+  /* Gather the names of all the windows. */
+  list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
+    {
+      struct sbuf *name;
+
+      name = sbuf_new (0);
+      sbuf_copy (name, window_name (cur->win));
+      list_add_tail (&name->node, list);
+    }
+
+  return list;
+}
+
 /* switch to window number or name */
 char *
 cmd_select (int interactive, char *data)
@@ -763,7 +799,7 @@ cmd_select (int interactive, char *data)
   int n;
 
   if (data == NULL)
-    str = get_input (MESSAGE_PROMPT_SWITCH_TO_WINDOW);
+    str = get_input (MESSAGE_PROMPT_SWITCH_TO_WINDOW, window_completions);
   else
     str = xstrdup (data);
 
@@ -814,7 +850,7 @@ cmd_rename (int interactive, char *data)
   if (current_window() == NULL) return NULL;
 
   if (data == NULL)
-    winname = get_input (MESSAGE_PROMPT_NEW_WINDOW_NAME);
+    winname = get_input (MESSAGE_PROMPT_NEW_WINDOW_NAME, trivial_completions);
   else
     winname = xstrdup (data);
 
@@ -959,6 +995,42 @@ command (int interactive, char *data)
   return result;
 }
 
+struct list_head *
+colon_completions (char* str)
+{
+  int i;
+  struct sbuf *s;
+  struct list_head *list;
+
+  /* Initialize our list. */
+  list = xmalloc (sizeof (struct list_head));
+  INIT_LIST_HEAD (list);
+
+  /* Put all the aliases in our list. */
+  for(i=0; i<alias_list_last; ++i)
+    {
+      s = sbuf_new (0);
+      sbuf_copy (s, alias_list[i].name);
+      /* The space is so when the user completes a space is
+	 conveniently inserted after the command. */
+      sbuf_concat (s, " ");
+      list_add_tail (&s->node, list);
+    }
+
+  /* Put all the commands in our list. */
+  for(i=0; user_commands[i].name; ++i)
+    {
+      s = sbuf_new (0);
+      sbuf_copy (s, user_commands[i].name);
+      /* The space is so when the user completes a space is
+	 conveniently inserted after the command. */
+      sbuf_concat (s, " ");
+      list_add_tail (&s->node, list);
+    }
+
+  return list;
+}
+
 char *
 cmd_colon (int interactive, char *data)
 {
@@ -966,9 +1038,9 @@ cmd_colon (int interactive, char *data)
   char *input;
 
   if (data == NULL)
-    input = get_input (MESSAGE_PROMPT_COMMAND);
+    input = get_input (MESSAGE_PROMPT_COMMAND, colon_completions);
   else
-    input = get_more_input (MESSAGE_PROMPT_COMMAND, data);
+    input = get_more_input (MESSAGE_PROMPT_COMMAND, data, colon_completions);
 
   /* User aborted. */
   if (input == NULL)
@@ -985,13 +1057,76 @@ cmd_colon (int interactive, char *data)
   return NULL;
 }
 
+struct list_head *
+exec_completions (char *str)
+{
+  size_t n = 256;
+  char *partial;
+  struct sbuf *line;
+  FILE *file;
+  struct list_head *head;
+  char *completion_string;
+
+  /* Initialize our list. */
+  head = xmalloc (sizeof (struct list_head));
+  INIT_LIST_HEAD (head);
+	
+  /* FIXME: A Bash dependancy?? */
+  completion_string = xsprintf("bash -c \"compgen -ac %s|sort\"", str);
+  file = popen (completion_string, "r");
+  free (completion_string);
+  if (!file)
+    {
+      PRINT_ERROR (("popen failed\n"));
+      return head;
+    }
+
+  partial = (char*)xmalloc (n);
+
+  /* Read data from the file, split it into lines and store it in a
+     list. */
+  line = sbuf_new (0);
+  while (fgets (partial, n, file) != NULL)
+    {
+      /* Read a chunk from the file into our line accumulator. */
+      sbuf_concat (line, partial);
+
+      if (feof(file) || (*(sbuf_get (line) + strlen(sbuf_get (line)) - 1) == '\n'))
+	{
+	  char *s;
+	  struct sbuf *elem;
+
+	  s = sbuf_get (line);
+
+	  /* Frob the newline into */
+	  if (*(s + strlen(s) - 1) == '\n')
+	    *(s + strlen(s) - 1) = '\0';
+	      
+	  /* Add our line to the list. */
+	  elem = sbuf_new (0);
+	  sbuf_copy (elem, s);
+	  /* The space is so when the user completes a space is
+	     conveniently inserted after the command. */
+	  sbuf_concat (elem, " ");
+	  list_add_tail (&elem->node, head);
+
+	  sbuf_clear (line);
+	}
+    }
+
+  free (partial);
+  pclose (file);
+
+  return head;
+}
+
 char *
 cmd_exec (int interactive, char *data)
 {
   char *cmd;
 
   if (data == NULL)
-    cmd = get_input (MESSAGE_PROMPT_SHELL_COMMAND);
+    cmd = get_input (MESSAGE_PROMPT_SHELL_COMMAND, exec_completions);
   else
     cmd = xstrdup (data);
 
@@ -1053,7 +1188,7 @@ cmd_newwm(int interactive, char *data)
   char *prog;
 
   if (data == NULL)
-    prog = get_input (MESSAGE_PROMPT_SWITCH_WM);
+    prog = get_input (MESSAGE_PROMPT_SWITCH_WM, trivial_completions);
   else
     prog = xstrdup (data);
 
@@ -1441,6 +1576,9 @@ cmd_resize (int interactive, char *data)
 	{
 	  show_frame_message (" Resize frame ");
 	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
+
+	  /* Convert the mask to be compatible with ratpoison. */
+	  mod = x11_mask_to_rp_mask (mod);
 
 	  if (c == RESIZE_VGROW_KEY && mod == RESIZE_VGROW_MODIFIER)
 	    resize_frame_vertically (current_frame(), defaults.frame_resize_unit);
@@ -3193,6 +3331,30 @@ find_group (char *str)
   return group;
 }
 
+struct list_head *
+group_completions (char *str)
+{
+  struct list_head *list;
+  rp_group *cur;
+
+  /* Initialize our list. */
+  list = xmalloc (sizeof (struct list_head));
+  INIT_LIST_HEAD (list);
+
+  /* Grab all the group names. */
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      struct sbuf *s;
+
+      s = sbuf_new (0);
+      sbuf_copy (s, cur->name);
+
+      list_add_tail (&s->node, list);
+    }
+
+  return list;
+}
+
 char *
 cmd_gselect (int interactive, char *data)
 {
@@ -3200,7 +3362,7 @@ cmd_gselect (int interactive, char *data)
   rp_group *g;
 
   if (data == NULL)
-    str = get_input (MESSAGE_PROMPT_SWITCH_TO_GROUP);
+    str = get_input (MESSAGE_PROMPT_SWITCH_TO_GROUP, group_completions);
   else
     str = xstrdup (data);
 

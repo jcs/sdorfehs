@@ -1,4 +1,136 @@
+2003-05-27  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/editor.c (saved_command): new local global
+	(edit_binding): new typedef
+	(edit_binding): new struct
+	(edit_bindings): new local global
+	(input_line_new): new function
+	(input_line_free): likewise
+	(execute_edit_action): likewise
+	(editor_forward_char): likewise
+	(editor_backward_char): likewise
+	(editor_forward_word): likewise
+	(editor_backward_word): likewise
+	(editor_beginning_of_line): likewise
+	(editor_end_of_line): likewise
+	(editor_delete_char): likewise
+	(editor_backward_delete_char): likewise
+	(editor_kill_word): likewise
+	(editor_backward_kill_word): likewise
+	(editor_kill_line): likewise
+	(editor_backward_kill_line): likewise
+	(editor_history_previous): likewise
+	(editor_history_next): likewise
+	(editor_abort): likewise
+	(editor_no_action): likewise
+	(editor_insert): likewise
+	(editor_enter): likewise
+	(paste_cut_buffer): likewise
+	(paste_primary_selection): likewise
+	(editor_paste_selection): likewise
+	(editor_complete): likewise
+	(editor_forward_char): new prototype
+	(editor_backward_char): likewise
+	(editor_forward_word): likewise
+	(editor_backward_word): likewise
+	(editor_beginning_of_line): likewise
+	(editor_end_of_line): likewise
+	(editor_delete_char): likewise
+	(editor_backward_delete_char): likewise
+	(editor_kill_word): likewise
+	(editor_backward_kill_word): likewise
+	(editor_kill_line): likewise
+	(editor_paste_selection): likewise
+	(editor_abort): likewise
+	(editor_no_action): likewise
+	(editor_enter): likewise
+	(editor_history_previous): likewise
+	(editor_history_next): likewise
+	(editor_complete): likewise
+	(editor_backward_kill_line): likewise
+
+	* src/sbuf.h (sbuf): add node field.
+
+	* src/main.c (xrealloc): don't print debugger output
+	(init_defaults): init history_size
+	(main): initialize rp_selection
+	(main): load history
+	(clean_up): save history
+
+	* src/linkedlist.h (list_first): new macro
+
+	* src/input.h (free_history): remove prototype
+	(ring_bell): new function
+
+	* src/input.c: include unistd.h
+	(input_history): remove
+	(input_num_history_entries): likewise
+	(update_input_window): remove prompt, input, and input_len
+	arguments. add line argument.
+	(update_input_window): use line argument.
+	(ring_bell): new function
+	(get_input): take completion_fn argument. prototype and callers
+	updated.
+	(free_history): remove function
+	(get_more_input): take completion_fn argument. prototype and
+	callers updated. use line structure and its functionality.
+
+	* src/globals.h (MAX_FONT_WIDTH): new define
+	(rp_selection): new extern
+
+	* src/globals.c (rp_selection): new global
+
+	* src/completions.h (completions_new): new prototype
+	(completions_free): likewise
+	(completions_assign): likewise
+	(completions_update): likewise
+	(completions_next_completion): likewise
+
+
+	* src/completions.c (completions_new): new function
+	(completions_free): likewise
+	(completions_assign): likewise
+	(completions_update): likewise
+	(completions_next_completion): likewise
+
+	* src/Makefile.am (ratpoison_SOURCES): add editor.c editor.h
+	history.h and history.c
+
+	* src/data.h (rp_completions): new typedef
+	(rp_input_line): likewise
+	(completion_fn): likewise
+	(rp_defaults): new field, history_size
+	(rp_completions): new struct
+	(rp_input_line): new struct
+
+	* src/conf.h (MAX_HISTORY_SIZE): new define
+	(HISTORY_FILE): likewise
+	(VISUAL_BELL): likewise
+	(MODIFIER_PREFIX): set to RP_CONTROL_MASK
+	(INPUT_ABORT_MODIFIER): likewise
+	(INPUT_PREV_HISTORY_MODIFIER): likewise
+	(INPUT_NEXT_HISTORY_MODIFIER): likewise
+	(RESIZE_VGROW_MODIFIER): likewise
+	(RESIZE_VSHRINK_MODIFIER): likewise
+	(RESIZE_HGROW_MODIFIER): likewise
+	(RESIZE_HSHRINK_MODIFIER): likewise
+
+	* src/actions.c (trivial_completions): new function
+	(window_completions): likewise
+	(colon_completions): likewise
+	(exec_completions): likewise
+	(cmd_select): pass window_completions to get_input
+	(cmd_rename): pass trivial_completions to get_input
+	(cmd_colon): pass colon_completions to get_input and
+	get_more_input
+	(cmd_exec): pass exec_completions to get_input
+	(cmd_newwm): pass trivial_completions to get_input
+	(cmd_resize): convert the keysym modifier to something ratpoison
+	understands.
+
 2003-05-25  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/Makefile.am (ratpoison_SOURCES): add completions.c and completions.h
 
 	* src/actions.c (cmd_gmerge): show a message if the group
 	specified by the user could not be found.

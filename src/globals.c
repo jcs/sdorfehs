@@ -39,6 +39,7 @@ Atom wm_colormaps;
 Atom rp_command;
 Atom rp_command_request;
 Atom rp_command_result;
+Atom rp_selection;
 
 int rp_current_screen;
 rp_screen *screens;

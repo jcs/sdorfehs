@@ -171,3 +171,12 @@ void prefetch(const void *x);
 		     prefetch(pos->member.prev))
 
 #endif
+
+
+/* Return the first element in the list. */
+#define list_first(first, head, member)				\
+{								\
+  first = list_entry((head)->next, typeof(*first), member);	\
+  if (&first->member == (head))					\
+    first = NULL;						\
+}

@@ -24,6 +24,7 @@
 #include "data.h"
 
 #define FONT_HEIGHT(f) ((f)->max_bounds.ascent + (f)->max_bounds.descent)
+#define MAX_FONT_WIDTH(f) ((f)->max_bounds.width)
 
 #define WIN_EVENTS (StructureNotifyMask | PropertyChangeMask | ColormapChangeMask | FocusChangeMask)
 /* EMPTY is used when a frame doesn't contain a window, or a window
@@ -75,6 +76,7 @@ extern Display *dpy;
 extern Atom rp_command;
 extern Atom rp_command_request;
 extern Atom rp_command_result;
+extern Atom rp_selection;
 
 extern Atom wm_name;
 extern Atom wm_state;
