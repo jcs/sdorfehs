@@ -28,8 +28,14 @@
 #define KEY_PREFIX      XK_t
 #define MODIFIER_PREFIX ControlMask
 
+/* After hitting the prefix key ratpoison will change the mouse cursor
+   to a square to indicate that it is waiting for a second
+   keystroke. If do not wish this functionality, comment out the
+   following line. */
+#define USE_WAITFORKEY_CURSOR
+
 /* Quit ratpoison when there are no more managed windows. */
-//#define AUTO_CLOSE		
+/* #define AUTO_CLOSE */
 
 /* The minimum size of the input window */
 #define INPUT_WINDOW_SIZE 200

@@ -324,6 +324,7 @@ client_msg (XClientMessageEvent *ev)
     }
 }
 
+#ifdef USE_WAITFORKEY_CURSOR
 static void
 grab_rat ()
 {
@@ -331,12 +332,15 @@ grab_rat ()
 		GrabModeAsync, GrabModeAsync, 
 		None, current_screen()->rat, CurrentTime);
 }
+#endif
 
+#ifdef USE_WAITFORKEY_CURSOR
 static void
 ungrab_rat ()
 {
   XUngrabPointer (dpy, CurrentTime);
 }
+#endif
 
 static void
 handle_key (screen_info *s)
@@ -360,7 +364,9 @@ handle_key (screen_info *s)
 
   /* Change the mouse icon to indicate to the user we are waiting for
      more keystrokes */
+#ifdef USE_WAITFORKEY_CURSOR
   grab_rat();
+#endif
 
   read_key (&keysym, &mod, NULL, 0);
 
@@ -386,7 +392,9 @@ handle_key (screen_info *s)
       free (msg);
     }
 
+#ifdef USE_WAITFORKEY_CURSOR
   ungrab_rat();
+#endif
 }
 
 static void
@@ -780,8 +788,6 @@ get_event (XEvent *ev)
 
   XFlush(dpy);
   FD_SET(x_fd, &fds);
-  t.tv_sec = 1;
-  t.tv_usec = 0;
 
   if (select(x_fd+1, &fds, NULL, NULL, NULL) == 1) 
     {

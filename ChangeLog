@@ -1,3 +1,12 @@
+2001-06-11  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/events.c (grab_rat): wrap in ifdef
+	(ungrab_rat): likewise
+	(handle_key): only change the mouse icon if USE_WAITFORKEY_CURSOR is
+	defined.
+
+	* src/conf.h (USE_WAITFORKEY_CURSOR): new define
+
 2001-06-10  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/actions.c (cmd_generate): return if there is no current
