@@ -821,7 +821,14 @@ set_active_frame (rp_window_frame *frame)
 
   win = find_window_number (frame->win_number);
   old_frame = current_frame();
-  old_win = find_window_number (old_frame->win_number);
+  if (old_frame)
+    {
+      old_win = find_window_number (old_frame->win_number);
+    }
+  else
+    {
+      old_win = NULL;
+    }
 
   /* Make the switch */
   give_window_focus (win, old_win);

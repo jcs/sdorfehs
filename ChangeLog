@@ -1,5 +1,7 @@
 2003-04-04  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/split.c (set_active_frame): fix NULL pointer crash bug.
+
 	* src/actions.c (cmd_setenv): properly parse the environment name
 	and value using strtok.
 
