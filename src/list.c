@@ -33,7 +33,7 @@ get_mouse_root_position (rp_window *win, int *mouse_x, int *mouse_y)
 {
   Window root_win, child_win;
   int win_x, win_y;
-  int mask;
+  unsigned int mask;
   
   XQueryPointer (dpy, win->scr->root, &root_win, &child_win, &win_x, &win_y, mouse_x, mouse_y, &mask);
 }
@@ -222,7 +222,7 @@ save_mouse_position (rp_window *win)
 {
   Window root_win, child_win;
   int win_x, win_y;
-  int mask;
+  unsigned int mask;
   
   /* In the case the XQueryPointer raises a BadWindow error, the
      window is not mapped or has been destroyed so it doesn't matter

@@ -26,4 +26,4 @@ void key_press (XEvent *ev);
 void map_request (XEvent *ev);
 void unmap_notify (XEvent *ev);
 
-#endif _EVENTS_H
+#endif /* _EVENTS_H */
