@@ -1,5 +1,14 @@
 2000-12-15  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* manage.c (manage): added ColormapChangeMask and
+	StructureNotifyMask to events listened for on managed windows.
+
+	* main.c (main): propagated changes to set_active_window usage
+
+	* events.c: propagated changes to set_active_window usage
+
+	* data.h (struct rp_window): Added colormap member
+
 	* list.c (set_active_window): Installs colormap
 	(set_active_window): sets rp_current_window to window passed in as
 	parameter
