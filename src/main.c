@@ -293,7 +293,7 @@ print_help ()
   printf ("-i, --interactive     Execute commands in interactive mode\n");
   printf ("-f, --file <file>     Specify an alternative configuration file\n\n");
 
-  printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
+  printf ("Report bugs to ratpoison-devel@nongnu.org\n\n");
 
   exit (EXIT_SUCCESS);
 }

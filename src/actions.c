@@ -2113,8 +2113,8 @@ cmd_license (int interactive, char *data)
 			   "Boston, MA 02111-1307 USA",
 			   "",
 			   "Send bugreports, fixes, enhancements, t-shirts, money, beer & pizza ",
-			   "to ratpoison-devel@lists.sourceforge.net or visit ",
-			   "http://ratpoison.sourceforge.net/",
+			   "to ratpoison-devel@nongnu.org or visit ",
+			   "http://www.nongnu.org/ratpoison/",
 			   "",
 			   "[Press any key to end.] ",
 			   NULL};
