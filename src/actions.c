@@ -1836,6 +1836,8 @@ cmd_setenv (int interactive, void *data)
   return NULL;
 }
 
+/* Thanks to Gergely Nagy <algernon@debian.org> for the original
+   patch. */
 char *
 cmd_chdir (int interactive, void *data)
 {
@@ -1850,6 +1852,8 @@ cmd_chdir (int interactive, void *data)
   return NULL;
 }
 
+/* Thanks to Gergely Nagy <algernon@debian.org> for the original
+   patch. */
 char *
 cmd_unsetenv (int interactive, void *data)
 {
@@ -1864,6 +1868,8 @@ cmd_unsetenv (int interactive, void *data)
   return NULL;
 }
 
+/* Thanks to Gergely Nagy <algernon@debian.org> for the original
+   patch. */
 char *
 cmd_info (int interactive, void *data)
 {
@@ -1883,6 +1889,8 @@ cmd_info (int interactive, void *data)
   return NULL;
 }
 
+/* Thanks to Gergely Nagy <algernon@debian.org> for the original
+   patch. */
 char *
 cmd_lastmsg (int interactive, void *data)
 {
