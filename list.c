@@ -41,6 +41,7 @@ add_to_window_list (screen_info *s, Window w)
   new_window->last_access = 0;
   new_window->prev = NULL;
   new_window->state = STATE_UNMAPPED;
+  new_window->number = -1;	
   if ((new_window->name = malloc (strlen ("Unnamed") + 1)) == NULL)
     {
       fprintf (stderr, "list.c:add_to_window_list():Out of memory.\n");
@@ -77,6 +78,7 @@ find_window (Window w)
   return NULL;
 }
       
+/* this function can rp_current_window a dangling pointer. */
 void
 remove_from_window_list (rp_window *w)
 {
@@ -85,9 +87,6 @@ remove_from_window_list (rp_window *w)
 
   if (w->prev != NULL) w->prev->next = w->next;
   if (w->next != NULL) w->next->prev = w->prev;
-
-  if (rp_current_window == w) rp_current_window = rp_window_head;
-  if (rp_current_window && rp_current_window->state == STATE_UNMAPPED) next_window ();
 
   free (w);
 #ifdef DEBUG
@@ -141,15 +140,13 @@ prev_window ()
 rp_window *
 find_window_by_number (int n)
 {
-  int i;
   rp_window *cur;
 
-  for (i=0, cur=rp_window_head; cur; cur=cur->next)
+  for (cur=rp_window_head; cur; cur=cur->next)
     {
       if (cur->state != STATE_MAPPED) continue;
 
-      if (i == n) return cur;
-      else i++;
+      if (n == cur->number) return cur;
     }
 
   return NULL;

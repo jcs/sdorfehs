@@ -130,7 +130,9 @@ manage (rp_window *win, screen_info *s)
   XSelectInput (dpy, win->w, PropertyChangeMask);
   XAddToSaveSet(dpy, win->w);
   grab_prefix_key (win->w);
+
   win->state = STATE_MAPPED;
+  win->number = get_unique_window_number ();
 
 #ifdef DEBUG
   printf ("window '%s' managed.\n", win->name);
@@ -140,7 +142,9 @@ manage (rp_window *win, screen_info *s)
 void
 unmanage (rp_window *w)
 {
+  return_window_number (w->number);
   remove_from_window_list (w);
+  last_window ();
 }
 
 /* When starting up scan existing windows and start managing them. */

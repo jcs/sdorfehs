@@ -1,4 +1,4 @@
-/* Some standard datatypes for ratpoison 
+/* Standard header for ratpoison.
  *  
  * Copyright (C) 2000 Shawn Betts
  * 
@@ -27,6 +27,7 @@
 #include "list.h"
 #include "bar.h"
 #include "events.h"
+#include "number.h"
 
 void clean_up ();
 screen_info *find_screen (Window w);

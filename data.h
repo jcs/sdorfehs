@@ -36,6 +36,7 @@ struct rp_window
 {
   screen_info *scr;
   Window w;
+  int number;
   char *name;
   int state;
   int last_access;		

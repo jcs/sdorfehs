@@ -91,7 +91,7 @@ get_unique_window_number ()
   /* look for a unique number, and add it to the list of taken
      numbers. */
   i = 0;
-  while (add_to_list (i)) i++;
+  while (!add_to_list (i)) i++;
 
   return i;
 }
@@ -111,4 +111,20 @@ return_window_number (int n)
 	  return;
 	}
     }
+}
+
+
+void
+init_numbers ()
+{
+  max_taken = 10;
+  num_taken = 0;
+
+  numbers_taken = malloc (max_taken * sizeof (int));
+  if (numbers_taken == NULL)
+    {
+      fprintf (stderr, "numbers.c: Cannot alloc numbers_taken.\n");
+      exit (EXIT_FAILURE);
+    }
+
 }

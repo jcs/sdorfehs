@@ -70,17 +70,15 @@ static int
 calc_bar_width (XFontStruct *font)
 {
   char str[100];		/* window names are capped at 99 chars */
-  int i;
   int size = 1;
   rp_window *cur;
 
-  for (i=0, cur = rp_window_head; cur; cur = cur->next)
+  for (cur = rp_window_head; cur; cur = cur->next)
     {
       if (cur->state == STATE_UNMAPPED) continue;
       
-      sprintf (str, "%d-%s", i, cur->name);
+      sprintf (str, "%d-%s", cur->number, cur->name);
       size += 10 + XTextWidth (font, str, strlen (str));
-      i++;
     }
 
   return size;
@@ -104,7 +102,6 @@ void
 update_window_names (screen_info *s)
 {
   char str[100];		/* window names are capped at 99 chars */
-  int i;
   int width = calc_bar_width (s->font);
   rp_window *cur;
   int cur_x = 5;
@@ -119,11 +116,15 @@ update_window_names (screen_info *s)
   XRaiseWindow (dpy, s->bar_window);
 
   if (rp_window_head == NULL) return;
-  for (i=0, cur = rp_window_head; cur; cur = cur->next)
+
+  /* Draw them in reverse order they were added in, so the oldest
+     windows appear on the left and the newest on the right end of the
+     program bar. */
+  for (cur = rp_window_tail; cur; cur = cur->prev) 
     {
       if (cur->state == STATE_UNMAPPED) continue;
 
-      sprintf (str, "%d-%s", i, cur->name);
+      sprintf (str, "%d-%s", cur->number, cur->name);
       if ( rp_current_window == cur) 
 	{
 	  XDrawString (dpy, s->bar_window, s->bold_gc, cur_x, 
@@ -136,6 +137,5 @@ update_window_names (screen_info *s)
 	}
 
       cur_x += 10 + XTextWidth (s->font, str, strlen (str));
-      i++;
     }
 }

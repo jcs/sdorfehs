@@ -124,6 +124,7 @@ main (int argc, char *argv[])
       signal (SIGHUP, SIG_IGN);
     }
 
+  init_numbers ();
   init_window_list ();
 
   font = XLoadQueryFont (dpy, FONT_NAME);
