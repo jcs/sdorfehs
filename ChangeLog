@@ -1,5 +1,18 @@
 2004-04-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/messages.h (MESSAGE_PROMPT_SELECT_VAR): new define
+	(MESSAGE_PROMPT_VAR_VALUE): likewise
+
+	* src/actions.h (cmd_set): new prototype
+
+	* src/actions.c (user_commands): remove all def* commands. Add 'set' command.
+	rename all cmd_def* commands to set_*. Add prototypes for set_* commands.
+	(struct set_var): new struct
+	(set_vars): new static global
+	(cmd_set): new function
+	(var_completions): new function
+	(initialize_default_keybindings): add aliases for def* commands
+	
 	* src/events.c (configure_request): only display a raise request
 	if the window isn't already focused.
 

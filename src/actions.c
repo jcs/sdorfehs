@@ -35,103 +35,83 @@ LIST_HEAD(rp_keymaps);
 static user_command user_commands[] = 
   { /*@begin (tag required for genrpbindings) */
     {"abort",		cmd_abort,		arg_VOID},
+    {"addhook",         cmd_addhook,            arg_STRING},
+    {"alias",		cmd_alias,		arg_STRING},
     {"banish",          cmd_banish,     	arg_VOID},
-    {"time", 		cmd_time, 		arg_VOID},
+    {"chdir",		cmd_chdir,		arg_STRING},
+    {"clrunmanaged",	cmd_clrunmanaged, 	arg_VOID},
     {"colon",	 	cmd_colon,		arg_STRING},
     {"curframe",        cmd_curframe,   	arg_VOID},
+    {"definekey",       cmd_definekey,          arg_STRING},
     {"delete", 		cmd_delete, 		arg_VOID},
+    {"delkmap",         cmd_delkmap,            arg_STRING},
     {"echo", 		cmd_echo, 		arg_STRING},
     {"escape",          cmd_escape,     	arg_STRING},
     {"exec", 		cmd_exec, 		arg_STRING},
+    {"fdump",		cmd_fdump,		arg_STRING},
     {"focus",		cmd_next_frame,		arg_VOID},
-    {"focusup",		cmd_focusup,		arg_VOID},
     {"focusdown",	cmd_focusdown,		arg_VOID},
+    {"focuslast",	cmd_focuslast,		arg_VOID},
     {"focusleft",	cmd_focusleft,		arg_VOID},
     {"focusright",	cmd_focusright,		arg_VOID},
-    {"focuslast",	cmd_focuslast,		arg_VOID},
-    {"meta",		cmd_meta,		arg_STRING},
-    {"license",		cmd_license,		arg_VOID},
+    {"focusup",		cmd_focusup,		arg_VOID},
+    {"frestore",	cmd_frestore,		arg_STRING},
+    {"fselect",		cmd_fselect,		arg_VOID},
+    {"gdelete",		cmd_gdelete,		arg_STRING},
+    {"getenv",		cmd_getenv,		arg_STRING},
+    {"gmerge",		cmd_gmerge,		arg_VOID},
+    {"gmove",		cmd_gmove,		arg_VOID},
+    {"gnew", 		cmd_gnew, 		arg_VOID},
+    {"gnewbg", 		cmd_gnewbg, 		arg_VOID},
+    {"gnext",		cmd_gnext,		arg_VOID},
+    {"gprev", 		cmd_gprev, 		arg_VOID},
+    {"gravity",		cmd_gravity, 		arg_STRING},
+    {"groups",		cmd_groups,		arg_VOID},
+    {"gselect",		cmd_gselect,		arg_STRING},
     {"help",		cmd_help,		arg_VOID},
     {"hsplit",		cmd_h_split,		arg_STRING},
+    {"info",		cmd_info,		arg_VOID},
     {"kill", 		cmd_kill, 		arg_VOID},
-    {"redisplay", 	cmd_redisplay,		arg_VOID},
+    {"lastmsg",		cmd_lastmsg,		arg_VOID},
+    {"license",		cmd_license,		arg_VOID},
+    {"link",		cmd_link,		arg_STRING},
+    {"listhook",        cmd_listhook,           arg_STRING},
+    {"meta",		cmd_meta,		arg_STRING},
+    {"newkmap",         cmd_newkmap,            arg_STRING},
     {"newwm",		cmd_newwm,		arg_STRING},
     {"next", 		cmd_next, 		arg_VOID},
+    {"nextscreen",	cmd_nextscreen,		arg_VOID},
     {"number", 		cmd_number, 		arg_STRING},
     {"only",            cmd_only,       	arg_VOID},
     {"other", 		cmd_other, 		arg_VOID},
-    {"gravity",		cmd_gravity, 		arg_STRING},
     {"prev", 		cmd_prev, 		arg_VOID},
+    {"prevscreen",	cmd_prevscreen,		arg_VOID},
     {"quit",		cmd_quit,		arg_VOID},
+    {"readkey",         cmd_readkey,            arg_STRING},
+    {"redisplay", 	cmd_redisplay,		arg_VOID},
+    {"remhook",         cmd_remhook,            arg_STRING},
     {"remove",          cmd_remove,     	arg_VOID},
+    {"resize",		cmd_resize,		arg_STRING},
+    {"restart",		cmd_restart,		arg_VOID},
     {"rudeness",	cmd_rudeness,		arg_STRING},
     {"select", 		cmd_select,		arg_STRING},
+    {"set",          	cmd_set,             	arg_STRING},
+    {"setenv",		cmd_setenv,		arg_STRING},
+    {"shrink",		cmd_shrink,		arg_VOID},
     {"source",		cmd_source,		arg_STRING},
     {"split",		cmd_v_split,		arg_STRING},
+    {"startup_message",	cmd_startup_message, 	arg_STRING},
+    {"time", 		cmd_time, 		arg_VOID},
     {"title", 		cmd_rename, 		arg_STRING},
+    {"tmpwm",		cmd_tmpwm,		arg_STRING},
+    {"unalias",		cmd_unalias,		arg_STRING},
+    {"unmanage",	cmd_unmanage,		arg_STRING},
+    {"unsetenv",	cmd_unsetenv,		arg_STRING},
+    {"verbexec", 	cmd_verbexec, 		arg_STRING},
     {"version",		cmd_version,		arg_VOID},
     {"vsplit",		cmd_v_split,		arg_STRING},
-    {"windows", 	cmd_windows, 		arg_VOID},
-    {"setenv",		cmd_setenv,		arg_STRING},
-    {"getenv",		cmd_getenv,		arg_STRING},
-    {"chdir",		cmd_chdir,		arg_STRING},
-    {"unsetenv",	cmd_unsetenv,		arg_STRING},
-    {"info",		cmd_info,		arg_VOID},
-    {"lastmsg",		cmd_lastmsg,		arg_VOID},
-    {"restart",		cmd_restart,		arg_VOID},
-    {"startup_message",	cmd_startup_message, 	arg_STRING},
-    {"link",		cmd_link,		arg_STRING},
-    {"alias",		cmd_alias,		arg_STRING},
-    {"unalias",		cmd_unalias,		arg_STRING},
-    {"prevscreen",	cmd_prevscreen,		arg_VOID},
-    {"nextscreen",	cmd_nextscreen,		arg_VOID},
     {"warp",		cmd_warp,		arg_STRING},
-    {"resize",		cmd_resize,		arg_STRING},
-    {"shrink",		cmd_shrink,		arg_VOID},
-    {"tmpwm",		cmd_tmpwm,		arg_STRING},
-    {"fselect",		cmd_fselect,		arg_VOID},
-    {"fdump",		cmd_fdump,		arg_STRING},
-    {"frestore",	cmd_frestore,		arg_STRING},
-    {"verbexec", 	cmd_verbexec, 		arg_STRING},
-    {"unmanage",	cmd_unmanage,		arg_STRING},
-    {"clrunmanaged",	cmd_clrunmanaged, 	arg_VOID},
-    {"gnext",		cmd_gnext,		arg_VOID},
-    {"gprev", 		cmd_gprev, 		arg_VOID},
-    {"gnew", 		cmd_gnew, 		arg_VOID},
-    {"gnewbg", 		cmd_gnewbg, 		arg_VOID},
-    {"gselect",		cmd_gselect,		arg_STRING},
-    {"gdelete",		cmd_gdelete,		arg_STRING},
-    {"groups",		cmd_groups,		arg_VOID},
-    {"gmove",		cmd_gmove,		arg_VOID},
-    {"gmerge",		cmd_gmerge,		arg_VOID},
-    {"addhook",         cmd_addhook,            arg_STRING},
-    {"remhook",         cmd_remhook,            arg_STRING},
-    {"listhook",        cmd_listhook,           arg_STRING},
-    {"readkey",          cmd_readkey,             arg_STRING},
-    {"newkmap",          cmd_newkmap,             arg_STRING},
-    {"delkmap",          cmd_delkmap,             arg_STRING},
-    {"definekey",          cmd_definekey,             arg_STRING},
-
-    /* Commands to set default behavior. */
-    {"defbargravity",		cmd_defbargravity,	arg_STRING},
-    {"msgwait",			cmd_msgwait,	 	arg_STRING},
-    {"defborder", 		cmd_defborder, 		arg_STRING},
-    {"deffont", 		cmd_deffont, 		arg_STRING},
-    {"definputwidth",		cmd_definputwidth,	arg_STRING},
-    {"defmaxsizegravity",	cmd_defmaxsizegravity, 	arg_STRING},
-    {"defpadding", 		cmd_defpadding, 	arg_STRING},
-    {"defbarborder",		cmd_defbarborder,	arg_STRING},
-    {"deftransgravity",		cmd_deftransgravity,	arg_STRING},
-    {"defwaitcursor",		cmd_defwaitcursor,	arg_STRING},
-    {"defwinfmt", 		cmd_defwinfmt, 		arg_STRING},
-    {"defwinname", 		cmd_defwinname,		arg_STRING},
-    {"defwingravity",		cmd_defwingravity,	arg_STRING},
-    {"deffgcolor",		cmd_deffgcolor,		arg_STRING},
-    {"defbgcolor",		cmd_defbgcolor,		arg_STRING},
-    {"defbarpadding", 		cmd_defbarpadding, 	arg_STRING},
-    {"defresizeunit", 		cmd_defresizeunit, 	arg_STRING},
-    {"defwinliststyle",		cmd_defwinliststyle,	arg_STRING},
-    {"defframesels",            cmd_defframesels,       arg_STRING},
+    {"windows", 	cmd_windows, 		arg_VOID},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to help debug ratpoison. */
@@ -148,6 +128,51 @@ static user_command user_commands[] =
     {"stuff", 		cmd_unimplemented, 	arg_VOID},
 #endif
     {0,			0,		0} };
+
+struct set_var
+{
+  char *var;
+  char *(*set_fn)(char *);
+};
+
+static char * set_resizeunit (char *data);
+static char * set_wingravity (char *data);
+static char * set_transgravity (char *data);
+static char * set_maxsizegravity (char *data);
+static char * set_bargravity (char *data);
+static char * set_font (char *data);
+static char * set_padding (char *data);
+static char * set_border (char *data);
+static char * set_barborder (char *data);
+static char * set_inputwidth (char *data);
+static char * set_waitcursor (char *data);
+static char * set_winfmt (char *data);
+static char * set_winname (char *data);
+static char * set_fgcolor (char *data);
+static char * set_bgcolor (char *data);
+static char * set_barpadding (char *data);
+static char * set_winliststyle (char *data);
+static char * set_framesels (char *data);
+static struct set_var set_vars[] =
+  { {"resizeunit", 	set_resizeunit},
+    {"wingravity", 	set_wingravity},
+    {"transgravity", 	set_transgravity},
+    {"maxsizegravity", 	set_maxsizegravity},
+    {"bargravity", 	set_bargravity},
+    {"font", 		set_font},
+    {"padding", 	set_padding},
+    {"border", 		set_border},
+    {"barborder", 	set_barborder},
+    {"inputwidth", 	set_inputwidth},
+    {"waitcursor", 	set_waitcursor},
+    {"winfmt", 		set_winfmt},
+    {"winname", 	set_winname},
+    {"fgcolor", 	set_fgcolor},
+    {"bgcolor", 	set_bgcolor},
+    {"barpadding", 	set_barpadding},
+    {"winliststyle", 	set_winliststyle},
+    {"framesels", 	set_framesels},
+    {0, 		0 } };
 
 typedef struct
 {
@@ -449,6 +474,24 @@ initialize_default_keybindings (void)
 
   add_alias ("unbind", "definekey " ROOT_KEYMAP);
   add_alias ("bind", "definekey " ROOT_KEYMAP);
+  add_alias ("defresizeunit", "set resizeunit");
+  add_alias ("defwingravity", "set wingravity");
+  add_alias ("deftransgravity", "set transgravity");
+  add_alias ("defmaxsizegravity", "set maxsizegravity");
+  add_alias ("defbargravity", "set bargravity");
+  add_alias ("deffont", "set font");
+  add_alias ("defpadding", "set padding");
+  add_alias ("defborder", "set border");
+  add_alias ("defbarborder", "set barborder");
+  add_alias ("definputwidth", "set inputwidth");
+  add_alias ("defwaitcursor", "set waitcursor");
+  add_alias ("defwinfmt", "set winfmt");
+  add_alias ("defwinname", "set winname");
+  add_alias ("deffgcolor", "set fgcolor");
+  add_alias ("defbgcolor", "set bgcolor");
+  add_alias ("defbarpadding", "set barpadding");
+  add_alias ("defwinliststyle", "set winliststyle");
+  add_alias ("defframesels", "set framesels");
 }
 
 void
@@ -1782,15 +1825,15 @@ cmd_resize (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defresizeunit (int interactive, char *data)
+static char *
+set_resizeunit (char *data)
 {
   int tmp;
 
-  if (data == NULL && !interactive)
+  if (data == NULL)
     return xsprintf ("%d", defaults.frame_resize_unit);
 
-  if (data == NULL || sscanf (data, "%d", &tmp) < 1)
+  if (sscanf (data, "%d", &tmp) < 1)
     {
       message (" defresizeunit: one argument required ");
       return NULL;
@@ -2176,19 +2219,13 @@ cmd_gravity (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defwingravity (int interactive, char *data)
+static char *
+set_wingravity (char *data)
 {
   int gravity;
 
-  if (data == NULL && !interactive) 
+  if (data == NULL) 
     return xstrdup (wingravity_to_string (defaults.win_gravity));
-
-  if (data == NULL)
-    {
-      message (" defwingravity: one argument required ");
-      return NULL;
-    }
 
   if ((gravity = parse_wingravity (data)) < 0)
     message (" defwingravity: unknown gravity ");
@@ -2198,19 +2235,13 @@ cmd_defwingravity (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_deftransgravity (int interactive, char *data)
+static char *
+set_transgravity (char *data)
 {
   int gravity;
 
-  if (data == NULL && !interactive)
-    return xstrdup (wingravity_to_string (defaults.trans_gravity));
- 
   if (data == NULL)
-    {
-      message (" deftransgravity: one argument required ");
-      return NULL;
-    }
+    return xstrdup (wingravity_to_string (defaults.trans_gravity));
 
   if ((gravity = parse_wingravity (data)) < 0)
     message (" deftransgravity: unknown gravity ");
@@ -2220,19 +2251,13 @@ cmd_deftransgravity (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defmaxsizegravity (int interactive, char *data)
+static char *
+set_maxsizegravity (char *data)
 {
   int gravity;
 
-  if (data == NULL && !interactive)
-    return xstrdup (wingravity_to_string (defaults.maxsize_gravity));
-
   if (data == NULL)
-    {
-      message (" defmaxsizegravity: one argument required ");
-      return NULL;
-    }
+    return xstrdup (wingravity_to_string (defaults.maxsize_gravity));
 
   if ((gravity = parse_wingravity (data)) < 0)
     message (" defmaxsizegravity: unknown gravity ");
@@ -2264,19 +2289,13 @@ cmd_msgwait (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defbargravity (int interactive, char *data)
+static char *
+set_bargravity (char *data)
 {
   int gravity;
 
-  if (data == NULL && !interactive)
-    return xstrdup (wingravity_to_string (defaults.bar_location));
-
   if (data == NULL)
-    {
-      message (" defbargravity: one argument required ");
-      return NULL;
-    }
+    return xstrdup (wingravity_to_string (defaults.bar_location));
 
   if ((gravity = parse_wingravity (data)) < 0)
     message (" defbargravity: unknown gravity ");
@@ -2316,12 +2335,14 @@ update_all_gcs ()
 }
 
 
-char *
-cmd_deffont (int interactive, char *data)
+static char *
+set_font (char *data)
 {
   XFontStruct *font;
 
-  if (data == NULL) return NULL;
+  /* FIXME: return a useful string. */
+  if (data == NULL)
+    return xstrdup ("dummy");
 
   font = XLoadQueryFont (dpy, data);
   if (font == NULL)
@@ -2338,21 +2359,20 @@ cmd_deffont (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defpadding (int interactive, char *data)
+static char *
+set_padding (char *data)
 {
   rp_frame *frame;
   int l, t, r, b;
 
-  if (data == NULL && !interactive)
+  if (data == NULL)
     return xsprintf ("%d %d %d %d", 
 		     defaults.padding_left,
 		     defaults.padding_right,
 		     defaults.padding_top,
 		     defaults.padding_bottom);
 
-  if (data == NULL
-      || sscanf (data, "%d %d %d %d", &l, &t, &r, &b) < 4)
+  if (sscanf (data, "%d %d %d %d", &l, &t, &r, &b) < 4)
     {
       message (" defpadding: four arguments required ");
       return NULL;
@@ -2401,20 +2421,14 @@ cmd_defpadding (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defborder (int interactive, char *data)
+static char *
+set_border (char *data)
 {
   int tmp;
   rp_window *win;
 
-  if (data == NULL && !interactive)
-    return xsprintf ("%d", defaults.window_border_width);
-
   if (data == NULL)
-    {
-      message (" defborder: one argument required ");
-      return NULL;
-    }
+    return xsprintf ("%d", defaults.window_border_width);
 
   if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
     {
@@ -2434,20 +2448,14 @@ cmd_defborder (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defbarborder (int interactive, char *data)
+static char *
+set_barborder (char *data)
 {
   int tmp;
   int i;
 
-  if (data == NULL && !interactive)
-    return xsprintf ("%d", defaults.bar_border_width);
-
   if (data == NULL)
-    {
-      message (" defbarborder: one argument required ");
-      return NULL;
-    }
+    return xsprintf ("%d", defaults.bar_border_width);
 
   if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
     {
@@ -2468,19 +2476,13 @@ cmd_defbarborder (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_definputwidth (int interactive, char *data)
+static char *
+set_inputwidth (char *data)
 {
   int tmp;
 
-  if (data == NULL && !interactive)
-    return xsprintf ("%d", defaults.input_window_size);
-
   if (data == NULL)
-    {
-      message (" definputwidth: one argument required ");
-      return NULL;
-    }
+    return xsprintf ("%d", defaults.input_window_size);
 
   if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
     message (" definputwidth: invalid argument ");
@@ -2490,14 +2492,13 @@ cmd_definputwidth (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defwaitcursor (int interactive, char *data)
+static char *
+set_waitcursor (char *data)
 {
-  if (data == NULL && !interactive)
+  if (data == NULL)
     return xsprintf ("%d", defaults.wait_for_key_cursor);
 
-  if (data == NULL
-      || sscanf (data, "%d", &defaults.wait_for_key_cursor) < 1)
+  if (sscanf (data, "%d", &defaults.wait_for_key_cursor) < 1)
     {
       message (" defwaitcursor: one argument required ");
     }
@@ -2505,14 +2506,11 @@ cmd_defwaitcursor (int interactive, char *data)
   return NULL;    
 }
 
-char *
-cmd_defwinfmt (int interactive, char *data)
+static char *
+set_winfmt (char *data)
 {
-  if (data == NULL && !interactive)
-    return xstrdup (defaults.window_fmt);
-
   if (data == NULL)
-    return NULL;
+    return xstrdup (defaults.window_fmt);
 
   free (defaults.window_fmt);
   defaults.window_fmt = xstrdup (data);
@@ -2520,12 +2518,12 @@ cmd_defwinfmt (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defwinname (int interactive, char *data)
+static char *
+set_winname (char *data)
 {
   char *name;
 
-  if (data == NULL && !interactive)
+  if (data == NULL)
     switch (defaults.win_name)
       {
       case WIN_NAME_TITLE:
@@ -2538,12 +2536,6 @@ cmd_defwinname (int interactive, char *data)
 	PRINT_DEBUG (("Unknown win_name\n"));
 	return xstrdup ("unknown");
       }
-
-  if (data == NULL)
-    {
-      message (" defwinname: one argument required ");
-      return NULL;
-    }
 
   name = data;
 
@@ -2561,17 +2553,15 @@ cmd_defwinname (int interactive, char *data)
   return NULL;      
 }
 
-char *
-cmd_deffgcolor (int interactive, char *data)
+static char *
+set_fgcolor (char *data)
 {
   int i;
   XColor color, junk;
 
+  /* FIXME: return a meaningful string. */
   if (data == NULL)
-    {
-      message (" deffgcolor: one argument required ");
-      return NULL;
-    }
+    return xstrdup ("dummy");
 
   for (i=0; i<num_screens; i++)
     {
@@ -2592,17 +2582,15 @@ cmd_deffgcolor (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defbgcolor (int interactive, char *data)
+static char *
+set_bgcolor (char *data)
 {
   int i;
   XColor color, junk;
 
+  /* FIXME: return a meaningful string. */
   if (data == NULL)
-    {
-      message (" defbgcolor: one argument required ");
-      return NULL;
-    }
+    return xstrdup ("dummy");
 
   for (i=0; i<num_screens; i++)
     {
@@ -2892,16 +2880,15 @@ cmd_link (int interactive, char *data)
 
 /* Thanks to Doug Kearns <djkea2@mugc.its.monash.edu.au> for the
    original patch. */
-char *
-cmd_defbarpadding (int interactive, char *data)
+static char *
+set_barpadding (char *data)
 {
   int x, y;
 
-  if (data == NULL && !interactive)
+  if (data == NULL)
     return xsprintf ("%d %d", defaults.bar_x_padding, defaults.bar_y_padding);
 
-  if (data == NULL
-      || sscanf (data, "%d %d", &x, &y) < 2) 
+  if (sscanf (data, "%d %d", &x, &y) < 2) 
     {
       message (" defbarpadding: two arguments required ");
       return NULL;
@@ -3588,17 +3575,11 @@ cmd_verbexec (int interactive, char *data)
   return cmd_exec(interactive, data);
 }
 
-char *
-cmd_defwinliststyle (int interactive, char *data)
+static char *
+set_winliststyle (char *data)
 {
-  if (data == NULL && !interactive)
-    return xsprintf ("%s", defaults.window_list_style ? "column":"row");
-
   if (data == NULL)
-    {
-      message (" defwinliststyle: one argument required ");
-      return NULL;
-     }
+    return xsprintf ("%s", defaults.window_list_style ? "column":"row");
 
   if (!strcmp ("column", data))
     {
@@ -4163,16 +4144,121 @@ cmd_delkmap (int interactive, char *data)
   return NULL;
 }
 
-char *
-cmd_defframesels (int interactive, char *data)
+static char *
+set_framesels (char *data)
 {
   if (data == NULL)
-    {
-      marked_message_printf (0, 0, " %s ", defaults.frame_selectors);
-      return NULL;
-    }
+    return xstrdup (defaults.frame_selectors);
 
   free (defaults.frame_selectors);
   defaults.frame_selectors = xstrdup (data);
+  return NULL;
+}
+
+struct list_head *
+var_completions (char *str)
+{
+  struct list_head *list;
+  int i;
+
+  /* Initialize our list. */
+  list = xmalloc (sizeof (struct list_head));
+  INIT_LIST_HEAD (list);
+
+  /* Grab all the group names. */
+  for (i=0; set_vars[i].var; i++)
+    {
+      struct sbuf *s;
+      s = sbuf_new (0);
+      sbuf_copy (s, set_vars[i].var);
+      list_add_tail (&s->node, list);
+    }
+
+  return list;
+}
+
+char *
+cmd_set (int interactive, char *data)
+{
+  char *tmp;
+  char *var;
+  char *rest;
+  char *result;
+  int i;
+
+  if (data == NULL) 
+    {
+      char *tmp;
+      var = get_input (MESSAGE_PROMPT_SELECT_VAR, var_completions);
+      if (strlen (var) == 0)
+	{
+	  free (var);
+	  return NULL;
+	}
+      tmp = get_input (MESSAGE_PROMPT_VAR_VALUE, trivial_completions);
+      /* Gobble whitespace */
+      rest = tmp;
+      if (rest)
+	{
+	  while (*rest == ' ')
+	    rest++;
+	  /* If rest is empty, then we have no argument. */
+	  if (*rest == '\0')
+	    rest = NULL;
+	}
+      if (rest)
+	rest = xstrdup (rest);
+      free (tmp);
+    }
+  else
+    {
+      tmp = xstrdup (data);
+      var = strtok (tmp, " ");
+      rest = strtok (NULL, "\0");
+      /* Copy the extracted strings so we can free tmp. */
+      if (var)
+	var = xstrdup (var);
+      if (rest)
+	rest = xstrdup (rest);
+      free (tmp);
+    }
+
+  PRINT_DEBUG (("%s %s\n", var, rest));
+
+  if (var == NULL) 
+    {
+      message (" set: at least two arguments required ");
+      if (rest)
+	free (rest);
+      return NULL;
+    }
+
+  for (i=0; set_vars[i].var; i++)
+    {
+      if (!strcmp (var, set_vars[i].var)) 
+	{
+	  result = set_vars[i].set_fn (rest);
+	  free (var);
+	  /* If rest is not NULL then result must be NULL. */
+	  if (rest == NULL) 
+	    {
+	      if (interactive) 
+		{
+		  marked_message_printf (0, 0, " %s: %s ", var, result);
+		  free (result);
+		  return NULL;
+		}
+	      else
+		return result;
+	    }
+	  free (rest);
+	  return NULL;
+	}
+    }
+
+  marked_message_printf (0, 0, " set: unknown variable '%s'", var);
+  free (var);
+  if (rest)
+    free (rest);
   return NULL;
 }

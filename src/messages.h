@@ -42,6 +42,8 @@
 #define MESSAGE_PROMPT_SWITCH_WM 	" Switch to wm: "
 #define MESSAGE_PROMPT_XTERM_COMMAND 	MESSAGE_PROMPT_SHELL_COMMAND TERM_PROG " -e "
 #define MESSAGE_PROMPT_SWITCH_TO_GROUP  " Switch to group: "
+#define MESSAGE_PROMPT_SELECT_VAR  " Variable: "
+#define MESSAGE_PROMPT_VAR_VALUE  " Value: "
 
 #define MESSAGE_WELCOME 	" Welcome to ratpoison! Hit `%s %s' for help. "
 #define MESSAGE_FRAME_STRING 	" Current Frame "
