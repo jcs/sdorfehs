@@ -1,7 +1,6 @@
-2004-10-07  Shawn Betts  <katia_dilkina@verizon.net>
-
-	* autogen.sh: Add a -f option to forcefully create symlinks of
-	missing files.
+2004-07-24  Thien-Thi Nguyen  <ttn@glug.org>
+ 
+	* autogen.sh: Handle "-f" option. Add usage comment.
 
 2004-10-05  Shawn Betts  <katia_dilkina@verizon.net>
 
