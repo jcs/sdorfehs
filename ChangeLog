@@ -1,3 +1,8 @@
+2004-10-07  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* autogen.sh: Add a -f option to forcefully create symlinks of
+	missing files.
+
 2004-10-05  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/actions.c (cmd_unsetenv): add an '=' to the string passed to
