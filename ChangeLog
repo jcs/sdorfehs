@@ -1,3 +1,8 @@
+2005-02-09  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/main.c (main): set the RATPOISON env. variable to the path
+	to this executable.
+
 2005-02-06  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/actions.c (cmd_prompt): allow prompt to be run

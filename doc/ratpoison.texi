@@ -1569,6 +1569,9 @@ if it is switch to its window otherwise launch it.
 
 It should also be noted that multiple @option{-c} options can be used.
 
+to facilitate writing scripts, the @env{RATPOISON} environment
+variable is set to the full path of the ratpoison binary.
+
 @example
 $ ratpoison -c split -c split
 @end example

@@ -6,6 +6,11 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
+* Changes since 1.4.0-beta1
+** RATPOISON environment variable
+RATPOISON is set to the location of the ratpoison binary. This is
+useful for scripts.
+
 * Changes since 1.3.0
 ** command arguments can be wrapped in double quotes.
 To include a space in a command argument, wrap the argument with ".

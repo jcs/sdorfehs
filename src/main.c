@@ -624,6 +624,9 @@ main (int argc, char *argv[])
   set_sig_handler (SIGHUP, hup_handler);
   set_sig_handler (SIGCHLD, chld_handler);
 
+  /* Add RATPOISON to the environment */
+  putenv (xsprintf ("RATPOISON=%s", argv[0]));
+
   /* Setup ratpoison's internal structures */
   init_globals ();
   init_defaults ();
