@@ -1,5 +1,18 @@
 2003-05-27  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/completions.c (completions_next_completion): check
+	c->last_match as a match to partial on a virgin completion.
+
+	* src/group.c (free_groups): new function
+
+	* src/group.h (free_groups): new prototype
+
+	* src/main.c (clean_up): call free_groups
+
+	* src/actions.c (cmd_fdump): free the string returned by frame_dump.
+
+	* src/completions.c (completions_update): free new_list.
+
 	* src/editor.c (input_line_free): free the completions structure
 	in line.
 

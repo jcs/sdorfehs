@@ -774,7 +774,7 @@ clean_up ()
   free_keybindings ();
   free_aliases ();
   free_bar ();
-/*   free_history (); */
+  free_groups ();
 
   free_window_stuff ();
   

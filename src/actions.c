@@ -3137,8 +3137,12 @@ cmd_fdump (int interactively, char *data)
   /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
   list_for_each_entry (cur, &current_screen()->frames, node)
     {
-      sbuf_concat (s, frame_dump (cur));
+      char *tmp;
+
+      tmp = frame_dump (cur);
+      sbuf_concat (s, tmp);
       sbuf_concat (s, ",");
+      free (tmp);
     }
 
   tmp = sbuf_get (s);

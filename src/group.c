@@ -24,7 +24,8 @@
 
 static struct numset *group_numset;
 
-void init_groups()
+void
+init_groups()
 {
   rp_group *g;
 
@@ -36,6 +37,18 @@ void init_groups()
   g = group_new (numset_request (group_numset), DEFAULT_GROUP_NAME);
   rp_current_group = g;
   list_add_tail (&g->node, &rp_groups);
+}
+
+void
+free_groups()
+{
+  rp_group *cur;
+  struct list_head *iter, *tmp;
+
+  list_for_each_safe_entry (cur, iter, tmp, &rp_groups, node)
+    {
+      group_free (cur);
+    }
 }
 
 rp_group *

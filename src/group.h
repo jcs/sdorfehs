@@ -2,6 +2,8 @@
 #define GROUP_H
 
 void init_groups ();
+void free_groups();
+
 void group_add_window (rp_group *g, rp_window *w);
 void group_resort_window (rp_group *g, rp_window_elem *w);
 void group_free (rp_group *g);

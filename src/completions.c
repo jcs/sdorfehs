@@ -71,6 +71,9 @@ completions_update (rp_completions *c, char *partial)
   c->partial = xstrdup (partial);
 
   completions_assign (c, new_list);
+
+  /* Free the head structure for our list. */
+  free (new_list);
 }
 
 /* Return a completed string that starts with partial. */
@@ -80,10 +83,23 @@ completions_next_completion (rp_completions *c, char *partial)
   struct sbuf *cur;
 
   if (c->virgin)
-    completions_update (c, partial);
+    {
+      completions_update (c, partial);
+      
+      /* Since it's never been completed on and c->last_match points
+	 to the first element of the list which may be a match. So
+	 check it. FIXME: This is a bit of a hack. */
+      if (c->last_match == NULL)
+	return NULL;
+
+      if (str_comp (sbuf_get (c->last_match), c->partial, strlen (c->partial)))
+	return sbuf_get (c->last_match);
+    }
 
   if (c->last_match == NULL)
     return NULL;
+
+  /*  */
 
   /* search forward from our last match through the list looking for
      another match. */
