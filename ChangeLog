@@ -1,5 +1,22 @@
 2004-12-09  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/actions.c (cmd_unmanage): fix message formatting
+	(cmd_ratwarp): likewise
+	(cmd_ratrelwarp): likewise
+	(cmd_ratclick): likewise
+	(cmd_rathold): likewise
+	(cmd_unsetenv): likewise
+	(set_barpadding): likewise
+	(cmd_fselect): likewise
+	(cmd_addhook): likewise
+	(cmd_remhook): likewise
+	(cmd_listhook): likewise
+	(cmd_gdelete): likewise
+	(cmd_readkey): likewise
+	(cmd_newkmap): likewise
+	(cmd_delkmap): likewise
+	(cmd_describekey): likewise
+
 	* src/messages.h (MESSAGE_NO_OTHER_WINDOW): remove padding spaces
 	(MESSAGE_NO_OTHER_FRAME): likewise
 	(MESSAGE_NO_MANAGED_WINDOWS): likewise

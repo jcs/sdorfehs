@@ -716,7 +716,7 @@ cmd_unmanage (int interactive, char *data)
 
   if (data)
     add_unmanaged_window(data);
-  else message("unmanage: at least one argument required");
+  else message ("unmanage: at least one argument required");
 
   return NULL;
 }
@@ -845,7 +845,6 @@ char *
 cmd_unimplemented (int interactive, char *data)
 {
   marked_message ("FIXME:  unimplemented command",0,8);
-
   return NULL;
 }
 
@@ -989,7 +988,6 @@ string_to_window_number (char *str)
   return *s ? -1 : i;
 }
 
-
 struct list_head *
 trivial_completions (char* str)
 {
@@ -1109,7 +1107,6 @@ cmd_rename (int interactive, char *data)
 
   return NULL;
 }
-
 
 char *
 cmd_delete (int interactive, char *data)
@@ -1381,7 +1378,6 @@ cmd_exec (int interactive, char *data)
 
   return NULL;
 }
-
 
 int
 spawn(char *cmd)
@@ -1979,13 +1975,13 @@ cmd_ratwarp (int interactive, char *data)
 
   if (data == NULL)
     {
-      message("ratwarp: 2 arguments required");
+      message ("ratwarp: 2 arguments required");
       return NULL;
     }
 
   if (sscanf(data, "%d %d", &x, &y) < 2 || x < 0 || y < 0)
     {
-      message("ratwarp: Invalid arguments");
+      message ("ratwarp: Invalid arguments");
       return NULL;
     }
 
@@ -2003,13 +1999,13 @@ cmd_ratrelwarp (int interactive, char *data)
 
   if (data == NULL)
     {
-      message("ratrelwarp: 2 arguments required");
+      message ("ratrelwarp: 2 arguments required");
       return NULL;
     }
 
-  if (sscanf(data, "%d %d", &x, &y) < 2)
+  if (sscanf (data, "%d %d", &x, &y) < 2)
     {
-      message("ratrelwarp: Invalid arguments");
+      message ("ratrelwarp: Invalid arguments");
       return NULL;
     }
 
@@ -2026,7 +2022,7 @@ cmd_ratclick (int interactive, char *data)
     {
       if (sscanf (data, "%d", &button) < 1 || button < 1 || button > 3)
 	{
-	  message("ratclick: invalid argument");
+	  message ("ratclick: invalid argument");
 	}
     }
 
@@ -2048,7 +2044,7 @@ cmd_rathold (int interactive, char *data)
       tmp = strtok(NULL, " ");
       if (!command)
         {
-          message ("rathold: Needs at least 1 argument.");
+          message ("rathold: at least one argument required");
 	  return NULL;
 	}
       if (tmp)
@@ -2056,14 +2052,14 @@ cmd_rathold (int interactive, char *data)
 	  button = strtol(tmp, &tail, 10);
 	  if (*tail != '\0')
 	    {
-	      marked_message_printf (0, 0, "rathold: %s not a number.", tmp);
+	      marked_message_printf (0, 0, "rathold: '%s' not a number", tmp);
 	      return NULL;
 	    }
 	}
     }
   else
     {
-      message ("rathold: Needs at least 1 argument. ");
+      message ("rathold: at least one argument required.");
       return NULL;
     }
 
@@ -2072,7 +2068,7 @@ cmd_rathold (int interactive, char *data)
   else if(!strcmp(command,"up"))
     XTestFakeButtonEvent(dpy, button, False, CurrentTime);
   else
-    marked_message_printf (0, 0, "athold: %s invalid argumen", command);
+    marked_message_printf (0, 0, "rathold: '%s' invalid argument", command);
   
   return NULL;
 }
@@ -2171,7 +2167,7 @@ cmd_help (int interactive, char *data)
 
   if (data == NULL)
     {
-      message ("help: One argument required");
+      message ("help: one argument required");
       return NULL;
     }
 
@@ -2181,8 +2177,6 @@ cmd_help (int interactive, char *data)
       marked_message_printf (0, 0, "help: keymap '%s' not found", data);
       return NULL;
     }
-
-
 
   if (interactive)
     {
@@ -2551,7 +2545,6 @@ update_all_gcs ()
       update_gc (&screens[i]);
     }
 }
-
 
 static char *
 set_font (char *data)
@@ -2963,7 +2956,7 @@ cmd_unsetenv (int interactive, char *data)
 
   if (data == NULL)
     {
-      message ("unsetenv: one argument is required");
+      message ("unsetenv: one argument required");
       return NULL;
     }
 
@@ -3138,7 +3131,7 @@ set_barpadding (char *data)
     }
   else
     {
-      message ("defbarpadding: invalid argument");    
+      message ("defbarpadding: invalid arguments");    
     }
   return NULL;
 }
@@ -3375,7 +3368,6 @@ sync_wins (rp_screen *s)
 	  ignore_badwindow--;
 	}
     }
-
 
   for (i=0; i<nwins; i++)
     {
@@ -3707,7 +3699,7 @@ cmd_fselect (int interactive, char *data)
     }
   else
     {
-      marked_message_printf (0, 0, "fselect: No such frame (%d)", fnum);
+      marked_message_printf (0, 0, "fselect: no such frame (%d)", fnum);
       return xstrdup ("No such frame");
     }
 }
@@ -4053,7 +4045,7 @@ cmd_groups (int interactive, char *data)
       else
 	separator = '-';
 
-      fmt =  xsprintf ("%d%c%s", cur->number, separator, cur->name);
+      fmt = xsprintf ("%d%c%s", cur->number, separator, cur->name);
       sbuf_concat (buffer, fmt);
 
       /* Pad end of group name with a space for row style. */
@@ -4161,7 +4153,7 @@ cmd_addhook (int interactive, char *data)
   hook = hook_lookup (token);
   if (hook == NULL)
     {
-      marked_message_printf (0, 0, "addhook: unknown hook \"%s\"", token);
+      marked_message_printf (0, 0, "addhook: unknown hook '%s'", token);
       free (dup);
       return NULL;
     }
@@ -4175,7 +4167,7 @@ cmd_addhook (int interactive, char *data)
       return NULL;
     }
 
-  /* Add the command to the hook  */
+  /* Add the command to the hook */
   cmd = sbuf_new (0);
   sbuf_copy (cmd, token);
   hook_add (hook, cmd);
@@ -4204,7 +4196,7 @@ cmd_remhook (int interactive, char *data)
   hook = hook_lookup (token);
   if (hook == NULL)
     {
-      marked_message_printf (0, 0, "remhook: unknown hook \"%s\"", token);
+      marked_message_printf (0, 0, "remhook: unknown hook '%s'", token);
       free (dup);
       return NULL;
     }
@@ -4218,7 +4210,7 @@ cmd_remhook (int interactive, char *data)
       return NULL;
     }
 
-  /* Add the command to the hook  */
+  /* Add the command to the hook */
   cmd = sbuf_new (0);
   sbuf_copy (cmd, token);
   hook_remove (hook, cmd);
@@ -4269,7 +4261,7 @@ cmd_listhook (int interactive, char *data)
   hook = hook_lookup (str);
   if (hook == NULL)
     {
-      marked_message_printf (0, 0, "listhook: unknown hook \"%s\" ", str);
+      marked_message_printf (0, 0, "listhook: unknown hook '%s'", str);
       return NULL;
     }
 
@@ -4329,7 +4321,7 @@ cmd_gdelete (int interactive, char *data)
       message ("gdelete: non-empty group");
       break;
     default:
-      message ("gdelete: Unknown return code (this shouldn't happen)");
+      message ("gdelete: unknown return code (this shouldn't happen)");
     }
 
   return NULL;
@@ -4368,7 +4360,7 @@ cmd_readkey (int interactive, char *data)
   map = find_keymap (data);
   if (map == NULL)
     {
-      marked_message_printf (0, 0, "readkey: Unknown keymap '%s'", data);
+      marked_message_printf (0, 0, "readkey: unknown keymap '%s'", data);
       return NULL;
     }
 
@@ -4401,7 +4393,7 @@ cmd_readkey (int interactive, char *data)
     {
       /* No key match, notify user. */
       keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
-      marked_message_printf (0, 0, "%s unbound key", keysym_name);
+      marked_message_printf (0, 0, "readkey: unbound key '%s'", keysym_name);
       free (keysym_name);
     }
 
@@ -4422,7 +4414,7 @@ cmd_newkmap (int interactive, char *data)
   map = find_keymap (data);
   if (map)
     {
-      marked_message_printf (0, 0, "newkmap: '%s' already exists", data);
+      marked_message_printf (0, 0, "newkmap: keymap '%s' already exists", data);
       return NULL;
     }
 
@@ -4445,14 +4437,14 @@ cmd_delkmap (int interactive, char *data)
 
   if (!strcmp (data, ROOT_KEYMAP) || !strcmp (data, TOP_KEYMAP))
     {
-      marked_message_printf (0, 0, "delkmap: Cannot delete '%s' keymap", data);
+      marked_message_printf (0, 0, "delkmap: cannot delete keymap '%s'", data);
       return NULL;
     }
 
   map = find_keymap (data);
   if (map == NULL)
     {
-      marked_message_printf (0, 0,  "delkmap: Unknown keymap '%s'", data);
+      marked_message_printf (0, 0,  "delkmap: unknown keymap '%s'", data);
       return NULL;
     }
 
@@ -4921,7 +4913,7 @@ cmd_describekey (int interactive, char *data)
   map = find_keymap (data);
   if (map == NULL)
     {
-      marked_message_printf (0, 0, "describekey: Unknown keymap '%s'", data);
+      marked_message_printf (0, 0, "describekey: unknown keymap '%s'", data);
       return NULL;
     }
 
@@ -4954,7 +4946,7 @@ cmd_describekey (int interactive, char *data)
     {
       /* No key match, notify user. */
       keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
-      marked_message_printf (0, 0, "%s unbound key", keysym_name);
+      marked_message_printf (0, 0, "describekey: unbound key '%s'", keysym_name);
       free (keysym_name);
     }
 
