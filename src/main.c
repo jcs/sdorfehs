@@ -750,7 +750,7 @@ init_screen (rp_screen *s, int screen_num)
 				       defaults.bar_border_width, 
 				       s->fg_color, s->bg_color);
 
-  /* Setup the window that will recieve all keystrokes once the prefix
+  /* Setup the window that will receive all keystrokes once the prefix
      key has been pressed. */
   s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, 
 				       WhitePixel (dpy, s->screen_num), 

@@ -1,3 +1,10 @@
+2003-11-29  Ryan Yeske  <rcyeske@vcn.bc.ca>
+
+	* src/communications.c (receive_command_result): Rename from
+	recieve_command_result.  From paxed.
+
+	* src/events.c (handle_signals): s/recieve/receive.
+
 2003-11-24  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/main.c (ratpoison_longopts): add "file"

@@ -32,7 +32,7 @@
 
 /* Sending commands to ratpoison */
 static void
-recieve_command_result (Window w)
+receive_command_result (Window w)
 {
   int status;
   Atom type_ret;
@@ -124,7 +124,7 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
       if (ev.xproperty.atom == rp_command_result 
 	  && ev.xproperty.state == PropertyNewValue)
 	{
-	  recieve_command_result(ev.xproperty.window);
+	  receive_command_result(ev.xproperty.window);
 	  done = 1;
 	}
     }

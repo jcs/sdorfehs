@@ -739,7 +739,7 @@ handle_signals ()
     {
       int i;
 
-      PRINT_DEBUG (("Alarm recieved.\n"));
+      PRINT_DEBUG (("Alarm received.\n"));
 
       /* Only hide the bar if it times out. */
       if (defaults.bar_timeout > 0)
