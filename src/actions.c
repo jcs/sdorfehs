@@ -1,5 +1,20 @@
-/* actions.cpp -- all actions that can be performed with
-   keystrokes */
+/* 
+ * Copyright (C) 2000 Shawn Betts
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA */
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -376,6 +391,56 @@ generate_prefix (void *data)
   XSync (dpy, False);
 }
 
+
+/* Maximize a transient window. The current window if data = 0, otherwise assume it is a
+   pointer to a window that should be maximized */
+static void
+maximize_transient (void *data)
+{
+  int x, y, maxx, maxy;
+  rp_window *win = (rp_window *)data;
+
+  if (!win) win = rp_current_window;
+  if (!win) return;
+
+  /* Honour the window's maximum size */
+  if (win->hints->flags & PMaxSize)
+    {
+      maxx = win->hints->max_width;
+      maxy = win->hints->max_height;
+    }
+  else
+    {
+      maxx = win->width;
+      maxy = win->height;
+    }
+
+  /* Make sure we maximize to the nearest Resize Increment specified
+     by the window */
+  if (win->hints->flags & PResizeInc)
+    {
+      int amount;
+
+      amount = maxx - win->width;
+      amount -= amount % win->hints->width_inc;
+      PRINT_DEBUG ("amount x: %d\n", amount);
+      maxx = amount + win->width;
+
+      amount = maxy - win->height;
+      amount -= amount % win->hints->height_inc;
+      PRINT_DEBUG ("amount y: %d\n", amount);
+      maxy = amount + win->height;
+    }
+
+  PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
+
+  x = PADDING_LEFT - win->width / 2 + (win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT) / 2;
+  y = PADDING_TOP - win->height / 2 + (win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM) / 2;
+
+  XMoveResizeWindow (dpy, win->w, x, y, maxx, maxy);
+  XSync (dpy, False);
+}
+
 /* Maximize the current window if data = 0, otherwise assume it is a
    pointer to a window that should be maximized */
 void
@@ -386,6 +451,13 @@ maximize (void *data)
 
   if (!win) win = rp_current_window;
   if (!win) return;
+
+  /* Handle maximizing transient windows differently */
+  if (win->transient) 
+    {
+      maximize_transient (data);
+      return;
+    }
 
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)

@@ -1,4 +1,5 @@
-/* 
+/* communications.h -- Send commands to a running copy of ratpoison.
+ *
  * Copyright (C) 2000 Shawn Betts
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +17,5 @@
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA */
 
-char *keysym_to_string (KeySym keysym, unsigned int modifier);
-void cook_keycode (KeyCode keycode, KeySym *keysym, unsigned int *mod);
-void get_input (screen_info *s, char *prompt, char *str, int len);
-void read_key (KeySym *keysym, unsigned int *mode);
+void send_kill ();
+void send_restart ();

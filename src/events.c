@@ -70,12 +70,14 @@ unmap_notify (XEvent *ev)
       win->state = STATE_UNMAPPED;
       
       /* Update the state of the actual window */
+      ignore_badwindow = 1;
+
       XRemoveFromSaveSet (dpy, win->w);
       XChangeProperty(dpy, win->w, wm_state, wm_state, 32,
 		      PropModeReplace, (unsigned char *)data, 2);
 
-      ignore_badwindow = 1;
       XSync(dpy, False);
+
       ignore_badwindow = 0;
 
       if (rp_current_window == win)
@@ -375,6 +377,10 @@ property_notify (XEvent *ev)
 	  PRINT_DEBUG ("updating window normal hints\n");
 	  update_normal_hints (win);
 	  maximize (win);
+	  break;
+
+	case XA_WM_TRANSIENT_FOR:
+	  PRINT_DEBUG ("Transient for\n");
 	  break;
 
 	default:

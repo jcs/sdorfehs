@@ -27,6 +27,17 @@
 rp_window *rp_window_head, *rp_window_tail;
 rp_window *rp_current_window;
 
+/* Get the mouse position relative to the root of the specified window */
+static void
+get_mouse_root_position (rp_window *win, int *mouse_x, int *mouse_y)
+{
+  Window root_win, child_win;
+  int win_x, win_y;
+  int mask;
+  
+  XQueryPointer (dpy, win->scr->root, &root_win, &child_win, &win_x, &win_y, mouse_x, mouse_y, &mask);
+}
+
 /* Allocate a new window and add it to the list of managed windows */
 rp_window *
 add_to_window_list (screen_info *s, Window w)
@@ -48,6 +59,11 @@ add_to_window_list (screen_info *s, Window w)
   new_window->named = 0;
   new_window->hints = XAllocSizeHints ();
   new_window->colormap = DefaultColormap (dpy, s->screen_num);
+  new_window->transient = XGetTransientForHint (dpy, new_window->w, &new_window->transient_for);
+
+  get_mouse_root_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
+
+  PRINT_DEBUG ("transient %d\n", new_window->transient);
   
   if ((new_window->name = malloc (strlen ("Unnamed") + 1)) == NULL)
     {
@@ -201,6 +217,26 @@ find_last_accessed_window ()
   return most_recent;
 }
 
+static void
+save_mouse_position (rp_window *win)
+{
+  Window root_win, child_win;
+  int win_x, win_y;
+  int mask;
+  
+  /* In the case the XQueryPointer raises a BadWindow error, the
+     window is not mapped or has been destroyed so it doesn't matter
+     what we store in mouse_x and mouse_y since they will never be
+     used again. */
+
+  ignore_badwindow = 1;
+
+  XQueryPointer (dpy, win->w, &root_win, &child_win, 
+		 &win_x, &win_y, &win->mouse_x, &win->mouse_y, &mask);
+
+  ignore_badwindow = 0;
+}
+
 void
 set_active_window (rp_window *rp_w)
 {
@@ -215,6 +251,14 @@ set_active_window (rp_window *rp_w)
 
   if (rp_w->scr->bar_is_raised) update_window_names (rp_w->scr);
 
+  if (rp_current_window != NULL)
+    {
+      save_mouse_position (rp_current_window);
+    }
+
+  XWarpPointer (dpy, None, rp_w->w, 0, 0, 0, 0, rp_w->mouse_x, rp_w->mouse_y);
+  XSync (dpy, False);
+
   XSetInputFocus (dpy, rp_w->w, 
 		  RevertToPointerRoot, CurrentTime);
   XRaiseWindow (dpy, rp_w->w);
@@ -227,6 +271,7 @@ set_active_window (rp_window *rp_w)
   XInstallColormap (dpy, rp_w->colormap);
 
   rp_current_window = rp_w;
+
       
   /* Make sure the program bar is always on the top */
   update_window_names (rp_w->scr);

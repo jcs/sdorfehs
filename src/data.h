@@ -53,6 +53,13 @@ struct rp_window
   /* Colormap */
   Colormap colormap;
 
+  /* Is this a transient window? */
+  int transient;
+  Window transient_for;
+
+  /* Saved mouse position */
+  int mouse_x, mouse_y;
+
   rp_window *next, *prev;  
 };
 

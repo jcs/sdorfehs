@@ -1,3 +1,40 @@
+2001-02-10  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* communications.c (send_restart, send_kill): Added
+
+	* ratpoison.h: includes communications.h
+
+	* main.c (send_restart, send_kill): Moved to communications.c
+
+	* list.c (get_mouse_root_position): Added
+	(add_to_window_list): Initialize new rp_window fields
+	(save_mouse_position): Added
+	(set_active_window): Added code to save and restore the position
+	of the mouse
+
+	* events.c (property_notify): Added code to listen for a
+	WM_TRANSIENT_FOR property change.
+
+	* data.h (struct rp_window): Added transient, transient_for, mouse_x, mouse_y.
+
+	* actions.c (maximize_transient): Added
+	(maximize): Added code to handle transient windows differently
+
+	* Makefile.am (ratpoison_SOURCES): Added communications.h and communications.c
+
+2001-01-02  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* communications.c (send_restart): moved from main.c
+	(send_kill): moved from main.c
+
+	* main.c: Removed send_kill, send_restart
+
+	* input.h: Added copyright notice.
+
+	* input.c: Added copyright notice.
+
+	* actions.c: Added copyright notice.
+
 2001-02-04  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* actions.c (prev_window): do not set active window when
