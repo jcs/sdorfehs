@@ -1,3 +1,7 @@
+2004-12-08  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (frestore): use strtok_r.
+
 2004-12-06  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/manage.c (unmanage): remove call to numset_release.

@@ -3801,7 +3801,7 @@ frestore (char *data, rp_screen *s)
 	  return NULL;
 	}
       list_add_tail (&new->node, &fset);
-      token = strtok_r (NULL, ",", nexttok);
+      token = strtok_r (NULL, ",", &nexttok);
     } 
 
   free (dup);
