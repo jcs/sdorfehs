@@ -74,10 +74,11 @@ char * cmd_help (int interactive, void *data);
 char * cmd_quit(int interactive, void *data);
 char * cmd_number (int interactive, void *data);
 char * cmd_rudeness (int interactive, void *data);
+char * cmd_unbind (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 
 void initialize_default_keybindings (void);
-rp_action* find_keybinding (int keysym, int state);
+rp_action* find_keybinding (KeySym keysym, int state);
 
 #endif /* ! _RATPOISON_ACTIONS_H */

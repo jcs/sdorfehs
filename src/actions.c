@@ -31,7 +31,7 @@ int key_actions_last;
 int key_actions_table_size;
 
 rp_action*
-find_keybinding (int keysym, int state)
+find_keybinding (KeySym keysym, int state)
 {
   int i;
   for (i = 0; i < key_actions_last; i++)
@@ -44,7 +44,7 @@ find_keybinding (int keysym, int state)
 }
 
 static void
-add_keybinding (int keysym, int state, char *cmd)
+add_keybinding (KeySym keysym, int state, char *cmd)
 {
   if (key_actions_last >= key_actions_table_size)
     {
@@ -70,6 +70,35 @@ replace_keybinding (rp_action *key_action, char *newcmd)
     key_action->data = (char*) realloc (key_action->data, strlen (newcmd) + 1);
 
   strcpy (key_action->data, newcmd);
+}
+
+static int
+remove_keybinding (KeySym keysym, int state)
+{
+  int i;
+  int found = -1;
+
+  for (i=0; i<key_actions_last; i++)
+    {
+      if (key_actions[i].key == keysym && key_actions[i].state == state)
+	{
+	  found = i;
+	  break;
+	}
+    }
+
+  if (found >= 0)
+    {
+      free (key_actions[found].data);
+
+      memmove (&key_actions[found], &key_actions[found+1], 
+	       sizeof (rp_action) * (key_actions_last - found - 1));
+      key_actions_last--;
+      
+      return 1;
+    }
+
+  return 0;
 }
 
 void
@@ -157,6 +186,7 @@ user_command user_commands[] =
     {"generate",	cmd_generate,	arg_STRING},	/* rename to stuff */
     {"version",		cmd_version,	arg_VOID},
     {"bind",		cmd_bind,	arg_VOID},
+    {"unbind",		cmd_unbind,	arg_STRING},
     {"source",		cmd_source,	arg_STRING},
     {"escape",          cmd_escape,     arg_STRING},
     {"echo", 		cmd_echo, 	arg_STRING},
@@ -176,7 +206,7 @@ user_command user_commands[] =
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
        emulated with these commands */
-
+#if 0
     {"stuff", 		cmd_unimplemented, 	arg_VOID},
     {"hardcopy",	cmd_unimplemented,	arg_VOID},
     {"lastmsg",		cmd_unimplemented,	arg_VOID},
@@ -194,6 +224,7 @@ user_command user_commands[] =
     {"sleep",		cmd_unimplemented,	arg_VOID},
     {"sorendition",	cmd_unimplemented,	arg_VOID},
     {"startup_message",	cmd_unimplemented,	arg_VOID},
+#endif
     {0,			0,		0} };
 
 /* return a KeySym from a string that contains either a hex value or
@@ -299,7 +330,7 @@ cmd_bind (int interactive, void *data)
 
   if (!data)
     {
-      message (" bind: at least one argument required ");
+      message (" bind: two arguments required ");
       return NULL;
     }
 
@@ -314,7 +345,7 @@ cmd_bind (int interactive, void *data)
     }
   
   if (!keydesc)
-    message (" bind: at least one argument required ");
+    message (" bind: two arguments required ");
   else
     {
       if (!cmd || !*cmd)
@@ -339,6 +370,36 @@ cmd_bind (int interactive, void *data)
 
   free (keydesc);
 
+  return NULL;
+}
+
+char *
+cmd_unbind (int interactive, void *data)
+{
+  struct rp_key *key;
+  char *keydesc;
+
+  if (!data)
+    {
+      message (" unbind: one argument required ");
+      return NULL;
+    }
+
+  keydesc = (char*) xmalloc (strlen (data + 1));
+  sscanf (data, "%s", keydesc);
+  key = parse_keydesc (keydesc);
+
+  if (key)
+    {
+      if (!remove_keybinding (key->sym, key->state))
+	marked_message_printf (0, 0, " %s unbound key ", keydesc);
+    }
+  else
+    {
+      marked_message_printf (0, 0, " %s unknown key ", keydesc);
+    }
+
+  free (keydesc);
   return NULL;
 }
 
@@ -945,22 +1006,21 @@ cmd_escape (int interactive, void *data)
 
   if (key)
     {
-      /* Update the "generate" keybinding */
-      action = find_keybinding(prefix_key.sym, 0);
-      if (action != NULL)
-	{
-	  action->key = key->sym;
-	  action->state = 0;
-	}
-
       /* Update the "other" keybinding */
       action = find_keybinding(prefix_key.sym, prefix_key.state);
-      if (action != NULL)
+      if (action != NULL && !strcmp (action->data, "other"))
 	{
 	  action->key = key->sym;
 	  action->state = key->state;
 	}
 
+      /* Update the "generate" keybinding */
+      action = find_keybinding(prefix_key.sym, 0);
+      if (action != NULL && !strcmp (action->data, "generate"))
+	{
+	  action->key = key->sym;
+	  action->state = 0;
+	}
 
       /* Remove the grab on the current prefix key */
       for (cur = rp_mapped_window_sentinel->next; 

@@ -1,3 +1,21 @@
+2001-09-04  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/actions.h (cmd_unbind): new prototype
+
+	* src/actions.c (find_keybinding): Change the first parameter's
+	type to KeySym. Prototype updated.
+	(add_keybinding): likewise
+	(remove_keybinding): new function.
+	(key_actions): new command 'unbind'.
+	(key_actions): #if out the unimplemented bindings.
+	(cmd_bind): Error messages are more accurate.
+	(cmd_unbind): new function.
+	(cmd_escape): update the "other" command before the "generate"
+	command.
+	(cmd_escape): When searching for the "other" and "generate"
+	commands' keystrokes, verify that the located action is the right
+	command.
+
 2001-08-31  Shawn  <sabetts@hotdog>
 
 	* src/split.c (set_active_frame): Only show the frame indicator
