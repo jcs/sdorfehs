@@ -1,3 +1,36 @@
+2004-11-18  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/window.c (unhide_transient_for): add a newline to debugging
+	output.
+	(hide_transient_for_between): likewise.
+
+	* src/manage.c (get_wmname): typecast name when passing to
+	xstrdup.
+
+	* src/main.c (main): typecast command[i] when passing to
+	send_command.
+
+	* src/events.c (execute_remote_command): typecast req[1] when
+	passing to command.
+	(receive_command): typecast result when passing to
+	XChangeProperty.
+
+	* src/editor.c (editor_history_previous): Add newline to
+	debugging output.
+	(editor_history_next): likewise.
+	(paste_primary_selection): typecast data when passing to editor_insert.
+
+	* src/communications.c (receive_command_result): typecast result
+	when passing to strlen.
+	(send_command): typecast cmd when passing the XChangeProperty.
+
+	* src/actions.c (user_commands): add focusprev
+	(cmd_prev): clean up
+	(cmd_next): likewise
+	(cmd_prev_frame): call find_frame_prev instead of find_frame_next.
+	(cmd_frestore): grab the frame's number first when processing the
+	frames.
+
 2004-11-17  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (user_commands): add rathold

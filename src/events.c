@@ -471,7 +471,7 @@ execute_remote_command (Window w)
     }
 
   PRINT_DEBUG (("command: %s\n", req));
-  result = command (req[0], &req[1]);
+  result = command (req[0], (char *)&req[1]);
   XFree (req);
 
   return result;
@@ -542,7 +542,7 @@ receive_command (Window root)
       if (result)
 	{
 	  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
-			   8, PropModeReplace, result, strlen (result));
+			   8, PropModeReplace, (unsigned char *)result, strlen (result));
 	  free (result);
 	}
       else

@@ -73,7 +73,7 @@ receive_command_result (Window w)
     }
 
   /* If result is not the empty string, print it. */
-  if (strlen (result))
+  if (strlen ((char *)result))
     printf ("%s\n", result);
 
   /* Free the result. */
@@ -104,7 +104,7 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
   XSelectInput (dpy, w, PropertyChangeMask);
 
   XChangeProperty (dpy, w, rp_command, XA_STRING,
-		   8, PropModeReplace, sbuf_get(s), strlen (cmd) + 2);
+		   8, PropModeReplace, sbuf_get(s), strlen ((char *)cmd) + 2);
 
   XChangeProperty (dpy, root, 
 		   rp_command_request, XA_WINDOW,

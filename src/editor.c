@@ -330,7 +330,7 @@ editor_history_previous (rp_input_line *line)
     }
   else
     {
-      PRINT_DEBUG (("- do nothing -"));
+      PRINT_DEBUG (("- do nothing -\n"));
       return EDIT_NO_OP;
     }
 
@@ -364,7 +364,7 @@ editor_history_next (rp_input_line *line)
     }
   else
     {
-      PRINT_DEBUG (("- do nothing -"));
+      PRINT_DEBUG (("- do nothing -\n"));
           return EDIT_NO_OP;
     }
 
@@ -515,7 +515,7 @@ paste_primary_selection (rp_input_line *line)
            offset += nitems;
 
 /*            editor_insert (line, data, nitems); */
-           editor_insert (line, data);
+           editor_insert (line, (char *)data);
 
            PRINT_DEBUG (("bytes_after = %ld, nitems = %ld, data = '%s'\n", bytes_after, nitems, data));
 

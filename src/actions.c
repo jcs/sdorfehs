@@ -51,6 +51,7 @@ static user_command user_commands[] =
     {"exec", 		cmd_exec, 		arg_STRING},
     {"fdump",		cmd_fdump,		arg_STRING},
     {"focus",		cmd_next_frame,		arg_VOID},
+    {"focusprev",       cmd_prev_frame,         arg_VOID},
     {"focusdown",	cmd_focusdown,		arg_VOID},
     {"focuslast",	cmd_focuslast,		arg_VOID},
     {"focusleft",	cmd_focusleft,		arg_VOID},
@@ -851,22 +852,16 @@ cmd_meta (int interactive, char *data)
 char *
 cmd_prev (int interactive, char *data)
 {
-  if (!current_window())
-    {
-      set_active_window (group_prev_window (rp_current_group, NULL));
-      if (!current_window())
-	message (MESSAGE_NO_MANAGED_WINDOWS);
-    }
-  else
-    {
-      rp_window *win;
+  rp_window *cur, *win; 
+  cur = current_window(); 
+  win = group_prev_window (rp_current_group, cur); 
 
-      win = group_prev_window (rp_current_group, current_window());
-      if (win == NULL)
-	message (MESSAGE_NO_OTHER_WINDOW);
-      else
-	set_active_window (win);
-    }
+  if (win) 
+    set_active_window (win); 
+  else if (cur) 
+    message (MESSAGE_NO_OTHER_WINDOW);
+  else
+    message (MESSAGE_NO_MANAGED_WINDOWS); 
 
   return NULL;
 }
@@ -876,7 +871,7 @@ cmd_prev_frame (int interactive, char *data)
 {
   rp_frame *frame;
 
-  frame = find_frame_next (current_frame());
+  frame = find_frame_prev (current_frame());
   if (!frame)
     message (MESSAGE_NO_OTHER_FRAME);
   else
@@ -888,22 +883,16 @@ cmd_prev_frame (int interactive, char *data)
 char *
 cmd_next (int interactive, char *data)
 {
-  if (!current_window())
-    {
-      set_active_window (group_next_window (rp_current_group, NULL));
-      if (!current_window())
-	message (MESSAGE_NO_MANAGED_WINDOWS);
-    }
-  else
-    {
-      rp_window *win;
+  rp_window *cur, *win; 
+  cur = current_window(); 
+  win = group_next_window (rp_current_group, cur); 
 
-      win = group_next_window (rp_current_group, current_window());
-      if (win == NULL)
-	message (MESSAGE_NO_OTHER_WINDOW);
-      else
-	set_active_window (win);
-    }
+  if (win) 
+    set_active_window (win); 
+  else if (cur) 
+    message (MESSAGE_NO_OTHER_WINDOW);
+  else
+    message (MESSAGE_NO_MANAGED_WINDOWS); 
 
   return NULL;
 }
@@ -3756,18 +3745,18 @@ cmd_frestore (int interactively, char *data)
 
       PRINT_DEBUG (("restore %d %d\n", cur->number, cur->win_number));
 
+      /* Grab the frame's number, but if it already exists request a
+	 new one. */
+      if (!numset_add_num (s->frames_numset, cur->number)) {
+	cur->number = numset_request (s->frames_numset);
+      }
+
       /* Find the current frame based on last_access. */
       if (cur->last_access > max)
 	{
 	  s->current_frame = cur->number;
 	  max = cur->last_access;
 	}
-
-      /* Grab the frame's number, but if it already exists request a
-	 new one. */
-      if (!numset_add_num (s->frames_numset, cur->number)) {
-	cur->number = numset_request (s->frames_numset);
-      }
 
       /* Update the window the frame points to. */
       if (cur->win_number != EMPTY)

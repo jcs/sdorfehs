@@ -363,7 +363,7 @@ unhide_transient_for (rp_window *win)
   transient_for = find_window (win->transient_for);
   if (transient_for == NULL) 
     {
-      PRINT_DEBUG (("Can't find transient_for for '%s'", win->name ));
+      PRINT_DEBUG (("Can't find transient_for for '%s'\n", win->name ));
       return;
     }
 
@@ -403,7 +403,7 @@ hide_transient_for_between (rp_window *win, rp_window *last)
   transient_for = find_window (win->transient_for);
   if (transient_for == last) 
     {
-      PRINT_DEBUG (("Can't find transient_for for '%s'", win->name ));
+      PRINT_DEBUG (("Can't find transient_for for '%s'\n", win->name ));
       return;
     }
 

@@ -250,7 +250,7 @@ get_wmname (Window w)
 
   /* duplicate the string into our own buffer, and free the one given
      to us by X. */
-  ret = xstrdup (name);
+  ret = xstrdup ((char *)name);
   XFree (name);
 
   return ret;
