@@ -1,5 +1,9 @@
 2002-03-13  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (cmd_nextscreen): An error message is displayed
+	when there is only 1 screen.
+	(cmd_prevscreen): likewise
+
 	* src/split.c (set_active_frame): fix to operate properly with
 	multiple screens.
 

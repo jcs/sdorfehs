@@ -2439,8 +2439,11 @@ cmd_nextscreen (int interactive, void *data)
   int new_screen;
 
   /* No need to go through the motions when we don't have to. */
-  if (num_screens <= 1) return NULL;
-
+  if (num_screens <= 1)
+    {
+      message (" nextscreen: No other screen ");
+      return NULL;
+    }
   new_screen = rp_current_screen + 1;
   if (new_screen >= num_screens)
     new_screen = 0;
@@ -2456,7 +2459,11 @@ cmd_prevscreen (int interactive, void *data)
   int new_screen;
 
   /* No need to go through the motions when we don't have to. */
-  if (num_screens <= 1) return NULL;
+  if (num_screens <= 1) 
+    {
+      message (" prevscreen: No other screen ");
+      return NULL;
+    }
 
   new_screen = rp_current_screen - 1;
   if (new_screen < 0)
