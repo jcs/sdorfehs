@@ -2,4 +2,4 @@ bin_PROGRAMS = ratpoison
 
 ratpoison_SOURCES = bar.c bar.h conf.h data.h events.c events.h	\
 input.c input.h list.c list.h main.c manage.c manage.h number.c	\
-number.h ratpoison.h
+number.h ratpoison.h actions.h actions.c

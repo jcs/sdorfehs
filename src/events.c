@@ -19,37 +19,15 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
-#include <X11/keysymdef.h>
+#include <X11/keysym.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/wait.h>
 
 #include "ratpoison.h"
 
 extern Display *dpy;
-
-void
-spawn(char *prog)
-{
-  /*
-   * ugly dance to avoid leaving zombies.  Could use SIGCHLD,
-   * but it's not very portable.
-   */
-  if (fork() == 0) {
-    if (fork() == 0) {
-      putenv(DisplayString(dpy));
-      execlp(prog, prog, 0);
-      fprintf (stderr, "exec %s ", prog);
-      perror(" failed");
-      exit(EXIT_FAILURE);
-    }
-    exit(0);
-  }
-  wait((int *) 0);
-  PRINT_DEBUG ("spawned %s\n", prog);
-}
 
 void
 new_window (XCreateWindowEvent *e)
@@ -81,11 +59,28 @@ unmap_notify (XEvent *ev)
 
   if (s && win)
     {
+      long data[2] = { WithdrawnState, None };
+
       /* Give back the window number. the window will get another one,
          if it in remapped. */
       return_window_number (win->number);
       win->number = -1;
       win->state = STATE_UNMAPPED;
+      
+      /* Update the state of the actual window */
+      XRemoveFromSaveSet (dpy, win->w);
+      XChangeProperty(dpy, win->w, wm_state, wm_state, 32,
+		      PropModeReplace, (unsigned char *)data, 2);
+
+      ignore_badwindow = 1;
+      XSync(dpy, False);
+      ignore_badwindow = 0;
+
+      if (rp_current_window == win)
+	{
+	  last_window (NULL);
+	}
+
       update_window_names (s);
     }
 }
@@ -165,7 +160,7 @@ destroy_window (XDestroyWindowEvent *ev)
 
   if (last_destroy_event && switch_window_pending)
     {
-      last_window ();
+      last_window (NULL);
       switch_window_pending = 0;
     }
 }
@@ -200,39 +195,12 @@ configure_request (XConfigureRequestEvent *e)
 	    }
 	  else if (e->detail == Below && win == rp_current_window) 
 	    {
-	      last_window ();
+	      last_window (NULL);
 	    }
 	}
 
       XSendEvent(dpy, win->w, False, StructureNotifyMask, (XEvent*)&ce);
     }
-}
-
-void
-delete_window ()
-{
-  XEvent ev;
-  int status;
-
-  if (rp_current_window == NULL) return;
-
-  ev.xclient.type = ClientMessage;
-  ev.xclient.window = rp_current_window->w;
-  ev.xclient.message_type = wm_protocols;
-  ev.xclient.format = 32;
-  ev.xclient.data.l[0] = wm_delete;
-  ev.xclient.data.l[1] = CurrentTime;
-
-  status = XSendEvent(dpy, rp_current_window->w, False, 0, &ev);
-  if (status == 0) fprintf(stderr, "ratpoison: delete window failed\n");
-}
-
-void 
-kill_window ()
-{
-  if (rp_current_window == NULL) return;
-
-  XKillClient(dpy, rp_current_window->w);
 }
 
 static void
@@ -255,19 +223,9 @@ client_msg (XClientMessageEvent *ev)
 }
 
 static void
-goto_win_by_name (screen_info *s)
-{
-  char winname[100];
-  
-  get_input (s, "Window: ", winname, 100);
-  PRINT_DEBUG ("user entered: %s\n", winname);
-
-  goto_window_name (winname);
-}
-
-static void
 handle_key (screen_info *s)
 {
+  const rp_action *i;
   int revert;
   Window fwin;
   XEvent ev;
@@ -277,10 +235,29 @@ handle_key (screen_info *s)
 
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
-  XMaskEvent (dpy, KeyPressMask, &ev);
+
+  do
+    {  
+      XMaskEvent (dpy, KeyPressMask, &ev);
+      keysym = XLookupKeysym((XKeyEvent *) &ev, 0);
+    } while (keysym == XK_Shift_L      
+	     || keysym == XK_Shift_R      
+	     || keysym == XK_Control_L    
+	     || keysym == XK_Control_R    
+	     || keysym == XK_Caps_Lock    
+	     || keysym == XK_Shift_Lock   
+	     || keysym == XK_Meta_L       
+	     || keysym == XK_Meta_R       
+	     || keysym == XK_Alt_L        
+	     || keysym == XK_Alt_R        
+	     || keysym == XK_Super_L      
+	     || keysym == XK_Super_R      
+	     || keysym == XK_Hyper_L      
+	     || keysym == XK_Hyper_R); /* ignore modifier keypresses. */
+
   XSetInputFocus (dpy, fwin, revert, CurrentTime);
 
-  if (XLookupKeysym((XKeyEvent *) &ev, 0) == KEY_PREFIX && !ev.xkey.state)
+  if (keysym == KEY_PREFIX && !ev.xkey.state)
     {
       /* Generate the prefix keystroke for the app */
       ev.xkey.window = fwin;
@@ -290,54 +267,17 @@ handle_key (screen_info *s)
       return;
     }
 
-  keysym = XLookupKeysym((XKeyEvent *) &ev, 0);
-
-  if (keysym == KEY_TOGGLEBAR)
-    {
-      toggle_bar (s);
-      return;
-    }
-
-  /* All functions tested for after this point hide the program bar. */
+  /* All functions hide the program bar. */
   hide_bar (s);
 
-  if (keysym >= '0' && keysym <= '9')
+  for (i = key_actions; i->key != 0; i++)
     {
-      goto_window_number (XLookupKeysym((XKeyEvent *) &ev, 0) - '0');
-      hide_bar (s);
-      return;
-    }
-
-  switch (keysym)
-    {
-    case KEY_XTERM:
-      spawn (TERM_PROG);
-      break;
-    case KEY_EMACS:
-      spawn (EMACS_PROG);
-      break;
-    case KEY_PREVWINDOW:
-      prev_window ();
-      break;
-    case KEY_NEXTWINDOW:
-      next_window ();
-      break;
-    case KEY_LASTWINDOW:
-      last_window ();
-      break;
-    case KEY_WINBYNAME:
-      goto_win_by_name (s);
-      break;
-    case KEY_RENAME:
-      rename_current_window ();
-      break;
-    case KEY_DELETE:
-      if (ev.xkey.state & ShiftMask) kill_window ();
-      else delete_window ();
-      break;
-    default:
-      PRINT_DEBUG ("Unknown key command '%c'\n", (char)keysym);
-      break;
+      if (keysym == i->key)
+	if (i->state == -1 || ev.xkey.state == i->state)
+	  {
+	    (*i->func)(i->data);
+	    break;
+	  }
     }
 }
 
@@ -435,7 +375,7 @@ delegate_event (XEvent *ev)
       break;
 
     case KeyPress:
-      PRINT_DEBUG ("KeyPress\n");
+      PRINT_DEBUG ("KeyPress %d %d\n", ev->xkey.keycode, ev->xkey.state);
       key_press (ev);
       break;
       

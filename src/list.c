@@ -112,36 +112,6 @@ init_window_list ()
   rp_current_window = NULL;
 }
 
-void
-next_window ()
-{
-  if (rp_current_window != NULL)
-    {
-      rp_current_window = rp_current_window->next;
-      if (rp_current_window == NULL) 
-	{
-	  rp_current_window = rp_window_head;
-	}
-      if (rp_current_window->state == STATE_UNMAPPED) next_window ();
-      set_active_window (rp_current_window);
-    }
-}
-
-void
-prev_window ()
-{
-  if (rp_current_window != NULL)
-    {
-      set_current_window (rp_current_window->prev);
-      if (rp_current_window == NULL) 
-	{
-	  rp_current_window = rp_window_tail;
-	}
-      if (rp_current_window->state == STATE_UNMAPPED) prev_window ();
-      set_active_window (rp_current_window);
-    }
-}
-
 rp_window *
 find_window_by_number (int n)
 {
@@ -196,20 +166,6 @@ goto_window_name (char *name)
   set_active_window (rp_current_window);
 }
 
-void
-goto_window_number (int n)
-{
-  rp_window *win;
-
-  if ((win = find_window_by_number (n)) == NULL)
-    {
-      return;
-    }
-
-  rp_current_window = win;
-  set_active_window (rp_current_window);
-}
-
 rp_window *
 find_last_accessed_window ()
 {
@@ -237,13 +193,6 @@ find_last_accessed_window ()
     }
 
   return most_recent;
-}
-
-void
-last_window ()
-{
-  rp_current_window = find_last_accessed_window ();
-  set_active_window (rp_current_window);
 }
 
 void

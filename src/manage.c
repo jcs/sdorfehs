@@ -101,29 +101,6 @@ update_window_name (rp_window *win)
   return 1;
 }
 
-void
-rename_current_window ()
-{
-  char winname[100];
-  
-  if (rp_current_window == NULL) return;
-
-  get_input (rp_current_window->scr, "Name: ", winname, 100);
-  PRINT_DEBUG ("user entered: %s\n", winname);
-
-  free (rp_current_window->name);
-  rp_current_window->name = malloc (sizeof (char) * strlen (winname) + 1);
-  if (rp_current_window->name == NULL)
-    {
-      PRINT_ERROR ("Out of memory\n");
-      exit (EXIT_FAILURE);
-    }
-  strcpy (rp_current_window->name, winname);
-  rp_current_window->named = 1;
-  
-  /* Update the program bar. */
-  update_window_names (rp_current_window->scr);
-}
 
 void
 manage (rp_window *win, screen_info *s)
@@ -170,7 +147,8 @@ scanwins(screen_info *s)
       if (attr.override_redirect != True)
 	{
 	  win = add_to_window_list (s, wins[i]);
-	  if (attr.map_state != IsUnmapped) manage (win, s);
+	  PRINT_DEBUG ("map_state: %d\n", attr.map_state);
+	  if (attr.map_state == IsViewable) manage (win, s);
 	}
     }
   XFree((void *) wins);	/* cast is to shut stoopid compiler up */

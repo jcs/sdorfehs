@@ -31,6 +31,7 @@
 
 typedef struct rp_window rp_window;
 typedef struct screen_info screen_info;
+typedef struct rp_action rp_action;
 
 struct rp_window
 {
@@ -56,6 +57,14 @@ struct screen_info
   Colormap def_cmap;
 };
 
+struct rp_action
+{
+  int key;
+  int state;
+  void *data;			/* misc data to be passed to the function */
+  void (*func)(void *);
+};
+
 extern  rp_window *rp_window_head, *rp_window_tail;
 extern  rp_window *rp_current_window;
 extern screen_info *screens;
@@ -72,9 +81,10 @@ extern Atom wm_delete;
 extern Atom wm_take_focus;
 extern Atom wm_colormaps;
 
-/* Set to 1 to indicate that the WM should exit at it's earliest
-   convenience. */
-extern int exit_signal;
+/* When unmapping or deleting windows, it is sometimes helpful to
+   ignore a bad window when attempting to clean the window up. This
+   does just that when set to 1 */
+extern int ignore_badwindow;
 
 /* Arguments passed to ratpoison. */
 extern char **myargv;

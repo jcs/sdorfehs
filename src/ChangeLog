@@ -1,3 +1,18 @@
+2000-10-17  shawn  <sabetts@vcn.bc.ca>
+
+	* manage.c (scanwins): Now only maps visible windows
+
+	* conf.h: Removed keystroke related defines
+
+	* actions.c: Moved all key activated functions here. Added
+	key_actions array.
+
+	* events.c (unmap_notify): now properly unmaps windows
+
+	* data.h: added ignore_badwindow
+
+	* main.c (handler): added ability to ignore BadWindow errors
+
 2000-10-15  shawn  <sabetts@vcn.bc.ca>
 
 	* main.c, data.h, events.c: Added ability to kill and hup running

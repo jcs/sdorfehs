@@ -17,21 +17,11 @@
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA */
 
+#include "data.h"
+#include "actions.h"
+
 #define KEY_PREFIX      't'
 #define MODIFIER_PREFIX ControlMask
-
-#define KEY_XTERM       'c'
-#define KEY_EMACS       'e'
-#define KEY_PREVWINDOW  'p'
-#define KEY_NEXTWINDOW  'n'	
-#define KEY_LASTWINDOW  't'	/* key to toggle between the current window and the last visitted one */
-#define KEY_TOGGLEBAR   'w'	/* key to toggle the display of the program bar */
-#define KEY_DELETE      'k'	/* delete a window SHIFT+key will Destroy the window */
-#define KEY_WINBYNAME   '\''	/* key to jump to a window by name */
-#define KEY_RENAME      'a'	/* key to rename a window. */
-
-#define TERM_PROG       "xterm"	/* command to boot an x term */
-#define EMACS_PROG      "emacs"	/* command to boot emacs */
 
 #define BAR_FG_COLOR    "Gray60"
 #define BAR_BG_COLOR    "Lightgreen"

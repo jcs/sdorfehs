@@ -45,8 +45,9 @@ Atom rp_kill;
 screen_info *screens;
 int num_screens;
 Display *dpy;
-int exit_signal = 0;		/* Set by the signal handler. if this
-                                   is set, quit. */
+
+int ignore_badwindow = 0;
+
 static XFontStruct *font;
 
 char **myargv;
@@ -57,7 +58,7 @@ static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
 					      {"restart", no_argument, 0, 'r'},
 					      {"kill", no_argument, 0, 'k'},
 					      {0, 0, 0, 0} };
-static char ratpoison_opts[] = "hv";
+static char ratpoison_opts[] = "hvrk";
 
 void
 sighandler ()
@@ -145,11 +146,12 @@ handler (Display *d, XErrorEvent *e)
     exit(EXIT_FAILURE);
   }  
 
+  if (ignore_badwindow && e->error_code == BadWindow) return 0;
+
   XGetErrorText (d, e->error_code, error_msg, sizeof (error_msg));
   fprintf (stderr, "ratpoison: %s!\n", error_msg);
 
-  return 0;
-  /*  exit (EXIT_FAILURE); */
+  exit (EXIT_FAILURE); 
 }
 
 void

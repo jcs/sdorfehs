@@ -59,13 +59,6 @@ show_bar (screen_info *s)
   return 0;
 }
 
-/* Toggle the display of the program bar */
-void
-toggle_bar (screen_info *s)
-{
-  if (!hide_bar (s)) show_bar (s);
-}
-
 static int
 calc_bar_width (XFontStruct *font)
 {
