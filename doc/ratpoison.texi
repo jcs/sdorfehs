@@ -81,12 +81,14 @@ This document explains how to use ratpoison.
 @menu
 * About::                       What is ratpoison?
 * Contacting::                  How do I contact the ratpoison developers?
+* Concepts::                    Window manipulation concepts
 * General Use::                 How does this thing work??
 * Splitting The Screen::        When you want to see more than one window
 * Keystrokes::                  Key commands and functionality
 * Commands::                    ratpoison commands
 * Command Line Arguments::      ratpoison command-line actions
 * Startup file::                They threatened me...with violence!
+
 
 
 
@@ -106,7 +108,7 @@ that cripples EMACS and other quality pieces of software.
 
 ratpoison was written by Shawn Betts (@email{sabetts@@users.sourceforge.net}).
 
-@node Contacting, General Use, About, Top
+@node Contacting, Concepts, About, Top
 @chapter Contacting
 ratpoison is hosted on @url{sourceforge.net}. To see the latest
 developments in ratpoison go to
@@ -119,7 +121,38 @@ and for the list archives go to the ratpoison sourceforge.net project.
 
 There is a #ratpoison irc channel on irc.openprojects.net.
 
-@node General Use, Splitting The Screen, Contacting, Top
+@node Concepts, General Use, Contacting, Top
+@chapter Concepts
+
+ratpoison is a @dfn{paned} window manager. Instead of allowing windows
+to have arbitary shapes at arbitary locations on the screen, the
+display is divided into panes like a real window. The panes are called
+@dfn{frames}, and windows are placed in them, maximised. ratpoison
+starts with one frame, which can be split into an arbitary number of
+smaller ones. You can move among them, making different ones the
+current. For more information, see @ref{Splitting The Screen}.
+
+Each frame has at most one window associated with it, which is visible
+in that frame. If you select a window that is associated with a frame,
+the focus will move to its associated frame, rather than moving the
+window to the current frame. If you select a window that is not
+associated with a frame, that window will be opened in the current
+frame and resized to fit that frame.
+
+If the window associated with a frame does not fill the frame
+completely, the various gravity commands control how it is placed. 
+
+If no window was open in that frame before the current window was
+opened, the X root will be visible behind it.
+
+Transient windows (dialog boxes, splash screens, and the like) are
+handled specially. In order to understand the contents of a transient
+window, the previously focused window is often required. Take a search
+window, it is useful to be able to see the document you are searching
+as well as the search window. For this reason transient windows appear
+overtop (according to their gravity) of the previously focused window.
+
+@node General Use, Splitting The Screen, Concepts, Top
 @chapter General Use
 
 When ratpoison starts you should see an empty X server. To open an x
