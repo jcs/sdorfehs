@@ -1,8 +1,57 @@
+2004-12-12  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/sbuf.c (sbuf_concat): call sbuf_nconcat. move bulk of body
+	to sbuf_nconcat.
+	(sbuf_nconcat): new function
+
+	* src/globals.c (init_globals): new function
+
+	* src/main.c (main): call init_globals.
+
+	* src/globals.c: include unistd.h.
+	(x_export_selection): new function
+	(set_nselection): likewise
+	(set_selection): call x_export_selection
+	(get_cut_buffer): new function
+	(get_primary_selection): likewise
+	(get_selection): likewise
+
+	* src/editor.c (editor_kill_word): add the deleted text to the X11
+	selection
+	(editor_backward_kill_word): likewise
+	(editor_kill_line): likewise
+	(backward_kill_line): new fuction
+	(editor_backward_kill_line): add the deleted text to the X11
+	selection. call backward_kill_line.
+	(paste_cut_buffer): remove function
+	(paste_primary_selection): likewise
+	(editor_paste_selection): call get_selection to get the X11
+	selection.
+	(editor_complete): call backward_kill_line instead of
+	editor_backward_kill_line.
+
+	* src/ratpoison.h: Include string.h. Include X11/XAtom.h.
+
+	* src/globals.c (selection): new global
+	(set_selection): new function
+
+	* src/events.c: include X11/Xmd.h
+	(selection_request): new function
+	(selection_clear): new function
+	(delegate_event): call selection_request and selection_clear for
+	SelectionRequest and SelectionClear events.
+
+	* src/actions.c (user_commands): remove duplicate focusprev entry. Add putsel. Add getsel.
+	(cmd_putsel): new function
+	(cmd_getsel): new function
+
+	* contrib/genrpbindings: add a missing paren to the elisp bindings.
+
 2004-12-12  Ryan Yeske  <rcyeske@gmail.com>
 
 	* MERCHANDISE: Add file.
 
-2004-12-09  Shawn Betts  <katia_dilkina@verizon.net>
+2004-12-09  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_unmanage): fix message formatting
 	(cmd_ratwarp): likewise

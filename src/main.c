@@ -615,6 +615,7 @@ main (int argc, char *argv[])
   set_sig_handler (SIGCHLD, chld_handler);
 
   /* Setup ratpoison's internal structures */
+  init_globals ();
   init_defaults ();
   init_groups ();
   init_window_stuff ();

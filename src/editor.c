@@ -257,6 +257,7 @@ static edit_status
 editor_kill_word (rp_input_line *line)
 {
   int i, diff;
+  
 
   if (line->position < line->length)
     {
@@ -265,6 +266,9 @@ editor_kill_word (rp_input_line *line)
 
       diff = i - line->position;
 
+      /* Add the word to the X11 selection. */
+      set_nselection (&line->buffer[line->position], diff);
+  
       for (i = line->position; i <= line->length - diff; i++)
         line->buffer[i] = line->buffer[i + diff];
 
@@ -288,6 +292,9 @@ editor_backward_kill_word (rp_input_line *line)
 
       line->position = i;
 
+      /* Add the word to the X11 selection. */
+      set_nselection (&line->buffer[line->position], diff);
+
       for (; i <= line->length - diff; i++)
         line->buffer[i] = line->buffer[i + diff];
 
@@ -302,6 +309,9 @@ editor_kill_line (rp_input_line *line)
 {
   if (line->position < line->length)
     {
+      /* Add the line to the X11 selection. */
+      set_selection (&line->buffer[line->position]);
+
       line->length = line->position;
       line->buffer[line->length] = 0;
     }
@@ -309,19 +319,33 @@ editor_kill_line (rp_input_line *line)
   return EDIT_DELETE;
 }
 
-static edit_status
-editor_backward_kill_line (rp_input_line *line)
+/* Do the dirty work of killing a line backwards. */
+static void
+backward_kill_line (rp_input_line *line)
 {
   int i;
 
+  /* If we're at the beginning, we have nothing to do. */
   if (line->position <= 0)
-    return EDIT_NO_OP;
+    return;
 
   for (i = line->position; i<= line->length; i++)
     line->buffer[i - line->position] = line->buffer[i];
 
   line->length -= line->position;
   line->position = 0;
+}
+
+static edit_status
+editor_backward_kill_line (rp_input_line *line)
+{
+  if (line->position <= 0)
+    return EDIT_NO_OP;
+
+  /* Add the line to the X11 selection. */
+  set_nselection (line->buffer, line->position);
+
+  backward_kill_line (line);
 
   return EDIT_DELETE;
 }
@@ -469,118 +493,18 @@ editor_enter (rp_input_line *line)
 }
 
 static edit_status
-paste_cut_buffer (rp_input_line *line)
-{
-  int nbytes;
-  char *data;
-  edit_status status;
-
-  PRINT_DEBUG (("trying the cut buffer\n"));
-
-  data = XFetchBytes (dpy, &nbytes);
-
-  if (data)
-    {
-/*       status = editor_insert (line, data, nbytes); */
-      status = editor_insert (line, data);
-      XFree (data);
-    }
-  else
-    {
-      status = EDIT_NO_OP;
-    }
-
-  return status;
-}
-
-static edit_status
-paste_primary_selection (rp_input_line *line)
-{
-  Atom actual_type;
-  rp_screen *s = current_screen ();
-  int actual_format;
-  unsigned long nitems;
-  unsigned long offset;
-  unsigned long bytes_after;
-  unsigned char *data;
-
-  if (XGetWindowProperty (dpy, s->input_window, rp_selection, 0, 0, False, XA_STRING, &actual_type, &actual_format, &nitems, &bytes_after, &data) == Success)
-    {
-       if (data)
-	 {
-	   XFree (data);
-	   data = NULL;
-	 }
-
-       PRINT_DEBUG (("actual_type = %ld, actual_format = %d, bytes_after = %ld\n", actual_type, actual_format, bytes_after));
-
-       if (actual_type != XA_STRING || actual_format != 8)
-         {
-           PRINT_DEBUG (("selection data is invalid\n"));
-           if (data)
-             XFree (data);
-           return EDIT_NO_OP;
-         }
-
-       offset = 0;
-
-       while (bytes_after > 0)
-         {
-           if (XGetWindowProperty (dpy, s->input_window, rp_selection, offset / 4, bytes_after / 4 + 1, False, XA_STRING, &actual_type, &actual_format, &nitems, &bytes_after, &data) != Success)
-             break;
-
-           PRINT_DEBUG (("bytes_after = %ld, nitems = %ld, data = '%s'\n", bytes_after, nitems, data));
-
-           nitems *= actual_format / 8;
-           offset += nitems;
-
-/*            editor_insert (line, data, nitems); */
-           editor_insert (line, (char *)data);
-
-           PRINT_DEBUG (("bytes_after = %ld, nitems = %ld, data = '%s'\n", bytes_after, nitems, data));
-
-           XFree (data);
-         }
-    }
-
-  /* notify the owner that the data has been transferred */
-  XDeleteProperty(dpy, s->input_window, rp_selection);
-
-  return EDIT_INSERT;
-}
-
-static edit_status
 editor_paste_selection (rp_input_line *line)
 {
-  Atom property;
-  XEvent ev;
-  rp_screen *s = current_screen ();
-  int loops = 1000;
-
-  /* be a good icccm citizen */
-  XDeleteProperty (dpy, s->input_window, rp_selection);
-  /* TODO: we shouldn't use CurrentTime here, use the time of the XKeyEvent, should we fake it? */
-  XConvertSelection (dpy, XA_PRIMARY, XA_STRING, rp_selection, s->input_window, CurrentTime);
-
-  while (!XCheckTypedWindowEvent (dpy, s->input_window, SelectionNotify, &ev))
+  char *text;
+  text = get_selection();
+  if (text)
     {
-      if (loops == 0)
-        {
-	  PRINT_ERROR (("selection request timed out\n"));
-          return EDIT_NO_OP;
-        }
-      usleep (10000);
-      loops--;
+      editor_insert(line, text);
+      free (text);
+      return EDIT_INSERT;
     }
-
-  PRINT_DEBUG (("SelectionNotify event\n"));
-
-  property = ev.xselection.property;
-
-  if (property != None)
-    return paste_primary_selection (line);
   else
-    return paste_cut_buffer (line);
+    return EDIT_NO_OP;
 }
 
 static edit_status
@@ -604,7 +528,7 @@ editor_complete (rp_input_line *line, int direction)
     return EDIT_NO_OP;
 
   /* Insert the completion. */
-  editor_backward_kill_line (line);
+  backward_kill_line (line);
   editor_insert (line, s);
 
   return EDIT_COMPLETE;

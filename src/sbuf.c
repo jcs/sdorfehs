@@ -69,9 +69,9 @@ sbuf_free_struct (struct sbuf *b)
 }
 
 char *
-sbuf_concat (struct sbuf *b, const char *str)
+sbuf_nconcat (struct sbuf *b, const char *str, int len)
 {
-  size_t minsz = b->len + strlen (str) + 1;
+  size_t minsz = b->len + len + 1;
 
   if (b->maxsz < minsz)
     {
@@ -84,6 +84,13 @@ sbuf_concat (struct sbuf *b, const char *str)
   *(b->data + b->len) = 0;
 
   return b->data;
+}
+
+
+char *
+sbuf_concat (struct sbuf *b, const char *str)
+{
+  return sbuf_nconcat (b, str, strlen (str));
 }
 
 char *

@@ -1289,6 +1289,10 @@ Execute a shell command. By default, @kbd{C-t !} does this.
 Display the value of the environment variable, @var{env}.
 @end deffn
 
+@deffn Command getsel
+Return the contents of the X11 selection.
+@end deffn
+
 @deffn Command help
 Display a help screen that lists all bound keystrokes.
 @end deffn
@@ -1299,6 +1303,10 @@ Display ratpoison's license. By default, this is bound to @kbd{C-t V}.
 
 @deffn Command meta
 Send a @kbd{C-t} to the current window.
+@end deffn
+
+@deffn Command putsel @var{text}
+Make text the X11 selection.
 @end deffn
 
 @deffn Command quit

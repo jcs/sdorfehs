@@ -340,5 +340,11 @@ struct rp_frame_undo
   struct list_head node;
 };
 
+typedef struct rp_xselection rp_xselection;
+struct rp_xselection
+{
+  unsigned char *text;
+  int len;
+};
 
 #endif /* _RATPOISON_DATA_H */

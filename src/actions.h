@@ -141,8 +141,9 @@ char *cmd_prompt (int interactive, char *data);
 char *cmd_sdump (int interactive, char *data);
 char *cmd_sfdump (int interactively, char *data);
 char *cmd_undo (int interactive, char *data);
+char *cmd_putsel (int interactive, char *data);
+char *cmd_getsel (int interactive, char *data);
 void pop_frame_undo (rp_frame_undo *u);
-
 
 rp_keymap *find_keymap (char *name);
 void initialize_default_keybindings (void);

@@ -61,7 +61,7 @@ print ELISP <<PREAMBLE;
 
 (defmacro defun-ratpoison (cmd)
   `(progn (defun ,(intern (concat "ratpoison-" (symbol-name cmd))) (&rest args)
-          (apply 'ratpoison-cmd ,(symbol-name cmd) args)))
+          (apply 'ratpoison-cmd ,(symbol-name cmd) args))))
 
 (defun ratpoison-cmd (cmd &rest args)
   (with-temp-buffer

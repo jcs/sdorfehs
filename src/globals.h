@@ -148,4 +148,13 @@ extern struct numset *rp_frame_numset;
 
 extern struct list_head rp_frame_undos;
 extern int rp_num_frame_undos;
+
+/* Selection handling globals */
+extern rp_xselection selection;
+void set_selection (char *txt);
+void set_nselection (char *txt, int len);
+char *get_selection ();
+
+void init_globals ();
+
 #endif

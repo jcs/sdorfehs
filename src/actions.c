@@ -125,14 +125,15 @@ static user_command user_commands[] =
     {"cprev",           cmd_cprev,              arg_VOID},
     {"dedicate",        cmd_dedicate,           arg_VOID},
     {"describekey",     cmd_describekey,        arg_STRING},
-    {"focusprev",       cmd_prev_frame,         arg_VOID},
     {"inext",           cmd_inext,              arg_VOID},
     {"iother",          cmd_iother,             arg_VOID},
     {"iprev",           cmd_iprev,              arg_VOID},
-    {"prompt",          cmd_prompt,              arg_STRING},
+    {"prompt",          cmd_prompt,             arg_STRING},
     {"sdump",           cmd_sdump,              arg_VOID},
     {"sfdump",          cmd_sfdump,             arg_VOID},
     {"undo",            cmd_undo,               arg_STRING},
+    {"putsel",          cmd_putsel,             arg_STRING},
+    {"getsel",          cmd_getsel,             arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to help debug ratpoison. */
@@ -4973,3 +4974,21 @@ cmd_dedicate (int interactive, char *data)
   return NULL;
 }
 
+char *
+cmd_putsel (int interactive, char *data)
+{
+  if (data == NULL)
+    {
+      message ("putsel: one argument required");
+      return NULL;
+    }
+  
+  set_selection(data);
+  return NULL;
+}
+
+char *
+cmd_getsel (int interactive, char *data)
+{
+  return get_selection();
+}

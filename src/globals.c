@@ -20,6 +20,8 @@
 
 #include "ratpoison.h"
 
+#include <unistd.h>		/* for usleep(). */
+
 int alarm_signalled = 0;
 int kill_signalled = 0;
 int hup_signalled = 0;
@@ -70,6 +72,143 @@ char *rp_error_msg = NULL;
 /* Global frame numset */
 struct numset *rp_frame_numset;
 
+/* The X11 selection globals */
+rp_xselection selection;
+
+static void
+x_export_selection ()
+{
+  /* Hang the selections off screen 0's key window. */
+  XSetSelectionOwner(dpy, XA_PRIMARY, screens[0].key_window, CurrentTime);
+  if (XGetSelectionOwner(dpy, XA_PRIMARY) != screens[0].key_window)
+    PRINT_ERROR(("can't get primary selection"));
+  XChangeProperty(dpy, screens[0].root, XA_CUT_BUFFER0, XA_STRING, 8,
+		  PropModeReplace, selection.text, selection.len);
+}
+
+void
+set_nselection (char *txt, int len)
+{
+  int i;
+
+  /* Update the selection structure */
+  if (selection.text != NULL)
+    free(selection.text);
+
+  /* Copy the string by hand. */
+  selection.text = malloc(len+1);
+  selection.len = len + 1;
+  for (i=0; i<len; i++)
+    selection.text[i] = txt[i];
+  selection.text[len] = 0;
+
+  x_export_selection();
+}
+
+void
+set_selection (char *txt)
+{
+  /* Update the selection structure */
+  if (selection.text != NULL)
+    free(selection.text);
+  selection.text = xstrdup (txt);
+  selection.len = strlen (txt);
+  
+  x_export_selection();
+}
+
+static char *
+get_cut_buffer ()
+{
+  int nbytes;
+  char *data;
+
+  PRINT_DEBUG (("trying the cut buffer\n"));
+
+  data = XFetchBytes (dpy, &nbytes);
+
+  if (data)
+    {
+      struct sbuf *s = sbuf_new (0);
+      sbuf_nconcat (s, data, nbytes);
+      XFree (data);
+      return sbuf_free_struct (s);
+    }
+  else
+    return NULL;
+}
+
+/* Lifted the code from rxvt. */
+static char *
+get_primary_selection()
+{
+  long            nread;
+  unsigned long   bytes_after;
+  XTextProperty   ct;
+  struct sbuf *s = sbuf_new(0);
+
+  for (nread = 0, bytes_after = 1; bytes_after > 0; nread += ct.nitems) {
+    if ((XGetWindowProperty(dpy, current_screen()->input_window, rp_selection, (nread / 4), 4096,
+			    True, AnyPropertyType, &ct.encoding,
+			    &ct.format, &ct.nitems, &bytes_after,
+			    &ct.value) != Success)) {
+      XFree(ct.value);
+      sbuf_free(s);
+      return NULL;
+    }
+    if (ct.value == NULL)
+      continue;
+    /* Accumulate the data. FIXME: ct.value may not be NULL
+       terminated. */
+    sbuf_nconcat (s, ct.value, ct.nitems);
+    XFree(ct.value);
+  }
+  return sbuf_free_struct (s);
+}
+
+char *
+get_selection ()
+{
+  Atom property;
+  XEvent ev;
+  rp_screen *s = current_screen ();
+  int loops = 1000;
+
+  /* Just insert our text, if we own the selection. */
+  if (selection.text)
+    {
+      return xstrdup (selection.text);
+    }
+  else
+    {
+      /* be a good icccm citizen */
+      XDeleteProperty (dpy, s->input_window, rp_selection);
+      /* TODO: we shouldn't use CurrentTime here, use the time of the XKeyEvent, should we fake it? */
+      XConvertSelection (dpy, XA_PRIMARY, XA_STRING, rp_selection, s->input_window, CurrentTime);
+
+      /* This seems like a hack. */
+      while (!XCheckTypedWindowEvent (dpy, s->input_window, SelectionNotify, &ev))
+	{
+	  if (loops == 0)
+	    {
+	      PRINT_ERROR (("selection request timed out\n"));
+	      return NULL;
+	    }
+	  usleep (10000);
+	  loops--;
+	}
+
+      PRINT_DEBUG (("SelectionNotify event\n"));
+
+      property = ev.xselection.property;
+
+      if (property != None)
+	return get_primary_selection ();
+      else
+	return get_cut_buffer ();
+    }
+}
+
 /* The hook dictionary globals. */
 
 LIST_HEAD (rp_key_hook);
@@ -106,3 +245,10 @@ set_window_focus (Window window)
 
 LIST_HEAD (rp_frame_undos);
 int rp_num_frame_undos = 0;
+
+void
+init_globals ()
+{
+  selection.text = NULL;
+  selection.len = 0;
+}

@@ -21,6 +21,10 @@ Rather than error out, now, ratpoison will just be built without history.
 inext, iprev, iother, cnext, cprev, cother, prompt, dedicate,
 describekey, focusprev, sdump, sfdump.
 
+** yet two more new commands: putsel, getsel
+putsel puts the specified text into the X11 selection so other clients
+can yank it. getsel returns the current selection.
+
 * Changes since 1.3.0-rc2-beta2
 ** new format option %f
 This options displays the frame number the window is in or a space if

@@ -29,7 +29,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #include <fcntl.h>
 
 /* Some systems don't define the close-on-exec flag in fcntl.h */

@@ -24,6 +24,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
+#include <X11/Xmd.h>		/* for CARD32. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -674,6 +675,76 @@ mapping_notify (XMappingEvent *ev)
     }
 }
 
+/* This is called whan an application has requested the
+   selection. Copied from rxvt. */
+static void
+selection_request (XSelectionRequestEvent *rq)
+{
+  XEvent          ev;
+  CARD32          target_list[4];
+  Atom            target;
+  static Atom     xa_targets = None;
+  static Atom     xa_compound_text = None;
+  static Atom     xa_text = None;
+  XTextProperty   ct;
+  XICCEncodingStyle style;
+  char           *cl[4];
+
+  if (xa_text == None)
+    xa_text = XInternAtom(dpy, "TEXT", False);
+  if (xa_compound_text == None)
+    xa_compound_text = XInternAtom(dpy, "COMPOUND_TEXT", False);
+  if (xa_targets == None)
+    xa_targets = XInternAtom(dpy, "TARGETS", False);
+
+  ev.xselection.type = SelectionNotify;
+  ev.xselection.property = None;
+  ev.xselection.display = rq->display;
+  ev.xselection.requestor = rq->requestor;
+  ev.xselection.selection = rq->selection;
+  ev.xselection.target = rq->target;
+  ev.xselection.time = rq->time;
+
+  if (rq->target == xa_targets) {
+    target_list[0] = (CARD32) xa_targets;
+    target_list[1] = (CARD32) XA_STRING;
+    target_list[2] = (CARD32) xa_text;
+    target_list[3] = (CARD32) xa_compound_text;
+    XChangeProperty(dpy, rq->requestor, rq->property, rq->target,
+		    (8 * sizeof(target_list[0])), PropModeReplace,
+		    (unsigned char *)target_list,
+		    (sizeof(target_list) / sizeof(target_list[0])));
+    ev.xselection.property = rq->property;
+  } else if (rq->target == XA_STRING
+	     || rq->target == xa_compound_text
+	     || rq->target == xa_text) {
+    if (rq->target == XA_STRING) {
+      style = XStringStyle;
+      target = XA_STRING;
+    } else {
+      target = xa_compound_text;
+      style = (rq->target == xa_compound_text) ? XCompoundTextStyle
+	: XStdICCTextStyle;
+    }
+    cl[0] = selection.text;
+    XmbTextListToTextProperty(dpy, cl, 1, style, &ct);
+    XChangeProperty(dpy, rq->requestor, rq->property,
+		    target, 8, PropModeReplace,
+		    ct.value, ct.nitems);
+    ev.xselection.property = rq->property;
+  }
+  XSendEvent(dpy, rq->requestor, False, 0, &ev);
+}
+
+static void
+selection_clear ()
+{
+  if (selection.text)
+    free (selection.text);
+  selection.text = NULL;
+  selection.len = 0;
+}
+
 /* Given an event, call the correct function to handle it. */
 static void
 delegate_event (XEvent *ev)
@@ -740,6 +811,14 @@ delegate_event (XEvent *ev)
       mapping_notify( &ev->xmapping );
       break;
 
+    case SelectionRequest:
+      selection_request(&ev->xselectionrequest);
+      break;
+
+    case SelectionClear:
+      selection_clear();
+      break;
+
     case ConfigureNotify:
     case MapNotify:
     case Expose:
@@ -747,9 +826,7 @@ delegate_event (XEvent *ev)
     case KeyRelease:
     case ReparentNotify:
     case EnterNotify:
-    case SelectionRequest:
     case SelectionNotify:
-    case SelectionClear:
     case CirculateRequest:
       /* Ignore these events. */
       break;
