@@ -1342,7 +1342,7 @@ Send a @kbd{C-t} to the current window.
 
 @deffn Command prompt @var{prompt}
 This command is only useful when called
-non-interactively. @cmd{prompt} prompts the user for input using
+non-interactively. @command{prompt} prompts the user for input using
 @var{prompt} and returns the input.
 @end deffn
        
