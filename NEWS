@@ -101,11 +101,7 @@ All fixed length buffer sizes in window names that resulted in
 curious segfaults have been fixed.
 
 ** Themes support
-<<<<<<< NEWS
 There is still no theme support, despite what you might have heard.
-=======
-There is still no themes support, despite what you might have heard.
->>>>>>> 1.13.2.2
 
 
 * Changes Singe 0.0.4

@@ -410,23 +410,30 @@ cmd_select (void *data)
   else
     str = strdup ((char *) data);
 
-  /* try by number */
-  if ((n = string_to_window_number (str)) >= 0)
-    {
-      if ((w = find_window_number (n)))
-	set_active_window (w);
-      else
-	/* show the window list as feedback */
-	show_bar (current_screen ());
-    }
-  else
-    /* try by name */
+  /* Only search if the string contains something to search for. */
+  if (strlen (str) > 0)
     {
       if ((w = find_window_name (str)))
 	set_active_window (w);
+
+      /* try by number */
+      if ((n = string_to_window_number (str)) >= 0)
+	{
+	  if ((w = find_window_number (n)))
+	    set_active_window (w);
+	  else
+	    /* show the window list as feedback */
+	    show_bar (current_screen ());
+	}
       else
-	/* we need to format a string that includes the str */
-	message (" no window by that name ");
+	/* try by name */
+	{
+	  if ((w = find_window_name (str)))
+	    set_active_window (w);
+	  else
+	    /* we need to format a string that includes the str */
+	    message (" no window by that name ");
+	}
     }
 
   free (str);

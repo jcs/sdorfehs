@@ -232,6 +232,20 @@ configure_request (XConfigureRequestEvent *e)
 	  PRINT_DEBUG("request CWY %d\n", e->y);
 	}
 
+      if (e->value_mask & CWStackMode && win->state == STATE_MAPPED)
+	{
+	  if (e->detail == Above)
+	    {
+	      set_active_window (win);
+	    }
+	  else if (e->detail == Below)
+	    {
+	      set_active_window (find_window_other ());
+	    }
+
+	  PRINT_DEBUG("request CWStackMode %d\n", e->detail);
+	}
+
 
       PRINT_DEBUG ("'%s' new window size: %d %d %d %d %d\n", win->name,
 		   win->x, win->y, win->width, win->height, win->border);
@@ -308,7 +322,7 @@ handle_key (screen_info *s)
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
 
-  read_key (&keysym, &mod);
+  read_key (&keysym, &mod, NULL, 0);
 
   if ((key_action = find_keybinding (keysym, mod)))
     {
@@ -337,8 +351,8 @@ void
 key_press (XEvent *ev)
 {
   screen_info *s;
-  unsigned int modifier = ev->xkey.state;
-  int ks = XLookupKeysym((XKeyEvent *) ev, 0);
+  unsigned int modifier;
+  KeySym ks;
 
   s = find_screen (ev->xkey.root);
 
@@ -348,12 +362,15 @@ key_press (XEvent *ev)
 
   if (!s) return;
 
+  modifier = ev->xkey.state;
+  cook_keycode ( &ev->xkey, &ks, &modifier, NULL, 0);
+
   if (ks == prefix_key.sym && (modifier == prefix_key.state))
     {
       handle_key (s);
     }
   else
-    {
+    { 
       if (rp_current_window)
 	{
 	  ignore_badwindow = 1;
@@ -486,7 +503,7 @@ delegate_event (XEvent *ev)
     case KeyRelease: 
       PRINT_DEBUG ("KeyRelease %d %d\n", ev->xkey.keycode, ev->xkey.state);
       break;
-      
+
     case UnmapNotify:
       PRINT_DEBUG ("UnmapNotify\n");
       unmap_notify (ev);

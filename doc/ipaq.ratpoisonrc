@@ -1,0 +1,33 @@
+# .ratpoisonrc for an iPaq36xx handheld pc running Linux
+#
+# $Id: ipaq.ratpoisonrc,v 1.2 2001/03/12 01:10:48 sabetts Exp $
+
+
+# make the "audio record" button the escape key:
+
+# Note: use XF86AudioRecord instead of the hex value if its available
+# on your system
+escape 0x1008ff1c
+
+# the "speaker" buttons
+bind Up exec rxvt
+bind Down windows
+bind Left prev
+bind Right next
+bind KP_Enter echo
+
+# the power button should be reserved?
+# Note: use XF86PowerDown if its available on your system
+bind 0x1008ff21 version
+
+## the four buttons under the screen:
+
+# Note: use XF86Calendar if its available on your system
+bind 0x1008ff20 exec xcalc
+
+bind telephone exec contacts
+
+bind Menu echo
+
+# Note: use XF86Start if its available on your system
+bind 0x1008ff1a clock

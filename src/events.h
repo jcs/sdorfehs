@@ -27,5 +27,5 @@ void delegate_event (XEvent *ev);
 void key_press (XEvent *ev);
 void map_request (XEvent *ev);
 void unmap_notify (XEvent *ev);
-
+void keymap_state (XKeymapEvent *ev);
 #endif /* _RATPOISON_EVENTS_H */

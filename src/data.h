@@ -144,4 +144,16 @@ extern int ignore_badwindow;
 /* Arguments passed to ratpoison. */
 extern char **myargv;
 
+struct modifier_info
+{
+/*   unsigned int mode_switch_mask; */
+  unsigned int meta_mod_mask;
+  unsigned int alt_mod_mask;
+  unsigned int super_mod_mask;
+  unsigned int hyper_mod_mask;
+};
+
+/* Keeps track of which mod mask each modifier is under. */
+extern struct modifier_info rp_modifier_info;
+
 #endif /* _RATPOISON_DATA_H */

@@ -23,9 +23,10 @@
 #define _RATPOISON_INPUT_H 1
 
 char *keysym_to_string (KeySym keysym, unsigned int modifier);
-void cook_keycode (KeyCode keycode, KeySym *keysym, unsigned int *mod);
+int cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_name, int len);
 char *get_input (char *prompt);
 char *get_more_input (char *prompt, char *preinput);
-void read_key (KeySym *keysym, unsigned int *mode);
+int read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len);
+void init_modifier_map ();
 
 #endif /* ! _RATPOISON_INPUT_H */

@@ -65,6 +65,8 @@ XGCValues gv;
 
 struct rp_key prefix_key;
 
+struct modifier_info rp_modifier_info;
+
 /* Command line options */
 static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
 					      {"version", no_argument, 0, 'v'},
@@ -246,7 +248,8 @@ read_rc_file (FILE *file)
 	  PRINT_DEBUG ("rcfile line: %s\n", line);
 
 	  /* do it */
-	  command (line);
+	  if (*line != '#')
+	    command (line);
 
 	  *line = '\0';
 	}
@@ -376,6 +379,7 @@ main (int argc, char *argv[])
   init_numbers ();
   init_window_list ();
   initialize_default_keybindings ();
+  init_modifier_map ();
 
   font = XLoadQueryFont (dpy, FONT);
   if (font == NULL)
@@ -451,7 +455,7 @@ init_screen (screen_info *s, int screen_num)
 
   XSelectInput(dpy, s->root,
                PropertyChangeMask | ColormapChangeMask
-               | SubstructureRedirectMask | KeyPressMask 
+               | SubstructureRedirectMask | KeyPressMask | KeyReleaseMask
                | SubstructureNotifyMask );
 
   /* Create the program bar window. */
@@ -463,13 +467,13 @@ init_screen (screen_info *s, int screen_num)
   /* Setup the window that will recieve all keystrokes once the prefix
      key has been pressed. */
   s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, WhitePixel (dpy, 0), BlackPixel (dpy, 0));
-  XSelectInput (dpy, s->key_window, KeyPressMask);
+  XSelectInput (dpy, s->key_window, KeyPressMask );
   XMapWindow (dpy, s->key_window);
 
   /* Create the input window. */
   s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 
   					 1, 1, 1, fg_color.pixel, bg_color.pixel);
-  XSelectInput (dpy, s->input_window, KeyPressMask);
+  XSelectInput (dpy, s->input_window, KeyPressMask );
 
   XSync (dpy, 0);
 
