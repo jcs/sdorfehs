@@ -32,9 +32,6 @@ Use the configure option '--enable-debug' to enable debugging symbols.
 Use the configure option '--with-xterm=PROG' to set the x terminal
 emulator to use. The default is `xterm'.
 
-Use the configure option '--with-emacs=PROG' to set the emacs program
-to launch. This is useful if you use xemacs.
-
 Consult the INSTALL file for more information about the configure script.
 
 Using
