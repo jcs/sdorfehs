@@ -1,20 +1,23 @@
-/* 
- * Copyright (C) 2000 Shawn Betts
- * 
- * This program is free software; you can redistribute it and/or modify
+/* ratpoison actions
+ * Copyright (C) 2000, 2001 Shawn Betts
+ *
+ * This file is part of ratpoison.
+ *
+ * ratpoison is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
- * This program is distributed in the hope that it will be useful,
+ *
+ * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA */
+ * Boston, MA 02111-1307 USA
+ */
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -99,8 +102,8 @@ rp_action key_actions[] =
 
     {XK_colon, 		0, 	"colon",		command},
 
-    {XK_e, 		0, 	"exec emacs", 		command},
-    {XK_e, 		C, 	"exec emacs", 		command},
+    {XK_e, 		0, 	"exec " EMACS_PROG, 	command},
+    {XK_e, 		C, 	"exec " EMACS_PROG,	command},
 
     {XK_exclam, 	0, 	"exec", 		command},
     {XK_exclam, 	C, 	"xterm", 	command},
@@ -274,29 +277,31 @@ last_window (void *data)
 void
 goto_win_by_name (void *data)
 {
-  char winname[100];
+  char *winname;
   
   if (rp_current_window == NULL) return;
 
   if (data == NULL)
-    get_input (rp_current_window->scr, MESSAGE_PROMPT_GOTO_WINDOW_NAME, winname, 100);
+    winname = get_input (rp_current_window->scr, MESSAGE_PROMPT_GOTO_WINDOW_NAME);
   else
-    strncpy (winname, data, 99);
+    winname = strdup ((char *) data);
 
   goto_window_name (winname);
+
+  free (winname);
 }
 
 void
 rename_current_window (void *data)
 {
-  char winname[100];
+  char *winname;
   
   if (rp_current_window == NULL) return;
 
   if (data == NULL)
-    get_input (rp_current_window->scr, MESSAGE_PROMPT_NEW_WINDOW_NAME, winname, 100);
+    winname = get_input (rp_current_window->scr, MESSAGE_PROMPT_NEW_WINDOW_NAME);
   else
-    strncpy (winname, data, 99);
+    winname = strdup ((char *) data);
 
   if (*winname)
     {
@@ -315,6 +320,8 @@ rename_current_window (void *data)
       /* Update the program bar. */
       update_window_names (rp_current_window->scr);
     }
+
+  free (winname);
 }
 
 
@@ -354,7 +361,7 @@ show_version (void *data)
 void
 command (void *data)
 {
-  char input[100];
+  char *input;
   char *cmd, *rest;
   void *arg;
 
@@ -362,9 +369,9 @@ command (void *data)
   struct sbuf *buf = NULL;
   
   if (data == NULL)
-    get_input (get_screen(), MESSAGE_PROMPT_COMMAND, input, 100);
+    input = get_input (get_screen(), MESSAGE_PROMPT_COMMAND);
   else
-    strncpy (input, data, 99);
+    input = strdup ((char *) data);
   
   if (input == NULL)
     return;
@@ -372,11 +379,14 @@ command (void *data)
   cmd = strtok (input, " ");
 
   if (cmd == NULL)
-    return;
+    {
+      free (input);
+      return;
+    }
 
   rest = strtok (NULL, "\0");
 
-  fprintf (stderr, "cmd==%s rest==%s\n", cmd, (char*)rest);
+  PRINT_DEBUG ("cmd==%s rest==%s\n", cmd, (char*)rest);
 
   /* find the command */
   for (uc = user_commands; uc->name; uc++)
@@ -407,6 +417,7 @@ command (void *data)
 
 	  uc->func (arg);
 
+          free (input);
 	  return;
 	}
     }
@@ -422,36 +433,42 @@ command (void *data)
   display_msg_in_bar (get_screen(), sbuf_get (buf), 0, 0);
   
   sbuf_free (buf);
+
+  free (input);
 }
 
 void
 shell_command (void *data)
 {
-  char cmd[100];
+  char *cmd;
 
   if (data == NULL)
-    get_input (get_screen(), MESSAGE_PROMPT_SHELL_COMMAND, cmd, 100);
+    cmd = get_input (get_screen(), MESSAGE_PROMPT_SHELL_COMMAND);
   else
-    strncpy (cmd, data, 99);
+    cmd = strdup ((char *) data);
 
   spawn (cmd);
+
+  free (cmd);
 }
 
-
-/*BENNO: This could be done a lot neater. I mainly code python so my C string
- handling is kinda rusty ;). It seems to work though */
 void
 xterm_command (void *data)
 {
-  char cmd[MAX_COMMAND_LENGTH];
-  char realcmd[MAX_COMMAND_LENGTH + strlen(TERM_PROG) + 5];
+  char *cmd, *realcmd;
+
   if (data == NULL)
-    get_input (get_screen(), MESSAGE_PROMPT_XTERM_COMMAND, cmd, MAX_COMMAND_LENGTH);
+    cmd = get_input (get_screen(), MESSAGE_PROMPT_XTERM_COMMAND);
   else
-    strncpy (cmd, data, MAX_COMMAND_LENGTH-1);
- 	
+    cmd = strdup ((char *) data);
+
+  realcmd = (char *) malloc (strlen (cmd) + strlen (TERM_PROG) + 5);
+
   sprintf(realcmd, "%s -e %s", TERM_PROG, cmd);
   spawn (realcmd);
+
+  free(cmd);
+  free(realcmd);
 }
 
 
@@ -484,12 +501,12 @@ spawn(void *data)
 void
 switch_to(void *data)
 {
-  char prog[100];
+  char *prog;
 
   if (data == NULL)
-    get_input (get_screen(), MESSAGE_PROMPT_SWITCH_WM, prog, 100);
+    prog = get_input (get_screen(), MESSAGE_PROMPT_SWITCH_WM);
   else
-    strncpy (prog, data, 99);
+    prog = strdup ((char *) data);
 
   PRINT_DEBUG ("Switching to %s\n", prog);
 
@@ -498,6 +515,8 @@ switch_to(void *data)
 
   PRINT_ERROR ("exec %s ", prog);
   perror(" failed");
+
+  free (prog);
 }
 
 /* Quit ratpoison. Thanks to 
@@ -596,7 +615,6 @@ generate_prefix (void *data)
   XSync (dpy, False);
 }
 
-
 /* Set a transient window's x,y,width,height fields to maximize the
    window. */
 static void
@@ -691,7 +709,6 @@ maximize_normal (rp_window *win)
   win->height = maxy;
 }
 
-
 /* Maximize the current window if data = 0, otherwise assume it is a
    pointer to a window that should be maximized */
 void
@@ -720,4 +737,3 @@ maximize (void *data)
 
   XSync (dpy, False);
 }
-
