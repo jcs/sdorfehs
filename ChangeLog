@@ -1,3 +1,8 @@
+2003-06-02  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (group_completions): use a group's number if it
+	has no name.
+
 2003-05-31  Shawn Betts  <sabetts@sfu.ca>
 
 	* configure.in: check for usleep

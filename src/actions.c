@@ -3351,7 +3351,16 @@ group_completions (char *str)
       struct sbuf *s;
 
       s = sbuf_new (0);
-      sbuf_copy (s, cur->name);
+      /* A group may not have a name, so if it doesn't, use it's
+	 number. */
+      if (cur->name)
+	{
+	  sbuf_copy (s, cur->name);
+	}
+      else
+	{
+	  sbuf_printf (s, "%d", cur->number);
+	}
 
       list_add_tail (&s->node, list);
     }
