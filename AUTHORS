@@ -4,3 +4,9 @@ Shawn is the original author and current maintainer for
 ratpoison. Sickened by the rat and the trend in window managers, he
 sat down one evening and pulled an all-nighter writing the first
 version of ratpoison.
+
+Ryan Yeske (rcyeske@vcn.bc.ca)
+
+Ryan began hacking on ratpoison so he could ssh his university
+by only pressing 3 keys.  He also thinks that a keyboard driven window
+manager is the optimal user interface for penbased handheld computers.
