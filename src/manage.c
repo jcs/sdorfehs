@@ -511,7 +511,7 @@ unhide_window (rp_window *win)
   if (win == NULL) return;
   if (win->state != IconicState) return;
 
-  XMapWindow (dpy, win->w);
+  XMapRaised (dpy, win->w);
   set_state (win, NormalState);
 }
 
