@@ -3112,7 +3112,7 @@ cmd_defwinliststyle (int interactive, char *data)
 
   if (data == NULL)
     {
-      message (" defwrapwinlist: One argument required ");
+      message (" defwinliststyle: One argument required ");
       return NULL;
      }
 
@@ -3126,7 +3126,7 @@ cmd_defwinliststyle (int interactive, char *data)
     }
   else
     {
-      message (" defwrapwinlist: Bad argument ");
+      message (" defwinliststyle: Bad argument ");
     }
 
    return NULL;    

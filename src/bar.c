@@ -427,7 +427,7 @@ marked_message (char *msg, int mark_start, int mark_end)
   alarm_signalled = 0;
 
   XMoveResizeWindow (dpy, s->bar_window, 
-		     bar_x (s, width), bar_y (s, width),
+		     bar_x (s, width), bar_y (s, height),
 		     width,
 		     height);
 

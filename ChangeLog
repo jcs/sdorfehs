@@ -1,3 +1,14 @@
+2003-04-07  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/input.c (read_key): remove the local variable, key_presses.
+
+	* src/Makefile.am (ratpoison_SOURCES): add linkedlist.h
+
+	* src/bar.c (marked_message): pass correct arguments to bar_y.
+
+	* src/actions.c (cmd_defwinliststyle): error messages print the
+	correct command name.
+
 2003-04-06  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/actions.h: All cmd_* functions take char* instead of

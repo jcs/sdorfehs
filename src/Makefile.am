@@ -17,7 +17,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##
-## $Id: Makefile.am,v 1.14 2003/03/31 07:06:23 sabetts Exp $
+## $Id: Makefile.am,v 1.15 2003/04/08 00:00:49 sabetts Exp $
 
 bin_PROGRAMS		= ratpoison
 
@@ -38,6 +38,7 @@ ratpoison_SOURCES	= actions.c		\
 			getopt1.c		\
 			input.c			\
 			input.h			\
+			linkedlist.h		\
 			main.c			\
 			manage.c		\
 			manage.h		\
