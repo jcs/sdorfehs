@@ -1,5 +1,8 @@
 2001-09-06  Gergely Nagy  <algernon@debian.org>
 
+	* doc/ratpoison-mode.el: major mode for editing .ratpoisonrc files
+	* doc/Makefile.am (EXTRA_DIST): added ratpoison-mode.el
+
 	* debian/changelog: Updated to version 1.0.0
 
 	* doc/sample.ratpoisonrc: change escape ^a to escape C-a, to
