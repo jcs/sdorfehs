@@ -144,7 +144,6 @@ unmanage (rp_window *w)
 {
   return_window_number (w->number);
   remove_from_window_list (w);
-  last_window ();
 }
 
 /* When starting up scan existing windows and start managing them. */
