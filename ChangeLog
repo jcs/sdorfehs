@@ -1,3 +1,7 @@
+2003-06-21  Shawn Betts  <sabetts@sfu.ca>
+
+	* contrib/Makefile.am (bin_SCRIPTS): add rpws
+
 2003-06-14  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/window.c (set_active_window): remove duplicate call to

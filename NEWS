@@ -1,5 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes since 1.2.2
+** Workspace script
+rpws is an installed script that adds workspaces to ratpoison. Look at
+contrib/rpws for instructions on how to use it.
+
 * Changes since 1.2.0-beta5
 ** Completions
 You can now type Tab and get completions on window names, group names,
