@@ -1,5 +1,11 @@
 2001-12-21  shawn  <sabetts@vcn.bc.ca>
 
+	* src/actions.h (cmd_license): new prototype
+
+	* src/actions.c (cmd_license): new function
+	(user_commands): new command "license"
+	(initialize_default_keybindings): bind "license" to V and C-V
+
 	* src/list.c (format_window_name): print unrecognized formatting
 	options.
 

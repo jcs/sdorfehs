@@ -49,6 +49,7 @@ static user_command user_commands[] =
     {"focusright",	cmd_focusright,	arg_VOID},
     {"focuslast",	cmd_focuslast,	arg_VOID},
     {"meta",		cmd_meta,	arg_STRING},
+    {"license",		cmd_license,	arg_VOID},
     {"help",		cmd_help,	arg_VOID},
     {"hsplit",		cmd_h_split,	arg_VOID},
     {"kill", 		cmd_kill, 	arg_VOID},
@@ -299,6 +300,8 @@ initialize_default_keybindings (void)
   add_keybinding (XK_space, RP_CONTROL_MASK, "next");
   add_keybinding (XK_v, 0, "version");
   add_keybinding (XK_v, RP_CONTROL_MASK, "version");
+  add_keybinding (XK_V, 0, "license");
+  add_keybinding (XK_V, RP_CONTROL_MASK, "license");
   add_keybinding (XK_w, 0, "windows");
   add_keybinding (XK_w, RP_CONTROL_MASK, "windows");
   add_keybinding (XK_s, 0, "split");
@@ -1224,6 +1227,84 @@ char *
 cmd_curframe (int interactive, void *data)
 {
   show_frame_indicator();
+  return NULL;
+}
+
+/* Thanks to Martin Samuelsson <cosis@lysator.liu.se> for the
+   original patch. */
+char *
+cmd_license (int interactive, void *data)
+{
+  screen_info *s = current_screen();
+  XEvent ev;
+  Window fwin;			/* Window currently in focus */
+  int revert;			
+  int x = 10;
+  int y = 10;
+  int i;
+  int max_width = 0;
+  char *license_text[] = { PACKAGE " " VERSION,
+			   "",
+			   "Copyright (C) 2000, 2001 Shawn Betts",
+			   "",
+			   "ratpoison is free software; you can redistribute it and/or modify ",
+			   "it under the terms of the GNU General Public License as published by ",
+			   "the Free Software Foundation; either version 2, or (at your option) ",
+			   "any later version.",
+			   "",
+			   "ratpoison is distributed in the hope that it will be useful, ",
+			   "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
+			   "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the ",
+			   "GNU General Public License for more details.",
+			   "",
+			   "You should have received a copy of the GNU General Public License ",
+			   "along with this software; see the file COPYING.  If not, write to ",
+			   "the Free Software Foundation, Inc., 59 Temple Place, Suite 330, ",
+			   "Boston, MA 02111-1307 USA",
+			   "",
+			   "Send bugreports, fixes, enhancements, t-shirts, money, beer & pizza ",
+			   "to ratpoison-devel@lists.sourceforge.net or visit ",
+			   "http://ratpoison.sourceforge.net/",
+			   "",
+			   "[Press any key to end.] ",
+			   NULL};
+
+  XMapRaised (dpy, s->help_window);
+
+  XGetInputFocus (dpy, &fwin, &revert);
+  XSetInputFocus (dpy, s->help_window, RevertToPointerRoot, CurrentTime);
+
+  /* Find the longest line. */
+  for(i=0; license_text[i]; i++)
+    {
+      int tmp;
+
+      tmp = XTextWidth (defaults.font, license_text[i], strlen (license_text[i]));
+      if (tmp > max_width)
+	max_width = tmp;
+    }
+
+  /* Offset the text so its in the center. */
+  x = (s->root_attr.width - max_width) / 2;
+  y = (s->root_attr.height - i * FONT_HEIGHT (defaults.font)) / 2;
+  if (x < 0) x = 0;
+  if (y < 0) y = 0;
+
+  /* Print the text. */
+  for(i=0; license_text[i]; i++)
+  {
+    XDrawString (dpy, s->help_window, s->normal_gc,
+	         x, y + defaults.font->max_bounds.ascent,
+	         license_text[i], strlen (license_text[i]));
+
+    y += FONT_HEIGHT (defaults.font);
+  }
+
+  /* Wait for a key press. */
+  XMaskEvent (dpy, KeyPressMask, &ev);
+  XUnmapWindow (dpy, s->help_window);
+  XSetInputFocus (dpy, fwin, revert, CurrentTime);
+
   return NULL;
 }
 
