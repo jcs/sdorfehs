@@ -452,7 +452,7 @@ cmd_bind (int interactive, void *data)
       return NULL;
     }
 
-  keydesc = (char*) xmalloc (strlen (data + 1));
+  keydesc = (char*) xmalloc (strlen (data) + 1);
   sscanf (data, "%s", keydesc);
   cmd = data + strlen (keydesc);
 
@@ -506,7 +506,7 @@ cmd_unbind (int interactive, void *data)
       return NULL;
     }
 
-  keydesc = (char*) xmalloc (strlen (data + 1));
+  keydesc = (char*) xmalloc (strlen (data) + 1);
   sscanf (data, "%s", keydesc);
   key = parse_keydesc (keydesc);
 
