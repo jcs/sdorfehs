@@ -44,6 +44,11 @@ Just like strncmp, except that it's case-insensitive.
 These functions are exactly like malloc and realloc, but they will
 NEVER return NULL.
 
+** Lists
+Ratpoison has taken a double-linked list implementation from the Linux
+kernel. Look at linkedlist.h. For an example of how to use it...read
+the source!
+
 * Coding Style
 
 Ratpoison follows the GNU coding style as described in the GNU Coding
