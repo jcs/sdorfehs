@@ -3771,6 +3771,7 @@ frestore (char *data, rp_screen *s)
   rp_window *win;
   struct list_head fset;
   int max = -1;
+  char *nexttok;
 
   if (data == NULL)
     {
@@ -3781,7 +3782,7 @@ frestore (char *data, rp_screen *s)
   INIT_LIST_HEAD (&fset);
 
   dup = xstrdup (data);
-  token = strtok (dup, ",");
+  token = strtok_r (dup, ",", &nexttok);
   if (token == NULL)
     {
       message (" frestore: invalid frame format ");
@@ -3800,7 +3801,7 @@ frestore (char *data, rp_screen *s)
 	  return NULL;
 	}
       list_add_tail (&new->node, &fset);
-      token = strtok (NULL, ",");
+      token = strtok_r (NULL, ",", nexttok);
     } 
 
   free (dup);
