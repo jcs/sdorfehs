@@ -357,13 +357,25 @@ property_notify (XEvent *ev)
   
   if (win)
     {
-      if (ev->xproperty.atom == XA_WM_NAME) 
+      switch (ev->xproperty.atom)
 	{
+	case XA_WM_NAME:
 	  PRINT_DEBUG ("updating window name\n");
 	  if (update_window_name (win))
 	    {
 	      update_window_names (win->scr);
 	    }
+	  break;
+
+	case XA_WM_NORMAL_HINTS:
+	  PRINT_DEBUG ("updating window normal hints\n");
+	  update_normal_hints (win);
+	  maximize (win);
+	  break;
+
+	default:
+	  PRINT_DEBUG ("Unhandled property notify event\n");
+	  break;
 	}
     }
 }
