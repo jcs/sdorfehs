@@ -487,44 +487,66 @@ receive_command ()
   unsigned long nitems;
   unsigned long bytes_after;
   void *prop_return;
+  int offset;
 
+  /* Init offset to 0. In the case where there is more than one window
+     in the property, a partial read does not delete the property and
+     we need to grab the next window by incementing offset to the
+     offset of the next window. */
+  offset = 0;
   do
     {
-      if (XGetWindowProperty (dpy, DefaultRootWindow (dpy),
-			      rp_command_request, 0, 
-			      sizeof (Window) / 4 + (sizeof (Window) % 4 ?1:0),
-			      True, XA_WINDOW, &type_ret, &format_ret, &nitems,
-			      &bytes_after, (unsigned char **)&prop_return) == Success)
+      int ret;
+      int length;
+      Window w;
+
+      length = sizeof (Window) / 4 + (sizeof (Window) % 4 ?1:0);
+      ret = XGetWindowProperty (dpy, DefaultRootWindow (dpy),
+				rp_command_request, 
+				offset, length, 
+				True, XA_WINDOW, &type_ret, &format_ret,
+				&nitems,
+				&bytes_after, (unsigned char **)&prop_return);
+
+      /* Update the offset to point to the next window (if there is
+	 another one). */
+      offset += length;
+
+      if (ret != Success)
 	{
+	  PRINT_ERROR (("XGetWindowProperty Failed\n"));
 	  if (prop_return)
-	    {
-	      Window w;
-
-	      w = *(Window *)prop_return;
-	      XFree (prop_return);
-
-	      result = execute_remote_command (w);
-	      if (result)
-		{
-		  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
-				   8, PropModeReplace, result, strlen (result));
-		  free (result);
-		}
-	      else
-		{
-		  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
-				   8, PropModeReplace, NULL, 0);
-		}
-	    }
-	  else
-	    {
-	      PRINT_DEBUG (("Couldn't get RP_COMMAND_REQUEST Property\n"));
-	    }
-
-	  PRINT_DEBUG (("command requests: %ld\n", nitems));
+	    XFree (prop_return);
+	  break;
 	}
-    } while (nitems > 0);
-			  
+
+      /* If there was no window, then we're done. */
+      if (prop_return == NULL)
+	{
+	  PRINT_DEBUG (("No property to read\n"));
+	  break;
+	}
+
+      /* We grabbed a window, so now find read the command stored in
+	 this window and execute it. */
+      w = *(Window *)prop_return;
+      XFree (prop_return);
+      result = execute_remote_command (w);
+
+      /* notify the client of any text that was returned by the
+	 command. */
+      if (result)
+	{
+	  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+			   8, PropModeReplace, result, strlen (result));
+	  free (result);
+	}
+      else
+	{
+	  XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+			   8, PropModeReplace, NULL, 0);
+	}
+    } while (bytes_after > 0);
 }
 
 static void

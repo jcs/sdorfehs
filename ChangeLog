@@ -1,3 +1,8 @@
+2003-04-09  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/events.c (receive_command): handle the case when more than
+	one client requests a command (fix infinite loop bug).
+
 2003-04-08  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/main.c (WAIT_ANY): define it if it isn't already define.
