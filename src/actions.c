@@ -1555,7 +1555,7 @@ wingravity_to_string (int g)
     case SouthWestGravity:
       return "sw";
     case NorthGravity:
-      return "ng";
+      return "n";
     case CenterGravity:
       return "c";
     case SouthGravity:
