@@ -283,12 +283,13 @@ init_user_commands()
   add_command ("startup_message", cmd_startup_message,	1, 1, 1,
 	       "Startup message: ", arg_STRING);
   add_command ("time",		cmd_time,	0, 0, 0);
-  add_command ("title",		cmd_rename,	0, 0, 0);
+  add_command ("title",		cmd_rename,	1, 1, 1,
+	       "Set window's title to: ", arg_REST);
   add_command ("tmpwm",		cmd_tmpwm,	1, 1, 1,
 	       "Tmp wm: ", arg_REST);
   add_command ("unalias",	cmd_unalias,	1, 1, 1,
 	       "Alias: ", arg_STRING);
-  add_command ("unmanage",	cmd_unmanage,	1, 1, 1,
+  add_command ("unmanage",	cmd_unmanage,	1, 1, 0,
 	       "Unmanage: ", arg_REST);
   add_command ("unsetenv",	cmd_unsetenv,	1, 1, 1,
 	       "Variable: ", arg_STRING);

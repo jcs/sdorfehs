@@ -1,3 +1,9 @@
+2005-01-22  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (init_user_commands): make unmanage'd argument
+	optional when called non-interactively.
+	(init_user_commands): "title" accepts 1 argument.
+
 2005-01-20  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/actions.c (init_user_commands): fix unmanage command.
