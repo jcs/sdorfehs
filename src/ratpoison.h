@@ -21,8 +21,21 @@
 #define _RATPOISON_H
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#  include <config.h>
 #endif /* HAVE_CONFIG_H */
+
+/* Some error reporting macros */
+#define PRE_PRINT_LOCATION fprintf (stderr, "%s:%s():%d: ", __FILE__, __FUNCTION__, __LINE__);
+#define PRINT_ERROR(format, args...) \
+        { fprintf (stderr, PACKAGE ":error -- "); PRE_PRINT_LOCATION; fprintf (stderr, format, ## args); }
+
+/* Some debugging macros */
+#ifdef DEBUG
+#  define PRINT_DEBUG(format, args...) \
+          { fprintf (stderr, PACKAGE ":debug -- "); PRE_PRINT_LOCATION; fprintf (stderr, format, ## args); }
+#else
+#  define PRINT_DEBUG(format, args...) 
+#endif /* DEBUG */
 
 #include "conf.h"
 

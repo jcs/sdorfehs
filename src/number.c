@@ -63,7 +63,7 @@ find_empty_cell ()
       numbers_taken = realloc (numbers_taken, sizeof (int) * max_taken);
       if (numbers_taken == NULL)
 	{
-	  fprintf (stderr, "numbers.c: Out of memory\n");
+	  PRINT_ERROR ("Out of memory\n");
 	  exit (EXIT_FAILURE);
 	}
     }
@@ -123,7 +123,7 @@ init_numbers ()
   numbers_taken = malloc (max_taken * sizeof (int));
   if (numbers_taken == NULL)
     {
-      fprintf (stderr, "numbers.c: Cannot alloc numbers_taken.\n");
+      PRINT_ERROR ("Cannot allocate memory for numbers_taken.\n");
       exit (EXIT_FAILURE);
     }
 

@@ -53,20 +53,22 @@ update_window_name (rp_window *win)
 
   if (!XGetWMName (dpy, win->w, &text))
     {
-      fprintf (stderr, "ratpoison:manage.c: I can't get the WMName.\n");
+      PRINT_DEBUG ("I can't get the WMName.\n");
       return 0;
     }
 
   if (!XTextPropertyToStringList (&text, &name_list, &list_len))
     {
-      fprintf (stderr, "ratpoison:manage.c:Error retrieving TextList.\n");
+      PRINT_DEBUG ("Error retrieving TextList.\n");
       return 0;
     }
 
+#ifdef DEBUG
   for (i=0; i<list_len; i++)
     {
-      printf ("WMName: %s\n", name_list[i]);
+      PRINT_DEBUG ("WMName: %s\n", name_list[i]);
     }
+#endif /* DEBUG */
 
   /* Set the window's name to the first in the name_list */
   if (list_len > 0)
@@ -76,7 +78,7 @@ update_window_name (rp_window *win)
       free (win->name);
       if ((win->name = malloc (strlen (name_list[0]) + 1)) == NULL)
 	{
-	  fprintf (stderr, "manage.c:update_window_name():Out of memory!\n");
+	  PRINT_ERROR ("Out of memory!\n");
 	  exit (EXIT_FAILURE);
 	}    
       strcpy (win->name, name_list[0]);
@@ -103,13 +105,13 @@ rename_current_window ()
   if (rp_current_window == NULL) return;
 
   get_input (rp_current_window->scr, "Name: ", winname, 100);
-  printf ("user entered: %s\n", winname);
+  PRINT_DEBUG ("user entered: %s\n", winname);
 
   free (rp_current_window->name);
   rp_current_window->name = malloc (sizeof (char) * strlen (winname) + 1);
   if (rp_current_window->name == NULL)
     {
-      fprintf (stderr, "ratpoison:rename_window(): Out of memory\n");
+      PRINT_ERROR ("Out of memory\n");
       exit (EXIT_FAILURE);
     }
   strcpy (rp_current_window->name, winname);
@@ -134,9 +136,7 @@ manage (rp_window *win, screen_info *s)
   win->state = STATE_MAPPED;
   win->number = get_unique_window_number ();
 
-#ifdef DEBUG
-  printf ("window '%s' managed.\n", win->name);
-#endif
+  PRINT_DEBUG ("window '%s' managed.\n", win->name);
 }
 
 void
@@ -156,9 +156,7 @@ scanwins(screen_info *s)
   Window dw1, dw2, *wins;
 
   XQueryTree(dpy, s->root, &dw1, &dw2, &wins, &nwins);
-#ifdef DEBUG
-  printf ("windows: %d\n", nwins);
-#endif
+  PRINT_DEBUG ("windows: %d\n", nwins);
 
   for (i = 0; i < nwins; i++) 
     {

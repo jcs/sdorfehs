@@ -35,7 +35,7 @@ add_to_window_list (screen_info *s, Window w)
   new_window = malloc (sizeof (rp_window));
   if (new_window == NULL)
     {
-      fprintf (stderr, "list.c:add_to_window_list():Out of memory!\n");
+      PRINT_ERROR ("Out of memory!\n");
       exit (EXIT_FAILURE);
     }
   new_window->w = w;
@@ -48,7 +48,7 @@ add_to_window_list (screen_info *s, Window w)
 
   if ((new_window->name = malloc (strlen ("Unnamed") + 1)) == NULL)
     {
-      fprintf (stderr, "list.c:add_to_window_list():Out of memory.\n");
+      PRINT_ERROR ("Out of memory!\n");
       exit (EXIT_FAILURE);
     }
   strcpy (new_window->name, "Unnamed");
@@ -96,9 +96,7 @@ remove_from_window_list (rp_window *w)
   if (rp_current_window == w) rp_current_window = NULL;
 
   free (w);
-#ifdef DEBUG
-  printf ("Removed window from list.\n");
-#endif
+  PRINT_DEBUG ("Removed window from list.\n");
 }
 
 void

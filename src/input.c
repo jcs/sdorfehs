@@ -48,7 +48,7 @@ get_input (screen_info *s, char *prompt, char *str, int len)
   cur_len = 0;
   while ((ch = read_key ()) != XK_Return)
     {
-      printf ("key %d\n", ch);
+      PRINT_DEBUG ("key %d\n", ch);
       if (ch == XK_BackSpace)
 	{
 	  if (cur_len > 0) cur_len--;

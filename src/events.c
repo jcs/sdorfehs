@@ -41,16 +41,14 @@ spawn(char *prog)
     if (fork() == 0) {
       putenv(DisplayString(dpy));
       execlp(prog, prog, 0);
-      fprintf(stderr, "ratpoison: exec %s ", prog);
+      fprintf (stderr, "exec %s ", prog);
       perror(" failed");
       exit(EXIT_FAILURE);
     }
     exit(0);
   }
   wait((int *) 0);
-#ifdef DEBUG
-  printf ("spawned %s\n", prog);
-#endif
+  PRINT_DEBUG ("spawned %s\n", prog);
 }
 
 void
@@ -115,7 +113,7 @@ map_request (XEvent *ev)
     }
   else
     {
-      printf ("Not managed.\n");
+      PRINT_DEBUG ("Not managed.\n");
       XMapWindow (dpy, ev->xmap.window);
     }
 }
@@ -151,7 +149,7 @@ destroy_window (XDestroyWindowEvent *ev)
       /* Goto the last accessed window. */
       if (win == rp_current_window) 
 	{
-	  printf ("Destroying current window.\n");
+	  PRINT_DEBUG ("Destroying current window.\n");
 	  
 	  /* tell ratpoison to switch to the last window when all the
              destroy events have been delt with. */
@@ -160,7 +158,7 @@ destroy_window (XDestroyWindowEvent *ev)
 	}
       else
 	{
-	  printf ("Destroying some other window.\n");
+	  PRINT_DEBUG ("Destroying some other window.\n");
 	  unmanage (win);
 	}
     }
@@ -226,7 +224,7 @@ delete_window ()
   ev.xclient.data.l[1] = CurrentTime;
 
   status = XSendEvent(dpy, rp_current_window->w, False, 0, &ev);
-  if (status == 0) fprintf(stderr, "ratpoison: XSendEvent failed\n");
+  if (status == 0) fprintf(stderr, "ratpoison: delete window failed\n");
 }
 
 void 
@@ -240,7 +238,7 @@ kill_window ()
 static void
 client_msg (XClientMessageEvent *ev)
 {
-  printf ("Recieved client message.\n");
+  PRINT_DEBUG ("Recieved client message.\n");
 }
 
 static void
@@ -249,7 +247,7 @@ goto_win_by_name (screen_info *s)
   char winname[100];
   
   get_input (s, "Window: ", winname, 100);
-  printf ("user entered: %s\n", winname);
+  PRINT_DEBUG ("user entered: %s\n", winname);
 
   goto_window_name (winname);
 }
@@ -262,9 +260,7 @@ handle_key (screen_info *s)
   XEvent ev;
   int keysym;
 
-#ifdef DEBUG
-  printf ("handling key.\n");
-#endif
+  PRINT_DEBUG ("handling key.\n");
 
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
@@ -327,7 +323,7 @@ handle_key (screen_info *s)
       else delete_window ();
       break;
     default:
-      fprintf (stderr, "Unknown key command '%c'\n", (char)keysym);
+      PRINT_DEBUG ("Unknown key command '%c'\n", (char)keysym);
       break;
     }
 }
@@ -352,7 +348,7 @@ property_notify (XEvent *ev)
 {
   rp_window *win;
 
-  printf ("atom: %ld\n", ev->xproperty.atom);
+  PRINT_DEBUG ("atom: %ld\n", ev->xproperty.atom);
 
   win = find_window (ev->xproperty.window);
   
@@ -360,7 +356,7 @@ property_notify (XEvent *ev)
     {
       if (ev->xproperty.atom == XA_WM_NAME) 
 	{
-	  printf ("updating window name\n");
+	  PRINT_DEBUG ("updating window name\n");
 	  if (update_window_name (win))
 	    {
 	      update_window_names (win->scr);
@@ -376,85 +372,85 @@ delegate_event (XEvent *ev)
   switch (ev->type)
     {
     case ConfigureRequest:
-      printf ("ConfigureRequest\n");
+      PRINT_DEBUG ("ConfigureRequest\n");
       configure_request (&ev->xconfigurerequest);
       break;
     case CirculateRequest:
-      printf ("CirculateRequest\n");
+      PRINT_DEBUG ("CirculateRequest\n");
       break;
     case CreateNotify:
-      printf ("CreateNotify\n");
+      PRINT_DEBUG ("CreateNotify\n");
       new_window (&ev->xcreatewindow);
       break;
     case DestroyNotify:
-      printf ("DestroyNotify\n");
+      PRINT_DEBUG ("DestroyNotify\n");
       destroy_window (&ev->xdestroywindow);
       break;
     case ClientMessage:
+      PRINT_DEBUG ("ClientMessage\n");
       client_msg (&ev->xclient);
-      printf ("ClientMessage\n");
       break;
     case ColormapNotify:
-      printf ("ColormapNotify\n");
+      PRINT_DEBUG ("ColormapNotify\n");
       break;
     case PropertyNotify:
-      printf ("PropertyNotify\n");
+      PRINT_DEBUG ("PropertyNotify\n");
       property_notify (ev);
       break;
     case SelectionClear:
-      printf ("SelectionClear\n");
+      PRINT_DEBUG ("SelectionClear\n");
       break;
     case SelectionNotify:
-      printf ("SelectionNotify\n");
+      PRINT_DEBUG ("SelectionNotify\n");
       break;
     case SelectionRequest:
-      printf ("SelectionRequest\n");
+      PRINT_DEBUG ("SelectionRequest\n");
       break;
     case EnterNotify:
-      printf ("EnterNotify\n");
+      PRINT_DEBUG ("EnterNotify\n");
       break;
     case ReparentNotify:
-      printf ("ReparentNotify\n");
+      PRINT_DEBUG ("ReparentNotify\n");
       break;
     case FocusIn:
-      printf ("FocusIn\n");
+      PRINT_DEBUG ("FocusIn\n");
       break;
 
     case MapRequest:
-      printf ("MapRequest\n");
+      PRINT_DEBUG ("MapRequest\n");
       map_request (ev);
       break;
 
     case KeyPress:
-      printf ("KeyPress\n");
+      PRINT_DEBUG ("KeyPress\n");
       key_press (ev);
       break;
       
     case UnmapNotify:
-      printf ("UnmapNotify\n");
+      PRINT_DEBUG ("UnmapNotify\n");
       unmap_notify (ev);
       break;
 
     case MotionNotify:
-      printf ("MotionNotify\n");
+      PRINT_DEBUG ("MotionNotify\n");
       break;
     case Expose:
-      printf ("Expose\n");
+      PRINT_DEBUG ("Expose\n");
       break;
     case FocusOut:
-      printf ("FocusOut\n");
+      PRINT_DEBUG ("FocusOut\n");
       break;
     case ConfigureNotify:
-      printf ("ConfigureNotify\n");
+      PRINT_DEBUG ("ConfigureNotify\n");
       break;
     case MapNotify:
-      printf ("MapNotify\n");
+      PRINT_DEBUG ("MapNotify\n");
       break;
     case MappingNotify:
-      printf ("MappingNotify\n");
+      PRINT_DEBUG ("MappingNotify\n");
       break;
     default:
-      printf ("Unhandled event %d\n", ev->type);
+      PRINT_DEBUG ("Unhandled event %d\n", ev->type);
     }
 }
 

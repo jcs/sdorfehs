@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "ratpoison.h"
 
@@ -48,6 +49,12 @@ int exit_signal = 0;		/* Set by the signal handler. if this
 static XFontStruct *font;
 
 char **myargv;
+
+/* Command line options */
+static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
+					      {"version", no_argument, 0, 'v'},
+					      {0, 0, 0, 0} };
+static char ratpoison_opts[] = "hv";
 
 void
 sighandler ()
@@ -72,9 +79,7 @@ alrm_handler ()
 {
   int i;
 
-#ifdef DEBUG
-  printf ("alarm recieved.\n");
-#endif
+  PRINT_DEBUG ("alarm recieved.\n");
 
   /* FIXME: should only hide 1 bar, but we hide them all. */
   for (i=0; i<num_screens; i++)
@@ -101,12 +106,53 @@ handler (Display *d, XErrorEvent *e)
   //  exit (EXIT_FAILURE);
 }
 
+void
+print_version ()
+{
+  printf ("%s %s\n", PACKAGE, VERSION);
+  printf ("Copyright (C) 2000 Shawn Betts\n\n");
+
+  exit (EXIT_SUCCESS);
+}  
+
+void
+print_help ()
+{
+  printf ("Help for %s %s\n\n", PACKAGE, VERSION);
+  printf ("-h, --help            Display this help screen\n");
+  printf ("-v, --version         Display the version\n\n");
+
+  printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
+
+  exit (EXIT_SUCCESS);
+}
+
 int
 main (int argc, char *argv[])
 {
   int i;
+  int c;
 
   myargv = argv;
+
+  /* Parse the arguments */
+  while (1)
+    {
+      int option_index = 0;
+
+      c = getopt_long (argc, argv, ratpoison_opts, ratpoison_longopts, &option_index);
+      if (c == -1) break;
+
+      switch (c)
+	{
+	case 'h':
+	  print_help ();
+	  break;
+	case 'v':
+	  print_version ();
+	  break;
+	}
+    }
 
   if (!(dpy = XOpenDisplay (NULL)))
     {
@@ -119,11 +165,7 @@ main (int argc, char *argv[])
   if (signal (SIGALRM, alrm_handler) == SIG_IGN) signal (SIGALRM, SIG_IGN);
   if (signal (SIGTERM, sighandler) == SIG_IGN) signal (SIGTERM, SIG_IGN);
   if (signal (SIGINT, sighandler) == SIG_IGN) signal (SIGINT, SIG_IGN);
-  if (signal (SIGHUP, hup_handler) == SIG_IGN) 
-    {
-      printf ("Ignoring HUP.\n");
-      signal (SIGHUP, SIG_IGN);
-    }
+  if (signal (SIGHUP, hup_handler) == SIG_IGN) signal (SIGHUP, SIG_IGN);
 
   init_numbers ();
   init_window_list ();
@@ -138,11 +180,11 @@ main (int argc, char *argv[])
   num_screens = ScreenCount (dpy);
   if ((screens = (screen_info *)malloc (sizeof (screen_info) * num_screens)) == NULL)
     {
-      fprintf (stderr, "ratpoison:main.c:Out of memory!\n");
+      PRINT_ERROR ("Out of memory!\n");
       exit (EXIT_FAILURE);
     }  
 
-  printf ("%d screens.\n", num_screens);
+  PRINT_DEBUG ("%d screens.\n", num_screens);
 
   /* Initialize the screens */
   for (i=0; i<num_screens; i++)
@@ -186,17 +228,17 @@ init_screen (screen_info *s, int screen_num)
   /* Get our program bar colors */
   if (!XAllocNamedColor (dpy, s->def_cmap, BAR_FG_COLOR, &fg_color, &junk))
     {
-      fprintf (stderr, "Unknown color '%s'\n", BAR_FG_COLOR);
+      fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_FG_COLOR);
     }
 
   if (!XAllocNamedColor (dpy, s->def_cmap, BAR_BG_COLOR, &bg_color, &junk))
     {
-      fprintf (stderr, "Unknown color '%s'\n", BAR_BG_COLOR);
+      fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_BG_COLOR);
     }
 
   if (!XAllocNamedColor (dpy, s->def_cmap, BAR_BOLD_COLOR, &bold_color, &junk))
     {
-      fprintf (stderr, "Unknown color '%s'\n", BAR_BOLD_COLOR);
+      fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_BOLD_COLOR);
     }
 
   /* Setup the GC for drawing the font. */
