@@ -112,6 +112,8 @@ There is also a ratpoison mailing list:
 @email{ratpoison-devel@@lists.sourceforge.net}. For details on subscribing
 and for the list archives go to the ratpoison sourceforge.net project.
 
+There is a #ratpoison irc channel on irc.openprojects.net.
+
 @node General Use, Keystrokes, Contacting, Top
 @chapter General Use
 
@@ -164,7 +166,7 @@ Switch to the last window.
 @item C-t :
 Enter a command line.
 
-@item C-t 1-9
+@item C-t 0-9
 Switch to the numbered window.
 
 @item C-t A
@@ -191,7 +193,8 @@ Go to previous window.
 
 @item C-t '
 @item C-t C-'
-Go to a window by name.
+Go to a window by name.  You will usually only need to type the first
+few characters of the window name.
 
 @item C-t a
 @item C-t C-a
@@ -216,7 +219,7 @@ Run a shell command.
 Run a shell command through an X terminal.
 
 @item C-t k
-@item C-t k
+@item C-t C-k
 Close the current window.
 
 @item C-t m
@@ -310,7 +313,7 @@ shown in the Program Bar. You can do the same trick with
 @command{C-@var{n}} too.
 
 @item select @var{window-name}
-Go to a window by name. A shourcut is @kbd{C-t '}.
+Go to a window by name. A shortcut is @kbd{C-t '}.
 
 @item source @var{file}
 Read a text file containing ratpoison commands.
@@ -321,18 +324,20 @@ duration of the window's life, unless you change it again. By default,
 the @kbd{C-t A} keystroke is bound to this command.
 
 @item version
-Print ratpoison version. @kbd{C-t v}! @kbd{C-t v}!
+Print ratpoison version.  By default, this is bound to @kbd{C-t v}.
 
 @item windows
 This displays the Program Bar which displays the windows you currently
-have running. The number before each window name is used to jump to that
-window. You can do this by typing @kbd{C-t C-@var{n}} where @var{n} is the
-number of the window. Note that only windows with numbers from 0 to 9
-can be referenced.
+have running. The number before each window name is used to jump to
+that window. You can do this by typing @kbd{C-t @var{n}} where @var{n}
+is the number of the window. Note that only windows with numbers from
+0 to 9 can be referenced using this keystoke.  To reach windows with
+numbers greater than 9, use @kbd{C-t '} and type the number at the
+prompt.
 
 After 5 seconds the Program Bar disappears.
 
-This command is bound to @kbd{C-t w}.
+This command is bound to @kbd{C-t w} by default.
 
 @end table
 
