@@ -69,8 +69,8 @@ find_empty_cell ()
   return num_taken-1;
 }
 
-static int
-add_to_list (int n)
+int
+add_window_number (int n)
 {
   if (number_is_taken (n)) return 0; /* failed. */
   
@@ -88,7 +88,7 @@ get_unique_window_number ()
   /* look for a unique number, and add it to the list of taken
      numbers. */
   i = 0;
-  while (!add_to_list (i)) i++;
+  while (!add_window_number (i)) i++;
 
   return i;
 }

@@ -1,6 +1,21 @@
 2001-04-15  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/number.h (add_window_number): new prototype
+
+	* src/number.c (add_window_number): renamed from
+	add_to_list. Dependant code updated.
+
+	* src/messages.h (MESSAGE_WINDOW_INFORMATION): new define
+
+	* src/list.h (print_window_information): new prototype
+
+	* src/list.c (print_window_information): new function
+
+	* src/actions.h (cmd_number): new prototype
+
 	* src/actions.c (cmd_clock): remove newline from date string.
+	(cmd_rename): passes current_screen() to update_window_names.
+	(cmd_number): new function
 
 	* src/messages.h (MESSAGE_WELCOME): new define
 

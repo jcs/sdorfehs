@@ -50,4 +50,6 @@ void append_to_list (rp_window *win, rp_window *sentinel);
 void insert_into_list (rp_window *win, rp_window *sentinel);
 void remove_from_list (rp_window *win);
 
+void print_window_information (rp_window *win);
+
 #endif /* ! _RATPOISON_LIST_H */

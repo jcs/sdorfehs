@@ -439,3 +439,23 @@ goto_window (rp_window *win)
       set_active_window (win);
     }
 }
+
+void
+print_window_information (rp_window *win)
+{
+  char number[3];
+  char *str;
+
+  snprintf (number, 3, "%d", win->number);
+
+  /* There is a bit of extra memory being allocated from the
+     formatting tags in MESSAGE_WINDOW_INFORMATION, but it is not a
+     couple bytes. */
+  str = xmalloc (strlen (number) + strlen (win->name) + strlen (MESSAGE_WINDOW_INFORMATION) + 1);
+
+  sprintf (str, MESSAGE_WINDOW_INFORMATION, number, win->name);
+  message (str);
+  free (str);
+
+  return;
+}

@@ -72,6 +72,7 @@ void cmd_banish (void *data);
 void cmd_curframe (void *data);
 void cmd_help (void *data);
 void cmd_quit(void *data);
+void cmd_number (void *data);
 
 /* void cmd_xterm (void *data); */
 

@@ -168,13 +168,13 @@ user_command user_commands[] =
     {"curframe",        cmd_curframe,   arg_VOID},
     {"help",		cmd_help,	arg_VOID},
     {"quit",		cmd_quit,	arg_VOID},
+    {"number", 		cmd_number, 	arg_STRING},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
        emulated with these commands */
 
     {"stuff", 		cmd_unimplemented, 	arg_VOID},
-    {"number", 		cmd_unimplemented, 	arg_VOID},
     {"hardcopy",	cmd_unimplemented,	arg_VOID},
     {"lastmsg",		cmd_unimplemented,	arg_VOID},
     {"license",		cmd_unimplemented,	arg_VOID},
@@ -523,7 +523,7 @@ cmd_rename (void *data)
       current_window()->named = 1;
   
       /* Update the program bar. */
-      update_window_names (current_window()->scr);
+      update_window_names (current_screen());
     }
 
   free (winname);
@@ -702,7 +702,7 @@ cmd_quit(void *data)
 
 /* Show the current time on the bar. Thanks to Martin Samuelsson
    <cosis@lysator.liu.se> for the patch. Thanks to Jonathan Walther
-   <djw@lineo.com> for making it pretty. */
+   <krooger@debian.org> for making it pretty. */
 void
 cmd_clock (void *data)
 {
@@ -718,6 +718,59 @@ cmd_clock (void *data)
   free (msg);
 }
 
+/* Assign a new number to a window ala screen's number command. Thanks
+   to Martin Samuelsson <cosis@lysator.liu.se> for the original
+   patch. */
+void
+cmd_number (void *data)
+{
+  int old_number, new_number;
+  rp_window *other_win;
+  char *str;
+  
+  if (current_window() == NULL) return;
+
+  if (data == NULL)
+    {
+      print_window_information (current_window());
+      return;
+    }
+  else
+    {
+      str = strdup ((char *) data);
+    }
+
+  if ((new_number = string_to_window_number (str)) >= 0)
+    {
+      /* Find other window with same number and give it old number. */
+      other_win = find_window_number (new_number);
+      if (other_win != NULL)
+	{
+	  old_number = current_window()->number;
+	  other_win->number = old_number;
+
+	  /* Resort the the window in the list */
+	  remove_from_list (other_win);
+	  insert_into_list (other_win, rp_mapped_window_sentinel);
+	}
+      else
+	{
+	  return_window_number (current_window()->number);
+	}
+
+      current_window()->number = new_number;
+      add_window_number (new_number);
+
+      /* resort the the window in the list */
+      remove_from_list (current_window());
+      insert_into_list (current_window(), rp_mapped_window_sentinel);
+
+      /* Update the window list. */
+      update_window_names (current_screen());
+    }
+
+  free (str);
+}
 
 /* Toggle the display of the program bar */
 void
