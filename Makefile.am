@@ -17,7 +17,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##
-## $Id: Makefile.am,v 1.7 2001/03/02 09:40:59 sabetts Exp $
+## $Id: Makefile.am,v 1.8 2001/06/29 14:56:40 algernon Exp $
 
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -32,13 +32,7 @@ SUBDIRS			= src doc
 docdir			= $(datadir)/doc/$(PACKAGE)
 doc_DATA		= AUTHORS COPYING ChangeLog NEWS README
 
-debian_FILES		= debian/changelog debian/control debian/copyright \
-			debian/ratpoison.dirs debian/ratpoison.doc-base \
-			debian/ratpoison.docs debian/ratpoison.info \
-			debian/ratpoison.menu debian/ratpoison.watch \
-			debian/ratpoison.wm debian/rules
-
-EXTRA_DIST		= $(doc_DATA) $(debian_FILES)
+EXTRA_DIST		= $(doc_DATA)
 
 dist-hook:
 	chmod -R go-w $(distdir)
