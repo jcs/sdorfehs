@@ -17,7 +17,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.10 2001/02/18 22:49:43 sabetts Exp $
+dnl $Id: configure.in,v 1.11 2001/02/18 23:01:17 sabetts Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 0.0.6)
@@ -60,7 +60,7 @@ fi
 dnl check for an Emacs
 AC_CHECK_PROG(EMACS_PROG,$emacs_prog,yes,no)
 if test x$EMACS_PROG = xno; then
-   AC_MSG_ERROR([*** Can't find Emacs \`$emacs_prog'])
+   AC_MSG_WARN([*** Can't find Emacs \`$emacs_prog'])
 fi
 
 dnl Check for the X libs
