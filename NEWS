@@ -1,6 +1,11 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** Raise requests don't change frame focus if rudeness doesn't allow it
+If a window in another frame requests to be raised, a message pops up
+just like everywhere else. The old behavior was to jump focus to the
+windows frame regardless of the rudeness.
+
 ** New windows formatting option %l
 Prints a last access number. The higher the number, the more recently
 the window was accessed.

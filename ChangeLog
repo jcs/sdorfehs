@@ -1,3 +1,8 @@
+2001-10-11  shawn  <sabetts@vcn.bc.ca>
+
+	* src/events.c (configure_request): Always check the rudeness
+	level before honouring a raise request.
+
 2001-10-09  shawn  <sabetts@vcn.bc.ca>
 
 	* src/split.c (remove_frame): Make sure the frame attempting to
