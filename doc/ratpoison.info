@@ -123,6 +123,13 @@ do:
      use `C-t k', but just incase you need to rip the heart out of a
      misbehaving window this command should do the trick.
 
+`C-t C-a'
+     Rename the currently active window. This name will remain for the
+     duration of the window's life.
+
+`C-t C-''
+     Go to a window by name.
+
 
 
 Tag Table:
