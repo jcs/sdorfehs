@@ -7,6 +7,7 @@
 	arguments, not numbers.
 	(cmd_windows): Use the argument as a window format string in
 	non-interactive mode.
+	(cmd_windows): if data is NULL use the default format string.
 
 2001-09-08  shawn  <sabetts@diggin.lamenet.tmp>
 

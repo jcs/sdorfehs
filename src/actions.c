@@ -1006,7 +1006,10 @@ cmd_windows (int interactive, void *data)
   else
     {
       window_list = sbuf_new (0);
-      get_window_list ((char *)data, "\n", window_list, &dummy, &dummy);
+      if (data)
+	get_window_list ((char *)data, "\n", window_list, &dummy, &dummy);
+      else
+	get_window_list (defaults.window_fmt, "\n", window_list, &dummy, &dummy);
       tmp = sbuf_get (window_list);
       free (window_list);
 
