@@ -1,3 +1,8 @@
+2001-10-01  shawn  <sabetts@vcn.bc.ca>
+
+	* src/bar.c (marked_message_printf): Handle a return value from
+	vsnprintf of -1 properly.
+
 2001-09-27  shawn  <sabetts@vcn.bc.ca>
 
 	* src/main.c[ratpoison_opts]: remove 'r' and 'k'.

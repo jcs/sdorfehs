@@ -132,7 +132,20 @@ marked_message_printf (int mark_start, int mark_end, char *fmt, ...)
   buffer = (char *)xmalloc (size);
 
   nchars = vsnprintf (buffer, size, fmt, ap);
-  if (nchars >= size)
+
+  /* From the GNU Libc manual: In versions of the GNU C library prior
+     to 2.1 the return value is the number of characters stored, not
+     including the terminating null; unless there was not enough space
+     in S to store the result in which case `-1' is returned. */
+  if (nchars == -1)
+    {
+      do
+	{
+	  size *= 2;
+	  buffer = (char *)xrealloc (buffer, size);
+	} while (vsnprintf (buffer, size, fmt, ap) == -1);
+    }
+  else if (nchars >= size)
     {
       buffer = (char *)xrealloc (buffer, nchars + 1);
       vsnprintf (buffer, nchars + 1, fmt, ap);
