@@ -50,6 +50,7 @@
 #include "number.h"
 #include "input.h"
 #include "communications.h"
+#include "messages.h"
 
 void clean_up ();
 screen_info *find_screen (Window w);
