@@ -48,14 +48,15 @@ static void init_screen (rp_screen *s, int screen_num);
 
 /* Command line options */
 static struct option ratpoison_longopts[] = 
-  { {"help", 	no_argument, 		0, 	'h'},
-    {"version", no_argument, 		0, 	'v'},
-    {"command", required_argument, 	0, 	'c'},
-    {"display", required_argument, 	0, 	'd'},
-    {"screen",  required_argument,      0,      's'},
-    {0, 	0, 			0, 	0} };
+  { {"help", 		no_argument, 		0, 	'h'},
+    {"interactive", 	no_argument, 		0, 	'i'},
+    {"version", 	no_argument, 		0, 	'v'},
+    {"command", 	required_argument, 	0, 	'c'},
+    {"display", 	required_argument, 	0, 	'd'},
+    {"screen",  	required_argument,      0,      's'},
+    {0, 		0, 			0, 	0} };
 
-static char ratpoison_opts[] = "hvc:d:s:";
+static char ratpoison_opts[] = "hvic:d:s:";
 
 void
 fatal (const char *msg)
@@ -289,11 +290,21 @@ print_help ()
   printf ("-v, --version         Display the version\n");
   printf ("-d, --display <dpy>   Set the X display to use\n");
   printf ("-s, --screen <num>    Only use the specified screen\n");
-  printf ("-c, --command <cmd>   Send ratpoison a colon-command\n\n");
+  printf ("-c, --command <cmd>   Send ratpoison a colon-command\n");
+  printf ("-i, --interactive     Execute commands in interactive mode\n\n");
 
   printf ("Report bugs to ratpoison-devel@lists.sourceforge.net\n\n");
 
   exit (EXIT_SUCCESS);
+}
+
+void
+set_close_on_exec (FILE *fd)
+{
+  int fnum = fileno (fd);
+  int flags = fcntl (fnum, F_GETFD);
+  if (flags >= 0)
+    fcntl (fnum, F_SETFD, flags | FD_CLOEXEC);
 }
 
 void
@@ -384,6 +395,7 @@ read_startup_files ()
 
       if (fileptr)
 	{
+	  set_close_on_exec(fileptr);
 	  read_rc_file (fileptr);
 	  fclose (fileptr);
 	}
@@ -484,6 +496,7 @@ main (int argc, char *argv[])
   int screen_arg = 0;
   int screen_num = 0;
   char *display = NULL;
+  unsigned char interactive = 0;
 
   myargv = argv;
 
@@ -524,6 +537,9 @@ main (int argc, char *argv[])
 	  screen_arg = 1;
 	  screen_num = strtol (optarg, NULL, 10);
 	  break;
+	case 'i':
+	  interactive = 1;
+	  break;
 	  
 	default:
 	  exit (EXIT_FAILURE);
@@ -549,9 +565,9 @@ main (int argc, char *argv[])
       for (i=0; i<cmd_count; i++)
 	{
 	  if (screen_arg)
-	    send_command (command[i], screen_num);
+	    send_command (interactive, command[i], screen_num);
 	  else
-	    send_command (command[i], -1);
+	    send_command (interactive, command[i], -1);
 
 	  free (command[i]);
 	}

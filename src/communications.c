@@ -81,10 +81,15 @@ recieve_command_result (Window w)
 }
 
 int
-send_command (unsigned char *cmd, int screen_num)
+send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
 {
   Window w;
   int done = 0;
+  struct sbuf *s;
+
+  s = sbuf_new(0);
+  sbuf_printf(s, "%c%s", interactive, cmd);
+
 
   /* If the user specified a specific screen, then send the event to
      that screen. */
@@ -103,11 +108,13 @@ send_command (unsigned char *cmd, int screen_num)
   XSelectInput (dpy, w, PropertyChangeMask);
 
   XChangeProperty (dpy, w, rp_command, XA_STRING,
-		   8, PropModeReplace, cmd, strlen (cmd) + 1);
+		   8, PropModeReplace, sbuf_get(s), strlen (cmd) + 2);
 
   XChangeProperty (dpy, DefaultRootWindow (dpy), 
 		   rp_command_request, XA_WINDOW,
 		   8, PropModeAppend, (unsigned char *)&w, sizeof (Window));
+
+  sbuf_free (s);
 
   while (!done)
     {

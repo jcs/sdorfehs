@@ -22,6 +22,6 @@
 #ifndef _RATPOISON_COMMUNICATIONS_H
 #define _RATPOISON_COMMUNICATIONS_H 1
 
-int send_command (unsigned char *cmd, int screen_num);
+int send_command (unsigned char interactive, unsigned char *cmd, int screen_num);
 
 #endif /* ! _RATPOISON_COMMUNICATIONS_H */

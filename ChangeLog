@@ -1,3 +1,28 @@
+2003-11-17  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* contrib/rpshowall.sh: store ratpoison binary location in
+	RATPOISON env var.
+
+	* src/ratpoison.h (FD_CLOEXEC): new define
+	(set_close_on_exec): new prototype
+
+	* src/main.c (ratpoison_longopts): add "interactive" option.
+	(ratpoison_opts): likewise
+	(print_help): print a help line for interactive option.
+	(set_close_on_exec): new function
+	(read_startup_files): call set_close_on_exec on file pointer
+	(main): parse interactive command line option and pass it to
+	send_command.
+
+	* src/events.c (execute_remote_command): pass the interactive bit
+	to command.
+
+	* src/communications.c (send_command): send an interactive bit at
+	the beginning of the message. Take an interactive argument. All
+	callers updated. Prototype updated.
+	
+	* src/actions.c (cmd_source): call set_close_on_exec on file pointer.
+
 2003-11-16  Ryan Yeske  <rcyeske@vcn.bc.ca>
 
 	* contrib/rpshowall.sh: Added file.  From Florian Cramer

@@ -4,33 +4,35 @@
 # ratpoison script to show all open windows 
 # 2003 Florian Cramer <cantsin@zedat.fu-berlin.de>
 
-
+if [ -z $RATPOISON ]; then
+    RATPOISON=ratpoison
+fi
 # Save current frameset
 
-framecount=`ratpoison -c windows | wc -l | sed -e "s/[ ]*//g"`
-curframe=`ratpoison -c windows | grep "^.\*" | sed -e "s/^\([0-9]*\)\*.*/\1/"`
-ratpoison -c "setenv tmp `ratpoison -c 'fdump'`"
+framecount=`$RATPOISON -c windows | wc -l | sed -e "s/[ ]*//g"`
+curframe=`$RATPOISON -c windows | grep "^.\*" | sed -e "s/^\([0-9]*\)\*.*/\1/"`
+$RATPOISON -c "setenv tmp `$RATPOISON -c 'fdump'`"
 
 
 # Create split view of all open windows
 
-ratpoison -c only
+$RATPOISON -c only
 i=2; 
 while [ $i -le $framecount ]; do 
 	if [ $i -le `echo $framecount/2 | bc` ] ; then
-		ratpoison -c hsplit
+		$RATPOISON -c hsplit
 	else
-		ratpoison -c vsplit
+		$RATPOISON -c vsplit
 	fi
-	ratpoison -c focus
-	ratpoison -c focus
+	$RATPOISON -c focus
+	$RATPOISON -c focus
 	i=$[$i+1];
 done
 
 
 # Restore frameset
 
-ratpoison -c "select $curframe"
+$RATPOISON -c "select $curframe"
 echo -n "Restore window layout... "
 read i
-ratpoison -c "frestore `ratpoison -c 'getenv tmp'`"
+$RATPOISON -c "frestore `$RATPOISON -c 'getenv tmp'`"

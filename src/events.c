@@ -446,7 +446,7 @@ execute_remote_command (Window w)
     }
 
   PRINT_DEBUG (("command: %s\n", req));
-  result = command (0, req);
+  result = command (req[0], &req[1]);
   XFree (req);
 
   return result;

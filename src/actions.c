@@ -736,6 +736,7 @@ cmd_source (int interactive, char *data)
     marked_message_printf (0, 0, " source: %s : %s ", data, strerror(errno));
   else
     {
+      set_close_on_exec (fileptr);
       read_rc_file (fileptr);
       fclose (fileptr);
     }

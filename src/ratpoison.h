@@ -30,6 +30,12 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <X11/Xlib.h>
+#include <fcntl.h>
+
+/* Some systems don't define the close-on-exec flag in fcntl.h */
+#ifndef FD_CLOEXEC
+# define FD_CLOEXEC 1
+#endif
 
 /* Helper macro for error and debug reporting. */
 #define PRINT_LINE(type) printf (PACKAGE ":%s:%d: %s: ",__FILE__,  __LINE__, #type)
@@ -82,6 +88,7 @@ extern XGCValues gv;
 void clean_up ();
 rp_screen *find_screen (Window w);
 
+void set_close_on_exec (FILE *fd);
 void read_rc_file (FILE *file);
 
 void fatal (const char *msg);
