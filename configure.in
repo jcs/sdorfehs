@@ -1,29 +1,66 @@
 dnl Process this file with autoconf to produce a configure script.
+dnl Copyright (C) 2000, 2001 Shawn Betts <sabetts@users.sourceforge.net>
+dnl
+dnl This file is part of ratpoison.
+dnl
+dnl ratpoison is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 2 of the License, or
+dnl (at your option) any later version.
+dnl
+dnl ratpoison is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+dnl
+dnl You should have received a copy of the GNU General Public License
+dnl along with this program; if not, write to the Free Software
+dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+dnl
+dnl $Id: configure.in,v 1.7 2001/02/15 19:46:38 algernon Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 0.0.6)
 
 AM_CONFIG_HEADER(src/config.h)
 
-dnl by default turn on debugging
-AC_ARG_ENABLE(debug, [  --disable-debug         Turn off debugging information], enable_debugging=no, enable_debugging=yes)
-if test "$enable_debugging" = yes; then
-   AC_DEFINE(DEBUG)
-fi
+AC_CANONICAL_HOST
+AC_SUBST(host_os)
+
+dnl by default turn off debugging
+AC_MSG_CHECKING(whether to enable debugging)
+AC_ARG_ENABLE(debug,
+	[  --enable-debugging      build with extra debugging messages],
+	[if test "x$enableval" != "xno"; then
+		AC_DEFINE_UNQUOTED(DEBUG, 1, Define this to enable debugging messages)
+	 	AC_MSG_RESULT(yes)
+	else
+		AC_MSG_RESULT(no)
+	fi],[AC_MSG_RESULT(no)])
 
 AC_ARG_WITH(xterm, [ --with-xterm=PROG        set the x terminal emulator used by ratpoison ],
 term_prog=$withval, term_prog="xterm")
-
 AC_DEFINE_UNQUOTED(TERM_PROG,"$term_prog")
+
+AC_ARG_WITH(emacs, [ --with-emacs=PROG        set the Emacs used by ratpoison ],
+emacs_prog=$withval, emacs_prog="emacs")
+AC_DEFINE_UNQUOTED(EMACS_PROG,"$emacs_prog")
 
 dnl Checks for programs.
 CFLAGS="$CFLAGS -Wall"
+AC_CHECK_TOOL(CC, gcc)
 AC_PROG_CC
 
 dnl check for an x terminal emulator
-AC_CHECK_PROG(result,$term_prog,yes,no)
-if test $result = no; then
+AC_CHECK_PROG(TERM_PROG,$term_prog,yes,no)
+if test x$TERM_PROG = xno; then
    AC_MSG_ERROR([*** Can't find x terminal emulator \`$term_prog'])
+fi
+
+dnl check for an Emacs
+AC_CHECK_PROG(EMACS_PROG,$emacs_prog,yes,no)
+if test x$EMACS_PROG = xno; then
+   AC_MSG_ERROR([*** Can't find Emacs \`$emacs_prog'])
 fi
 
 dnl Check for the X libs
@@ -50,4 +87,4 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 
-AC_OUTPUT(Makefile doc/Makefile src/Makefile)
+AC_OUTPUT(Makefile doc/Makefile man/Makefile src/Makefile)
