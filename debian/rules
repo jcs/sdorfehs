@@ -1,110 +1,111 @@
-#!/usr/bin/make -f
-# by Gergely Nagy <8@free.bsd.hu>
-# patch and unpatch based on debian/rules.d/patch.mk in glibc-2.1.95-1
+#! /usr/bin/make -f
+## debian/rules for ratpoison
+## Copyright (C) 2001 Gergely Nagy <8@free.bsd.hu>
 
-export DH_COMPAT=2
-CFLAGS	= -O2
+export DH_COMPAT  = 2
+DEBHELPER_OPTIONS = -p$@ -Pdebian/$(DEB_HOST_ARCH)/$@
+PWD		 := $(CURDIR)
+
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_HOST_ARCH	   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+CFLAGS		    = -O2
+
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -g
 endif
 
-configure: patch configure-stamp
-configure-stamp:
+# bootstrap - for building from CVS snapshots
+bootstrap: build-deb/$(DEB_HOST_ARCH)/bootstrap-stamp
+build-deb/$(DEB_HOST_ARCH)/bootstrap-stamp:
+	test -f configure || ./autogen.sh
+	install -d build-deb/$(DEB_HOST_ARCH)
+	touch $@
+
+# config - run configure
+config: bootstrap build-deb/$(DEB_HOST_ARCH)/config-stamp
+build-deb/$(DEB_HOST_ARCH)/config-stamp:
 	dh_testdir
-	CFLAGS="$(CFLAGS)" ./configure --prefix=/usr \
-				       --infodir=/usr/share/info \
-				       --mandir=/usr/share/man
-	touch configure-stamp
+	cd build-deb/$(DEB_HOST_ARCH) && \
+	CFLAGS="$(CFLAGS)" ../../configure \
+			--prefix=/usr \
+			--infodir=/usr/share/info \
+			--mandir=/usr/share/man \
+			--with-xterm=x-terminal-emulator \
+			--disable-debug
+			--build=$(DEB_BUILD_GNU_TYPE) \
+			--host=$(DEB_HOST_GNU_TYPE)
+	touch $@
 
-patch: patch-stamp
-patch-stamp:
-	test -d debian/patched || install -d debian/patched
-	@echo "Patches applied in the Debian version of ratpoison:" > $@T
-	@for patch in `cat debian/patches/00list`; do \
-		stamp=debian/patched/$$patch.dpatch; \
-		patch=debian/patches/$$patch.dpatch; \
-		test -x $$patch || chmod +x $$patch; \
-		if test -f $$stamp; then \
-			echo "$$patch already applied."; \
-			echo -e "\n$$patch:" >> $@T; \
-			sed -n 's/^# *DP: */  /p' $$patch >> $@T; \
-		else \
-			echo "trying to apply patch $$patch..."; \
-			if $$patch -patch >$$stamp.new 2>&1; then \
-				mv $$stamp.new $$stamp; \
-				touch $$stamp; \
-				echo -e "\n$$patch:" >> $@T; \
-				sed -n 's/^# *DP: */  /p' $$patch >> $@T; \
-			else \
-				echo "error in applying $$patch patch."; \
-				exit 1; \
-			fi; \
-		fi; \
-	done
-	mv -f $@T $@
-
-unpatch:
-	@for patch in `tac debian/patches/00list`; do \
-		stamp=debian/patched/$$patch.dpatch; \
-		patch=debian/patches/$$patch.dpatch; \
-		test -x $$patch || chmod +x $$patch; \
-		if test -f $$stamp; then \
-			echo "trying to revert patch $$patch..."; \
-			if $$patch -unpatch; then \
-				echo "reverted $$patch patch."; \
-				rm -f $$stamp; \
-			else \
-				echo "error in reverting $$patch patch."; \
-				exit 1; \
-			fi; \
-		fi; \
-	done
-	rm -f patch-stamp
-
-build: configure build-stamp
-build-stamp:
+# build - build the package
+build: config build-deb/$(DEB_HOST_ARCH)/build-stamp
+build-deb/$(DEB_HOST_ARCH)/build-stamp:
 	dh_testdir
-	$(MAKE)
-	touch build-stamp
+	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) all
+	touch $@
 
-clean: clean1 unpatch
-clean1:
+# clean - remove build directories
+clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp patch-stamp
-	-$(MAKE) distclean
-	dh_clean
+	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) distclean
+	rm -Rf build-deb/$(DEB_HOST_ARCH)
+	@for m in $(shell dh_listpackages); do \
+		echo "dh_clean -p$$m -Pdebian/$(DEB_HOST_ARCH)/$$m" ;\
+		dh_clean -p$$m -Pdebian/$(DEB_HOST_ARCH)/$$m ;\
+	done
+	rm -Rf debian/$(DEB_HOST_ARCH)
 
+# install - install the package to debian/<ARCH>/ratpoison
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
-	dh_installdirs
-	$(MAKE) install prefix=`pwd`/debian/`dh_listpackages`/usr
+	@for m in $(shell dh_listpackages); do \
+		echo "dh_clean -k -Pdebian/$(DEB_HOST_ARCH)/$$m -p$$m" ;\
+		dh_clean -k -Pdebian/$(DEB_HOST_ARCH)/$$m -p$$m ;\
+		echo "dh_installdirs -Pdebian/$(DEB_HOST_ARCH)/$$m -p$$m" ;\
+		dh_installdirs -Pdebian/$(DEB_HOST_ARCH)/$$m -p$$m ;\
+	done
+	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) \
+		install DESTDIR=$(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison
 
-binary-indep: build install
-
-binary-arch: build install
-	dh_testversion 2.0.89
+# these build the various packages
+ratpoison: install
 	dh_testdir
 	dh_testroot
-	dh_installdocs
-	dh_installexamples
-	dh_installmenu
-	dh_installmanpages
-	dh_installinfo
-	dh_installchangelogs src/ChangeLog
-	dh_installwm
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
+	dh_installdocs $(DEBHELPER_OPTIONS)
+	dh_installexamples $(DEBHELPER_OPTIONS)
+	dh_installmenu $(DEBHELPER_OPTIONS)
+#	dh_installlogrotate $(DEBHELPER_OPTIONS)
+#	dh_installemacsen $(DEBHELPER_OPTIONS)
+#	dh_installpam $(DEBHELPER_OPTIONS)
+#	dh_installinit $(DEBHELPER_OPTIONS)
+#	dh_installcron $(DEBHELPER_OPTIONS)
+	dh_installmanpages $(DEBHELPER_OPTIONS)
+	dh_installinfo $(DEBHELPER_OPTIONS)
+#	dh_undocumented $(DEBHELPER_OPTIONS)
+	dh_installchangelogs src/ChangeLog $(DEBHELPER_OPTIONS)
+	dh_installwm $(DEBHELPER_OPTIONS)
+	dh_link $(DEBHELPER_OPTIONS)
+	dh_strip $(DEBHELPER_OPTIONS)
+	dh_compress $(DEBHELPER_OPTIONS)
+	dh_fixperms $(DEBHELPER_OPTIONS)
+#	dh_makeshlibs $(DEBHELPER_OPTIONS)
+	dh_installdeb $(DEBHELPER_OPTIONS)
+#	dh_perl $(DEBHELPER_OPTIONS)
+	dh_shlibdeps $(DEBHELPER_OPTIONS)
+	dh_gencontrol $(DEBHELPER_OPTIONS)
+	dh_md5sums $(DEBHELPER_OPTIONS)
+	dh_builddeb $(DEBHELPER_OPTIONS)
 
+# binary-arch, binary-indep, binary - targets required by DP
+binary-arch: ratpoison
+binary-indep:
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install unpatch \
-	clean1 patch configure
+
+# rebuild - rebuild from (almost) pristine sources
+rebuild: clean binary
+
+.PHONY: build clean binary-indep binary-arch binary install rebuild \
+	bootstrap config ratpoison
