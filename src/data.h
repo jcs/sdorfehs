@@ -172,6 +172,11 @@ struct modifier_info
   unsigned int alt_mod_mask;
   unsigned int super_mod_mask;
   unsigned int hyper_mod_mask;
+
+  /* Keep track of these because they mess up the grab and should be
+     ignored. */  
+  unsigned int num_lock_mask;
+  unsigned int scroll_lock_mask; 
 };
 
 /* Keeps track of which mod mask each modifier is under. */

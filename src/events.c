@@ -458,7 +458,7 @@ key_press (XEvent *ev)
   if (!s) return;
 
   modifier = ev->xkey.state;
-  cook_keycode ( &ev->xkey, &ks, &modifier, NULL, 0);
+  cook_keycode ( &ev->xkey, &ks, &modifier, NULL, 0, 1);
 
   if (ks == prefix_key.sym && (modifier == prefix_key.state))
     {

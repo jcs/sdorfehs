@@ -37,11 +37,12 @@ update_modifier_map ()
   int row, col;	/* The row and column in the modifier table.  */
   XModifierKeymap *mods;
 
-/*   rp_modifier_info.mode_switch_mask = 0; */
   rp_modifier_info.meta_mod_mask = 0;
   rp_modifier_info.alt_mod_mask = 0;
   rp_modifier_info.super_mod_mask = 0;
   rp_modifier_info.hyper_mod_mask = 0;
+  rp_modifier_info.num_lock_mask = 0;
+  rp_modifier_info.scroll_lock_mask = 0;
 
   mods = XGetModifierMapping (dpy);
 
@@ -54,40 +55,45 @@ update_modifier_map ()
 	
 	switch (XKeycodeToKeysym(dpy, code, 0))
 	  {
-	    case XK_Meta_L:
-	    case XK_Meta_R:
-	      rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
-	      PRINT_DEBUG ("Found Meta on %d\n",
-			   rp_modifier_info.meta_mod_mask);
-	      break;
+	  case XK_Meta_L:
+	  case XK_Meta_R:
+	    rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
+	    PRINT_DEBUG ("Found Meta on %d\n",
+			 rp_modifier_info.meta_mod_mask);
+	    break;
 
-	    case XK_Alt_L:
-	    case XK_Alt_R:
-	      rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
-	      PRINT_DEBUG ("Found Alt on %d\n",
-			   rp_modifier_info.alt_mod_mask);
-	      break;
+	  case XK_Alt_L:
+	  case XK_Alt_R:
+	    rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
+	    PRINT_DEBUG ("Found Alt on %d\n",
+			 rp_modifier_info.alt_mod_mask);
+	    break;
 
-	    case XK_Super_L:
-	    case XK_Super_R:
-	      rp_modifier_info.super_mod_mask |= modmasks[row - 3];
-	      PRINT_DEBUG ("Found Super on %d\n",
-			   rp_modifier_info.super_mod_mask);
-	      break;
+	  case XK_Super_L:
+	  case XK_Super_R:
+	    rp_modifier_info.super_mod_mask |= modmasks[row - 3];
+	    PRINT_DEBUG ("Found Super on %d\n",
+			 rp_modifier_info.super_mod_mask);
+	    break;
 
-	    case XK_Hyper_L:
-	    case XK_Hyper_R:
-	      rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
-	      PRINT_DEBUG ("Found Hyper on %d\n",
-			   rp_modifier_info.hyper_mod_mask);
-	      break;
+	  case XK_Hyper_L:
+	  case XK_Hyper_R:
+	    rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
+	    PRINT_DEBUG ("Found Hyper on %d\n",
+			 rp_modifier_info.hyper_mod_mask);
+	    break;
 
-/* 	  case XK_Mode_switch: */
-/* 	    rp_modifier_info.mode_switch_mask |= modmasks[row - 3]; */
-/* 	      PRINT_DEBUG ("Found Mode_switch on %d\n", */
-/* 			   rp_modifier_info.mode_switch_mask); */
-/* 	    break; */
+	  case XK_Num_Lock:
+	    rp_modifier_info.num_lock_mask |= modmasks[row - 3];
+	    PRINT_DEBUG ("Found NumLock on %d\n", 
+			 rp_modifier_info.num_lock_mask);
+	    break;
 
+	  case XK_Scroll_Lock:
+	    rp_modifier_info.scroll_lock_mask |= modmasks[row - 3];
+	    PRINT_DEBUG ("Found ScrollLock on %d\n", 
+			 rp_modifier_info.scroll_lock_mask);
+	    break;
 	  default:
 	    break;
 	  }
@@ -110,6 +116,34 @@ update_modifier_map ()
 
   XFreeModifiermap (mods);
 }
+
+/* Grab the key while ignoring annoying modifier keys including
+   caps lock, num lock, and scroll lock. */
+void
+grab_key (int keycode, unsigned int modifiers, Window grab_window)
+{
+  unsigned int mod_list[8];
+  int i;
+
+  /* Create a list of all possible combinations of ignored
+     modifiers. Assumes there are only 3 ignored modifiers. */
+  mod_list[0] = 0;
+  mod_list[1] = LockMask;
+  mod_list[2] = rp_modifier_info.num_lock_mask;
+  mod_list[3] = mod_list[1] | mod_list[2];
+  mod_list[4] = rp_modifier_info.scroll_lock_mask;
+  mod_list[5] = mod_list[1] | mod_list[4];
+  mod_list[6] = mod_list[2] | mod_list[4];
+  mod_list[7] = mod_list[1] | mod_list[2] | mod_list[4];
+
+  /* Grab every combination of ignored modifiers. */
+  for (i=0; i<8; i++)
+    {
+      XGrabKey(dpy, keycode, modifiers | mod_list[i],
+	       grab_window, True, GrabModeAsync, GrabModeAsync);
+    }
+}
+
 
 /* Return the name of the keysym. caller must free returned pointer */
 char *
@@ -143,11 +177,18 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
    interested in the keysym name pass in NULL for keysym_name and 0
    for len. */
 int
-cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_name, int len)
+cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_name, int len, int ignore_bad_mods)
 {
-int nbytes;
+  int nbytes;
+ 
+  if (ignore_bad_mods)
+    {
+      ev->state &= ~(LockMask
+		     | rp_modifier_info.num_lock_mask
+		     | rp_modifier_info.scroll_lock_mask);
+    }
 
- nbytes =  XLookupString (ev, keysym_name, len, keysym, NULL);
+  nbytes =  XLookupString (ev, keysym_name, len, keysym, NULL);
 
   *mod = ev->state;
   *mod &= (rp_modifier_info.meta_mod_mask
@@ -234,7 +275,7 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
     {
       XMaskEvent (dpy, KeyPressMask, &ev);
       *modifiers = ev.xkey.state;
-      nbytes = cook_keycode (&ev.xkey, keysym, modifiers, keysym_name, len);
+      nbytes = cook_keycode (&ev.xkey, keysym, modifiers, keysym_name, len, 0);
     } while (IsModifierKey (*keysym));
 
   return nbytes;

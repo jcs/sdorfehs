@@ -1,3 +1,25 @@
+2001-09-06  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/manage.c (grab_prefix_key): call grab_key.
+	(ungrab_prefix_key): use AnyModifier as the modifier mask param to
+	XUngrabKey.
+
+	* src/input.h (grab_key): new protoype
+
+	* src/input.c (update_modifier_map): find the numlock and scroll
+	lock modifiers.
+	(grab_key): new function
+	(cook_keycode): new param ignore_mad_mods. protoype updated. all
+	callers updated.
+	(cook_keycode): ignore caps lock, numlock and scroll lock
+	modifiers when ignore_bad_mods param is non-zero.
+
+	* src/events.c (key_press): ignore numlock, scroll lock, and caps
+	lock modifiers when cooking the prefix key.
+
+	* src/data.h (struct modifier_info): new fields num_lock_mask,
+	scroll_lock_mask.
+
 2001-09-05  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/main.c (show_welcome_message): If the help key is bound to ?

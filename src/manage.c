@@ -48,8 +48,7 @@ grab_prefix_key (Window w)
   XGrabKey(dpy, AnyKey, AnyModifier, w, True, 
 	   GrabModeAsync, GrabModeAsync);
 #else
-  XGrabKey(dpy, XKeysymToKeycode (dpy, prefix_key.sym ), prefix_key.state, 
-	   w, True, GrabModeAsync, GrabModeAsync);
+  grab_key (XKeysymToKeycode (dpy, prefix_key.sym), prefix_key.state, w);
 #endif
 }
 
@@ -58,7 +57,7 @@ ungrab_prefix_key (Window w)
 {
 #ifdef HIDE_MOUSE
 #else
-  XUngrabKey(dpy, XKeysymToKeycode (dpy, prefix_key.sym ), prefix_key.state, w);
+  XUngrabKey(dpy, XKeysymToKeycode (dpy, prefix_key.sym), AnyModifier, w);
 #endif
 }
 

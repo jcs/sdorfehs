@@ -1,12 +1,6 @@
 -*- outline -*-
 
-* split screen
-shawn
-
 * command stuff
-** adding new keybinding should wipe out the old one
-ryan
-
 ** binding an empty string should wipe out old binding
 ryan
 
@@ -14,11 +8,8 @@ ryan
 ryan
 
 * implement these screen commands (see the screen info for documentation):
-echo
 command ???
-focus (after we have split screen)
 hardcopy (screenshot)
-help
 lastmsg
 license
 lockscreen
@@ -26,7 +17,6 @@ meta
 msgwait
 msgminwait
 nethack
-quit
 redisplay
 screen (ratpoison)
 setenv
@@ -34,6 +24,5 @@ shell
 shelltitle
 sleep
 sorendition
-split
 startup_message
 stuff ???
