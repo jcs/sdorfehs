@@ -1,5 +1,8 @@
 2003-06-25  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/actions.c (cmd_gmove): prompt the user if no group is passed
+	as an argument.
+
 	* contrib/rpws: call /bin/bash
 	(rp_call): remove extraneous () in function declaration.
 	(ws_init_ws): likewise

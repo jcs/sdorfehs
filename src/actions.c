@@ -3596,13 +3596,8 @@ cmd_groups (int interactive, char *data)
 char *
 cmd_gmove (int interactive, char *data)
 {
+  char *str;
   rp_group *g;
-
-  if (data == NULL)
-    {
-      message (" gmove: one argument required ");
-      return NULL;
-    }
 
   if (current_window() == NULL)
     {
@@ -3610,7 +3605,17 @@ cmd_gmove (int interactive, char *data)
       return NULL;
     }
 
-  g = find_group (data);
+  /* Prompt for a group */
+  if (data == NULL)
+    str = get_input (MESSAGE_PROMPT_SWITCH_TO_GROUP, group_completions);
+  else
+    str = xstrdup (data);
+
+  /* User aborted. */
+  if (str == NULL)
+    return NULL;
+
+  g = find_group (str);
   if (g == NULL)
     {
       message (" gmove: cannot find group ");
