@@ -169,11 +169,20 @@ scanwins(screen_info *s)
 int
 unmanaged_window (Window w)
 {
+  char *wname;
   int i;
 
   for (i = 0; unmanaged_window_list[i]; i++) 
-    if (!strcmp (unmanaged_window_list[i], get_window_name (w)))
-      return 1;
+    {
+      wname = get_window_name (w);
+      if (!wname)
+	return 1;
+      if (!strcmp (unmanaged_window_list[i], wname))
+	{
+	  free (wname);
+	  return 1;
+	}
+    }
 
   return 0;
 }
