@@ -1,6 +1,7 @@
 2000-12-09  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* input.c (cook_keycode): properly handle LockMask
+	(cook_keycode): updated comments
 
 	* input.h: added prototype for keysym_to_string
 

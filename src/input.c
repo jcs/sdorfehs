@@ -67,19 +67,20 @@ cook_keycode (KeyCode keycode, KeySym *keysym, unsigned int *mod)
 	{
 	  *keysym = normal;
 	}
+      /* But if the shifted code is defined, we use it and remove the
+	 shift mask */
       else if (*mod & ShiftMask)
 	{
 	  *keysym = shifted;
 	  *mod &= ~(ShiftMask | LockMask);
 	}
+      /* If caps lock is on, use shifted for alpha keys */
       else if (normal >= XK_a 
 	       && normal <= XK_z
 	       && *mod & LockMask)
 	{
 	  *keysym = shifted;
 	}
-      /* But if the shifted code is defined, we use it and remove the
-	 shift mask */
       else
 	{
 	  *keysym = normal;
