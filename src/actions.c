@@ -134,6 +134,7 @@ static user_command user_commands[] =
     {"undo",            cmd_undo,               arg_STRING},
     {"putsel",          cmd_putsel,             arg_STRING},
     {"getsel",          cmd_getsel,             arg_STRING},
+    {"appendsel",       cmd_appendsel,          arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to help debug ratpoison. */
@@ -4991,4 +4992,30 @@ char *
 cmd_getsel (int interactive, char *data)
 {
   return get_selection();
+}
+
+char *
+cmd_appendsel (int interactive, char *data)
+{
+  char *sel;
+  
+  if (data == NULL)
+    {
+      message ("appendsel: One argument required"); 
+      return NULL;
+    }
+
+  sel = get_selection();
+  if (sel)
+    {
+      char *new_sel;
+      new_sel = xsprintf ("%s%s", sel, data);
+      free (sel);
+      set_selection (new_sel);
+      free (new_sel);
+    }
+  else
+    set_selection (data);
+
+  return NULL;
 }
