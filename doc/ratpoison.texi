@@ -681,14 +681,19 @@ Read a text file containing ratpoison commands.
 
 @item split @var{n}
 @item hsplit @var{n}
-Split the current window horizontally. The last accessed window
+Split the current frame horizontally in two. The last accessed window
 not occupying a frame will be the second window.
 
-@var{n} is either a ratio of the form @code{x/y} or a number. If it is
-a ratio then the two frames are sized according to the ratio. If it is
-a pixel, the original frame is resized to that many pixels. If @var{n}
-has a minus sign before it, then the new frame will be that many
-pixels.
+@var{n} is either a fraction of the form @code{x/y} or a number. If it
+is a fraction then the current frame is resized to that fraction of
+its original size and the new frame takes up the remaining space. For
+instance, @code{split 1/4} will split the current frame to a quarter
+of its original size and the new frame will then be 3/4 of the size of
+the original frame.
+
+If it is a pixel, the original frame is resized to that many
+pixels. If @var{n} has a minus sign before it, then the new frame will
+shrink by that many pixels.
 
 @item startup_message @var{state}
 Turn on or off the startup_message. This is most useful in your
@@ -713,14 +718,19 @@ Clear the value of the environment variable, @var{env}.
 Print ratpoison version.  By default, this is bound to @kbd{C-t v}.
 
 @item vsplit @var{n}
-Split the current window vertically. The last accessed window not
-occupying a frame will be the second window.
+Split the current frame vertically in two. The last accessed window
+not occupying a frame will be the second window.
 
-@var{n} is either a ratio of the form @code{x/y} or a number. If it is
-a ratio then the two frames are sized according to the ratio. If it is
-a pixel, the original frame is resized to that many pixels. If @var{n}
-has a minus sign before it, then the new frame will be that many
-pixels.
+@var{n} is either a fraction of the form @code{x/y} or a number. If it
+is a fraction then the current frame is resized to that fraction of
+its original size and the new frame takes up the remaining space. For
+instance, @code{split 1/4} will split the current frame to a quarter
+of its original size and the new frame will then be 3/4 of the size of
+the original frame.
+
+If it is a pixel, the original frame is resized to that many
+pixels. If @var{n} has a minus sign before it, then the new frame will
+shrink by that many pixels.
 
 @item windows @var{fmt}
 This displays the Program Bar which displays the windows you currently
