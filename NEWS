@@ -7,6 +7,10 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.3.0
+** New command undefinekey
+not passing a 3rd argument to definekey and bind no longer unbind the
+key. You must use undefinekey and unbind now.
+
 ** ratpoison -c prints errors to stderr
 You can now capture errors and output seperately depending on whether
 its printed to stderr or stdout.

@@ -2275,9 +2275,10 @@ command (int interactive, char *data)
 	  INIT_LIST_HEAD (&args);
 	  INIT_LIST_HEAD (&head);
 
-	  /* We need to tell parse_args about arg_REST. */
+	  /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
 	  for (i=0; i<uc->num_args; i++)
-	    if (uc->args[i].type == arg_REST)
+	    if (uc->args[i].type == arg_REST
+		|| uc->args[i].type == arg_SHELLCMD)
 	      {
 		nargs = i;
 		break;
@@ -4702,9 +4703,10 @@ cmd_set (int interactive, struct cmdarg **args)
       INIT_LIST_HEAD (&arglist);
       INIT_LIST_HEAD (&head);
 
-      /* We need to tell parse_args about arg_REST. */
+      /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
       for (i=0; i<ARG(0,variable)->nargs; i++)
-	if (ARG(0,variable)->args[i].type == arg_REST)
+	if (ARG(0,variable)->args[i].type == arg_REST
+	    || ARG(0,variable)->args[i].type == arg_SHELLCMD)
 	  {
 	    nargs = i;
 	    break;

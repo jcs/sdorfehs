@@ -5,6 +5,9 @@
 
 2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
 
+	* src/actions.c (command): treat arg_SHELLCMD like arg_REST.
+	(cmd_set): likewise
+
 	* src/globals.h (RET_SUCCESS): set to 1
 	(RET_FAILURE): set to 0
 
