@@ -17,7 +17,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.9 2001/02/17 03:16:05 algernon Exp $
+dnl $Id: configure.in,v 1.10 2001/02/18 22:49:43 sabetts Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 0.0.6)
@@ -87,4 +87,4 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 
-AC_OUTPUT(Makefile doc/Makefile man/Makefile src/Makefile)
+AC_OUTPUT(Makefile doc/Makefile src/Makefile)
