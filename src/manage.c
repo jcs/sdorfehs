@@ -109,12 +109,18 @@ get_window_name (Window w)
 int
 update_window_name (rp_window *win)
 {
+  char *newstr;
   char *loc;
 
   /* Don't overwrite the window name if the user specified one. */
   if (win->named) return 0;
 
-  win->name = get_window_name (win->w);
+  newstr = get_window_name (win->w);
+  if (newstr != NULL)
+    {
+      free (win->name);
+      win->name = newstr;
+    }
 
   /* A bit of a hack. If there's a : in the string, crop the
      string off there. This is mostly brought on by netscape's
@@ -149,19 +155,27 @@ send_configure (rp_window *win)
 void
 manage (rp_window *win, screen_info *s)
 {
-  XMapWindow (dpy, win->w);
+  XWindowAttributes attr;
 
-  if (!update_window_name (win)) return;
+  PRINT_DEBUG ("managing new window\n");
+
+  update_window_name (win);
 
   /* Get the WM Hints */
   update_normal_hints (win);
 
+  /* Get the colormap */
+  XGetWindowAttributes (dpy, win->w, &attr);
+  win->colormap = attr.colormap;
+
   /* We successfully got the name, which means we can start managing! */
-  XSelectInput (dpy, win->w, PropertyChangeMask);
+  XSelectInput (dpy, win->w, PropertyChangeMask | ColormapChangeMask | StructureNotifyMask);
   XAddToSaveSet(dpy, win->w);
   grab_prefix_key (win->w);
 
   maximize (win);
+
+  XMapWindow (dpy, win->w);
 
   win->state = STATE_MAPPED;
   win->number = get_unique_window_number ();
@@ -214,7 +228,7 @@ unmanaged_window (Window w)
     {
       wname = get_window_name (w);
       if (!wname)
-	return 1;
+	return 0;
       if (!strcmp (unmanaged_window_list[i], wname))
 	{
 	  free (wname);
