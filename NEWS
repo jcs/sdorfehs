@@ -1,6 +1,11 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** new command "alias"
+An alias gives a name to a command sequence. For instance, you could
+alias 'emacs' to 'exec emacs'. Then you could simply type 'C-t :emacs'
+and ratpoison would boot emacs.
+
 ** new command "license"
 Display ratpoison's license. This is also bound to C-t V and C-t C-V.
 
