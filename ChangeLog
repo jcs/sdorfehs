@@ -1,5 +1,8 @@
 2001-09-05  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/main.c (show_welcome_message): If the help key is bound to ?
+	then print ? instead of `question'.
+
 	* configure.in: check for getopt and getopt_long.
 
 	* src/getopt.c: wrap the whole file in an #ifndef HAVE_GETOPT_LONG

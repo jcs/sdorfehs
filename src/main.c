@@ -308,6 +308,8 @@ read_startup_files ()
     }
 }
 
+/* Odd that we spend so much code on making sure the silly welcome
+   message is correct. Oh well... */
 static void
 show_welcome_message ()
 {
@@ -326,7 +328,13 @@ show_welcome_message ()
 
   if (help)
     {
-      marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, help);
+      /* A little kludge to use ? instead of `question' for the help
+	 key. */
+      if (!strcmp (help, "question"))
+	marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, "?");
+      else
+	marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, help);
+
       free (help);
     }
   else
