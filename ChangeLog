@@ -1,5 +1,8 @@
 2002-10-18  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/actions.c (read_split): a negative number means subtract the
+	pixels from the frame's current size to get the new frame's size.
+
 	* src/split.c (VERTICALLY): new define
 	(VERTICALLY): likewise
 	(split_frame): new argument 'pixels'. The current frame is split

@@ -1273,12 +1273,14 @@ read_split (const char *str, int max)
       p = (int)(max * (float)(a) / (float)(b));
     }
   else if (sscanf(str, "%d", &p) == 1)
-    {   
+    {
+      if (p < 0)
+	p = max + p;
     }
   else
     {
       /* Failed to read input. */
-      p = -1;
+      return -1;
     }
 
   /* Input out of range. */
@@ -1296,8 +1298,9 @@ cmd_h_split (int interactive, void *data)
   /* Default to dividing the frame in half. */
   if (data == NULL)
     pixels = current_screen()->rp_current_frame->height / 2;
-  else
+  else 
     pixels = read_split (data, current_screen()->rp_current_frame->height);
+
 
   if (pixels > 0)
     h_split_frame (current_screen()->rp_current_frame, pixels);

@@ -1,5 +1,12 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
+* Changes since 1.1.1
+** split, vsplit, hsplit
+These commands now take a single argument. The argument can be a ratio
+which divides the frame into two frames sized based on this ratio, or
+it can be a number representing the number of pixels the existing
+frame will occupy.
+
 * Changes since 1.1.0
 ** new commands "nextscreen" and "prevscreen"
 
