@@ -86,6 +86,7 @@ This document explains how to use ratpoison.
 Windows
 
 * Manipulating Windows::        
+* Window Classes::              
 * Unmanaged Windows::           
 * Rudeness::                    
 
@@ -204,11 +205,12 @@ Windows are what ratpoison manages.
 
 @menu
 * Manipulating Windows::        
+* Window Classes::              
 * Unmanaged Windows::           
 * Rudeness::                    
 @end menu
 
-@node Manipulating Windows, Unmanaged Windows, Windows, Windows
+@node Manipulating Windows, Window Classes, Windows, Windows
 @section Manipulating Windows
 
 The following are commands used to manipulate windows.
@@ -397,7 +399,46 @@ When called non-interactively with no arguments, the current setting is
 returned.
 @end deffn
 
-@node Unmanaged Windows, Rudeness, Manipulating Windows, Windows
+@node Window Classes, Unmanaged Windows, Manipulating Windows, Windows
+@section Window Classes
+
+Window classes are a way of grouping windows together. Windows that
+are part of the same program generally have the same class. Ratpoison
+takes advantage of this to help you navigate between windows of the
+same class. This is useful if you only want to cycle through Emacs
+frames or XTerms.
+
+@deffn Command inext
+Go to the next window in the window list that is in the same class as
+the current window.
+@end deffn
+
+@deffn Command iprev
+Go to the previous window in the window list that is in the same class
+as the current window.
+@end deffn
+
+@deffn Command iother
+Go to the last accessed window that is in the same class as the
+current window.
+@end deffn
+
+@deffn Command cnext
+Go to the next window in the window list that is in a different class
+from the current window.
+@end deffn
+
+@deffn Command cprev
+Go to the previous window in the window list that is in a different
+class from the current window.
+@end deffn
+
+@deffn Command cother
+Go to the last accessed window that is in a different class from the
+current window.
+@end deffn
+
+@node Unmanaged Windows, Rudeness, Window Classes, Windows
 @section Unmanaged Windows
 
 ratpoison can intentionally not manage windows. ratpoison keeps a list
