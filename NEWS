@@ -19,6 +19,11 @@ $ ratpoison --command next
 WINDOW_BORDER_WIDTH has been added to conf.h. This constant determines
 the border width for all windows.
 
+** Rodent handling
+A new command, :banish, which will move the rat pointer out of harms
+way, has been added.  It is bound to 'C-t b' by default.  No more
+slapping your rat out of the way, as fun as that was.
+
 ** Window list changes
 A '+' is now drawn between the window number and the window name for
 the last accessed window.

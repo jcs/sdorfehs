@@ -1,6 +1,7 @@
 2001-04-04  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
-	* src/actions.c: add banish to user_commands.
+	* src/actions.c: add :banish to user_commands.
+	(initialize_default_keybindings): Add keybinding for :banish.
 	(cmd_banish): New function.
 
 2001-04-01  shawn  <sabetts@diggin.lamenet.tmp>
