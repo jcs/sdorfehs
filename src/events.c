@@ -67,32 +67,36 @@ cleanup_frame (rp_window_frame *frame)
   if (win)
     {
       rp_window *last_win;
-      last_win = frame->win;
-      frame->win = win;
+      last_win = set_frames_window (frame, win);
 
       maximize (win);
-      unhide_transient_for (win);
+//        unhide_transient_for (win);
       unhide_window (win);
 
-      if (is_transient_ancestor (last_win, win))
+      if (!win->transient)
 	{
-	  hide_transient_for_between (last_win, win);
+	  hide_others(win);
 	}
-      else if (last_win->transient && win->transient &&
-	       last_win->transient_for == win->transient_for)
-	{
-	  /* Both last_win and win have the same transient_for so we
-             don't need to hide anything more */
-	}
-      else
-	{
-	  hide_transient_for (last_win);
-	}
+
+//        if (is_transient_ancestor (last_win, win))
+//  	{
+//  	  hide_transient_for_between (last_win, win);
+//  	}
+//        else if (last_win->transient && win->transient &&
+//  	       last_win->transient_for == win->transient_for)
+//  	{
+//  	  /* Both last_win and win have the same transient_for so we
+//               don't need to hide anything more */
+//  	}
+//        else
+//  	{
+//  	  hide_transient_for (last_win);
+//  	}
     }
   else
     {
-      hide_transient_for (frame->win);
-      frame->win = NULL;
+//        hide_transient_for (frame->win);
+      set_frames_window (frame, NULL);
     }
 }
 

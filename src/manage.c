@@ -298,7 +298,7 @@ maximize_transient (rp_window *win)
   /* Set the window's border */
   win->border = WINDOW_BORDER_WIDTH;
 
-  frame = find_windows_frame (win);
+  frame = win->frame;
 
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)
@@ -368,7 +368,7 @@ maximize_normal (rp_window *win)
   /* Set the window's border */
   win->border = WINDOW_BORDER_WIDTH;
 
-  frame = find_windows_frame (win);
+  frame = win->frame;
 
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)
@@ -500,6 +500,9 @@ hide_window (rp_window *win)
 {
   if (win == NULL) return;
 
+  /* An unmapped window is not inside a frame. */
+  win->frame = NULL;
+
   /* Ignore the unmap_notify event. */
   XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XUnmapWindow (dpy, win->w);
@@ -520,7 +523,7 @@ unhide_window (rp_window *win)
 /* same as unhide_window except that it make sure the window is mapped
    on the bottom of the window stack. */
 void
-unhide_below_window (rp_window *win)
+unhide_window_below (rp_window *win)
 {
   if (win == NULL) return;
 
@@ -533,7 +536,6 @@ unhide_below_window (rp_window *win)
   XMapWindow (dpy, win->w);
   set_state (win, NormalState);
 }
-
 
 void
 withdraw_window (rp_window *win)
@@ -557,4 +559,28 @@ withdraw_window (rp_window *win)
   XSync (dpy, False);
 
   ignore_badwindow--;
+}
+
+/* Hide all other mapped windows except for win in win's frame. */
+void
+hide_others (rp_window *win)
+{
+  rp_window_frame *frame;
+  rp_window *cur;
+
+  if (win == NULL) return;
+  frame = find_windows_frame (win);
+  if (frame == NULL) return;
+
+  for (cur = rp_mapped_window_sentinel->next; 
+       cur != rp_mapped_window_sentinel; 
+       cur = cur->next)
+    {
+      if (find_windows_frame (cur) 
+	  || cur->state != NormalState 
+	  || cur->frame != frame)
+	continue;
+
+      hide_window (cur);
+    }
 }

@@ -1100,6 +1100,7 @@ cmd_help (int interactive, void *data)
   y += FONT_HEIGHT (s->font) * 2;
   
   i = 0;
+  old_i = 0;
   while (i<key_actions_last || drawing_keys)
     {
       if (drawing_keys)

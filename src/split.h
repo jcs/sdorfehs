@@ -22,6 +22,8 @@
 #ifndef SPLIT_H
 #define SPLIT_H
 
+rp_window *set_frames_window (rp_window_frame *frame, rp_window *win);
+void maximize_all_windows_in_frame (rp_window_frame *frame);
 void h_split_frame (rp_window_frame *frame);
 void v_split_frame (rp_window_frame *frame);
 void remove_all_splits ();

@@ -28,6 +28,35 @@
 rp_window_frame *rp_window_frame_sentinel;
 rp_window_frame *rp_current_frame;
 
+rp_window *
+set_frames_window (rp_window_frame *frame, rp_window *win)
+{
+  rp_window *last_win;
+
+  last_win = frame->win;
+  frame->win = win;
+  if (win)
+    win->frame = frame;
+
+  return last_win;
+}
+
+void
+maximize_all_windows_in_frame (rp_window_frame *frame)
+{
+  rp_window *win;
+
+  for (win = rp_mapped_window_sentinel->next;
+       win != rp_mapped_window_sentinel;
+       win = win->next)
+    {
+      if (win->frame == frame)
+	{
+	  maximize (win);
+	}
+    }
+}
+
 static void
 delete_frame_from_list (rp_window_frame *frame)
 {
@@ -60,7 +89,7 @@ create_initial_frame ()
 
   maximize_frame (rp_current_frame);
   
-  rp_current_frame->win = NULL;
+  set_frames_window (rp_current_frame, NULL);
 }
 
 void
@@ -167,7 +196,8 @@ find_window_for_frame (rp_window_frame *frame)
       if (cur != current_window() 
 	  && !find_windows_frame (cur)
 	  && cur->last_access >= last_access
-	  && window_fits_in_frame (cur, frame)) 
+	  && window_fits_in_frame (cur, frame)
+	  && !cur->frame)
 	{
 	  most_recent = cur;
 	  last_access = cur->last_access;
@@ -193,7 +223,7 @@ split_frame (rp_window_frame *frame, int way)
   rp_window_frame_sentinel->prev = new_frame;
   new_frame->next = rp_window_frame_sentinel;
 
-  new_frame->win = NULL;
+  set_frames_window (new_frame, NULL);
 
   if (way)
     {
@@ -219,24 +249,24 @@ split_frame (rp_window_frame *frame, int way)
     {
       PRINT_DEBUG ("Found a window for the frame!\n");
 
-      new_frame->win = win;
+      set_frames_window (new_frame, win);
 
       maximize (win);
       unhide_window (win);
-      unhide_transient_for (win);
+/*        unhide_transient_for (win); */
       XRaiseWindow (dpy, win->w);
     }
   else
     {
       PRINT_DEBUG ("No window fits the frame.\n");
 
-      new_frame->win = NULL;
+      set_frames_window (new_frame, NULL);
     }
 
   /* resize the existing frame */
   if (frame->win)
     {
-      maximize (frame->win);
+      maximize_all_windows_in_frame (frame);
       XRaiseWindow (dpy, frame->win->w);
     }
 
@@ -261,25 +291,45 @@ void
 remove_all_splits ()
 {
   rp_window *cur_window;
-  rp_window_frame *cur;
+  rp_window_frame *frame, *cur_frame;
+  rp_window *win;
 
   cur_window = current_window();
+  cur_frame  = rp_current_frame;
 
   while (rp_window_frame_sentinel->next != rp_window_frame_sentinel)
     {
-      cur = rp_window_frame_sentinel->next;
-      delete_frame_from_list (cur);
-      if (cur != rp_current_frame)
+      frame = rp_window_frame_sentinel->next;
+      delete_frame_from_list (frame);
+      if (frame != rp_current_frame)
 	{
-	  hide_window (cur->win);
-	  hide_transient_for (cur->win);
+	  for (win = rp_mapped_window_sentinel->next;
+	       win != rp_mapped_window_sentinel;
+	       win = win->next)
+	    {
+	      if (win->frame == frame)
+		hide_window (win);
+/*  	  hide_transient_for (cur->win); */
+	    }
 	}
-      free (cur);
+      free (frame);
     }
 
   create_initial_frame ();
-  rp_current_frame->win = cur_window;
-  maximize (cur_window);
+  
+  /* Maximize all the windows that were in the current frame. */
+  for (win = rp_mapped_window_sentinel->next;
+       win != rp_mapped_window_sentinel;
+       win = win->next)
+    {
+      if (win->frame == cur_frame)
+	{
+	  set_frames_window (rp_current_frame, win);
+	  maximize (win);
+	}
+    }
+
+  set_frames_window (rp_current_frame, cur_window);
 }
 
 static int
@@ -387,6 +437,7 @@ remove_frame (rp_window_frame *frame)
 
   delete_frame_from_list (frame);
   hide_window (frame->win);
+  hide_others (frame->win);
 
   for (cur = rp_window_frame_sentinel->next; 
        cur != rp_window_frame_sentinel; 
@@ -454,7 +505,7 @@ remove_frame (rp_window_frame *frame)
 	     the new frame size. */
 	  if (cur->win)
 	    {
-	      maximize (cur->win);
+	      maximize_all_windows_in_frame (cur);
 	      XRaiseWindow (dpy, cur->win->w);
 	    }
 	}
@@ -493,10 +544,10 @@ void
 blank_frame (rp_window_frame *frame)
 {
   if (frame->win == NULL) return;
-
-  hide_transient_for (frame->win);
+  
+/*    hide_transient_for (frame->win); */
   hide_window (frame->win);
-  frame->win = NULL;
+  set_frames_window (frame, NULL);
 
   if (frame == rp_current_frame)
     {

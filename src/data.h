@@ -70,6 +70,11 @@ struct rp_window
   /* Saved mouse position */
   int mouse_x, mouse_y;
 
+  /* A window can be visible inside a frame but not the frame's
+     current window. This keeps track of what frame the window was
+     mapped into. */
+  rp_window_frame *frame;
+
   rp_window *next, *prev;  
 };
 

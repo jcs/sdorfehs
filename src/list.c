@@ -119,7 +119,7 @@ find_window (Window w)
 void
 set_current_window (rp_window *win)
 {
-  rp_current_frame->win = win;  
+  set_frames_window (rp_current_frame, win);
 }
 
 void
@@ -419,19 +419,19 @@ unhide_transient_for (rp_window *win)
 
   if (find_windows_frame (transient_for) == NULL)
     {
-      frame->win = transient_for;
+      set_frames_window (frame, transient_for);
       maximize (transient_for);
 
       PRINT_DEBUG ("unhide transient window: %s\n", transient_for->name);
       
-      unhide_below_window (transient_for);
+      unhide_window_below (transient_for);
 
       if (transient_for->transient) 
 	{
 	  unhide_transient_for (transient_for);
 	}
 
-      frame->win = win;
+      set_frames_window (frame, win);
     }
   else if (transient_for->transient) 
     {
@@ -504,42 +504,46 @@ set_active_window (rp_window *win)
 
   if (win == NULL) return;
 
-  last_win = rp_current_frame->win;
-  rp_current_frame->win = win;
+  last_win = set_frames_window (rp_current_frame, win);
 
   if (last_win) PRINT_DEBUG ("last window: %s\n", last_win->name);
   PRINT_DEBUG ("new window: %s\n", win->name);
 
   /* Make sure the window comes up full screen */
-  unhide_transient_for (win);
+//    unhide_transient_for (win);
   maximize (win);
   unhide_window (win);
 
-  /* Hide the last window and its transients_fors */
-  if (is_transient_ancestor (win, last_win))
+  if (!win->transient)
     {
-      /* Do nothing if last_win is a transient since it should stay visible */
+      hide_others(win);
     }
-  else
-    {
-      hide_window (last_win);
 
-      if (last_win && is_transient_ancestor (last_win, win))
-	{
-	  /* We only need to hide the transients "between" last_win and win */
-	  hide_transient_for_between (last_win, win);
-	}
-      else if (last_win && last_win->transient && win->transient &&
-	       last_win->transient_for == win->transient_for)
-	{
-	  /* Both last_win and win have the same transient_for so we
-             don't need to hide anything more */
-	}
-      else
-	{
-	  hide_transient_for (last_win);
-	}
-    }
+//    /* Hide the last window and its transients_fors */
+//    if (is_transient_ancestor (win, last_win))
+//      {
+//        /* Do nothing if last_win is a transient since it should stay visible */
+//      }
+//    else
+//      {
+//        hide_window (last_win);
+
+//        if (last_win && is_transient_ancestor (last_win, win))
+//  	{
+//  	  /* We only need to hide the transients "between" last_win and win */
+//  	  hide_transient_for_between (last_win, win);
+//  	}
+//        else if (last_win && last_win->transient && win->transient &&
+//  	       last_win->transient_for == win->transient_for)
+//  	{
+//  	  /* Both last_win and win have the same transient_for so we
+//               don't need to hide anything more */
+//  	}
+//        else
+//  	{
+//  	  hide_transient_for (last_win);
+//  	}
+//      }
 
   give_window_focus (win, last_win);
 

@@ -1,5 +1,42 @@
 2001-08-22  Shawn  <sabetts@hotdog>
 
+	* src/split.h (set_frames_window): new prototype
+	(maximize_all_windows_in_frame): likewise
+
+	* src/split.c (set_frames_window): new function. all code setting
+	a frame's window updated to use this function.
+	(maximize_all_windows_in_frame): new function
+	(find_window_for_frame): don't include windows that are mapped in
+	another frame (not necessarily the frames active window).
+	(split_frame): maximize all windows in the existing frame, not
+	just the active one.
+	(split_frame): comment out unhiding transient window code.
+	(remove_all_splits): hide all mapped windows not in the current
+	frame.
+	(remove_all_splits): maximize all windows mapped in the current
+	frame.
+	(remove_all_splits): comment out hiding transient window code.
+	(remove_frame): when a frame's size has been changed, maximize all
+	windows in that frame.
+	(remove_frame): hide all windows in the frame being removed.
+
+	* src/manage.h (hide_others): new prototype
+
+	* src/manage.c (hide_window): set win's frame to NULL.
+	(unhide_window_below): renamed frame unhide_below_window. All
+	callers updated.
+	(hide_others): new function
+
+	* src/list.c (set_active_window): comment out hiding transient
+	window code.
+
+	* src/events.c (cleanup_frame): comment out hiding transient
+	window code.
+
+	* src/data.h (struct rp_window): new field 'frame'.
+
+	* src/actions.c (cmd_help): initialize old_i to 0
+
 	* src/list.c (set_active_window): Don't hide last_win's transient_for
 	windows if last_win and win share the same transient_for window.
 
