@@ -117,18 +117,18 @@ All interaction with the window manager is done through
 keystrokes. ratpoison has a prefix map to minimize the key clobbering
 that cripples EMACS and other quality pieces of software.
 
-ratpoison was written by Shawn Betts (@email{sabetts@@users.sourceforge.net}).
+ratpoison was written by Shawn Betts (@email{sabetts@@vcn.bc.ca}).
 
 @node Contacting, Concepts, About, Top
 @chapter Contacting
-ratpoison is hosted on @url{sourceforge.net}. To see the latest
+ratpoison is hosted on @url{http://savannah.nongnu.org}. To see the latest
 developments in ratpoison go to
-@url{http://www.sourceforge.net/projects/ratpoison} or visit the
-ratpoison webpage at @url{http://ratpoison.sourceforge.net}.
+@url{http://savannah.nongnu.org/projects/ratpoison} or visit the
+ratpoison webpage at @url{http://www.nongnu.org/ratpoison}.
 
 There is also a ratpoison mailing list:
-@email{ratpoison-devel@@lists.sourceforge.net}. For details on subscribing
-and for the list archives go to the ratpoison sourceforge.net project.
+@email{ratpoison-devel@@nongnu.org}. For details on subscribing
+and for the list archives go to the ratpoison Savannah project.
 
 There is a #ratpoison irc channel on irc.openprojects.net.
 
