@@ -277,12 +277,12 @@ read_startup_files ()
       if ((fileptr = fopen (filename, "r")) == NULL)
 	{
 	  /* we probably don't need to report this, its not an error */
-	  fprintf (stderr, "ratpoison: could not open %s\n", filename);
+	  PRINT_DEBUG ("ratpoison: could not open %s\n", filename);
 
 	  if ((fileptr = fopen ("/etc/ratpoisonrc", "r")) == NULL)
 	    {
 	      /* neither is this */
-	      fprintf (stderr, "ratpoison: could not open /etc/ratpoisonrc\n");
+	      PRINT_DEBUG ("ratpoison: could not open /etc/ratpoisonrc\n");
 	    }
 	}
 

@@ -1,3 +1,8 @@
+2001-03-07  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* main.c (read_startup_files): Use PRINT_DEBUG to report failure
+	to load rc files.
+
 2001-03-05  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* actions.c: remove silly C,M,A,S,H #defines and propagate
