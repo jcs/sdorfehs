@@ -699,29 +699,23 @@ cmd_newwm(void *data)
 /*   exit (EXIT_SUCCESS); */
 /* } */
 
-/* Show the current time on the bar. Thanks to 
-   Martin Samuelsson <cosis@lysator.liu.se> for the patch. */
+/* Show the current time on the bar. Thanks to Martin Samuelsson
+   <cosis@lysator.liu.se> for the patch. Thanks to Jonathan Walther
+   <djw@lineo.com> for making it pretty. */
 void
 cmd_clock (void *data)
 {
-  char *msg;
   time_t timep;
- 
-  msg = xmalloc (9);
  
   timep = time(NULL);
   if(timep == ((time_t)-1))
     {
-      perror("In show_clock() ");
+      PRINT_ERROR ("time() failed\n")
       return;
     }
- 
-  strncpy(msg, ctime(&timep) + 11, 8); /* FIXME: a little bit hardcoded looking */
-  msg[8] = '\0';
- 
-  message (msg);
 
-  free(msg);
+  /* FIXME: There's an annoying newline at the end */
+  message (ctime(&timep));
 }
 
 
