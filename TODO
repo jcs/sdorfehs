@@ -4,8 +4,9 @@
 ** general argument parsing strategy
 Its a free for all right now.
 
-** return the current setting for the def* command suite
-All def* commands that can do this, do do this.
+** The non-interactive functionality of help
+
+It should dump all the bindings in an easy to parse format.
 
 * implement these screen commands (see the screen info for documentation):
 command ???
