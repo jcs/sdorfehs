@@ -605,22 +605,17 @@ main (int argc, char *argv[])
 
   if (screen_arg)
     {
-      if (screen_num >= 0 && screen_num < num_screens)
-	{
-	  init_screen (&screens[screen_num], screen_num);
-	}
-      else
+      if (screen_num < 0 || screen_num >= num_screens)
 	{
 	  fprintf (stderr, "%d is an invalid screen for the display\n", screen_num);
 	  exit (EXIT_FAILURE);
 	}
     }
-  else
+
+  for (i=0; i<num_screens; i++)
     {
-      for (i=0; i<num_screens; i++)
-	{
-	  init_screen (&screens[i], i);
-	}
+      init_screen (&screens[i], i);
+      init_frame_list (&screens[i]);
     }
 
   init_frame_lists ();
