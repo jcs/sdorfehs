@@ -56,7 +56,9 @@ static edit_status editor_complete_next (rp_input_line *line);
 static edit_status editor_insert (rp_input_line *line, char *keysym_buf);
 
 
+#ifdef HAVE_HISTORY
 static char *saved_command = NULL;
+#endif
 
 typedef struct edit_binding edit_binding;
 
@@ -466,8 +468,10 @@ editor_insert (rp_input_line *line, char *keysym_buf)
 static edit_status
 editor_enter (rp_input_line *line)
 {
+#ifdef HAVE_HISTORY
   int result;
   char *expansion;
+#endif
 
   line->buffer[line->length] = '\0';
 #ifdef HAVE_HISTORY
