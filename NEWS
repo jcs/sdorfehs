@@ -1,6 +1,13 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.2.0-beta5
+** Completions
+You can now type Tab and get completions on window names, group names,
+and colon commands.
+
+** Line editing capabilities
+You can now go forward a word, backward a char, delete a word, etc.
+
 ** New commands gnewbg, gselect, groups, gmove, and gmerge
 These commands allow further manipulation of window groups.
 

@@ -1,5 +1,8 @@
 2003-05-28  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/completions.c (completions_complete): if direction is
+	COMPLETION_PREVIOUS, then set last_match to it's previous entry.
+
 	* src/globals.h (COMPLETION_NEXT): new define
 	(COMPLETION_PREVIOUS): likewise
 
