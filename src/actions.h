@@ -107,8 +107,7 @@ char * cmd_link (int interactive, void *data);
 char * cmd_defbarpadding (int interactive, void *data);
 char * cmd_license (int interactive, void *data);
 char * cmd_alias (int interactive, void *data);
-
-/* void cmd_xterm (void *data); */
+char *cmd_defbarborder (int interactive, void *data);
 
 void initialize_default_keybindings (void);
 rp_action* find_keybinding (KeySym keysym, int state);

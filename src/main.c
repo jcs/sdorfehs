@@ -412,6 +412,7 @@ init_defaults ()
   defaults.bar_y_padding       = 0;
   defaults.bar_location        = NorthEastGravity;
   defaults.bar_timeout 	       = 5;
+  defaults.bar_border_width    = 1;
 
   defaults.frame_indicator_timeout = 1;
 
@@ -618,22 +619,26 @@ init_screen (screen_info *s, int screen_num)
 
   /* Create the program bar window. */
   s->bar_is_raised = 0;
-  s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0,
-				       1, 1, 1, s->fg_color, s->bg_color);
+  s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 
+				       defaults.bar_border_width, 
+				       s->fg_color, s->bg_color);
 
   /* Setup the window that will recieve all keystrokes once the prefix
      key has been pressed. */
-  s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, WhitePixel (dpy, s->screen_num), BlackPixel (dpy, s->screen_num));
+  s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, 
+				       WhitePixel (dpy, s->screen_num), 
+				       BlackPixel (dpy, s->screen_num));
   XSelectInput (dpy, s->key_window, KeyPressMask );
   XMapWindow (dpy, s->key_window);
 
   /* Create the input window. */
-  s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 
-  					 1, 1, 1, s->fg_color, s->bg_color);
+  s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 
+					 defaults.bar_border_width, 
+					 s->fg_color, s->bg_color);
   XSelectInput (dpy, s->input_window, KeyPressMask );
 
   /* Create the frame indicator window */
-  s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, 1, 
+  s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, defaults.bar_border_width, 
 					 s->fg_color, s->bg_color);
 
   /* Create the help window */

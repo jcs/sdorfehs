@@ -92,6 +92,7 @@ static user_command user_commands[] =
     {"definputwidth",		cmd_definputwidth,	arg_STRING},
     {"defmaxsizegravity",	cmd_defmaxsizegravity, 	arg_STRING},
     {"defpadding", 		cmd_defpadding, 	arg_STRING},
+    {"defbarborder",		cmd_defbarborder,	arg_STRING},
     {"deftransgravity",		cmd_deftransgravity,	arg_STRING},
     {"defwaitcursor",		cmd_defwaitcursor,	arg_STRING},
     {"defwinfmt", 		cmd_defwinfmt, 		arg_STRING},
@@ -1879,6 +1880,41 @@ cmd_defborder (int interactive, void *data)
     {
       if (win->frame)
 	maximize (win);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defbarborder (int interactive, void *data)
+{
+  int tmp;
+  int i;
+
+  if (data == NULL && !interactive)
+    return xsprintf ("%d", defaults.window_border_width);
+
+  if (data == NULL
+      || sscanf (data, "%d", &tmp) < 1)
+    {
+      message (" defbarborder: One argument required ");
+      return NULL;
+    }
+
+  if (tmp >= 0)
+    defaults.bar_border_width = tmp;
+  else
+    {
+      message (" defbarborder: Bad argument ");
+      return NULL;
+    }
+
+  /* Update the frame and bar windows. */
+  for (i=0; i<num_screens; i++)
+    {
+      XSetWindowBorderWidth (dpy, screens[i].bar_window, defaults.bar_border_width);
+      XSetWindowBorderWidth (dpy, screens[i].frame_window, defaults.bar_border_width);
+      XSetWindowBorderWidth (dpy, screens[i].input_window, defaults.bar_border_width);
     }
 
   return NULL;

@@ -140,6 +140,7 @@ struct rp_defaults
   int bar_y_padding;
   int bar_location;
   int bar_timeout;
+  int bar_border_width;
   
   int frame_indicator_timeout;
 

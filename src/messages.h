@@ -43,6 +43,6 @@
 #define MESSAGE_PROMPT_XTERM_COMMAND 	MESSAGE_PROMPT_SHELL_COMMAND TERM_PROG " -e "
 
 #define MESSAGE_WELCOME 	" Welcome to ratpoison! Hit `%s %s' for help. "
-#define MESSAGE_FRAME_STRING 	"Current Frame"
+#define MESSAGE_FRAME_STRING 	" Current Frame "
 
 #endif /* ! _RATPOISON_MESSAGES_H */

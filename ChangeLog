@@ -1,5 +1,21 @@
 2002-01-24  shawn  <sabetts@vcn.bc.ca>
 
+	* src/messages.h (MESSAGE_FRAME_STRING): Pad the string with
+	spaces on both sides.
+
+	* src/main.c (init_screen): Create the frame, input, and bar
+	windows with a border width of defaults.bar_border_width.
+	(init_defaults): initialize defaults.bar_border_width
+
+	* src/bar.c (bar_x): Incorporate defaults.bar_border_width into
+	calculations.
+	(bar_y): likewise
+
+	* src/actions.h (cmd_defbarborder): new prototype
+
+	* src/actions.c (user_commands): new command "defbarborder"
+	(cmd_defbarborder): new function
+
 	* src/main.c (init_screen): create the help window with a 0 border
 	width.
 
