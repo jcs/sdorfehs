@@ -1,5 +1,8 @@
 2001-03-13  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* configure.in: warn the user if the x terminal emulator cannot be
+	found.
+
 	* src/conf.h: replaced the silly c++ style comment around
 	HIDE_MOUSE with a REAL comment.
 
