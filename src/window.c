@@ -468,8 +468,12 @@ set_active_window (rp_window *win)
 
   /* Make sure the window comes up full screen */
   maximize (win);
-  unhide_window (win);
 
+  /* Focus the window. */
+  give_window_focus (win, last_win);
+
+  /* The other windows in the frame will be hidden if this window
+     doesn't qualify as a transient window (ie dialog box. */
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
   if (!win->transient
       && !(win->hints->flags & PMaxSize 
@@ -479,8 +483,6 @@ set_active_window (rp_window *win)
   if (!win->transient)
 #endif
     hide_others(win);
-
-  give_window_focus (win, last_win);
 
   /* Make sure the program bar is always on the top */
   update_window_names (win->scr);
