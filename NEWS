@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** "number" command takes additional optional argument
+The second argument is used to specify a window other than the
+current.
+
 ** new command "alias"
 An alias gives a name to a command sequence. For instance, you could
 alias 'emacs' to 'exec emacs'. Then you could simply type 'C-t :emacs'
