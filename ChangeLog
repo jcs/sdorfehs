@@ -1,3 +1,8 @@
+2002-01-17  Gergely Nagy  <algernon@debian.org>
+
+	* doc/ratpoison.1, doc/ratpoison.texi (Keystrokes): removed
+	false statement that C-t C-: is bound to colon.
+
 2002-01-15  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/input.c (keysym_to_string): handle the case when
