@@ -1,3 +1,12 @@
+2001-09-06  Gergely Nagy  <algernon@debian.org>
+
+	* debian/changelog: Updated to version 1.0.0
+
+	* doc/sample.ratpoisonrc: change escape ^a to escape C-a, to
+	reflect	the new key naming scheme
+
+	* ratpoison.spec: bring it up to date, and add %doc stuff
+
 2001-09-06  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/manage.c (grab_prefix_key): call grab_key.
