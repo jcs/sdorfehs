@@ -1,3 +1,15 @@
+2005-02-22  sabetts  <sabetts@apeguts>
+
+	* src/main.c (read_startup_files): use xsprintf when generating
+	path to ratpoisonrc.
+
+	* src/input.c (get_more_input): Use HAVE_HISTORY to ifdef out
+	history_reset.
+
+	* src/actions.c (command): new variable, raw, which records
+	whether to tell parse_args not to parse the last arg.
+	(cmd_set): likewise
+
 2005-02-10  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (parse_keydesc): return a cmdret error in the

@@ -426,7 +426,7 @@ get_more_input (char *prompt, char *preinput,
   char *final_input;
   edit_status status;
 
-#ifdef HAVE_READLINE_HISTORY_H
+#ifdef HAVE_HISTORY
   history_reset();
 #endif /* HAVE_READLINE_HISTORY_H */
 

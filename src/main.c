@@ -388,8 +388,8 @@ read_startup_files (char *alt_rcfile)
 	}
       else
 	{
-	  char *filename = (char*)xmalloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
-	  sprintf (filename, "%s/.ratpoisonrc", homedir);
+	  char *filename;
+	  filename = xsprintf ("%s/.ratpoisonrc", homedir);
       
 	  if ((fileptr = fopen (filename, "r")) == NULL)
 	    {

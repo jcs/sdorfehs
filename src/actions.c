@@ -2305,7 +2305,7 @@ command (int interactive, char *data)
 	  struct cmdarg *acur;
 	  struct list_head *iter, *tmp;
 	  struct list_head head, args;
-	  int i, nargs = -1;
+	  int i, nargs = 0, raw = 0;
 
 	  INIT_LIST_HEAD (&args);
 	  INIT_LIST_HEAD (&head);
@@ -2316,12 +2316,13 @@ command (int interactive, char *data)
 		|| uc->args[i].type == arg_SHELLCMD
 		|| uc->args[i].type == arg_RAW)
 	      {
+		raw = 1;
 		nargs = i;
 		break;
 	      }
 
 	  /* Parse the arguments and call the function. */
-	  result = parse_args (rest, &head, nargs, uc->args[nargs].type == arg_RAW);
+	  result = parse_args (rest, &head, nargs, raw);
 	  if (result)
 	    goto free_lists;
 	  
@@ -4740,7 +4741,7 @@ cmd_set (int interactive, struct cmdarg **args)
       struct cmdarg *acur;
       struct list_head *iter, *tmp;
       struct list_head head, arglist;
-      int i, nargs = -1;
+      int i, nargs = 0, raw = 0;
       int parsed_args;
       cmdret *result = NULL;
       struct cmdarg **cmdargs;
@@ -4755,6 +4756,7 @@ cmd_set (int interactive, struct cmdarg **args)
 	    || ARG(0,variable)->args[i].type == arg_SHELLCMD
 	    || ARG(0,variable)->args[i].type == arg_RAW)
 	  {
+	    raw = 1;
 	    nargs = i;
 	    break;
 	  }
@@ -4764,7 +4766,7 @@ cmd_set (int interactive, struct cmdarg **args)
 	input = xstrdup (args[1]->string);
       else
 	input = xstrdup ("");
-      result = parse_args (input, &head, nargs, ARG(0,variable)->args[i].type == arg_RAW);
+      result = parse_args (input, &head, nargs, raw);
       free (input);
 
       if (result)
