@@ -1,5 +1,14 @@
 2001-09-09  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/split.c (set_active_frame): give the key_window focus when
+	no window has focus.
+	(blank_frame): give the key_window focus.
+
+	* src/main.c (init_screen): don't listen for keystrokes on the
+	root window.
+	(main): give the key_window focus in the case that no window has
+	focus.
+
 	* src/bar.c (marked_message): use the screen_info fg_color and
 	bg_color to create the inverse GC.
 

@@ -500,7 +500,12 @@ main (int argc, char *argv[])
 
   /* Indicate to the user that ratpoison has booted. */
   show_welcome_message();
-  
+
+  /* If no window has focus, give the key_window focus. */
+  if (current_window() == NULL)
+    XSetInputFocus (dpy, current_screen()->key_window, 
+		    RevertToPointerRoot, CurrentTime);
+
   handle_events ();
 
   return EXIT_SUCCESS;
@@ -522,8 +527,7 @@ init_screen (screen_info *s, int screen_num)
      it, terminating ratpoison. */
   XSelectInput(dpy, RootWindow (dpy, screen_num),
                PropertyChangeMask | ColormapChangeMask
-               | SubstructureRedirectMask | KeyPressMask | KeyReleaseMask
-               | SubstructureNotifyMask );
+               | SubstructureRedirectMask | SubstructureNotifyMask );
   XSync (dpy, False);
 
   s->screen_num = screen_num;

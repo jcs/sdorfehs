@@ -529,11 +529,12 @@ set_active_frame (rp_window_frame *frame)
       show_frame_indicator();
     }
 
-  /* If the frame has no window to give focus to, give the root window
+  /* If the frame has no window to give focus to, give the key window
      focus. */
   if( !frame->win )
     {
-      XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+      XSetInputFocus (dpy, current_screen()->key_window, 
+		      RevertToPointerRoot, CurrentTime);
     }  
 }
 
@@ -546,6 +547,10 @@ blank_frame (rp_window_frame *frame)
   hide_others (frame->win);
 
   set_frames_window (frame, NULL);
+
+  /* Give the key window focus. */
+  XSetInputFocus (dpy, current_screen()->key_window, 
+		  RevertToPointerRoot, CurrentTime);
 }
 
 void
