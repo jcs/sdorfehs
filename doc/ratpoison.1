@@ -1,4 +1,4 @@
-.TH RATPOISON 1 "3 March, 2001" "ratpoison 1.0.0" RATPOISON
+.TH RATPOISON 1 "9 September, 2001" "ratpoison" RATPOISON
 .SH NAME
 ratpoison \- fatless X window manager
 .SH SYNOPSIS
@@ -11,7 +11,7 @@ window manager.
 \fBratpoison\fP is a simple Window Manager with no fat library
 dependencies, no fancy graphics, no window decorations, and no
 flashy wank. It is largely modeled after \fIGNU Screen\fP which
-has done wonders in virtual terminal market.
+has done wonders in the virtual terminal market.
 
 All interaction with the window manager is done through
 keystrokes. ratpoison has a prefix map to minimize the key
@@ -21,14 +21,14 @@ software.
 ratpoison is controlled entirely through the keyboard. The default
 keystrokes are listed in this section.
 .TP
-.B C-t C-t
+.B C\-t C\-t
 Switch to the last window.
 .TP
-.B C-t t
-Sometimes you need to send a C-t to the current window. This keystroke
+.B C\-t t
+Sometimes you need to send a C\-t to the current window. This keystroke
 does just that.
 .TP
-.B C\-t 0-9
+.B C\-t 0\-9
 Switch to the numbered window.
 .TP
 .B C\-t \-
@@ -113,7 +113,7 @@ Cycle through ratpoison's frames.
 Kill all frames but the current one.
 .TP
 .B C\-t R
-Kill the current frame. This is a no-op if there is only one frame.
+Kill the current frame. This is a no\-op if there is only one frame.
 .TP
 .B C\-t b,
 .B C\-t C\-b
@@ -125,7 +125,6 @@ Display a help screen
 .B C\-t f
 .B C\-t C\-f
 Indicate which frame is the current frame.
-
 .SH COMMANDS
 Ratpoison can be controlled with commands (so called colon-commands).
 The summary of available commands is listed below:
@@ -143,7 +142,7 @@ key to bind and the command to run. For example, to bind \fIC\-t R\fP to
 restart ratpoison:
 
 .IP
-: bind R exec ratpoison --restart
+: bind R exec ratpoison \-\-restart
 .PP
 .TP
 .B clock
@@ -161,7 +160,7 @@ This deletes the current window. You can access it with the \fIC\-t k\fP
 keystroke.
 .TP
 .B escape \fIkey\fP
-Set the prefix to to \fIkey\fP. For example \fIescape C-b\fP sets the
+Set the prefix to to \fIkey\fP. For example \fIescape C\-b\fP sets the
 prefix key to \fIC\-b\fP.
 .TP
 .B focus
@@ -216,15 +215,15 @@ this is bound to \fIC\-t p\fP.
 Quit ratpoison.
 .TP
 .B remove
-Kill the current frame. This is a no-op if there is only one frame.
+Kill the current frame. This is a no\-op if there is only one frame.
 .TP
 .B rudeness \fIn\fP
-The rudeness command lets you decide what windows pop-up automatically
+The rudeness command lets you decide what windows pop\-up automatically
 and when. This is often useful for those deep hack sessions when you
 absolutely can't be disturbed.
 
 There are two kinds of windows: normal windows (like an xterm) and
-transient windows (generally pop-up dialog boxes). When a client
+transient windows (generally pop\-up dialog boxes). When a client
 program wants to display a new window it makes a requests to
 ratpoison. ratpoison then decides whether to grant the request and
 display the window or ignore it. A client program can also request
@@ -249,9 +248,9 @@ request with a message like \fIRaise request from window 1
 This jumps you to window \fIn\fP where \fIn\fP is the window number as
 shown in the Program Bar. You can do the same trick with
 \fIC\-n\fP too. To select no window, blanking the current
-frame, type \fIselect -\fP.
+frame, type \fIselect \-\fP.
 .TP
-.B select \fIwindow-name\fP
+.B select \fIwindow\-name\fP
 Go to a window by name. A shortcut is \fIC\-t '\fP.
 .TP
 .B source \fIfile\fP
@@ -292,7 +291,7 @@ This command is bound to \fIC\-t w\fP by default.
 
 When invoked from the command-line like this,
 
-$ ratpoison -c windows
+$ ratpoison \-c windows
 
 Instead of a message bar, you will get a list of the windows printed
 to stdout. This allows you to write more advanced scripts than simple
@@ -317,9 +316,8 @@ display this help and exit
 Tell the running ratpoison process to execute the command
 \fIcmd\fP. This is how ratpoison can be controlled from the
 command-line or from a script.
-
 .SH "REPORTING BUGS"
-Report bugs to <ratpoison-devel@lists.sourceforge.net>.
+Report bugs to <ratpoison\-devel@lists.sourceforge.net>.
 .SH COPYRIGHT
 Copyright \(co 2000, 2001 Shawn Betts
 .br
