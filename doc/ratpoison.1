@@ -10,7 +10,7 @@ window manager.
 
 \fBratpoison\fP is a simple Window Manager with no fat library
 dependencies, no fancy graphics, no window decorations, and no
-flashy wank. It is largely modelled after \fIGNU Screen\fP which
+flashy wank. It is largely modeled after \fIGNU Screen\fP which
 has done wonders in virtual terminal market.
 
 All interaction with the window manager is done through
@@ -30,6 +30,9 @@ does just that.
 .TP
 .B C\-t 0-9
 Switch to the numbered window.
+.TP
+.B C\-t \-
+Select no window, essentially hiding all windows in the current frame.
 .TP
 .B C\-t A,
 .B C\-t C\-A
@@ -94,6 +97,35 @@ Display the version of ratpoison.
 .B C\-t w,
 .B C\-t C\-w
 Display the list of managed windows. The current window is highlighted.
+.TP
+.B C\-t s
+Split the current window horizontally in two. The last accessed window
+not occupying a frame will be the second window.
+.TP
+.B C\-t S
+Split the current window vertically in two. The last accessed window not
+occupying a frame will be the second window.
+.TP
+.B C\-t tab
+Cycle through ratpoison's frames.
+.TP
+.B C\-t Q
+Kill all frames but the current one.
+.TP
+.B C\-t R
+Kill the current frame. This is a no-op if there is only one frame.
+.TP
+.B C\-t b,
+.B C\-t C\-b
+Banish the mouse to the lower right corner of the screen.
+.TP
+.B C\-t ?
+Display a help screen
+.TP
+.B C\-t f
+.B C\-t C\-f
+Indicate which frame is the current frame.
+
 .SH COMMANDS
 Ratpoison can be controlled with commands (so called colon-commands).
 The summary of available commands is listed below:
@@ -102,10 +134,14 @@ The summary of available commands is listed below:
 This is a pretty useless command. By default, it is bound to
 \fIC\-t g\fP, and its purpose is to abort other commands.
 .TP
-.B bind \fIkey\fP \fIcommand\fP
+.B banish
+Banish the mouse to the lower right corner of the screen.
+.TP
+.B bind \fIKey\fP \fIcommand\fP
 Bind a key to a ratpoison command. This command takes two arguments: the
 key to bind and the command to run. For example, to bind \fIC\-t R\fP to
 restart ratpoison:
+
 .IP
 : bind R exec ratpoison --restart
 .PP
@@ -117,26 +153,35 @@ In the default setup, the \fIC\-t a\fP keystroke is bound to this command.
 .B colon \fIcommand\fP
 Run a ratpoison command.
 .TP
+.B curframe
+Indicate which frame is the current frame.
+.TP
 .B delete
 This deletes the current window. You can access it with the \fIC\-t k\fP
 keystroke.
 .TP
 .B escape \fIkey\fP
-Set the prefix to \fIkey\fP. For example 
-.IP
-: escape ^b
-
-sets the prefix key to \fIC\-b\fP.
+Set the prefix to to \fIkey\fP. For example \fIescape ^b\fP sets the
+prefix key to \fIC\-b\fP.
+.TP
+.B focus
+cycle through ratpoison's frames.
 .TP
 .B generate
 Send a \fIC\-t\fP to the current window.
+.TP
+.B help
+Display a help screen that lists all bound keystrokes.
+.TP
+.B echo \fItext\fP
+Display \fItext\fP as a message.
 .TP
 .B exec \fIcommand\fP
 Execute a shell command. By default, \fIC\-t !\fP does this.
 .TP
 .B kill
 This destroys the current window. Normally you should only need to
-use \fIdelete\fP, but just incase you need to rip the heart out of a
+use \fIdelete\fP, but just in case you need to rip the heart out of a
 misbehaving window this command should do the trick. Also available as
 \fIC\-t K\fP.
 .TP
@@ -152,6 +197,13 @@ and \fIC\-t enter\fP.
 This is a bad-bad command. It kills ratpoison and revives that
 ugly rodent! Yuck! Avoid!
 .TP
+.B number \fIn\fP
+Set the current window's number to \fIn\fP. If another window occupies
+the requested number already, then the windows' numbers are swapped.
+.TP
+.B only
+Kill all frames but the current one.
+.TP
 .B other
 This toggles between the current window and the last window. By
 default, this is bound to \fIC\-t C\-t\fP.
@@ -160,10 +212,44 @@ default, this is bound to \fIC\-t C\-t\fP.
 This jumps you to the previous window in the window list. By default,
 this is bound to \fIC\-t p\fP.
 .TP
+.B quit
+Quit ratpoison.
+.TP
+.B remove
+Kill the current frame. This is a no-op if there is only one frame.
+.TP
+.B rudeness \fIn\fP
+The rudeness command lets you decide what windows pop-up automatically
+and when. This is often useful for those deep hack sessions when you
+absolutely can't be disturbed.
+
+There are two kinds of windows: normal windows (like an xterm) and
+transient windows (generally pop-up dialog boxes). When a client
+program wants to display a new window it makes a requests to
+ratpoison. ratpoison then decides whether to grant the request and
+display the window or ignore it. A client program can also request
+that one of its windows be raised. You can customize ratpoison to
+either honour these requests (the default operation) or ignore them.
+
+\fIn\fP is a number from 0 to 15. Each of the four bits determine
+which requests ratpoison grants.
+
+Bit 0 Tells ratpoison to grant raise requests on transient windows.
+Bit 1 Tells ratpoison to grant raise requests on normal windows. 
+Bit 2 Tells ratpoison to grant display requests on new transient windows.
+Bit 3 Tells ratpoison to grant display requests on new normal windows.
+
+For example, if you wanted only wanted to grant transient windows
+raise requests and display requests you would type \fIrudeness
+5\fP. If a request is not granted ratpoison will tell you about the
+request with a message like \fIRaise request from window 1
+(emacs)\fP.
+.TP
 .B select \fIn\fP
 This jumps you to window \fIn\fP where \fIn\fP is the window number as
 shown in the Program Bar. You can do the same trick with
-\fIC\-n\fP too.
+\fIC\-n\fP too. To select no window, blanking the current
+frame, type \fIselect -\fP.
 .TP
 .B select \fIwindow-name\fP
 Go to a window by name. A shortcut is \fIC\-t '\fP.
@@ -171,26 +257,47 @@ Go to a window by name. A shortcut is \fIC\-t '\fP.
 .B source \fIfile\fP
 Read a text file containing ratpoison commands.
 .TP
+.B split,
+.B hsplit
+Split the current window horizontally in two. The last accessed window
+not occupying a frame will be the second window.
+.TP
 .B title \fItitle\fP
 Rename the currently active window. This name will remain for the
 duration of the window's life, unless you change it again. By default,
 the \fIC\-t A\fP keystroke is bound to this command.
 .TP
+.B unbind \fIkey\fP
+Unbind a keystroke.
+.TP
 .B version
 Print ratpoison version.  By default, this is bound to \fIC\-t v\fP.
+.TP
+.B vsplit
+Split the current window vertically in two. The last accessed window not
+occupying a frame will be the second window.
 .TP
 .B windows
 This displays the Program Bar which displays the windows you currently
 have running. The number before each window name is used to jump to
 that window. You can do this by typing \fIC\-t n\fP where \fIn\fP
 is the number of the window. Note that only windows with numbers from
-0 to 9 can be referenced using this keystoke.  To reach windows with
+0 to 9 can be referenced using this keystroke.  To reach windows with
 numbers greater than 9, use \fIC\-t '\fP and type the number at the
 prompt.
 
 After 5 seconds the Program Bar disappears.
 
 This command is bound to \fIC\-t w\fP by default.
+
+When invoked from the command-line like this,
+
+$ ratpoison -c windows
+
+Instead of a message bar, you will get a list of the windows printed
+to stdout. This allows you to write more advanced scripts than simple
+keyboard macros.
+
 .SH OPTIONS
 These are the command line options that are recognized by ratpoison:
 .TP
@@ -205,6 +312,12 @@ output version information and exit
 .TP
 \fB\-h\fR, \fB\-\-help\fR
 display this help and exit
+.TP
+\fB\-c\fR \fIcmd\fP, \fB\-\-command\fR \fIcmd\fP
+Tell the running ratpoison process to execute the command
+\fIcmd\fP. This is how ratpoison can be controlled from the
+command-line or from a script.
+
 .SH "REPORTING BUGS"
 Report bugs to <ratpoison-devel@lists.sourceforge.net>.
 .SH COPYRIGHT

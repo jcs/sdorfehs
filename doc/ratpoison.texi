@@ -185,6 +185,9 @@ does just that.
 @item C-t 0-9
 Switch to the numbered window.
 
+@item C-t -
+Select no window, essentially hiding all windows in the current frame.
+
 @item C-t A
 @item C-t C-A
 Rename the current window. The window's new name will prevail for the
@@ -358,6 +361,9 @@ ugly rodent! Yuck! Avoid!
 Set the current window's number to @var{n}. If another window occupies
 the requested number already, then the windows' numbers are swapped.
 
+@item only
+Kill all frames but the current one.
+
 @item other
 This toggles between the current window and the last window. By
 default, this is bound to @kbd{C-t C-t}.
@@ -368,6 +374,9 @@ this is bound to @kbd{C-t p}.
 
 @item quit
 Quit ratpoison.
+
+@item remove
+Kill the current frame. This is a no-op if there is only one frame.
 
 @item rudeness @var{n}
 The rudeness command lets you decide what windows pop-up automatically
@@ -417,6 +426,11 @@ Go to a window by name. A shortcut is @kbd{C-t '}.
 @item source @var{file}
 Read a text file containing ratpoison commands.
 
+@item split
+@item hsplit
+Split the current window horizontally in two. The last accessed window
+not occupying a frame will be the second window.
+
 @item title @var{title}
 Rename the currently active window. This name will remain for the
 duration of the window's life, unless you change it again. By default,
@@ -427,6 +441,10 @@ Unbind a keystroke.
 
 @item version
 Print ratpoison version.  By default, this is bound to @kbd{C-t v}.
+
+@item vsplit
+Split the current window vertically in two. The last accessed window not
+occupying a frame will be the second window.
 
 @item windows
 This displays the Program Bar which displays the windows you currently
@@ -441,20 +459,15 @@ After 5 seconds the Program Bar disappears.
 
 This command is bound to @kbd{C-t w} by default.
 
-@item split
-@item hsplit
-Split the current window horizontally in two. The last accessed window
-not occupying a frame will be the second window.
+When invoked from the command-line like this,
 
-@item vsplit
-Split the current window vertically in two. The last accessed window not
-occupying a frame will be the second window.
+@example
+$ ratpoison -c windows
+@end example
 
-@item only
-Kill all frames but the current one.
-
-@item remove
-Kill the current frame. This is a no-op if there is only one frame.
+Instead of a message bar, you will get a list of the windows printed
+to stdout. This allows you to write more advanced scripts than simple
+keyboard macros.
 
 @end table
 
