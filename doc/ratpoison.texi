@@ -5,12 +5,10 @@
 @setchapternewpage odd
 @c %**end of header
 
-@ifinfo
-@format
-START-INFO-DIR-ENTRY
-* ratpoison: (ratpoison).                     A rat-free Window Manager.
-END-INFO-DIR-ENTRY
-@end format
+@dircategory X11
+@direntry
+* ratpoison: (ratpoison).       Say good-bye to the rodent
+@end direntry
 
 @ifinfo
 This is the ratpoison user manual.
