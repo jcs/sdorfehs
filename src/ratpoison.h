@@ -39,6 +39,7 @@
 do {						\
   PRINT_LINE (error);				\
   printf fmt;					\
+  fflush (stdout);				\
 } while (0)
 
 #ifdef DEBUG
@@ -46,6 +47,7 @@ do {						\
 do {						\
   PRINT_LINE (debug);				\
   printf fmt;					\
+  fflush (stdout);                              \
 } while (0)
 #else
 #define PRINT_DEBUG(fmt)
@@ -66,6 +68,7 @@ extern XGCValues gv;
 #include "communications.h"
 #include "sbuf.h"
 #include "split.h"
+#include "frame.h"
 
 void clean_up ();
 screen_info *find_screen (Window w);

@@ -1,3 +1,51 @@
+2003-03-07  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/Makefile.am (ratpoison_SOURCES): add frame.c and frame.h
+
+	* src/frame.h (frame_left): new prototype
+	(frame_top): likewise
+	(frame_right): likewise
+	(frame_bottom): likewise
+	(frame_width): likewise
+	(frame_height): likewise
+	(frame_resize_left): likewise
+	(frame_resize_right): likewise
+	(frame_resize_up): likewise
+	(frame_resize_down): likewise
+	(frame_move_left): likewise
+	(frame_move_right): likewise
+	(frame_move_up): likewise
+	(frame_move_down): likewise
+
+	* src/frame.c (frame_left): new function
+	(frame_top): likewise
+	(frame_right): likewise
+	(frame_bottom): likewise
+	(frame_width): likewise
+	(frame_height): likewise
+	(frame_resize_left): likewise
+	(frame_resize_right): likewise
+	(frame_resize_up): likewise
+	(frame_resize_down): likewise
+	(frame_move_left): likewise
+	(frame_move_right): likewise
+	(frame_move_up): likewise
+	(frame_move_down): likewise
+
+	* src/split.c (resize_frame): new function
+	(resize_frame_right): likewise
+	(resize_frame_left): likewise
+	(resize_frame_top): likewise
+	(resize_frame_bottom): likewise
+	(resize_frame_horizontally): use resize_frame_right and
+	resize_frame_left to do the resizing.
+	(resize_frame_vertically):  use resize_frame_top and
+	resize_frame_bottom to do the resizing.
+
+	* src/ratpoison.h (PRINT_ERROR): flush stdout
+	(PRINT_DEBUG): likewise
+	include frame.h
+
 2003-03-06  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/split.h (find_frame_number): new prototype
