@@ -13,9 +13,6 @@ All interaction with the window manager is done through
 keystrokes. ratpoison has a prefix map to minimize the key clobbering
 that cripples EMACS and other quality pieces of software.
 
-You'll also be pleased to hear that there is NO ratpoison.conf to
-configure. If you want to configure ratpoison, edit the source.
-
 Building
 --------
 
@@ -30,10 +27,13 @@ if you want to install it, simply type 'make install' as a privileged user:
 Customization
 -------------
 
-Use the configure option 'disable-debug' to disable debugging symbols.
+Use the configure option '--enable-debug' to enable debugging symbols.
 
 Use the configure option '--with-xterm=PROG' to set the x terminal
 emulator to use. The default is `xterm'.
+
+Use the configure option '--with-emacs=PROG' to set the emacs program
+to launch. This is useful if you use xemacs.
 
 Consult the INSTALL file for more information about the configure script.
 
