@@ -299,7 +299,7 @@ configure_request (XConfigureRequestEvent *e)
 	  XConfigureWindow (dpy, win->w, 
 			    e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
 			    &changes);
-
+	  XSync(dpy, False);
 	  if (win->state == NormalState)
 	    maximize (win);
 	}
@@ -584,6 +584,8 @@ property_notify (XEvent *ev)
 	case XA_WM_NORMAL_HINTS:
 	  PRINT_DEBUG ("updating window normal hints\n");
 	  update_normal_hints (win);
+	  if (win->state == NormalState)
+	    maximize (win);
 	  break;
 
 	case XA_WM_TRANSIENT_FOR:

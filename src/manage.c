@@ -76,17 +76,15 @@ update_normal_hints (rp_window *win)
 
   /* Print debugging output for window hints. */
 #ifdef DEBUG
-  PRINT_DEBUG ("hints: ");
   if (win->hints->flags & PMinSize)
-    PRINT_DEBUG ("minx: %d miny: %d ", win->hints->min_width, win->hints->min_height);
+    PRINT_DEBUG ("minx: %d miny: %d\n", win->hints->min_width, win->hints->min_height);
 
   if (win->hints->flags & PMaxSize)
-    PRINT_DEBUG ("maxx: %d maxy: %d ", win->hints->max_width, win->hints->max_height);
+    PRINT_DEBUG ("maxx: %d maxy: %d\n", win->hints->max_width, win->hints->max_height);
 
   if (win->hints->flags & PResizeInc)
-    PRINT_DEBUG ("incx: %d incy: %d", win->hints->width_inc, win->hints->height_inc);
+    PRINT_DEBUG ("incx: %d incy: %d\n", win->hints->width_inc, win->hints->height_inc);
 
-  PRINT_DEBUG ("\n");
 #endif
 }
 		     

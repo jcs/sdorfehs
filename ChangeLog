@@ -1,3 +1,13 @@
+2002-02-17  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/manage.c (update_normal_hints): fix debugging output to be
+	more readable.
+
+	* src/events.c (configure_request): call XSync after granting
+	configure request.
+	(property_notify): maximize the window on receiving a normal hints
+	property change.
+
 2002-02-16  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/manage.c (maximize): remove calls to XSelectInput.
