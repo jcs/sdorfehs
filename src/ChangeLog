@@ -1,3 +1,11 @@
+2001-02-17  Gergely Nagy  <8@free.bsd.hu>
+
+	* actions.c (goto_window_by_name, rename_current_window, command)
+	(shell_command, switch_to, xterm_command): changed static char[100]s
+	to dynamic char *s, as get_input() now supports this
+	* input.h: reflect get_input change
+	* input.c (get_input): use dynamically allocated strings
+
 2001-02-15  Gergely Nagy  <8@free.bsd.hu>
 
 	* getopt.c: fixed a warning
