@@ -1,3 +1,8 @@
+2005-01-15  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/frame.c (frame_read): correctly determine if the input
+	starts with "(frame ".
+
 2005-01-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_prev): return a cmdret*. same for error
