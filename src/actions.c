@@ -1,4 +1,4 @@
-/* Copyright (C) 2000-2004 Shawn Betts <sabetts@vcn.bc.ca>
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This file is part of ratpoison.
  *
@@ -2097,7 +2097,7 @@ cmd_license (int interactive, char *data)
   int max_width = 0;
   char *license_text[] = { PACKAGE " " VERSION, "(built " __DATE__ " " __TIME__ ")",
 			   "",
-			   "Copyright (C) 2000-2004 Shawn Betts",
+			   "Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts",
 			   "",
 			   "ratpoison is free software; you can redistribute it and/or modify ",
 			   "it under the terms of the GNU General Public License as published by ",

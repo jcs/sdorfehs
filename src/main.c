@@ -1,5 +1,5 @@
 /* Ratpoison.
- * Copyright (C) 2000-2004 Shawn Betts <sabetts@vcn.bc.ca>
+ * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This file is part of ratpoison.
  *
@@ -276,7 +276,7 @@ void
 print_version ()
 {
   printf ("%s %s\n", PACKAGE, VERSION);
-  printf ("Copyright (C) 2000-2004 Shawn Betts\n\n");
+  printf ("Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts\n\n");
 
   exit (EXIT_SUCCESS);
 }  

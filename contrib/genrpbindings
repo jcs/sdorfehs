@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 # genrpbindings -- generate ratpoison bindings for various languages
 #
-# Copyright (C) 2003-2004 Ryan Yeske, Doug Kearns, Shawn Betts
+# Copyright (C) 2003, 2004 Ryan Yeske, Doug Kearns, Shawn Betts
 #
 # currently generates bindings for:
 # * Perl        (Ratpoison.pm)       Ryan Yeske <rcyeske@sfu.ca>

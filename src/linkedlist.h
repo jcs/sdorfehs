@@ -2,7 +2,7 @@
  * Copyright (C) 2003 Linus Torvalds
  *
  * Modified by Shawn Betts. Portions created by Shawn Betts are
- * Copyright (C) 2003-2004 Shawn Betts
+ * Copyright (C) 2003, 2004 Shawn Betts
  *
  * This file is part of ratpoison.
  *
