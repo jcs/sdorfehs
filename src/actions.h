@@ -80,5 +80,6 @@ char * cmd_unbind (int interactive, void *data);
 
 void initialize_default_keybindings (void);
 rp_action* find_keybinding (KeySym keysym, int state);
+rp_action* find_keybinding_by_action (char *action);
 
 #endif /* ! _RATPOISON_ACTIONS_H */

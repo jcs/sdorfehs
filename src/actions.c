@@ -26,9 +26,25 @@
 
 #include "ratpoison.h"
 
-rp_action *key_actions;
-int key_actions_last;
-int key_actions_table_size;
+static rp_action *key_actions;
+static int key_actions_last;
+static int key_actions_table_size;
+
+rp_action*
+find_keybinding_by_action (char *action)
+{
+  int i;
+
+  for (i=0; i<key_actions_last; i++)
+    {
+      if (!strcmp (key_actions[i].data, action))
+	{
+	  return &key_actions[i];
+	}
+    }
+
+  return NULL;
+}
 
 rp_action*
 find_keybinding (KeySym keysym, int state)

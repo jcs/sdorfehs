@@ -1,3 +1,18 @@
+2001-09-05  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/messages.h (MESSAGE_WELCOME): The help keystroke is not
+	hardcoded.
+
+	* src/main.c (show_welcome_message): new function
+	(main): call show_welcome_message to show the welcome message.
+
+	* src/actions.h (find_keybinding_by_action): new prototype
+
+	* src/actions.c (key_actions): change to a static variable.
+	(key_actions_last): likewise
+	(key_actions_table_size): likewise
+	(find_keybinding_by_action): new function
+
 2001-09-04  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/actions.h (cmd_unbind): new prototype

@@ -42,6 +42,6 @@
 #define MESSAGE_PROMPT_SWITCH_WM " Switch to wm: "
 #define MESSAGE_PROMPT_XTERM_COMMAND MESSAGE_PROMPT_SHELL_COMMAND TERM_PROG " -e "
 
-#define MESSAGE_WELCOME " Welcome to ratpoison! Hit C-t ? for help. "
+#define MESSAGE_WELCOME " Welcome to ratpoison! Hit `%s %s' for help. "
 
 #endif /* ! _RATPOISON_MESSAGES_H */

@@ -308,6 +308,35 @@ read_startup_files ()
     }
 }
 
+static void
+show_welcome_message ()
+{
+  rp_action *help_action;
+  char *prefix, *help;
+  
+  prefix = keysym_to_string (prefix_key.sym, prefix_key.state);
+
+  /* Find the help key binding. */
+  help_action = find_keybinding_by_action ("help");
+  if (help_action)
+    help = keysym_to_string (help_action->key, help_action->state);
+  else
+    help = NULL;
+
+
+  if (help)
+    {
+      marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, help);
+      free (help);
+    }
+  else
+    {
+      marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, ":help");
+    }
+  
+  free (prefix);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -429,8 +458,8 @@ main (int argc, char *argv[])
 
   read_startup_files ();
 
-  /* Indicate to the user that ratpoison has booted */
-  message (MESSAGE_WELCOME);
+  /* Indicate to the user that ratpoison has booted. */
+  show_welcome_message();
   
   handle_events ();
 
