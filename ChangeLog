@@ -1,3 +1,10 @@
+2002-01-09  Gergely Nagy  <algernon@debian.org>
+
+	* src/actions.c (setenv, unsetenv): new functions, used when
+	the system libc does not have them.
+
+	* configure.in: check for the presence of setenv and unsetenv.
+
 2002-01-02  shawn  <sabetts@vcn.bc.ca>
 
 	* src/main.c (init_screen): do not select on any events for the
