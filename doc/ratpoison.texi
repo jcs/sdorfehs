@@ -71,8 +71,6 @@ under the above conditions for modified versions,
 except that this permission notice may be stated in a
 translation approved by the Free Software Foundation.
 @end titlepage
-     
-@end ifinfo
 
 @ifinfo
 This document explains how to use ratpoison.
