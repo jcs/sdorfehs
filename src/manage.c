@@ -233,21 +233,21 @@ scanwins(screen_info *s)
       if (wins[i] == s->bar_window 
 	  || wins[i] == s->key_window 
 	  || wins[i] == s->input_window
-	  || wins[i] == s->frame_window) continue;
+	  || wins[i] == s->frame_window
+	  || attr.override_redirect == True
+	  || unmanaged_window (wins[i])) continue;
 
-      if (attr.override_redirect != True && !unmanaged_window (wins[i]))
+      win = add_to_window_list (s, wins[i]);
+
+      PRINT_DEBUG ("map_state: %d\n", attr.map_state);
+      if (attr.map_state == IsViewable) 
 	{
-	  win = add_to_window_list (s, wins[i]);
-
-	  PRINT_DEBUG ("map_state: %d\n", attr.map_state);
-	  if (attr.map_state == IsViewable) 
-	    {
-	      map_window (win);
-	    }
-	      
+	  win->state = NormalState;
+	  map_window (win);
 	}
     }
-  XFree((void *) wins);	/* cast is to shut stoopid compiler up */
+
+  XFree(wins);
 }
 
 int
@@ -271,17 +271,15 @@ unmanaged_window (Window w)
   return 0;
 }
 
-/* Set the state of the window.
-
-   FIXME: This is sort of broken. We should really record the state in
-   win->state and mimic the X states NormalState, WithdrawnState,
-   IconicState */
+/* Set the state of the window. */
 void
 set_state (rp_window *win, int state)
 {
   long data[2];
   
-  data[0] = (long)state;
+  win->state = state;
+
+  data[0] = (long)win->state;
   data[1] = (long)None;
 
   XChangeProperty (dpy, win->w, wm_state, wm_state, 32,
@@ -480,19 +478,60 @@ map_window (rp_window *win)
 {
   PRINT_DEBUG ("Mapping the unmapped window %s\n", win->name);
 
+  /* Fill in the necessary data about the window */
   update_window_information (win);
-  grab_prefix_key (win->w);
-
-  maximize (win);
-
-  XMapWindow (dpy, win->w);
-  set_state (win, NormalState);
-  set_active_window (win);
-
-  win->state = STATE_MAPPED;
   win->number = get_unique_window_number ();
+  grab_prefix_key (win->w);
 
   /* Put win in the mapped window list */
   remove_from_list (win);
   insert_into_list (win, rp_mapped_window_sentinel);
+
+  /* It is now considered iconic and set_active_window can handle the rest. */
+  set_state (win, IconicState);
+
+  /* FIXME: We may not want a window to pop up out of nowhere */
+  set_active_window (win);
+}
+
+void
+hide_window (rp_window *win)
+{
+  if (win == NULL) return;
+
+  set_state (win, IconicState);
+  XUnmapWindow (dpy, win->w);
+}
+
+void
+unhide_window (rp_window *win)
+{
+  if (win == NULL) return;
+  if (win->state != IconicState) return;
+
+  XMapWindow (dpy, win->w);
+  set_state (win, NormalState);
+}
+
+void
+withdraw_window (rp_window *win)
+{
+  if (win == NULL) return;
+
+  PRINT_DEBUG ("withdawn_window on '%s'\n", win->name);
+
+  /* Give back the window number. the window will get another one,
+         if it is remapped. */
+  return_window_number (win->number);
+  win->number = -1;
+
+  remove_from_list (win);
+  append_to_list (win, rp_unmapped_window_sentinel);
+
+  XRemoveFromSaveSet (dpy, win->w);
+  set_state (win, WithdrawnState);
+
+  ignore_badwindow++;
+  XSync (dpy, False);
+  ignore_badwindow--;
 }

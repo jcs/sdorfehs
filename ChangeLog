@@ -1,3 +1,63 @@
+2001-04-13  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/split.h (blank_frame): new prototype
+
+	* src/split.c (split_frame): calls unhide_window after maximizing
+	the new frame's window.
+	(remove_all_splits): hide all windows but the current one
+	(remove_all_splits): maximize the current window in its newly
+	resized frame.
+	(remove_frame): hide the frame's window after removing it from the
+	list.
+	(blank_frame): new function
+
+	* src/manage.h (withdraw_window): new prototype
+	(hide_window): likewise
+	(unhide_window): likewise
+
+	* src/manage.c (scanwins): glob ignored windows into 1 if
+	statement.
+	(scanwins): set the window's state to NormalState before calling
+	map_window.
+	(set_state): sets win->state
+	(map_window): calls set_state
+	(hide_window): new function
+	(unhide_window): likewise
+	(withdraw_window): new function
+
+	* src/main.c (main): setup error handlers after --command,
+	--restart, and --kill commands have been processed.
+	(main): doesn't call set_active_window
+	(init_screen): XSync's after selecting ewents on the root window.
+	(clean_up): map iconized windows
+
+	* src/list.h (give_window_focus): prototype updated
+
+	* src/list.c (give_window_focus): takes a second argument,
+	last_win.
+	(give_window_focus): calls unhide_window
+	(give_window_focus): uses last_win instead of current_window()
+	(set_active_window): hides the last window and unhides the new
+	window.
+	(set_active_window): calls give_window_focus
+
+	* src/events.c (cleanup_frame): maximizes the frame's new window
+	(unmap_notify): do nothing if the window is in the iconic
+	state. Withdraw the window if it is in the normal state.
+	(map_request): calls unhide_window if the window is iconized. Do
+	nothing if it is already mapped.
+	(destroy_window): tightened up
+	(client_msg): detects iconize requests from clients.
+
+	* src/data.h (STATE_UNMAPPED): remove. Dependant code uses
+	WithdawnState in its stead.
+	(STATE_MAPPED): likewise. Dependant code uses NormalState in its
+	stead
+
+	* src/actions.c (initialize_default_keybindings): new keybinding -
+	bound to "select -"
+	(cmd_select): the string "-" selects a blank window
+
 2001-04-12  shawn  <sabetts@badbox.secure.basis.org>
 
 	* src/main.c (main): calls XCloseDisplay before exitting after

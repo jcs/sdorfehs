@@ -64,7 +64,7 @@ add_to_window_list (screen_info *s, Window w)
   new_window->scr = s;
   new_window->last_access = 0;
   new_window->prev = NULL;
-  new_window->state = STATE_UNMAPPED;
+  new_window->state = WithdrawnState;
   new_window->number = -1;	
   new_window->named = 0;
   new_window->hints = XAllocSizeHints ();
@@ -370,51 +370,52 @@ save_mouse_position (rp_window *win)
   ignore_badwindow--;
 }
 
+/* Takes focus away from last_win and gives focus to win */
 void
-give_window_focus (rp_window *win)
+give_window_focus (rp_window *win, rp_window *last_win)
 {
-  static int counter = 1;	/* increments every time this function
-                                   is called. This way we can track
-                                   which window was last accessed.  */
+  /* counter increments every time this function is called. This way
+     we can track which window was last accessed. */
+  static int counter = 1;
 
   if (win == NULL) return;
 
   counter++;
   win->last_access = counter;
 
-/*   if (win->scr->bar_is_raised) update_window_names (win->scr); */
+  unhide_window (win);
 
-  if (current_window() != NULL)
-    {
-      save_mouse_position (current_window());
-    }
-
+  /* Warp the cursor to the window's saved position. */
+  if (last_win != NULL) save_mouse_position (last_win);
   XWarpPointer (dpy, None, win->scr->root, 
 		0, 0, 0, 0, win->mouse_x, win->mouse_y);
-  XSync (dpy, False);
-
-  XSetInputFocus (dpy, win->w, 
-		  RevertToPointerRoot, CurrentTime);
   
   /* Swap colormaps */
-  if (current_window() != NULL)
-    {
-      XUninstallColormap (dpy, current_window()->colormap);
-    }
+  if (last_win != NULL) XUninstallColormap (dpy, last_win->colormap);
   XInstallColormap (dpy, win->colormap);
+
+  /* Finally, give the window focus */
+  XSetInputFocus (dpy, win->w, 
+		  RevertToPointerRoot, CurrentTime);
+
+  XSync (dpy, False);
 }
 
 void
 set_active_window (rp_window *win)
 {
+  rp_window *last_win;
+
   if (win == NULL) return;
 
-  give_window_focus (win);
+  last_win = rp_current_frame->win;
   rp_current_frame->win = win;
 
   /* Make sure the window comes up full screen */
-  maximize (current_window());
-  XRaiseWindow (dpy, win->w);
+  maximize (win);
+  unhide_window (win);
+  give_window_focus (win, last_win);
+  hide_window (last_win);
 
   /* Make sure the program bar is always on the top */
   update_window_names (win->scr);

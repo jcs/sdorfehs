@@ -59,6 +59,11 @@ static void
 cleanup_frame (rp_window_frame *frame)
 {
   frame->win = find_window_other ();
+  if (frame->win)
+    {
+      maximize (frame->win);
+      unhide_window (frame->win);
+    }
 }
 
 void 
@@ -75,36 +80,26 @@ unmap_notify (XEvent *ev)
   if (s && win)
     {
       rp_window_frame *frame;
-      long data[2] = { WithdrawnState, None };
 
-      /* Give back the window number. the window will get another one,
-         if it in remapped. */
-      return_window_number (win->number);
-      win->number = -1;
-      win->state = STATE_UNMAPPED;
-
-      ignore_badwindow++;
-
+      /* If the window was inside a frame, fill the frame with another
+	 window. */
       frame = find_windows_frame (win);
       if (frame) cleanup_frame (frame);
 
-      remove_from_list (win);
-      append_to_list (win, rp_unmapped_window_sentinel);
-      
-      /* Update the state of the actual window */
-
-      XRemoveFromSaveSet (dpy, win->w);
-      XChangeProperty(dpy, win->w, wm_state, wm_state, 32,
-		      PropModeReplace, (unsigned char *)data, 2);
-
-      XSync(dpy, False);
-
-      if (frame == rp_current_frame)
+      switch (win->state)
 	{
-	  set_active_frame (frame);
+	case IconicState:
+	  /* This shouldn't actually happen, since the window is
+	     already unmapped, so do nothing */
+	  PRINT_DEBUG ("Iconizing iconized window '%s'\n", win->name);
+	  break;
+	case NormalState:
+	  PRINT_DEBUG ("Withdrawing window '%s'\n", win->name);
+	  withdraw_window (win);
+/* 	  hide_window (win); */
+	  if (frame == rp_current_frame) set_active_frame (frame);
+	  break;
 	}
-
-      ignore_badwindow--;
 
       update_window_names (s);
     }
@@ -125,7 +120,7 @@ map_request (XEvent *ev)
 
       switch (win->state)
 	{
-	case STATE_UNMAPPED:
+	case WithdrawnState:
 	  PRINT_DEBUG ("Unmapped window\n");
 	  if (unmanaged_window (win->w))
 	    {
@@ -136,17 +131,21 @@ map_request (XEvent *ev)
 	  else
 	    {
 	      PRINT_DEBUG ("managed Window\n");
-
 	      map_window (win);
 	      break;
 	    }
-	case STATE_MAPPED:
+	case NormalState:
 	  PRINT_DEBUG ("Mapped Window\n");
+	  /* Its already mapped, so we don't have to do anything */
 
-	  maximize (win);
-	  XMapRaised (dpy, win->w);
-	  set_state (win, NormalState);
-	  set_active_window (win);
+/* 	  maximize (win); */
+/* 	  XMapRaised (dpy, win->w); */
+/* 	  set_state (win, NormalState); */
+/* 	  set_active_window (win); */
+	  break;
+	case IconicState:
+	  PRINT_DEBUG ("Mapped iconic window\n");
+	  unhide_window (win);
 	  break;
 	}
     }
@@ -174,7 +173,6 @@ void
 destroy_window (XDestroyWindowEvent *ev)
 {
   rp_window *win;
-
   ignore_badwindow++;
 
   win = find_window (ev->window);
@@ -185,20 +183,9 @@ destroy_window (XDestroyWindowEvent *ev)
 
       frame = find_windows_frame (win);
       if (frame) cleanup_frame (frame);
+      if (frame == rp_current_frame) set_active_frame (frame);
 
-      if (frame == rp_current_frame)
-	{
-	  PRINT_DEBUG ("Destroying the current window.\n");
-
-	  set_active_frame (frame);
-	  unmanage (win);
-	}
-      else
-	{
-	  PRINT_DEBUG ("Destroying some other window.\n");
-
-	  unmanage (win);
-	}
+      unmanage (win);
     }
 
   ignore_badwindow--;
@@ -242,7 +229,7 @@ configure_request (XConfigureRequestEvent *e)
 	  PRINT_DEBUG("request CWY %d\n", e->y);
 	}
 
-      if (e->value_mask & CWStackMode && win->state == STATE_MAPPED)
+      if (e->value_mask & CWStackMode && win->state == NormalState)
 	{
 	  if (e->detail == Above)
 	    {
@@ -309,6 +296,24 @@ client_msg (XClientMessageEvent *ev)
       PRINT_DEBUG ("Exiting\n");
       clean_up ();
       exit (EXIT_SUCCESS);
+    }
+  else if (ev->message_type == wm_change_state)
+    {
+      rp_window *win;
+
+      win = find_window (ev->window);
+      if (win == NULL) return;
+      if (ev->format == 32 && ev->data.l[0] == IconicState)
+	{
+	  if (win->state == NormalState)
+	    {
+	      /* TODO: Handle iconify events */
+	    }
+	}
+      else
+	{
+	  PRINT_ERROR ("Non-standard WM_CHANGE_STATE format\n");
+	}
     }
 }
 

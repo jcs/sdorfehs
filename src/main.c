@@ -372,13 +372,6 @@ main (int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
-  /* Setup signal handlers. */
-  XSetErrorHandler(handler);  
-  set_sig_handler (SIGALRM, alrm_handler);
-  set_sig_handler (SIGTERM, sighandler);
-  set_sig_handler (SIGINT, sighandler);
-  set_sig_handler (SIGHUP, hup_handler);
-
   /* Set ratpoison specific Atoms. */
   rp_restart = XInternAtom (dpy, "RP_RESTART", False);
   rp_kill = XInternAtom (dpy, "RP_KILL", False);
@@ -416,6 +409,14 @@ main (int argc, char *argv[])
   wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
   wm_colormaps = XInternAtom(dpy, "WM_COLORMAP_WINDOWS", False);
 
+  /* Setup signal handlers. */
+  XSetErrorHandler(handler);  
+  set_sig_handler (SIGALRM, alrm_handler);
+  set_sig_handler (SIGTERM, sighandler);
+  set_sig_handler (SIGINT, sighandler);
+  set_sig_handler (SIGHUP, hup_handler);
+
+  /* Setup ratpoison's internal structures */
   init_numbers ();
   init_window_list ();
   init_frame_list ();
@@ -441,9 +442,6 @@ main (int argc, char *argv[])
     }
 
   read_startup_files ();
-
-  /* Set an initial window as active. */
-  set_active_window (find_window_other ());
   
   handle_events ();
 
@@ -478,6 +476,15 @@ static void
 init_screen (screen_info *s, int screen_num)
 {
   XColor fg_color, bg_color,/*  bold_color, */ junk;
+
+  /* Select on some events on the root window, if this fails, then
+     there is already a WM running and the X Error handler will catch
+     it, terminating ratpoison. */
+  XSelectInput(dpy, RootWindow (dpy, screen_num),
+               PropertyChangeMask | ColormapChangeMask
+               | SubstructureRedirectMask | KeyPressMask | KeyReleaseMask
+               | SubstructureNotifyMask );
+  XSync (dpy, False);
 
   s->screen_num = screen_num;
   s->root = RootWindow (dpy, screen_num);
@@ -520,11 +527,6 @@ init_screen (screen_info *s, int screen_num)
 /* 			 | GCLineWidth | GCSubwindowMode | GCFont,  */
 /* 			 &gv); */
 
-  XSelectInput(dpy, s->root,
-               PropertyChangeMask | ColormapChangeMask
-               | SubstructureRedirectMask | KeyPressMask | KeyReleaseMask
-               | SubstructureNotifyMask );
-
   /* Create the program bar window. */
   s->bar_is_raised = 0;
   s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0,
@@ -558,8 +560,22 @@ init_screen (screen_info *s, int screen_num)
 void
 clean_up ()
 {
+  rp_window *cur;
   int i;
+
+  /* Map any iconized windows. */
+  for (cur = rp_mapped_window_sentinel->next;
+       cur != rp_mapped_window_sentinel;
+       cur = cur->next)
+    {
+      if (cur->state == IconicState)
+	{
+	  unhide_window (cur);
+	}
+    }
   
+  XSync (dpy, False);
+
   for (i=0; i<num_screens; i++)
     {
       XDestroyWindow (dpy, screens[i].bar_window);

@@ -225,6 +225,7 @@ split_frame (rp_window_frame *frame, int way)
       new_frame->win = win;
 
       maximize (win);
+      unhide_window (win);
       XRaiseWindow (dpy, win->w);
     }
   else
@@ -267,17 +268,13 @@ remove_all_splits ()
     {
       cur = rp_window_frame_sentinel->next;
       delete_frame_from_list (cur);
+      if (cur != rp_current_frame) hide_window (cur->win);
       free (cur);
     }
 
   create_initial_frame ();
   rp_current_frame->win = cur_window;
-
-  if (cur_window)
-    {
-      maximize (cur_window);
-      XRaiseWindow (dpy, cur_window->w);
-    }
+  maximize (cur_window);
 }
 
 static int
@@ -384,6 +381,7 @@ remove_frame (rp_window_frame *frame)
   PRINT_DEBUG ("Total Area: %d\n", area);
 
   delete_frame_from_list (frame);
+  hide_window (frame->win);
 
   for (cur = rp_window_frame_sentinel->next; 
        cur != rp_window_frame_sentinel; 
@@ -469,7 +467,7 @@ set_active_frame (rp_window_frame *frame)
 {
   rp_window_frame *old = rp_current_frame;
 
-  give_window_focus (frame->win);
+  give_window_focus (frame->win, rp_current_frame->win);
   rp_current_frame = frame;
 
   if (!frame->win || old != rp_current_frame) 
@@ -477,10 +475,28 @@ set_active_frame (rp_window_frame *frame)
       show_frame_indicator();
     }
 
+  /* If the frame has no window to give focus to, give the frame
+     indicator focus. */
   if( !frame->win )
     {
       XSetInputFocus (dpy, current_screen()->frame_window, 
 		  RevertToPointerRoot, CurrentTime);
+    }
+}
+
+void
+blank_frame (rp_window_frame *frame)
+{
+  if (frame->win == NULL) return;
+
+  hide_window (frame->win);
+  frame->win = NULL;
+
+  if (frame == rp_current_frame)
+    {
+      show_frame_indicator();  
+      XSetInputFocus (dpy, current_screen()->frame_window, 
+		      RevertToPointerRoot, CurrentTime);
     }
 }
 

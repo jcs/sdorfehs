@@ -28,10 +28,6 @@
 
 #define FONT_HEIGHT(f) ((f)->max_bounds.ascent + (f)->max_bounds.descent)
 
-#define STATE_UNMAPPED 0
-#define STATE_MAPPED   1
-
-
 typedef struct rp_window rp_window;
 typedef struct screen_info screen_info;
 typedef struct rp_action rp_action;

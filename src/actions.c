@@ -95,6 +95,7 @@ initialize_default_keybindings (void)
   add_keybinding (XK_7, 0, "select 7");
   add_keybinding (XK_8, 0, "select 8");
   add_keybinding (XK_9, 0, "select 9");
+  add_keybinding (XK_minus, 0, "select -");
   add_keybinding (XK_A, 0, "title");
   add_keybinding (XK_A, ControlMask, "title");
   add_keybinding (XK_K, 0, "kill");
@@ -468,11 +469,16 @@ cmd_select (void *data)
   /* Only search if the string contains something to search for. */
   if (strlen (str) > 0)
     {
-      if ((w = find_window_name (str)))
-	goto_window (w);
-
+      if (strlen (str) == 1 && str[0] == '-')
+	{
+	  blank_frame (rp_current_frame);
+	}
+/*       else if ((w = find_window_name (str))) */
+/* 	{ */
+/* 	  goto_window (w); */
+/* 	} */
       /* try by number */
-      if ((n = string_to_window_number (str)) >= 0)
+      else if ((n = string_to_window_number (str)) >= 0)
 	{
 	  if ((w = find_window_number (n)))
 	    goto_window (w);
