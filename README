@@ -21,7 +21,7 @@ Building
 
 ratpoison uses autoconf. To build it:
 
-$ configure && make
+$ ./configure && make
 
 if you want to install it, simply type 'make install' as a privileged user:
 
