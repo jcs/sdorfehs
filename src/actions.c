@@ -1980,6 +1980,46 @@ cmd_defbgcolor (int interactive, void *data)
   return NULL;
 }
 
+#ifndef HAVE_SETENV
+/* For systems, such as Solaris, where setenv is not implemented
+ * in libc */
+/* FIXME: overwrite has no effect in this implementation! */
+int
+setenv (const char *name, const char *value, int overwrite)
+{
+  char *tmp;
+  int i;
+
+  tmp = (char *)malloc (strlen(name) + strlen(value) + 2);
+  strcpy(tmp, name);
+  strcat(tmp, "=");
+  strcat(tmp, value);
+
+  i = putenv(tmp);
+
+  free(tmp);
+
+  return i;
+}
+#endif
+
+#ifndef HAVE_UNSETENV
+/* For systems which lack unsetenv (eg, Solaris) */
+void
+unsetenv (const char *name)
+{
+  char *tmp;
+
+  tmp = (char *)malloc (strlen(name) + 2);
+  strcpy (tmp, name);
+  strcat (tmp, "=");
+
+  putenv(tmp);
+
+  free(tmp);
+}
+#endif
+
 char *
 cmd_setenv (int interactive, void *data)
 {
