@@ -6,7 +6,7 @@
 ;; Maintainer: Gergely Nagy <algernon@debian.org>
 ;; Version: 0.2
 ;; Keywords: faces, ratpoison, X
-;; CVS Id: $Id: ratpoison.el,v 1.1 2001/10/05 16:15:25 algernon Exp $
+;; CVS Id: $Id: ratpoison.el,v 1.2 2003/10/24 23:52:45 rcyeske Exp $
 ;; Last updated: <2001/10/05 17:58:38 algernon>
 
 ;; This file is NOT part of GNU Emacs.
@@ -43,6 +43,9 @@
 ;;; Todo:
 ;; - auto-completion of commands
 ;; - probably a bunch of other things
+
+(require 'font-lock)
+(require 'generic-x)
 
 (defvar ratpoison-commands-0
   (list

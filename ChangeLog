@@ -1,3 +1,7 @@
+2003-10-24  Ryan Yeske  <rcyeske@vcn.bc.ca>
+
+	* contrib/ratpoison.el: Added requires.
+
 2003-10-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/globals.c (rp_hook_db): add hooks quit and restart
