@@ -157,6 +157,14 @@ This toggles between the current window and the last window.
 Sometimes you need to send a C-t to the current window. This keystroke
 does just that.
 
+@item C-t k
+This deletes the current window.
+
+@item C-t K
+This destroys the current window. Normally you should only need to use
+@kbd{C-t k}, but just incase you need to rip the heart out of a
+misbehaving window this command should do the trick.
+
 @end table
 
 @bye
