@@ -756,7 +756,6 @@ cmd_select (int interactive, char *data)
 {
   char *str;
   int n;
-  rp_window *w;
 
   if (data == NULL)
     str = get_input (MESSAGE_PROMPT_SWITCH_TO_WINDOW);
@@ -774,17 +773,13 @@ cmd_select (int interactive, char *data)
 	{
 	  blank_frame (current_frame());
 	}
-/*       else if ((w = find_window_name (str))) */
-/* 	{ */
-/* 	  goto_window (w); */
-/* 	} */
       /* try by number */
       else if ((n = string_to_window_number (str)) >= 0)
 	{
 	  rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
 
-	  if ((w = elem->win))
-	    goto_window (w);
+	  if (elem)
+	    goto_window (elem->win);
 	  else
 	    /* show the window list as feedback */
 	    show_bar (current_screen ());
@@ -792,8 +787,10 @@ cmd_select (int interactive, char *data)
       else
 	/* try by name */
 	{
-	  if ((w = find_window_name (str)))
-	    goto_window (w);
+	  rp_window *win = find_window_name (str);
+
+	  if (win)
+	    goto_window (win);
 	  else
 	    marked_message_printf (0, 0, " select: unknown window '%s' ", str);
 	}

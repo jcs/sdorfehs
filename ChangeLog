@@ -1,5 +1,28 @@
 2003-05-25  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/bar.c (reset_alarm): new function
+	(show_bar): call reset_alarm()
+	(count_lines): make function static. clean up code.
+	(max_line_length): likewise
+	(pos_in_line): likewise
+	(line_beginning): likewise
+	(draw_string): new static function
+	(correct_mark): likewise
+	(prepare_bar): likewise
+	(get_mark_box): likewise
+	(draw_inverse_box): likewise
+	(draw_mark): likewise
+	(update_last_message): likewise
+	(marked_message): Move most of the code to seperate function
+	calls. Call reset_alarm(), prepare_bar(), draw_string(),
+	correct_mark(), draw_mark(), and update_last_message().
+
+	* src/actions.c (cmd_select): fix crash bug.
+
+	* src/window.c (get_window_list): mark_end is the length of the
+	string. Don't do a special case if the window list is being
+	displayed as a column.
+
 	* src/input.c (read_key): Do not wait for the key release
 	event. Remove gobble_rel argument. Callers updated.
 
