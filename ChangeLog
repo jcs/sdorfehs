@@ -1,5 +1,8 @@
 2001-12-21  shawn  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (user_commands): remove "license" from the
+	unimplemented section.
+
 	* src/actions.h (cmd_license): new prototype
 
 	* src/actions.c (cmd_license): new function

@@ -108,7 +108,6 @@ static user_command user_commands[] =
        implemented.  See the screen documentation for what should be
        emulated with these commands */
 #if 0
-    {"license",		cmd_unimplemented,	arg_VOID},
     {"msgminwait",	cmd_unimplemented,	arg_VOID},
     {"nethack",		cmd_unimplemented,	arg_VOID},
     {"sleep",		cmd_unimplemented,	arg_VOID},
