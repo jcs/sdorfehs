@@ -19,41 +19,23 @@ configure. If you want to configure ratpoison, edit the source.
 Building
 --------
 
-ratpoison comes with a Makefile that should work in most cases on most
-architectures. If you have trouble compiling you may have to edit it.
+ratpoison uses autoconf. To build it:
 
-The first thing to do is compile the beast by typing 'make':
-
-$ make
-gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG main.c -o main.o
-gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG events.c -o events.o
-gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG manage.c -o manage.o
-gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG list.c -o list.o
-gcc -c -g -Wall -I/usr/X11R6/include  -DDEBUG bar.c -o bar.o
-gcc main.o events.o manage.o list.o bar.o -o ratpoison -g -Wall -I/usr/X11R6/include  -L/usr/X11R6/lib -lX11 
-
+$ configure && make
 
 if you want to install it, simply type 'make install' as a privileged user:
 
 # make install
-cp ratpoison /usr/local/bin
-
-If you don't want ratpoison to install in /usr/local/bin, then edit
-the Makefile.
 
 Customization
 -------------
 
-By default, ratpoison is compiled using xterm. This is because more
-users use xterm as opposed to alternative terms such as rxvt. 
+Use the configure option 'disable-debug' to disable debugging symbols.
 
-If you do want to use a different terminal program, edit conf.h and
-edit the line:
+Use the configure option '--with-xterm=PROG' to set the x terminal
+emulator to use. The default is `xterm'.
 
-#define TERM_PROG       "xterm"	/* command to boot an x term */
-
-to run you're favorite X term.
-
+Consult the INSTALL file for more information about the configure script.
 
 Using
 -----
