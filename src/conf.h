@@ -40,6 +40,30 @@
 #define INPUT_NEXT_HISTORY_KEY      XK_n
 #define INPUT_NEXT_HISTORY_MODIFIER ControlMask
 
+/* Key used to enlarge frame vertically when in resize mode.  */
+#define RESIZE_VGROW_KEY      XK_n
+#define RESIZE_VGROW_MODIFIER ControlMask
+
+/* Key used to shrink frame vertically when in resize mode.  */
+#define RESIZE_VSHRINK_KEY	XK_p
+#define RESIZE_VSHRINK_MODIFIER ControlMask
+
+/* Key used to enlarge frame horizontally when in resize mode.  */
+#define RESIZE_HGROW_KEY      XK_f
+#define RESIZE_HGROW_MODIFIER ControlMask
+
+/* Key used to shrink frame horizontally when in resize mode.  */
+#define RESIZE_HSHRINK_KEY	XK_b
+#define RESIZE_HSHRINK_MODIFIER ControlMask
+
+/* Key used to shrink frame to fit it's current window.  */
+#define RESIZE_SHRINK_TO_WINDOW_KEY		XK_s
+#define RESIZE_SHRINK_TO_WINDOW_MODIFIER	0
+
+/* Key used to exit resize mode.  */
+#define RESIZE_END_KEY	    XK_Return
+#define RESIZE_END_MODIFIER 0
+
 /* Number of history items to store. */
 #define INPUT_MAX_HISTORY 50
 

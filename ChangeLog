@@ -1,3 +1,42 @@
+2003-02-10  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/split.h (num_frames): new prototype
+	(resize_shrink_to_window): likewise
+	(resize_frame_vertically): likewise
+	(resize_frame_horizontally): likewise
+
+	* src/split.c (num_frames): no longer a static function
+	(resize_shrink_to_window): new function
+	(resize_frame_vertically): likewise
+	(resize_frame_horizontally): likewise
+
+	* src/main.c (init_defaults): init frame_resize_unit.
+
+	* src/data.h (struct rp_defaults): new member frame_resize_unit.
+
+	* src/conf.h (RESIZE_VGROW_KEY): new define
+	(RESIZE_VGROW_MODIFIER): likewise
+	(RESIZE_VSHRINK_KEY): likewise
+	(RESIZE_VSHRINK_MODIFIER): likewise
+	(RESIZE_HGROW_KEY): likewise
+	(RESIZE_HGROW_MODIFIER): likewise
+	(RESIZE_HSHRINK_KEY): likewise
+	(RESIZE_HSHRINK_MODIFIER): likewise
+	(RESIZE_SHRINK_TO_WINDOW_KEY): likewise
+	(RESIZE_SHRINK_TO_WINDOW_MODIFIER): likewise
+	(RESIZE_END_KEY): likewise
+	(RESIZE_END_MODIFIER): likewise
+
+	* src/actions.h (cmd_shrink): new prototype
+	(cmd_resize): likewise
+	(cmd_defresizeunit): likewise
+
+	* src/actions.c (user_commands): add commands cmd_resize and
+	cmd_shrink, and cmd_defresizeunit.
+	(cmd_shrink): new function
+	(cmd_resize): likewise
+	(cmd_defresizeunit): likewise
+
 2003-01-30  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/actions.c (cmd_bind): more informative error messages

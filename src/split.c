@@ -38,6 +38,22 @@ update_last_access (rp_window_frame *frame)
   counter++;
 }
 
+int
+num_frames (screen_info *s)
+{
+ int count = 0;
+ rp_window_frame *cur;
+
+ for (cur = s->rp_window_frame_sentinel->next; 
+      cur != s->rp_window_frame_sentinel; 
+      cur = cur->next)
+   {
+     count++;
+   }
+
+ return count;
+}
+
 rp_window *
 set_frames_window (rp_window_frame *frame, rp_window *win)
 {
@@ -405,6 +421,228 @@ remove_all_splits ()
   set_frames_window (s->rp_current_frame, cur_window);
 }
 
+/* Shrink the size of the frame to fit it's current window. */
+void
+resize_shrink_to_window (rp_window_frame *frame)
+{
+  if (frame->win == NULL) return;
+
+  resize_frame_horizontally (frame, frame->win->width + frame->win->border*2 - frame->width);
+  resize_frame_vertically (frame, frame->win->height + frame->win->border*2 - frame->height);
+}
+
+/* Resize FRAME vertically by diff pixels. if diff is negative
+   then shrink the frame, otherwise enlarge it. */
+void
+resize_frame_vertically (rp_window_frame *frame, int diff)
+{
+  screen_info *s = frames_screen (frame);
+  int found_adjacent_frames = 0;
+  int max_bound, min_bound;
+  int orig_y;
+  rp_window_frame *cur;
+
+  if (num_frames (s) < 2 || diff == 0)
+    return;
+
+  max_bound = frame->x + frame->width;
+  min_bound = frame->x;
+  orig_y = frame->y;
+
+  /* Look for frames below that needs to be resized.  */
+  for (cur = s->rp_window_frame_sentinel->next;
+       cur != s->rp_window_frame_sentinel;
+       cur = cur->next)
+    {
+      if (cur->y == (frame->y + frame->height)
+      	  && (cur->x + cur->width) > frame->x
+      	  && cur->x < (frame->x + frame->width))
+	{
+	  cur->height -= diff;
+	  cur->y += diff;
+
+	  if ((cur->x + cur->width) > max_bound)
+	    max_bound = cur->x + cur->width;
+
+	  if (cur->x < min_bound)
+	    min_bound = cur->x;
+
+	  if (cur->win)
+	    maximize_all_windows_in_frame (cur);
+
+	  found_adjacent_frames = 1;
+	}
+    }
+
+  /* Found no frames below, look for some above.  */
+  if (!found_adjacent_frames)
+    {
+      for (cur = s->rp_window_frame_sentinel->next;
+	   cur != s->rp_window_frame_sentinel;
+	   cur = cur->next)
+	{
+	    if (cur->y == (frame->y - cur->height)
+		&& (cur->x + cur->width) > frame->x
+		&& cur->x < (frame->x + frame->width))
+	    {
+	      cur->height -= diff;
+
+	      if ((cur->x + cur->width) > max_bound)
+		max_bound = cur->x + cur->width;
+
+	      if (cur->x < min_bound)
+		min_bound = cur->x;
+
+	      if (cur->win)
+		maximize_all_windows_in_frame (cur);
+
+	      found_adjacent_frames = 1;
+	    }
+	}
+
+      /* If we found any frames, move the current frame.  */
+      if (found_adjacent_frames)
+	{
+	  frame->y -= diff;
+	}
+    }
+
+  /* Resize current frame.  */
+  if (found_adjacent_frames)
+    {
+      frame->height += diff;
+
+      /* If we left any gaps, take care of them too.  */
+      for (cur = s->rp_window_frame_sentinel->next;
+	   cur != s->rp_window_frame_sentinel;
+	   cur = cur->next)
+	{
+	  if (cur->y == orig_y && cur->x >= min_bound
+	      && cur->x + cur->width <= max_bound
+	      && cur != frame)
+	    {
+	      cur->height = frame->height;
+	      cur->y = frame->y;
+
+	      if (cur->win)
+		maximize_all_windows_in_frame (cur);
+	    }
+	}
+
+      if (frame->win)
+	{
+	  maximize_all_windows_in_frame (frame);
+	  XRaiseWindow (dpy, frame->win->w);
+	}
+    }
+}
+
+/* Resize FRAME horizontally by diff pixels. if diff is negative
+   then shrink the frame, otherwise enlarge it. */
+void
+resize_frame_horizontally (rp_window_frame *frame, int diff)
+{
+  screen_info *s = frames_screen (frame);
+  int found_adjacent_frames = 0;
+  int max_bound, min_bound;
+  int orig_x;
+  rp_window_frame *cur;
+
+  if (num_frames (s) < 2 || diff == 0)
+    return;
+
+  max_bound = frame->y + frame->height;
+  min_bound = frame->y;
+  orig_x = frame->x;
+
+  /* Look for frames on the right that needs to be resized.  */
+  for (cur = s->rp_window_frame_sentinel->next;
+       cur != s->rp_window_frame_sentinel;
+       cur = cur->next)
+    {
+      if (cur->x == (frame->x + frame->width)
+      	  && (cur->y + cur->height) > frame->y
+      	  && cur->y < (frame->y + frame->height))
+	{
+	  cur->width -= diff;
+	  cur->x += diff;
+
+	  if ((cur->y + cur->height) > max_bound)
+	    max_bound = cur->y + cur->height;
+
+	  if (cur->y < min_bound)
+	    min_bound = cur->y;
+
+	  if (cur->win)
+	    maximize_all_windows_in_frame (cur);
+
+	  found_adjacent_frames = 1;
+	}
+    }
+
+  /* Found no frames to the right, look for some to the left.  */
+  if (!found_adjacent_frames)
+    {
+      for (cur = s->rp_window_frame_sentinel->next;
+	   cur != s->rp_window_frame_sentinel;
+	   cur = cur->next)
+	{
+	  if (cur->x == (frame->x - cur->width)
+	      && (cur->y + cur->height) > frame->y
+	      && cur->y < (frame->y + frame->height))
+	    {
+	      cur->width -= diff;
+
+	      if ((cur->y + cur->height) > max_bound)
+		max_bound = cur->y + cur->height;
+
+	      if (cur->y < min_bound)
+		min_bound = cur->y;
+
+	      if (cur->win)
+		maximize_all_windows_in_frame (cur);
+
+	      found_adjacent_frames = 1;
+	    }
+	}
+
+      /* If we found any frames, move the current frame.  */
+      if (found_adjacent_frames)
+	{
+	    frame->x -= diff;
+	}
+    }
+
+  /* Resize current frame.  */
+  if (found_adjacent_frames)
+    {
+      frame->width += diff;
+
+      /* If we left any gaps, take care of them too.  */
+      for (cur = s->rp_window_frame_sentinel->next;
+	   cur != s->rp_window_frame_sentinel;
+	   cur = cur->next)
+	{
+	  if (cur->x == orig_x && cur->y >= min_bound
+	      && cur->y + cur->height <= max_bound
+	      && cur != frame)
+	    {
+	      cur->width = frame->width;
+	      cur->x = frame->x;
+
+	      if (cur->win)
+		maximize_all_windows_in_frame (cur);
+	    }
+	}
+
+      if (frame->win)
+	{
+	  maximize_all_windows_in_frame (frame);
+	  XRaiseWindow (dpy, frame->win->w);
+	}
+    }
+}
+
 static int
 frame_is_below (rp_window_frame *src, rp_window_frame *frame)
 {
@@ -447,22 +685,6 @@ total_frame_area (screen_info *s)
     }
 
   return area;
-}
-
-static int
-num_frames (screen_info *s)
-{
- int count = 0;
- rp_window_frame *cur;
-
- for (cur = s->rp_window_frame_sentinel->next; 
-      cur != s->rp_window_frame_sentinel; 
-      cur = cur->next)
-   {
-     count++;
-   }
-
- return count;
 }
 
 /* Return 1 if frames f1 and f2 overlap */

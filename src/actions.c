@@ -88,6 +88,8 @@ static user_command user_commands[] =
     {"prevscreen",	cmd_prevscreen,	arg_VOID},
     {"nextscreen",	cmd_nextscreen,	arg_VOID},
     {"warp",		cmd_warp,	arg_STRING},
+    {"resize",		cmd_resize,	arg_STRING},
+    {"shrink",		cmd_shrink,	arg_VOID},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to set default behavior. */
@@ -107,6 +109,7 @@ static user_command user_commands[] =
     {"deffgcolor",		cmd_deffgcolor,		arg_STRING},
     {"defbgcolor",		cmd_defbgcolor,		arg_STRING},
     {"defbarpadding", 		cmd_defbarpadding, 	arg_STRING},
+    {"defresizeunit", 		cmd_defresizeunit, 	arg_STRING},
 
     /* Commands to help debug ratpoison. */
 #ifdef DEBUG
@@ -1352,6 +1355,98 @@ cmd_remove (int interactive, void *data)
       remove_frame (current_screen()->rp_current_frame);
       set_active_frame (frame);
     }
+
+  return NULL;
+}
+
+char *
+cmd_shrink (int interactive, void *data)
+{
+  screen_info *s = current_screen ();
+
+  resize_shrink_to_window (s->rp_current_frame);
+  return NULL;
+}
+
+char *
+cmd_resize (int interactive, void *data)
+{
+  screen_info *s = current_screen ();
+
+  /* If the user calls resize with arguments, treat it like the
+     non-interactive version. */
+  if (interactive && data == NULL)
+    {
+      int nbytes, revert;
+      char buffer[513];
+      unsigned int mod;
+      KeySym c;
+      Window fwin;
+
+      /* If we haven't got at least 2 frames, there isn't anything to
+	 scale. */
+      if (num_frames (s) < 2) return NULL;
+
+      XGetInputFocus (dpy, &fwin, &revert);
+      XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
+
+      nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
+      while (1)
+	{
+	  if (c == RESIZE_VGROW_KEY && mod == RESIZE_VGROW_MODIFIER)
+	    resize_frame_vertically (s->rp_current_frame, defaults.frame_resize_unit);
+	  else if (c == RESIZE_VSHRINK_KEY && mod == RESIZE_VSHRINK_MODIFIER)
+	    resize_frame_vertically (s->rp_current_frame, -defaults.frame_resize_unit);
+	  else if (c == RESIZE_HGROW_KEY && mod == RESIZE_HGROW_MODIFIER)
+	    resize_frame_horizontally (s->rp_current_frame, defaults.frame_resize_unit);
+	  else if (c == RESIZE_HSHRINK_KEY && mod == RESIZE_HSHRINK_MODIFIER)
+	    resize_frame_horizontally (s->rp_current_frame, -defaults.frame_resize_unit);
+	  else if (c == RESIZE_SHRINK_TO_WINDOW_KEY 
+		   && mod == RESIZE_SHRINK_TO_WINDOW_MODIFIER)
+	    resize_shrink_to_window (s->rp_current_frame);
+	  else if (c == RESIZE_END_KEY && mod == RESIZE_END_MODIFIER)
+	    break;
+
+	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
+	}
+
+      XSetInputFocus (dpy, fwin, RevertToPointerRoot, CurrentTime);
+    }
+  else
+    {
+      int xdelta, ydelta;
+
+      if (sscanf (data, "%d %d", &xdelta, &ydelta) < 2)
+	{
+	  message (" resize: Two numeric arguments required ");
+	  return NULL;
+	}
+
+      resize_frame_horizontally (s->rp_current_frame, xdelta);
+      resize_frame_vertically (s->rp_current_frame, ydelta);
+    }
+
+  return NULL;
+}
+
+char *
+cmd_defresizeunit (int interactive, void *data)
+{
+  int tmp;
+
+  if (data == NULL && !interactive)
+    return xsprintf ("%d", defaults.frame_resize_unit);
+
+  if (data == NULL || sscanf (data, "%d", &tmp) < 1)
+    {
+      message (" defresizeunit: One argument required ");
+      return NULL;
+    }
+
+  if (tmp >= 0)
+    defaults.frame_resize_unit = tmp;
+  else
+    message (" defresizeunit: Bad argument ");
 
   return NULL;
 }

@@ -144,6 +144,7 @@ struct rp_defaults
   int bar_border_width;
   
   int frame_indicator_timeout;
+  int frame_resize_unit;
 
   int padding_left;
   int padding_right;

@@ -460,6 +460,7 @@ init_defaults ()
   defaults.bar_border_width    = 1;
 
   defaults.frame_indicator_timeout = 1;
+  defaults.frame_resize_unit = 10;
 
   defaults.padding_left   = 0;
   defaults.padding_right  = 0;

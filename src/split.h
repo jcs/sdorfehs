@@ -22,11 +22,15 @@
 #ifndef SPLIT_H
 #define SPLIT_H
 
+int num_frames (screen_info *s);
 rp_window *set_frames_window (rp_window_frame *frame, rp_window *win);
 void maximize_all_windows_in_frame (rp_window_frame *frame);
 void h_split_frame (rp_window_frame *frame, int pixels);
 void v_split_frame (rp_window_frame *frame, int pixels);
 void remove_all_splits ();
+void resize_shrink_to_window (rp_window_frame *frame);
+void resize_frame_horizontally (rp_window_frame *frame, int steps);
+void resize_frame_vertically (rp_window_frame *frame, int steps);
 void remove_frame (rp_window_frame *frame);
 rp_window *find_window_for_frame (rp_window_frame *frame);
 rp_window_frame *find_windows_frame (rp_window *win);
