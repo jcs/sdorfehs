@@ -141,6 +141,9 @@ add_to_window_list (rp_screen *s, Window w)
   /* Add the window to the end of the unmapped list. */
   list_add_tail (&new_window->node, &rp_unmapped_window);
 
+  /* Add the window to the current group. */
+  group_add_window (rp_current_group, new_window);
+
   return new_window;
 }
 
@@ -207,19 +210,15 @@ str_comp (char *s1, char *s2, int len)
   return 1;
 }
 
-/* return a window by name */
 rp_window *
 find_window_name (char *name)
 {
-  rp_window *w;
+  rp_window_elem *cur;
 
-  list_for_each_entry (w,&rp_mapped_window,node)
+  list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
     {
-/*       if (w->state == STATE_UNMAPPED)  */
-/* 	continue; */
-
-      if (str_comp (name, window_name (w), strlen (name))) 
-	return w;
+      if (str_comp (name, window_name (cur->win), strlen (name))) 
+	return cur->win;
     }
 
   /* didn't find it */
@@ -273,23 +272,10 @@ find_window_next (rp_window *w)
 rp_window *
 find_window_other ()
 {
-  int last_access = 0;
-  rp_window *most_recent = NULL;
-  rp_window *cur;
-
-  list_for_each_entry (cur, &rp_mapped_window, node)
-    {
-      if (cur->last_access >= last_access 
-	  && cur != current_window()
-	  && !find_windows_frame (cur))
-	{
-	  most_recent = cur;
-	  last_access = cur->last_access;
-	}
-    }
-
-  return most_recent;
+  return group_last_window (rp_current_group);
 }
+
+
 
 /* Assumes the list is sorted by increasing number. Inserts win into
    to Right place to keep the list sorted. */
@@ -542,7 +528,7 @@ print_window_information (rp_window *win)
    
  */
 static void
-format_window_name (char *fmt, rp_window *win, rp_window *other_win, 
+format_window_name (char *fmt, rp_window_elem *win_elem, rp_window *other_win, 
 		    struct sbuf *buffer)
 {
   int esc = 0;
@@ -561,44 +547,44 @@ format_window_name (char *fmt, rp_window *win, rp_window *other_win,
 	  switch (*fmt)
 	    {
 	    case 'n':
-	      snprintf (dbuf, 10, "%d", win->number);
+	      snprintf (dbuf, 10, "%d", win_elem->number);
 	      sbuf_concat (buffer, dbuf);
 	      break;
 
 	    case 's':
-	      if (win == current_window())
+	      if (win_elem->win == current_window())
 		sbuf_concat (buffer, "*");
-	      else if (win == other_win)
+	      else if (win_elem->win == other_win)
 		sbuf_concat (buffer, "+");
 	      else
 		sbuf_concat (buffer, "-");
 	      break;
 
 	    case 't':
-	      sbuf_concat (buffer, window_name (win));
+	      sbuf_concat (buffer, window_name (win_elem->win));
 	      break;
 
 	    case 'a':
-	      if (win->res_name)
-		sbuf_concat (buffer, win->res_name);
+	      if (win_elem->win->res_name)
+		sbuf_concat (buffer, win_elem->win->res_name);
 	      else
 		sbuf_concat (buffer, "None");
 	      break;
 
 	    case 'c':
-	      if (win->res_class)
-		sbuf_concat (buffer, win->res_class);
+	      if (win_elem->win->res_class)
+		sbuf_concat (buffer, win_elem->win->res_class);
 	      else
 		sbuf_concat (buffer, "None");
 	      break;
 
 	    case 'i':
-	      snprintf (dbuf, 9, "%ld", (unsigned long)win->w);
+	      snprintf (dbuf, 9, "%ld", (unsigned long)win_elem->win->w);
 	      sbuf_concat (buffer, dbuf);
 	      break;
 
 	    case 'l':
-	      snprintf (dbuf, 9, "%d", win->last_access);
+	      snprintf (dbuf, 9, "%d", win_elem->win->last_access);
 	      sbuf_concat (buffer, dbuf);
 	      break;
 
@@ -631,7 +617,7 @@ void
 get_window_list (char *fmt, char *delim, struct sbuf *buffer, 
 		 int *mark_start, int *mark_end)
 {
-  rp_window *w;
+  rp_window_elem *we;
   rp_window *other_window;
 
   if (buffer == NULL) return;
@@ -639,11 +625,12 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
   sbuf_clear (buffer);
   other_window = find_window_other ();
 
-  list_for_each_entry (w,&rp_mapped_window,node)
+  /* We only loop through the current group to look for windows. */
+  list_for_each_entry (we,&rp_current_group->mapped_windows,node)
     {
-      PRINT_DEBUG (("%d-%s\n", w->number, window_name (w)));
+      PRINT_DEBUG (("%d-%s\n", we->number, window_name (we->win)));
 
-      if (w == current_window())
+      if (we->win == current_window())
 	*mark_start = strlen (sbuf_get (buffer));
 
       /* A hack, pad the window with a space at the beginning and end
@@ -651,7 +638,7 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
       if (!delim)
 	sbuf_concat (buffer, " ");
 
-      format_window_name (fmt, w, other_window, buffer);
+      format_window_name (fmt, we, other_window, buffer);
 
       /* A hack, pad the window with a space at the beginning and end
          if there is no delimiter. */
@@ -660,10 +647,10 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
 
       /* Only put the delimiter between the windows, and not after the the last
          window. */
-      if (delim && w->node.next != &rp_mapped_window)
+      if (delim && we->node.next != &rp_current_group->mapped_windows)
 	sbuf_concat (buffer, delim);
 
-      if (w == current_window()) 
+      if (we->win == current_window()) 
 	{
 	  if(defaults.window_list_style == STYLE_ROW)
 	    {

@@ -58,6 +58,7 @@ extern XGCValues gv;
 #include "conf.h"
 
 #include "data.h"
+#include "globals.h"
 #include "manage.h"
 #include "window.h"
 #include "bar.h"
@@ -70,6 +71,7 @@ extern XGCValues gv;
 #include "split.h"
 #include "frame.h"
 #include "screen.h"
+#include "group.h"
 
 void clean_up ();
 rp_screen *find_screen (Window w);

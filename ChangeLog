@@ -1,3 +1,46 @@
+2003-05-16  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/window.c (add_to_window_list): add the window to the current
+	group.
+	(find_window_name): search the current group for a matching
+	window.
+	(find_window_other): likewise.
+	(format_window_name): take a rp_window_elem as an argument, not an
+	rp_window. Print the group window's number, not the window's
+	internal number.
+	(get_window_list): loop through the current group.
+
+	* src/split.c (find_window_for_frame): search the current group
+	for a window to fit in the frame.
+
+	* src/ratpoison.h: include globals.h and group.h
+
+	* src/manage.c (unmanage): remove the window from any groups it
+	was in.
+	(map_window): map the window in any groups it is in.
+	(withdraw_window): unmap the window in any groups it is in.
+
+	* src/main.c: Move all globals to globals.h
+	(main): initialize the group functions.
+
+	* src/data.h: Move all defines and extern globals to globals.h
+	(struct rp_window_elem): new struct
+	(struct rp_group): likewise
+
+	* src/actions.h (cmd_gnext): new prototype
+	(cmd_gprev): likewise
+	(cmd_gnew): likewise
+
+	* src/actions.c (user_commands): new commands gnext, gprev, and gnew
+	(cmd_prev): fix to work with new group code.
+	(cmd_next): likewise
+	(cmd_gnext): new function
+	(cmd_gprev): likewise
+	(cmd_gnew): likewise
+
+	* src/Makefile.am (ratpoison_SOURCES): add files globals.h,
+	globals.c, group.h and group.c
+
 2003-05-15  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/data.h (struct rp_frame): renamed from rp_window_frame. All

@@ -347,7 +347,10 @@ void
 unmanage (rp_window *w)
 {
   numset_release (rp_window_numset, w->number);
+
   list_del (&w->node);
+  groups_del_window (w);
+
   free_window (w);  
 
 #ifdef AUTO_CLOSE
@@ -724,6 +727,9 @@ map_window (rp_window *win)
   list_del (&win->node);
   insert_into_list (win, &rp_mapped_window); 
 
+  /* Update all groups. */
+  groups_map_window (win);
+
   /* The window has never been accessed since it was brought back from
      the Withdrawn state. */
   win->last_access = 0;
@@ -805,6 +811,9 @@ withdraw_window (rp_window *win)
   win->number = -1;
 
   list_move_tail(&win->node, &rp_unmapped_window);
+
+  /* Update the groups. */
+  groups_unmap_window (win);
 
   ignore_badwindow++;
 

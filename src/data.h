@@ -29,28 +29,13 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#define FONT_HEIGHT(f) ((f)->max_bounds.ascent + (f)->max_bounds.descent)
-
-#define WIN_EVENTS (StructureNotifyMask | PropertyChangeMask | ColormapChangeMask | FocusChangeMask)
-/* EMPTY is used when a frame doesn't contain a window, or a window
-   doesn't have a frame. Any time a field refers to the number of a
-   window/frame/screen/etc, Use EMPTY to denote a lack there of. */
-#define EMPTY -1
-
-/* Possible values for defaults.window_list_style */
-#define STYLE_ROW    0 
-#define STYLE_COLUMN 1
-
-/* Possible values for defaults.win_name */
-#define WIN_NAME_TITLE 		0
-#define WIN_NAME_RES_CLASS 	1
-#define WIN_NAME_RES_NAME 	2
-
 typedef struct rp_window rp_window;
 typedef struct rp_screen rp_screen;
 typedef struct rp_action rp_action;
 typedef struct rp_frame rp_frame;
 typedef struct rp_child_info rp_child_info;
+typedef struct rp_group rp_group;
+typedef struct rp_window_elem rp_window_elem;
 
 struct rp_frame
 {
@@ -70,11 +55,16 @@ struct rp_window
 {
   rp_screen *scr;
   Window w;
-  int number;
   int state;
   int last_access;
   int named;
-  
+
+  /* A number uniquely identifying this window. This is a different
+     number than the one given to it by the group it is in. This
+     number is used for internal purposes, whereas the group number is
+     what the user sees. */
+  int number;
+
   /* Window name hints. */
   char *user_name;
   char *wm_name;
@@ -106,6 +96,38 @@ struct rp_window
      mapped into. */
   int frame_number;
 
+  struct list_head node;
+};
+
+struct rp_window_elem
+{
+  rp_window *win;
+  int number;
+  struct list_head node;
+};
+
+/* An rp_group is a group of windows. By default all windows are added
+   to the same group. But a new group can be created. All new windows
+   will be part of this new current group. The windows of any other
+   group may be visible in another frame, but will not show up in the
+   window list and will not be accessible with select, next, or
+   prev. These window navigation commands only navigate the current
+   group. */
+struct rp_group
+{
+  /* The name and number of this group. This is to allow the user to
+     quickly jump to the desired group. */
+  char *name;
+  int number;
+
+  /* The list of windows participating in this group. */
+  struct list_head mapped_windows, unmapped_windows;
+
+  /* This numset is responsible for giving out numbers for each window
+     in the group. */
+  struct numset *numset;
+
+  /* This structure can exist in a list. */
   struct list_head node;
 };
 
@@ -211,58 +233,6 @@ struct rp_child_info
   struct list_head node;
 };
 
-/* Each child process is stored in this list. spawn, creates a new
-   entry in this list, the SIGCHLD handler sets child.terminated to be
-   true and handle_signals in events.c processes each terminated
-   process by printing a message saying the process ended and
-   displaying it's exit code. */
-extern struct list_head rp_children;
-
-extern struct rp_defaults defaults;
-
-/* The prefix key also known as the command character under screen. */
-extern struct rp_key prefix_key;
-
-/* A list of mapped windows. These windows show up in the window
-   list and have a number assigned to them. */
-extern struct list_head rp_mapped_window;
-
-/* A list of unmapped windows. These windows do not have a number
-   assigned to them and are not visible/active. */
-extern struct list_head rp_unmapped_window;
-
-extern int rp_current_screen;
-extern rp_screen *screens;
-extern int num_screens;
-
-extern XEvent rp_current_event;
-
-extern Display *dpy;
-extern Atom rp_command;
-extern Atom rp_command_request;
-extern Atom rp_command_result;
-
-extern Atom wm_name;
-extern Atom wm_state;
-extern Atom wm_change_state;
-extern Atom wm_protocols;
-extern Atom wm_delete;
-extern Atom wm_take_focus;
-extern Atom wm_colormaps;
-
-/* mouse properties */
-extern int rat_x;
-extern int rat_y;
-extern int rat_visible;
-
-/* When unmapping or deleting windows, it is sometimes helpful to
-   ignore a bad window when attempting to clean the window up. This
-   does just that when set to 1 */
-extern int ignore_badwindow;
-
-/* Arguments passed to ratpoison. */
-extern char **myargv;
-
 /* These defines should be used to specify the modifier mask for keys
    and they are translated into the X11 modifier mask when the time
    comes to compare modifier masks. */
@@ -285,27 +255,5 @@ struct modifier_info
   unsigned int num_lock_mask;
   unsigned int scroll_lock_mask; 
 };
-
-/* Keeps track of which mod mask each modifier is under. */
-extern struct modifier_info rp_modifier_info;
-
-/* nonzero if an alarm signal was raised. This means ratpoison should
-   hide its popup windows. */
-extern int alarm_signalled;
-extern int kill_signalled;
-extern int hup_signalled;
-extern int chld_signalled;
-
-/* rudeness levels */
-extern int rp_honour_transient_raise;
-extern int rp_honour_normal_raise;
-extern int rp_honour_transient_map;
-extern int rp_honour_normal_map;
-
-/* Keep track of X11 error messages. */
-extern char *rp_error_msg;
-
-/* Number sets for windows. */
-extern struct numset *rp_window_numset;
 
 #endif /* _RATPOISON_DATA_H */

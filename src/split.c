@@ -267,24 +267,27 @@ find_window_for_frame (rp_frame *frame)
 {
   rp_screen *s = frames_screen (frame);
   int last_access = 0;
-  rp_window *most_recent = NULL;
-  rp_window *cur;
+  rp_window_elem *most_recent = NULL;
+  rp_window_elem *cur;
 
-  list_for_each_entry (cur, &rp_mapped_window, node)
+  list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
     {
-      if (cur->scr == s
-	  && cur != current_window()
-	  && !find_windows_frame (cur)
-	  && cur->last_access >= last_access
-	  && window_fits_in_frame (cur, frame)
-	  && cur->frame_number == EMPTY)
+      if (cur->win->scr == s
+	  && cur->win != current_window()
+	  && !find_windows_frame (cur->win)
+	  && cur->win->last_access >= last_access
+	  && window_fits_in_frame (cur->win, frame)
+	  && cur->win->frame_number == EMPTY)
 	{
 	  most_recent = cur;
-	  last_access = cur->last_access;
+	  last_access = cur->win->last_access;
 	}
     }
 
-  return most_recent;
+  if (most_recent)
+    return most_recent->win;
+
+  return NULL;
 }
 
 /* Splits the frame in 2. if way is 0 then split vertically otherwise

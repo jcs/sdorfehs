@@ -35,69 +35,72 @@ static int key_actions_table_size;
 
 static user_command user_commands[] = 
   { /*@begin (tag required for genrpbindings) */
-    {"abort",		cmd_abort,	arg_VOID},
-    {"banish",          cmd_banish,     arg_VOID},
-    {"bind",		cmd_bind,	arg_VOID},
-    {"time", 		cmd_time, 	arg_VOID},
-    {"colon",	 	cmd_colon,	arg_STRING},
-    {"curframe",        cmd_curframe,   arg_VOID},
-    {"delete", 		cmd_delete, 	arg_VOID},
-    {"echo", 		cmd_echo, 	arg_STRING},
-    {"escape",          cmd_escape,     arg_STRING},
-    {"exec", 		cmd_exec, 	arg_STRING},
-    {"focus",		cmd_next_frame,	arg_VOID},
-    {"focusup",		cmd_focusup,	arg_VOID},
-    {"focusdown",	cmd_focusdown,	arg_VOID},
-    {"focusleft",	cmd_focusleft,	arg_VOID},
-    {"focusright",	cmd_focusright,	arg_VOID},
-    {"focuslast",	cmd_focuslast,	arg_VOID},
-    {"meta",		cmd_meta,	arg_STRING},
-    {"license",		cmd_license,	arg_VOID},
-    {"help",		cmd_help,	arg_VOID},
-    {"hsplit",		cmd_h_split,	arg_STRING},
-    {"kill", 		cmd_kill, 	arg_VOID},
-    {"redisplay", 	cmd_redisplay,	arg_VOID},
-    {"newwm",		cmd_newwm,	arg_STRING},
-    {"next", 		cmd_next, 	arg_VOID},
-    {"number", 		cmd_number, 	arg_STRING},
-    {"only",            cmd_only,       arg_VOID},
-    {"other", 		cmd_other, 	arg_VOID},
-    {"gravity",		cmd_gravity, 	arg_STRING},
-    {"prev", 		cmd_prev, 	arg_VOID},
-    {"quit",		cmd_quit,	arg_VOID},
-    {"remove",          cmd_remove,     arg_VOID},
-    {"rudeness",	cmd_rudeness,	arg_STRING},
-    {"select", 		cmd_select,	arg_STRING},
-    {"source",		cmd_source,	arg_STRING},
-    {"split",		cmd_h_split,	arg_STRING},
-    {"title", 		cmd_rename, 	arg_STRING},
-    {"unbind",		cmd_unbind,	arg_STRING},
-    {"version",		cmd_version,	arg_VOID},
-    {"vsplit",		cmd_v_split,	arg_STRING},
-    {"windows", 	cmd_windows, 	arg_VOID},
-    {"setenv",		cmd_setenv,	arg_STRING},
-    {"getenv",		cmd_getenv,	arg_STRING},
-    {"chdir",		cmd_chdir,	arg_STRING},
-    {"unsetenv",	cmd_unsetenv,	arg_STRING},
-    {"info",		cmd_info,	arg_VOID},
-    {"lastmsg",		cmd_lastmsg,	arg_VOID},
-    {"restart",		cmd_restart,	arg_VOID},
-    {"startup_message",	cmd_startup_message, arg_STRING},
-    {"link",		cmd_link,	arg_STRING},
-    {"alias",		cmd_alias,	arg_STRING},
-    {"unalias",		cmd_unalias,	arg_STRING},
-    {"prevscreen",	cmd_prevscreen,	arg_VOID},
-    {"nextscreen",	cmd_nextscreen,	arg_VOID},
-    {"warp",		cmd_warp,	arg_STRING},
-    {"resize",		cmd_resize,	arg_STRING},
-    {"shrink",		cmd_shrink,	arg_VOID},
-    {"tmpwm",		cmd_tmpwm,	arg_STRING},
-    {"fselect",		cmd_fselect,	arg_VOID},
-    {"fdump",		cmd_fdump,	arg_STRING},
-    {"frestore",	cmd_frestore,	arg_STRING},
-    {"verbexec", 	cmd_verbexec, 	arg_STRING},
-    {"unmanage",	cmd_unmanage,	arg_STRING},
-    {"clrunmanaged",	cmd_clrunmanaged, arg_VOID},
+    {"abort",		cmd_abort,		arg_VOID},
+    {"banish",          cmd_banish,     	arg_VOID},
+    {"bind",		cmd_bind,		arg_VOID},
+    {"time", 		cmd_time, 		arg_VOID},
+    {"colon",	 	cmd_colon,		arg_STRING},
+    {"curframe",        cmd_curframe,   	arg_VOID},
+    {"delete", 		cmd_delete, 		arg_VOID},
+    {"echo", 		cmd_echo, 		arg_STRING},
+    {"escape",          cmd_escape,     	arg_STRING},
+    {"exec", 		cmd_exec, 		arg_STRING},
+    {"focus",		cmd_next_frame,		arg_VOID},
+    {"focusup",		cmd_focusup,		arg_VOID},
+    {"focusdown",	cmd_focusdown,		arg_VOID},
+    {"focusleft",	cmd_focusleft,		arg_VOID},
+    {"focusright",	cmd_focusright,		arg_VOID},
+    {"focuslast",	cmd_focuslast,		arg_VOID},
+    {"meta",		cmd_meta,		arg_STRING},
+    {"license",		cmd_license,		arg_VOID},
+    {"help",		cmd_help,		arg_VOID},
+    {"hsplit",		cmd_h_split,		arg_STRING},
+    {"kill", 		cmd_kill, 		arg_VOID},
+    {"redisplay", 	cmd_redisplay,		arg_VOID},
+    {"newwm",		cmd_newwm,		arg_STRING},
+    {"next", 		cmd_next, 		arg_VOID},
+    {"number", 		cmd_number, 		arg_STRING},
+    {"only",            cmd_only,       	arg_VOID},
+    {"other", 		cmd_other, 		arg_VOID},
+    {"gravity",		cmd_gravity, 		arg_STRING},
+    {"prev", 		cmd_prev, 		arg_VOID},
+    {"quit",		cmd_quit,		arg_VOID},
+    {"remove",          cmd_remove,     	arg_VOID},
+    {"rudeness",	cmd_rudeness,		arg_STRING},
+    {"select", 		cmd_select,		arg_STRING},
+    {"source",		cmd_source,		arg_STRING},
+    {"split",		cmd_h_split,		arg_STRING},
+    {"title", 		cmd_rename, 		arg_STRING},
+    {"unbind",		cmd_unbind,		arg_STRING},
+    {"version",		cmd_version,		arg_VOID},
+    {"vsplit",		cmd_v_split,		arg_STRING},
+    {"windows", 	cmd_windows, 		arg_VOID},
+    {"setenv",		cmd_setenv,		arg_STRING},
+    {"getenv",		cmd_getenv,		arg_STRING},
+    {"chdir",		cmd_chdir,		arg_STRING},
+    {"unsetenv",	cmd_unsetenv,		arg_STRING},
+    {"info",		cmd_info,		arg_VOID},
+    {"lastmsg",		cmd_lastmsg,		arg_VOID},
+    {"restart",		cmd_restart,		arg_VOID},
+    {"startup_message",	cmd_startup_message, 	arg_STRING},
+    {"link",		cmd_link,		arg_STRING},
+    {"alias",		cmd_alias,		arg_STRING},
+    {"unalias",		cmd_unalias,		arg_STRING},
+    {"prevscreen",	cmd_prevscreen,		arg_VOID},
+    {"nextscreen",	cmd_nextscreen,		arg_VOID},
+    {"warp",		cmd_warp,		arg_STRING},
+    {"resize",		cmd_resize,		arg_STRING},
+    {"shrink",		cmd_shrink,		arg_VOID},
+    {"tmpwm",		cmd_tmpwm,		arg_STRING},
+    {"fselect",		cmd_fselect,		arg_VOID},
+    {"fdump",		cmd_fdump,		arg_STRING},
+    {"frestore",	cmd_frestore,		arg_STRING},
+    {"verbexec", 	cmd_verbexec, 		arg_STRING},
+    {"unmanage",	cmd_unmanage,		arg_STRING},
+    {"clrunmanaged",	cmd_clrunmanaged, 	arg_VOID},
+    {"gnext",		cmd_gnext,		arg_VOID},
+    {"gprev", 		cmd_gprev, 		arg_VOID},
+    {"gnew", 		cmd_gnew, 		arg_VOID},
 
     /* Commands to set default behavior. */
     {"defbargravity",		cmd_defbargravity,	arg_STRING},
@@ -644,26 +647,21 @@ cmd_meta (int interactive, char *data)
 char *
 cmd_prev (int interactive, char *data)
 {
-  rp_window *w;
-
-  /* If the current frame is empty find the last accessed window and
-     put it in the frame */
   if (!current_window())
     {
-      set_active_window (find_window_other());
+      set_active_window (group_prev_window (rp_current_group, NULL));
       if (!current_window())
 	message (MESSAGE_NO_MANAGED_WINDOWS);
-
-      return NULL;
     }
   else
     {
-      w = find_window_prev (current_window());
+      rp_window *win;
 
-      if (!w)
+      win = group_prev_window (rp_current_group, current_window());
+      if (win == NULL)
 	message (MESSAGE_NO_OTHER_WINDOW);
       else
-	set_active_window (w);
+	set_active_window (win);
     }
 
   return NULL;
@@ -686,26 +684,21 @@ cmd_prev_frame (int interactive, char *data)
 char *
 cmd_next (int interactive, char *data)
 {
-  rp_window *w;
-
-  /* If the current frame is empty find the last accessed window and
-     put it in the frame */
   if (!current_window())
     {
-      set_active_window (find_window_other());
+      set_active_window (group_next_window (rp_current_group, NULL));
       if (!current_window())
 	message (MESSAGE_NO_MANAGED_WINDOWS);
-
-      return NULL;
     }
-  else 
+  else
     {
-      w = find_window_next (current_window());
+      rp_window *win;
 
-      if (!w)
+      win = group_next_window (rp_current_group, current_window());
+      if (win == NULL)
 	message (MESSAGE_NO_OTHER_WINDOW);
       else
-	set_active_window (w);
+	set_active_window (win);
     }
 
   return NULL;
@@ -730,7 +723,8 @@ cmd_other (int interactive, char *data)
 {
   rp_window *w;
 
-  w = find_window_other ();
+/*   w = find_window_other (); */
+  w = group_last_window (rp_current_group);
 
   if (!w)
     message (MESSAGE_NO_OTHER_WINDOW);
@@ -787,7 +781,7 @@ cmd_select (int interactive, char *data)
       /* try by number */
       else if ((n = string_to_window_number (str)) >= 0)
 	{
-	  if ((w = find_window_number (n)))
+	  if ((w = group_find_window_by_number (rp_current_group, n)))
 	    goto_window (w);
 	  else
 	    /* show the window list as feedback */
@@ -1110,9 +1104,7 @@ cmd_time (int interactive, char *data)
 /* Assign a new number to a window ala screen's number command. Thanks
    to Martin Samuelsson <cosis@lysator.liu.se> for the original
    patch. */
-/* FIXME: this function breaks ratpoison because now all frame and
-   window references are based on numbers, and this code doesn't
-   update the number references after changing the number. */
+/* FIXME: With the new group code, this doesn't work as expected. */
 char *
 cmd_number (int interactive, char *data)
 {
@@ -3164,4 +3156,25 @@ cmd_defwinliststyle (int interactive, char *data)
     }
 
    return NULL;    
+}
+
+char *
+cmd_gnext (int interactive, char *data)
+{
+  rp_current_group = group_next_group ();
+  return NULL;
+}
+
+char *
+cmd_gprev (int interactive, char *data)
+{
+  rp_current_group = group_prev_group ();
+  return NULL;
+}
+
+char *
+cmd_gnew (int interactive, char *data)
+{
+  rp_current_group = group_add_new_group ();
+  return NULL;
 }
