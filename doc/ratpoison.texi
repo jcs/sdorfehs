@@ -407,7 +407,7 @@ unbinding the key.
 Change the current directory for ratpoison.
 
 @item clrunmanaged
-Clear the unmanaged window list. See @command{unmanange} for an
+Clear the unmanaged window list. See @command{unmanage} for an
 explanation of the unmanaged window list.
 
 @item colon @var{command}
