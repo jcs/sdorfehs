@@ -3,6 +3,10 @@
 	* src/actions.c (init_user_commands): set the last argument of the
 	following commands to arg_REST: addhook, chdir, remhook, source,
 	tmpwm, and prompt.
+	(command): check list_size of head when checking for too many
+	arguments.
+	(cmd_set): raise error if set command was passed too many
+	arguments.
 
 2005-01-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
