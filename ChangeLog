@@ -1,3 +1,7 @@
+2004-01-30  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (cmd_tmpwm): add an XSync() call
+
 2004-01-25  Ryan Yeske  <rcyeske@vcn.bc.ca>
 
 	* src/actions.c (sync_wins): Change list_for_each_entry to

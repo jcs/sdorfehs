@@ -3234,6 +3234,10 @@ cmd_tmpwm (int interactive, char *data)
       child = waitpid (pid, &status, 0);
     } while (child != pid);
 
+  /* This xsync seems to be needed. Otherwise, the following code dies
+     because X thinks another WM is running. */
+  XSync (dpy, False);
+
   /* Enable the event selection on the root window. */
   for (i=0; i<num_screens; i++)
     {
