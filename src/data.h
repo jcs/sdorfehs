@@ -37,8 +37,14 @@
    window/frame/screen/etc, Use EMPTY to denote a lack there of. */
 #define EMPTY -1
 
+/* Possible values for defaults.window_list_style */
 #define STYLE_ROW    0 
 #define STYLE_COLUMN 1
+
+/* Possible values for defaults.win_name */
+#define WIN_NAME_TITLE 		0
+#define WIN_NAME_RES_CLASS 	1
+#define WIN_NAME_RES_NAME 	2
 
 typedef struct rp_window rp_window;
 typedef struct screen_info screen_info;

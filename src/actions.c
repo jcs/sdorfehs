@@ -2222,11 +2222,11 @@ cmd_defwinname (int interactive, char *data)
   if (data == NULL && !interactive)
     switch (defaults.win_name)
       {
-      case 0:
+      case WIN_NAME_TITLE:
 	return xstrdup ("title");
-      case 1:
+      case WIN_NAME_RES_NAME:
 	return xstrdup ("name");
-      case 2:
+      case WIN_NAME_RES_CLASS:
 	return xstrdup ("class");
       default:
 	PRINT_DEBUG (("Unknown win_name\n"));
@@ -2244,11 +2244,11 @@ cmd_defwinname (int interactive, char *data)
   /* FIXME: Using strncmp is sorta dirty since `title' and
      `titlefoobar' would both match. But its quick and dirty. */
   if (!strncmp (name, "title", 5))
-    defaults.win_name = 0;
+    defaults.win_name = WIN_NAME_TITLE;
   else if (!strncmp (name, "name", 4))
-    defaults.win_name = 1;
+    defaults.win_name = WIN_NAME_RES_NAME;
   else if (!strncmp (name, "class", 5))
-    defaults.win_name = 2;
+    defaults.win_name = WIN_NAME_RES_CLASS;
   else
     message (" defwinname: invalid argument ");
 

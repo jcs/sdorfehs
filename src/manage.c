@@ -192,9 +192,6 @@ update_window_name (rp_window *win)
 {
   char *newstr;
 
-  /* Don't overwrite the window name if the user specified one. */
-/*   if (win->named) return 0; */
-
   newstr = get_wmname (win->w);
   if (newstr != NULL)
     {

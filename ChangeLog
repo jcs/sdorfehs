@@ -1,3 +1,24 @@
+2003-04-11  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/window.c (window_name): use WIN_NAME_* defines for possible
+	defaults.win_name values.
+	(window_name): remove case WIN_NAME_TITLE and glob it with the
+	default switch.
+
+	* src/main.c (init_defaults): use WIN_NAME_* defines for
+	possible defaults.win_name values.
+
+	* src/actions.c (cmd_defwinname): use WIN_NAME_* defines for
+	possible defaults.win_name values.
+	(cmd_defwinname): likewise
+
+	* src/data.h (WIN_NAME_TITLE): new define
+	(WIN_NAME_RES_CLASS): new define
+	(WIN_NAME_RES_NAME): new define
+
+	* src/window.c (add_to_window_list): use xstrdup to create the
+	default value for user_name.
+	
 2003-04-10  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/events.c (unmap_notify): fix crash bug in NormalState case.

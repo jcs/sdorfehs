@@ -85,23 +85,22 @@ window_name (rp_window *win)
 
   switch (defaults.win_name)
     {
-    case 0:
-      if (win->wm_name)
-	return win->wm_name;
-      else return win->user_name;
-
-    case 1:
+    case WIN_NAME_RES_NAME:
       if (win->res_name)
 	return win->res_name;
       else return win->user_name;
       
-    case 2:
+    case WIN_NAME_RES_CLASS:
       if (win->res_class)
 	return win->res_class;
       else return win->user_name;
 
+      /* if we're not looking for the res name or res class, then
+	 we're looking for the window title. */
     default:
-      return win->wm_name;
+      if (win->wm_name)
+	return win->wm_name;
+      else return win->user_name;
     }
 
   return NULL;
@@ -133,9 +132,8 @@ add_to_window_list (screen_info *s, Window w)
 
   XSelectInput (dpy, new_window->w, WIN_EVENTS);
 
-  new_window->user_name = xmalloc (strlen ("Unnamed") + 1);
+  new_window->user_name = xstrdup ("Unnamed");
 
-  strcpy (new_window->user_name, "Unnamed");
   new_window->wm_name = NULL;
   new_window->res_name = NULL;
   new_window->res_class = NULL;
