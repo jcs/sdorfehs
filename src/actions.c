@@ -1618,10 +1618,10 @@ cmd_rudeness (int interactive, void *data)
       return NULL;
     }
 
-  rp_honour_transient_raise = num & 1;
-  rp_honour_normal_raise = num & 2;
-  rp_honour_transient_map = num & 4;
-  rp_honour_normal_map = num & 8;
+  rp_honour_transient_raise = num & 1 ? 1 : 0;
+  rp_honour_normal_raise    = num & 2 ? 1 : 0;
+  rp_honour_transient_map   = num & 4 ? 1 : 0;
+  rp_honour_normal_map      = num & 8 ? 1 : 0;
 
   return NULL;
 }

@@ -4,6 +4,8 @@
 	non-interactively.
 	(cmd_defwaitcursor): error message correctly shows what command
 	the error occurred in.
+	(cmd_rudeness): rudeness data correctly stored in rudeness
+	variables.
 
 2002-12-11  Shawn  <sabetts@sfu.ca>
 
