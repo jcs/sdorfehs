@@ -288,7 +288,8 @@ init_user_commands()
 	       "Tmp wm: ", arg_REST);
   add_command ("unalias",	cmd_unalias,	1, 1, 1,
 	       "Alias: ", arg_STRING);
-  add_command ("unmanage",	cmd_unmanage,	0, 0, 0);
+  add_command ("unmanage",	cmd_unmanage,	1, 1, 1,
+	       "Unmanage: ", arg_REST);
   add_command ("unsetenv",	cmd_unsetenv,	1, 1, 1,
 	       "Variable: ", arg_STRING);
   add_command ("verbexec",	cmd_verbexec,	1, 1, 1,

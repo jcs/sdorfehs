@@ -1,3 +1,7 @@
+2005-01-20  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/actions.c (init_user_commands): fix unmanage command.
+
 2005-01-19  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* contrib/genrpbindings: add python bindings.
