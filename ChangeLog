@@ -2,6 +2,8 @@
 
 	* src/actions.c (wingravity_to_string): Fix the north gravity
 	string to return "n" not "ng".
+	(cmd_defborder): return NULL when no (or a bad) argument is passed
+	in.
 
 2002-01-23  Shawn  <sabetts@vcn.bc.ca>
 

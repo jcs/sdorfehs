@@ -1851,6 +1851,7 @@ cmd_defborder (int interactive, void *data)
       || sscanf (data, "%d", &tmp) < 1)
     {
       message (" defborder: One argument required ");
+      return NULL;
     }
 
   if (tmp >= 0)
