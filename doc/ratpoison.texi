@@ -400,6 +400,9 @@ Set the bar's timeout in seconds.
 When called non-interactively with no arguments, the current setting is
 returned.
 
+@item defbarborder @var{n}
+Set the border width for the bar window.
+
 @item defborder @var{n}
 Set the border width for all windows.
 
