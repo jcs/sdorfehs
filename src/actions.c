@@ -67,8 +67,15 @@ next_window (void *data)
 void
 last_window (void *data)
 {
+  rp_window *oldwin = rp_current_window;
+
   rp_current_window = find_last_accessed_window ();
   set_active_window (rp_current_window);
+
+  if (rp_current_window == oldwin)
+    {
+      display_msg_in_bar (&screens[0], "No other window.");
+    }
 }
 
 
@@ -145,7 +152,17 @@ execute_command (void *data)
 {
   char cmd[100];
 
-  get_input (rp_current_window->scr, "Command: ", cmd, 100);
+  if (rp_current_window)
+    {
+      get_input (rp_current_window->scr, "Command: ", cmd, 100);
+    }
+  else
+    {
+      /* FIXME: We can always assume there is 1 screen, but which one
+	 is the active one? Need to test on multi-screen x-servers. */
+      get_input (&screens[0], "Command: ", cmd, 100);
+    }
+
   PRINT_DEBUG ("user entered: %s\n", cmd);
 
   spawn (cmd);
@@ -163,14 +180,42 @@ spawn(void *data)
     if (fork() == 0) {
       putenv(DisplayString(dpy));
       execlp(prog, prog, 0);
-      fprintf (stderr, "exec %s ", prog);
+
+      PRINT_ERROR ("exec %s ", prog);
       perror(" failed");
+
       exit(EXIT_FAILURE);
     }
     exit(0);
   }
   wait((int *) 0);
   PRINT_DEBUG ("spawned %s\n", prog);
+}
+
+/* Switch to a different Window Manager. Thanks to 
+"Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
+void
+switch_to(void *which)
+{
+  char *prog=(char *)which;
+
+  PRINT_DEBUG ("Switching to %s\n", prog);
+
+  putenv(DisplayString(dpy)); 
+  execlp(prog, prog, 0);
+
+  PRINT_ERROR ("exec %s ", prog);
+  perror(" failed");
+}
+
+/* Quit ratpoison. Thanks to 
+"Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
+void
+bye(void *dummy)
+{
+  PRINT_DEBUG ("Exiting\n");
+  clean_up ();
+  exit (EXIT_SUCCESS);
 }
 
 void
@@ -180,6 +225,10 @@ goto_window_number (int n)
 
   if ((win = find_window_by_number (n)) == NULL)
     {
+      /* Display window list to indicate failure. */
+      /* FIXME: We can always assume there is 1 screen, but which one
+	 is the active one? Need to test on multi-screen x-servers. */
+      show_bar (&screens[0]);
       return;
     }
 

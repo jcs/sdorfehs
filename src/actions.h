@@ -1,6 +1,8 @@
 /* actions.h -- prototypes of all actions that can be performed with
    keystrokes */
 
+void switch_to(void *which);
+void bye(void *dummy);
 void generate_prefix (void *data);
 void abort_keypress (void *data);
 void goto_window_9 (void *data);

@@ -1,3 +1,41 @@
+2000-12-09  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* input.c (cook_keycode): properly handle LockMask
+
+	* input.h: added prototype for keysym_to_string
+
+	* input.c (keysym_to_string): added
+
+	* bar.c (show_bar): update_window_names(s) is called whether the
+	bar is raised or not.
+
+	* conf.h: Added BAR_Y_PADDING BAR_X_PADDING
+
+	* list.c (goto_window_name): return success or failure
+
+	* list.h: updated prototype for goto_window_name
+
+	* events.c (handle_key): Added a message indicating an unbound
+	key.
+
+	* bar.c (display_msg_in_bar): added
+	(update_window_names): uses BAR_X_PADDING instead of `5'
+	(update_window_names): Updated BAR_PADDING to BAR_Y_PADDING
+
+	* input.c (cook_keycode): mod is now an usigned int
+	(read_key): Ignores modifier keys. Now returns keysym and
+	modifiers.
+	(get_input): Updated BAR_PADDING to BAR_Y_PADDING and
+	BAR_X_PADDING.
+
+	* events.c (handle_key): uses read_key instead of XMaskEvent to
+	read a key.
+
+	* actions.c (goto_window_number): window list is displayed on failure.
+	(bye): added
+	(switch_to): added
+	(execute_command): no longer seg faults when no windows exist.
+
 2000-12-03  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* input.h (cook_keycode): added prototype

@@ -239,59 +239,49 @@ client_msg (XClientMessageEvent *ev)
 static void
 handle_key (screen_info *s)
 {
+  char *keysym_name;
+  char msg[100];
   const rp_action *i;
-  int revert;
-  Window fwin;
-  XEvent ev;
-  KeySym keysym;
-  int mod;
+  int revert;			
+  Window fwin;			/* Window currently in focus */
+  KeySym keysym;		/* Key pressed */
+  unsigned int mod;		/* Modifiers */
 
-  PRINT_DEBUG ("handling key.\n");
+  PRINT_DEBUG ("handling key...\n");
 
-  /* All functions hide the program bar. */
+  /* All functions hide the program bar. Unless the bar doesn't time
+     out. */
   if (BAR_TIMEOUT > 0) hide_bar (s);
 
   XGetInputFocus (dpy, &fwin, &revert);
   XSetInputFocus (dpy, s->key_window, RevertToPointerRoot, CurrentTime);
 
-  do
-    {  
-      XMaskEvent (dpy, KeyPressMask, &ev);
-      mod = ev.xkey.state;
+  read_key (&keysym, &mod);
 
-      cook_keycode (ev.xkey.keycode, &keysym, &mod);
-
-      for (i = key_actions; i->key != 0; i++)
+  for (i = key_actions; i->key != 0; i++)
+    {
+      if (keysym == i->key)
 	{
-	  if (keysym == i->key)
-	    if (i->state == -1 || mod == i->state)
-	      {
-		/* Revert focus back to the current window before
-                   executing the command. */
-		XSetInputFocus (dpy, fwin, revert, CurrentTime);
-		(*i->func)(i->data);
-		goto handled_key;
-	      }
+	  if (i->state == -1 || mod == i->state)
+	    {
+	      /* Revert focus back to the current window before
+	       executing the command. */
+	      XSetInputFocus (dpy, fwin, revert, CurrentTime);
+	      (*i->func)(i->data);
+	      return;
+	    }
 	}
     }
-  while (1);
 
- handled_key:
+  keysym_name = keysym_to_string (keysym, mod);
+  snprintf (msg, 100, "%s unbound key!", keysym_name);
+  free (keysym_name);
 
-/*     } while (keysym == XK_Shift_L */
-/* 	     || keysym == XK_Shift_R */
-/* 	     || keysym == XK_Control_L */
-/* 	     || keysym == XK_Control_R */
-/* 	     || keysym == XK_Caps_Lock */
-/* 	     || keysym == XK_Shift_Lock */
-/* 	     || keysym == XK_Meta_L */
-/* 	     || keysym == XK_Meta_R */
-/* 	     || keysym == XK_Alt_L */
-/* 	     || keysym == XK_Alt_R */
-/* 	     || keysym == XK_Super_L */
-/* 	     || keysym == XK_Super_R */
-/* 	     || keysym == XK_Hyper_L */
-/* 	     || keysym == XK_Hyper_R); /\* ignore modifier keypresses. *\/ */
+  PRINT_DEBUG ("%s\n", msg)
+
+  /* No key match, notify user. */
+  XSetInputFocus (dpy, fwin, revert, CurrentTime);
+  display_msg_in_bar (s, msg);
 }
 
 void
@@ -404,13 +394,11 @@ delegate_event (XEvent *ev)
 
     case KeyPress:
       PRINT_DEBUG ("KeyPress %d %d\n", ev->xkey.keycode, ev->xkey.state);
-      {
-	KeySym thesym;
-	char buf[512];
-	XLookupString (&ev->xkey, buf, 512, &thesym, NULL);
-	PRINT_DEBUG ("key string: '%s' %ld\n", buf, thesym);
-      }
       key_press (ev);
+      break;
+
+    case KeyRelease: 
+      PRINT_DEBUG ("KeyRelease %d %d\n", ev->xkey.keycode, ev->xkey.state);
       break;
       
     case UnmapNotify:

@@ -154,18 +154,19 @@ find_window_by_name (char *name)
   return NULL;
 }
 
-void
+int
 goto_window_name (char *name)
 {
   rp_window *win;
 
   if ((win = find_window_by_name (name)) == NULL)
     {
-      return;
+      return 0;
     }
 
   rp_current_window = win;
   set_active_window (rp_current_window);
+  return 1;
 }
 
 rp_window *
