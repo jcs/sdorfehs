@@ -25,14 +25,13 @@
 
 //#define HIDE_MOUSE		/* Pressing a key sends the mouse to the bottom right corner */
 
-#define BAR_FG_COLOR    "Gray60"
-#define BAR_BG_COLOR    "Lightgreen"
-#define BAR_BOLD_COLOR  "Black"	/* To indicate the current window */
+#define BAR_FG_COLOR    "black"
+#define BAR_BG_COLOR    "white"
+#define FONT_NAME       "9x15bold"
 
-#define FONT_NAME       "fixed"	/* The font you wish to use */
-#define BAR_Y_PADDING   3       /* The amount of padding on the top
+#define BAR_Y_PADDING   0       /* The amount of padding on the top
 				   and bottom of the message bar  */
-#define BAR_X_PADDING   5       /* The amount of padding on the left
+#define BAR_X_PADDING   0       /* The amount of padding on the left
 				   and right of the message bar  */
 #define BAR_LOCATION    3	/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
 #define BAR_TIMEOUT     5	/* Number of seconds before the progam bar autohides 0=don't autohide */
