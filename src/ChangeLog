@@ -1,3 +1,8 @@
+2001-01-28  Ryan Yeske  <rcyeske@soya.hotdog.tmp>
+
+	* actions.c: changed rename_current_window key to `A', bound `a'
+	to show_clock
+
 2001-01-02  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* actions.h (show_clock): added prototype
@@ -6,7 +11,8 @@
 
 2000-12-15  shawn  <sabetts@badbox.secure.basis.org>
 
-	* actions.c (maximize): increment size in hints->width_inc and hints->height_inc intervals
+	* actions.c (maximize): increment size in hints->width_inc and
+	hints->height_inc intervals
 
 	* manage.c (manage): set the dimension members of the rp_window struct
 
