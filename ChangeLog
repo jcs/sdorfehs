@@ -1,0 +1,6 @@
+2001-02-04  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
+
+	* doc/ratpoison.texi: added keystroke for `Show current time.'
+
+	* debian/ratpoison.1: added keystroke for `Show current time.'
+
