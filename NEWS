@@ -20,7 +20,8 @@ as windows in the back update.
 ** rat cursor changes
 
 When you hit the prefix key the rat cursor changes to a square to tell
-you what it is waiting for another key.
+you what it is waiting for another key. This feature can be removed in
+conf.h.
 
 ** Split windows
 
