@@ -373,7 +373,7 @@ init_defaults ()
 
   defaults.wait_for_key_cursor = 1;
 
-  defaults.window_fmt = strdup ("N-W");
+  defaults.window_fmt = strdup ("%n%s%t");
   if (defaults.window_fmt == NULL)
     {
       PRINT_ERROR ("Not enough memory\n");

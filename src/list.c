@@ -610,60 +610,80 @@ print_window_information (rp_window *win)
 }
 
 /* format options
-   N - Window number
-   - - Window status (current window, last window, etc)
-   W - Window Name
-   w - Window res name
-   c - Window res class
-   n - X11 Window ID
+   %n - Window number
+   %s - Window status (current window, last window, etc)
+   %t - Window Name
+   %a - application name
+   %c - resource class
+   %i - X11 Window ID
    
  */
 static void
 format_window_name (char *fmt, rp_window *win, rp_window *other_win, 
 		    struct sbuf *buffer)
 {
+  int esc = 0;
   char dbuf[10];
 
   for(; *fmt; fmt++)
     {
-      switch (*fmt)
+      if (*fmt == '%' && !esc)
 	{
-	case 'N':
-	  snprintf (dbuf, 10, "%d", win->number);
-	  sbuf_concat (buffer, dbuf);
-	  break;
+	  esc = 1;
+	  continue;
+	}
 
-	case '-':
-	  if (win == current_window())
-	    sbuf_concat (buffer, "*");
-	  else if (win == other_win)
-	    sbuf_concat (buffer, "+");
-	  else
-	    sbuf_concat (buffer, "-");
-	  break;
+      if (esc)
+	{
+	  switch (*fmt)
+	    {
+	    case 'n':
+	      snprintf (dbuf, 10, "%d", win->number);
+	      sbuf_concat (buffer, dbuf);
+	      break;
 
-	case 'W':
-	  sbuf_concat (buffer, window_name (win));
-	  break;
+	    case 's':
+	      if (win == current_window())
+		sbuf_concat (buffer, "*");
+	      else if (win == other_win)
+		sbuf_concat (buffer, "+");
+	      else
+		sbuf_concat (buffer, "-");
+	      break;
 
-	case 'w':
-	  sbuf_concat (buffer, win->res_name);
-	  break;
+	    case 't':
+	      sbuf_concat (buffer, window_name (win));
+	      break;
 
-	case 'c':
-	  sbuf_concat (buffer, win->res_class);
-	  break;
+	    case 'a':
+	      sbuf_concat (buffer, win->res_name);
+	      break;
 
-	case 'n':
-	  snprintf (dbuf, 9, "%ld", (unsigned long)win->w);
-	  sbuf_concat (buffer, dbuf);
-	  break;
+	    case 'c':
+	      sbuf_concat (buffer, win->res_class);
+	      break;
 
-	default:
+	    case 'i':
+	      snprintf (dbuf, 9, "%ld", (unsigned long)win->w);
+	      sbuf_concat (buffer, dbuf);
+	      break;
+
+	    case '%':
+	      dbuf[0] = '%';
+	      dbuf[1] = 0;
+	      sbuf_concat (buffer, dbuf);
+	      break;
+	    }
+
+	  /* Reset the 'escape' state. */
+	  esc = 0;
+	}
+      else
+	{
+	  /* Insert the character. */
 	  dbuf[0] = *fmt;
 	  dbuf[1] = 0;
 	  sbuf_concat (buffer, dbuf);
-	  break;
 	}
     }
 }

@@ -1,5 +1,8 @@
 2001-09-16  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/list.c (format_window_name): Use 2 character escape codes,
+	like printf. Dependant code updated.
+
 	* configure.in: check for setpgrp.
 
 	* src/actions.c (spawn): Only call setsid if it exists.
