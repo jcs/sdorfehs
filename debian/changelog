@@ -1,3 +1,11 @@
+ratpoison (1.0.0-1.1) unstable; urgency=low
+
+  * Recommend ratmenu (Closes: #113624)
+  * Do not recommend xterm, but xvt, that fits better with the ratpoison
+  idea
+
+ -- Gergely Nagy <algernon@debian.org>  Sun,  7 Oct 2001 16:55:41 +0200
+
 ratpoison (1.0.0-1) unstable; urgency=medium
 
   * New upstream release!
