@@ -1,3 +1,13 @@
+2002-03-23  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (command): look for the command in the aliases
+	before looking in the command list.
+
+	* src/actions.h (cmd_unalias): new prototype
+
+	* src/actions.c (user_commands): new command unalias
+	(cmd_unalias): new function
+
 2002-04-25  Gergely Nagy  <algernon@debian.org>
 
 	* src/actions.c: include <strings.h>

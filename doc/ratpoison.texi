@@ -99,8 +99,8 @@ This document explains how to use ratpoison.
 @chapter About
 
 ratpoison is a simple Window Manager with no fat library dependencies,
-no fancy graphics, no window decorations, and no flashy wank. It is
-largely modeled after GNU Screen which has done wonders in the
+no fancy graphics, no window decorations, and no rodent dependence. It
+is largely modeled after GNU Screen which has done wonders in the
 virtual terminal market.
 
 All interaction with the window manager is done through
@@ -177,8 +177,8 @@ and @kbd{C-t p}.
 
 And That concludes a brief introduction on how to use ratpoison. Notice
 how we didn't have to drag a single window, or click a single maximize
-button? Beautiful wasn't it? Felt fast? Cool? Its modern computing at
-its best boys and girls.
+button? Beautiful wasn't it? Felt fast? Cool? It's modern computing at
+its best.
 
 @node  Splitting Frames, Multiple Monitors, General Use, Top
 @chapter Splitting Frames
@@ -552,7 +552,7 @@ directions @samp{northwest}, @samp{north}, @samp{northeast},
 @samp{east}, @samp{southeast}, @samp{south}, @samp{southwest} and
 @samp{west}, clockwise from the top left corner. @samp{center} will
 center the window in the frame. @var{g} and can be abbreviated to the
-standard compass 1 and 2 letter abreviations (i.e. @samp{nw},
+standard compass 1 and 2 letter abbreviations (i.e. @samp{nw},
 @samp{s}, etc).
 
 @item help
@@ -633,7 +633,7 @@ Kill the current frame. This is a no-op if there is only one frame.
 Restart ratpoison.
 
 @item rudeness @var{n}
-The rudeness command lets you decide what windows pop-up automatically
+The rudeness command let's you decide what windows pop-up automatically
 and when. This is often useful for those deep hack sessions when you
 absolutely can't be disturbed.
 
@@ -795,7 +795,7 @@ Here ratpoison would split the current frame twice.
 
 Now you've probably read the web page, and you've no doubt dug up some
 old file I forgot about. You're probably wondering, ``say, didn't he say
-there was no configuration file to customize?''. Okay, ya got me. But lets
+there was no configuration file to customize?''. Okay, ya got me. But let's
 be honest here: ratpoison is so pure and fast-acting, customization is
 barely worth the extra effort. In the off chance that you need to make
 ratpoison your own, we now support it. 
