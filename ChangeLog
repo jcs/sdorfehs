@@ -3,6 +3,8 @@
 	* src/actions.c (find_alias_index): new function
 	(cmd_alias): When an alias is already in the alias list, replace
 	it with the new alias.
+	(command): Append to the end of alias command the arguments passed
+	in before evaluating the alias.
 
 	* src/events.c (configure_request): do not send a synthetic
 	configure notify event.

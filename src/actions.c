@@ -885,7 +885,17 @@ command (int interactive, char *data)
     {
       if (!strcmp (cmd, alias_list[i].name))
 	{
-	  result = command (interactive, alias_list[i].alias);
+	  struct sbuf *s;
+
+	  /* Append any arguments onto the end of the alias' command. */
+	  s = sbuf_new (0);
+	  sbuf_concat (s, alias_list[i].alias);
+	  if (rest != NULL)
+	    sbuf_printf_concat (s, " %s", rest);
+
+	  result = command (interactive, sbuf_get (s));
+
+	  sbuf_free (s);
 	  goto done;
 	}
     }
