@@ -408,6 +408,9 @@ Indicate which frame is the current frame.
 @item defbarborder @var{n}
 Set the border width for the bar window.
 
+@item defbarborder @var{n}
+Set the border width for the bar window.
+
 @item defbargravity @var{g}
 Set the default alignment for the message bar. See the @command{gravity} command.
 
@@ -504,6 +507,13 @@ Set the default gravity for normal windows. See the
 When called non-interactively with no arguments, the current setting is
 returned.
 
+@item defwingravity @var{g}
+Set the default gravity for normal windows. See the
+@command{gravity} command.
+
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item defwinname @var{name}
 There are three resources ratpoison can get a window's name from: the
 WMNAME hint, the res_name from the WMCLASS hint, or the res_class from
@@ -563,6 +573,9 @@ standard compass 1 and 2 letter abbreviations (i.e. @samp{nw},
 When called non-interactively with no arguments, the current setting is
 returned.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item help
 Display a help screen that lists all bound keystrokes.
 
@@ -581,6 +594,9 @@ Display the last message.
 @item license
 Display ratpoison's license. By default, this is bound to @kbd{C-t V}.
 
+@item license
+Display ratpoison's license. By default, this is bound to @kbd{C-t V}.
+
 @item link @var{key}
 Call the command that @var{key} is bound to. For instance
 @command{link C-t} would call the command @command{other} and switch
@@ -594,6 +610,10 @@ Set the bar's timeout in seconds.
 
 When called non-interactively with no arguments, the current setting is
 returned.
+
+@item newwm @var{window-manager}
+This is a bad-bad command. It kills ratpoison and revives that
+ugly rodent! Yuck! Avoid!
 
 @item newwm @var{window-manager}
 This is a bad-bad command. It kills ratpoison and revives that
@@ -682,6 +702,9 @@ request with a message like @samp{Raise request from window 1
 When called non-interactively with no arguments, the current setting is
 returned.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item select @var{n}
 This jumps you to window @var{n} where @var{n} is the window number as
 shown in the Program Bar. You can do the same trick with
@@ -720,6 +743,9 @@ Turn on or off the startup_message. This is most useful in your
 When called non-interactively with no arguments, the current setting is
 returned.
 
+When called non-interactively with no arguments, the current setting is
+returned.
+
 @item time
 Show current time. Disappears after 5 seconds, like all other info bars.
 In the default setup, the @kbd{C-t a} keystroke is bound to this command.
@@ -728,6 +754,9 @@ In the default setup, the @kbd{C-t a} keystroke is bound to this command.
 Rename the currently active window. This name will remain for the
 duration of the window's life, unless you change it again. By default,
 the @kbd{C-t A} keystroke is bound to this command.
+
+@item unalias @var{name}
+Remove @var{name} from the list of defined aliases.
 
 @item unalias @var{name}
 Remove @var{name} from the list of defined aliases.
@@ -755,6 +784,12 @@ the original frame.
 If it is a pixel, the original frame is resized to that many
 pixels. If @var{n} has a minus sign before it, then the new frame will
 shrink by that many pixels.
+
+@item warp @var{state}
+Toggle rat warping. By default ratpoison saves the position of the
+rat when leaving a window and when the user returns to the window the
+rat's position is restored. This can be counter-intuitive, so you can
+toggle it with this command. @var{state} can be @code{on} or @code{off}.
 
 @item warp @var{state}
 Toggle rat warping. By default ratpoison saves the position of the

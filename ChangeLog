@@ -1,3 +1,31 @@
+2003-01-30  Shawn Betts  <sabetts@sfu.ca>
+
+	* src/actions.c (cmd_bind): more informative error messages
+	(cmd_unbind): likewise
+	(cmd_source): likewise
+	(cmd_select): likewise
+	(cmd_number): likewise
+	(cmd_escape): likewise
+	(cmd_h_split): likewise
+	(cmd_v_split): likewise
+	(cmd_rudeness): likewise
+	(cmd_gravity): likewise
+	(cmd_defwingravity): likewise
+	(cmd_deftransgravity): likewise
+	(cmd_defmaxsizegravity): likewise
+	(cmd_msgwait): likewise
+	(cmd_defbargravity): likewise
+	(cmd_defbargravity): likewise
+	(cmd_defborder): likewise
+	(cmd_defbarborder): likewise
+	(cmd_definputwidth): likewise
+	(cmd_definputwidth): only accept input widths >=0
+	(cmd_chdir): add error message if HOME environment variable is not
+	set.
+	(cmd_chdir): add error message if chdir fails.
+	(cmd_rudeness): only accept rudeness numbers between 0 and 15
+	(cmd_msgwait): only accept waiting times >=0
+
 2003-01-25  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/actions.c (cmd_help): Print key binding when called

@@ -24,6 +24,7 @@
 #include <string.h>
 #include <strings.h>
 #include <time.h>
+#include <errno.h>
 
 #include "ratpoison.h"
 
@@ -486,7 +487,7 @@ cmd_bind (int interactive, void *data)
 		add_keybinding (key->sym, key->state, cmd);
 	    }
 	  else
-	    message (" bind: could not parse key description ");
+	    marked_message_printf (0, 0, " bind: unknown key '%s' ", keydesc);
 	}
     }
 
@@ -514,11 +515,11 @@ cmd_unbind (int interactive, void *data)
   if (key)
     {
       if (!remove_keybinding (key->sym, key->state))
-	marked_message_printf (0, 0, " %s unbound key ", keydesc);
+	marked_message_printf (0, 0, " unbind: unbound key '%s' ", keydesc);
     }
   else
     {
-      marked_message_printf (0, 0, " %s unknown key ", keydesc);
+      marked_message_printf (0, 0, " unbind: unknown key '%s' ", keydesc);
     }
 
   free (keydesc);
@@ -539,7 +540,7 @@ cmd_source (int interactive, void *data)
   FILE *fileptr;
 
   if ((fileptr = fopen ((char*) data, "r")) == NULL)
-    message (" source: error opening file ");
+    marked_message_printf (0, 0, " source: %s : %s ", (char *)data, strerror(errno));
   else
     {
       read_rc_file (fileptr);
@@ -758,8 +759,7 @@ cmd_select (int interactive, void *data)
 	  if ((w = find_window_name (str)))
 	    goto_window (w);
 	  else
-	    /* we need to format a string that includes the str */
-	    message (" no window by that name ");
+	    marked_message_printf (0, 0, " select: unknown window '%s' ", str);
 	}
     }
 
@@ -1084,7 +1084,7 @@ cmd_number (int interactive, void *data)
       new_number = string_to_window_number (tmp);
       if (new_number < 0)
 	{
-	  message (" number:  Bad argument ");
+	  message (" number: invalid argument ");
 	  free (str);
 	  return NULL;
 	}
@@ -1109,7 +1109,7 @@ cmd_number (int interactive, void *data)
       win_number = string_to_window_number (tmp);
       if (win_number < 0)
 	{
-	  message (" number: Bad argument ");
+	  message (" number: invalid argument ");
 	  free (str);
 	  return NULL;
 	}
@@ -1249,7 +1249,7 @@ cmd_escape (int interactive, void *data)
     }
   else
     {
-      message (" escape: could not parse key description ");
+      marked_message_printf (0, 0, " escape: unknown key '%s' ", (char *)data);
     }
 
   return NULL;
@@ -1306,6 +1306,8 @@ cmd_h_split (int interactive, void *data)
 
   if (pixels > 0)
     h_split_frame (current_screen()->rp_current_frame, pixels);
+  else
+    message (" hsplit: invalid argument ");    
 
   return NULL;
 }
@@ -1323,6 +1325,8 @@ cmd_v_split (int interactive, void *data)
 
   if (pixels > 0)
     v_split_frame (current_screen()->rp_current_frame, pixels);
+  else
+    message (" vsplit: invalid argument ");    
 
   return NULL;
 }
@@ -1608,13 +1612,13 @@ cmd_rudeness (int interactive, void *data)
 		     
   if (data == NULL)
     {
-      message (" Rudeness level required ");
+      message (" rudeness: one argument required ");
       return NULL;
     }
 
-  if (sscanf ((char *)data, "%d", &num) < 1)
+  if (sscanf ((char *)data, "%d", &num) < 1 || num < 0 || num > 15)
     {
-      marked_message_printf (0, 0, " Bad rudeness level: %s ", (char *)data);
+      marked_message_printf (0, 0, " rudeness: invalid level '%s' ", (char *)data);
       return NULL;
     }
 
@@ -1694,11 +1698,14 @@ cmd_gravity (int interactive, void *data)
   if (data == NULL && !interactive) 
     return xstrdup (wingravity_to_string (win->gravity));
 
-  if (data == NULL
-      || (gravity = parse_wingravity (data)) < 0)
+  if (data == NULL)
     {
-      message (" gravity: Unknown gravity ");
+      message (" gravity: one argument required ");
+      return NULL;
     }
+
+  if ((gravity = parse_wingravity (data)) < 0)
+    message (" gravity: unknown gravity ");
   else
     {
       win->gravity = gravity;
@@ -1716,15 +1723,16 @@ cmd_defwingravity (int interactive, void *data)
   if (data == NULL && !interactive) 
     return xstrdup (wingravity_to_string (defaults.win_gravity));
 
-  if (data == NULL
-      || (gravity = parse_wingravity (data)) < 0)
+  if (data == NULL)
     {
-      message (" defwingravity: Unknown gravity ");
+      message (" defwingravity: one argument required ");
+      return NULL;
     }
+
+  if ((gravity = parse_wingravity (data)) < 0)
+    message (" defwingravity: unknown gravity ");
   else
-    {
-      defaults.win_gravity = gravity;
-    }
+    defaults.win_gravity = gravity;
 
   return NULL;
 }
@@ -1736,16 +1744,17 @@ cmd_deftransgravity (int interactive, void *data)
 
   if (data == NULL && !interactive)
     return xstrdup (wingravity_to_string (defaults.trans_gravity));
+ 
+  if (data == NULL)
+    {
+      message (" deftransgravity: one argument required ");
+      return NULL;
+    }
 
-  if (data == NULL
-      || (gravity = parse_wingravity (data)) < 0)
-    {
-      message (" gravity: Unknown gravity ");
-    }
+  if ((gravity = parse_wingravity (data)) < 0)
+    message (" deftransgravity: unknown gravity ");
   else
-    {
-      defaults.trans_gravity = gravity;
-    }
+    defaults.trans_gravity = gravity;
 
   return NULL;
 }
@@ -1758,15 +1767,16 @@ cmd_defmaxsizegravity (int interactive, void *data)
   if (data == NULL && !interactive)
     return xstrdup (wingravity_to_string (defaults.maxsize_gravity));
 
-  if (data == NULL
-      || (gravity = parse_wingravity (data)) < 0)
+  if (data == NULL)
     {
-      message (" defmaxsizegravity: Unknown gravity ");
+      message (" defmaxsizegravity: one argument required ");
+      return NULL;
     }
+
+  if ((gravity = parse_wingravity (data)) < 0)
+    message (" defmaxsizegravity: unknown gravity ");
   else
-    {
-      defaults.maxsize_gravity = gravity;
-    }
+    defaults.maxsize_gravity = gravity;
 
   return NULL;
 }
@@ -1779,16 +1789,16 @@ cmd_msgwait (int interactive, void *data)
   if (data == NULL && !interactive)
     return xsprintf ("%d", defaults.bar_timeout);
     
-  if (data == NULL
-      || sscanf (data, "%d", &tmp) < 1)
+  if (data == NULL)
     {
-      message (" msgwait: One argument required ");
+      message (" msgwait: one argument required ");
+      return NULL;
     }
 
-  if (tmp >= 0)
-    defaults.bar_timeout = tmp;
+  if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
+    message (" msgwait: invalid argument ");    
   else
-    message (" msgwait: Bad argument ");    
+    defaults.bar_timeout = tmp;
 
   return NULL;
 }
@@ -1803,19 +1813,14 @@ cmd_defbargravity (int interactive, void *data)
 
   if (data == NULL)
     {
-      message (" defbargravity: One argument required ");
+      message (" defbargravity: one argument required ");
       return NULL;
     }
 
   if ((gravity = parse_wingravity (data)) < 0)
-    {
-      message (" defbargravity: Bad location ");
-      return NULL;
-    }
+    message (" defbargravity: unknown gravity ");
   else
-    {
-      defaults.bar_location = gravity;
-    }
+    defaults.bar_location = gravity;
 
   return NULL;
 }
@@ -1860,7 +1865,7 @@ cmd_deffont (int interactive, void *data)
   font = XLoadQueryFont (dpy, (char *)data);
   if (font == NULL)
     {
-      message (" deffont: Unknown font ");
+      message (" deffont: unknown font ");
       return NULL;
     }
 
@@ -1888,7 +1893,7 @@ cmd_defpadding (int interactive, void *data)
   if (data == NULL
       || sscanf (data, "%d %d %d %d", &l, &t, &r, &b) < 4)
     {
-      message (" defpadding: Four arguments required ");
+      message (" defpadding: four arguments required ");
       return NULL;
     }
 
@@ -1946,20 +1951,19 @@ cmd_defborder (int interactive, void *data)
   if (data == NULL && !interactive)
     return xsprintf ("%d", defaults.window_border_width);
 
-  if (data == NULL
-      || sscanf (data, "%d", &tmp) < 1)
+  if (data == NULL)
     {
-      message (" defborder: One argument required ");
+      message (" defborder: one argument required ");
       return NULL;
     }
 
-  if (tmp >= 0)
-    defaults.window_border_width = tmp;
-  else
+  if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
     {
-    message (" defborder: Bad argument ");
-    return NULL;
+      message (" defborder: invalid argument ");
+      return NULL;
     }
+
+  defaults.window_border_width = tmp;
 
   /* Update all the visible windows. */
   for (win = rp_mapped_window_sentinel->next; 
@@ -1982,20 +1986,19 @@ cmd_defbarborder (int interactive, void *data)
   if (data == NULL && !interactive)
     return xsprintf ("%d", defaults.bar_border_width);
 
-  if (data == NULL
-      || sscanf (data, "%d", &tmp) < 1)
+  if (data == NULL)
     {
-      message (" defbarborder: One argument required ");
+      message (" defbarborder: one argument required ");
       return NULL;
     }
 
-  if (tmp >= 0)
-    defaults.bar_border_width = tmp;
-  else
+  if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
     {
-      message (" defbarborder: Bad argument ");
+      message (" defbarborder: invalid argument ");
       return NULL;
     }
+
+  defaults.bar_border_width = tmp;
 
   /* Update the frame and bar windows. */
   for (i=0; i<num_screens; i++)
@@ -2011,14 +2014,21 @@ cmd_defbarborder (int interactive, void *data)
 char *
 cmd_definputwidth (int interactive, void *data)
 {
+  int tmp;
+
   if (data == NULL && !interactive)
     return xsprintf ("%d", defaults.input_window_size);
 
-  if (data == NULL
-      || sscanf (data, "%d", &defaults.input_window_size) < 1)
+  if (data == NULL)
     {
-      message (" definputwidth: One argument required ");
+      message (" definputwidth: one argument required ");
+      return NULL;
     }
+
+  if (sscanf (data, "%d", &tmp) < 1 || tmp < 0)
+    message (" definputwidth: invalid argument ");
+  else
+    defaults.input_window_size = tmp;
 
   return NULL;
 }
@@ -2032,7 +2042,7 @@ cmd_defwaitcursor (int interactive, void *data)
   if (data == NULL
       || sscanf (data, "%d", &defaults.wait_for_key_cursor) < 1)
     {
-      message (" defwaitcursor: One argument required ");
+      message (" defwaitcursor: one argument required ");
     }
 
   return NULL;    
@@ -2074,7 +2084,7 @@ cmd_defwinname (int interactive, void *data)
 
   if (data == NULL)
     {
-      message (" defwinname: One argument required ");
+      message (" defwinname: one argument required ");
       return NULL;
     }
 
@@ -2089,7 +2099,7 @@ cmd_defwinname (int interactive, void *data)
   else if (!strncmp (name, "class", 5))
     defaults.win_name = 2;
   else
-    message (" defwinname: Bad argument ");
+    message (" defwinname: invalid argument ");
 
   return NULL;      
 }
@@ -2102,7 +2112,7 @@ cmd_deffgcolor (int interactive, void *data)
 
   if (data == NULL)
     {
-      message (" deffgcolor: One argument required ");
+      message (" deffgcolor: one argument required ");
       return NULL;
     }
 
@@ -2110,7 +2120,7 @@ cmd_deffgcolor (int interactive, void *data)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, (char *)data, &color, &junk))
 	{
-	  message (" deffgcolor: Unknown color ");
+	  message (" deffgcolor: unknown color ");
 	  return NULL;
 	}
 
@@ -2133,7 +2143,7 @@ cmd_defbgcolor (int interactive, void *data)
 
   if (data == NULL)
     {
-      message (" defbgcolor: One argument required ");
+      message (" defbgcolor: one argument required ");
       return NULL;
     }
 
@@ -2141,7 +2151,7 @@ cmd_defbgcolor (int interactive, void *data)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, (char *)data, &color, &junk))
 	{
-	  message (" defbgcolor: Unknown color ");
+	  message (" defbgcolor: unknown color ");
 	  return NULL;
 	}
 
@@ -2164,7 +2174,7 @@ cmd_setenv (int interactive, void *data)
 
   if (data == NULL)
     {
-      message (" setenv: Two arguments required ");
+      message (" setenv: two arguments required ");
       return NULL;
     }
 
@@ -2173,7 +2183,7 @@ cmd_setenv (int interactive, void *data)
   value = xmalloc (strlen (data) + 1);
   if (sscanf (data, "%s %s", name, value) < 2)
     {
-      message (" setenv: Two arguments required ");
+      message (" setenv: two arguments required ");
       free (name);
       free (value);
       return NULL;
@@ -2211,7 +2221,7 @@ cmd_getenv (int interactive, void *data)
 
   if (data == NULL)
     {
-      message (" getenv: One argument required ");
+      message (" getenv: one argument required ");
       return NULL;
     }
 
@@ -2228,7 +2238,7 @@ cmd_getenv (int interactive, void *data)
 
   if (interactive)
     {
-      marked_message_printf (0,0, " %s ", value);
+      marked_message_printf (0, 0, " %s ", value);
       return NULL;
     }
 
@@ -2246,14 +2256,23 @@ cmd_getenv (int interactive, void *data)
 char *
 cmd_chdir (int interactive, void *data)
 {
+  char *dir;
+
   if (!data)
     {
-      char *homedir = getenv("HOME");
-      if (homedir)
-        chdir (homedir);
+      dir = getenv ("HOME");
+      if (dir == NULL || *dir == '\0')
+        {
+	  message ( " chdir : HOME not set " );
+          return NULL;
+	}
     }
+  else
+    dir = (char *)data;
 
-  chdir ((char *)data);
+  if (chdir (dir) == -1)
+    marked_message_printf (0, 0, " chdir: %s : %s ", dir, strerror(errno));
+
   return NULL;
 }
 
@@ -2264,7 +2283,7 @@ cmd_unsetenv (int interactive, void *data)
 {
   if (data == NULL)
     {
-      message (" unsetenv: One argument is required ");
+      message (" unsetenv: one argument is required ");
       return NULL;
     }
 
@@ -2363,7 +2382,7 @@ cmd_startup_message (int interactive, void *data)
 
   if (data == NULL)
     {
-      message (" startup_message; one argument required ");
+      message (" startup_message: one argument required ");
       return NULL;
     }
 
@@ -2372,7 +2391,7 @@ cmd_startup_message (int interactive, void *data)
   else if (!strcasecmp (data, "off"))
     defaults.startup_message = 0;
   else
-    message (" startup_message; Invalid argument ");
+    message (" startup_message: invalid argument ");
 
   return NULL;
 }
@@ -2385,7 +2404,7 @@ cmd_focuslast (int interactive, void *data)
   if (frame)
       set_active_frame (frame);
   else
-    message (" focuslast: No other frame ");
+    message (" focuslast: no other frame ");
 
   return NULL;
 }
@@ -2418,7 +2437,7 @@ cmd_defbarpadding (int interactive, void *data)
   if (data == NULL
       || sscanf (data, "%d %d", &x, &y) < 2) 
     {
-      message (" defbarpadding: Two arguments required ");
+      message (" defbarpadding: two arguments required ");
       return NULL;
     }
 
@@ -2429,7 +2448,7 @@ cmd_defbarpadding (int interactive, void *data)
     }
   else
     {
-      message (" defbarpadding: Bad argument ");    
+      message (" defbarpadding: invalid argument ");    
     }
   return NULL;
 }
@@ -2456,7 +2475,7 @@ cmd_alias (int interactive, void *data)
   
   if (data == NULL)
     {
-      message (" alias: At least one argument required ");
+      message (" alias: two arguments required ");
       return NULL;
     }
 
@@ -2466,7 +2485,7 @@ cmd_alias (int interactive, void *data)
 
   if (name == NULL || alias == NULL)
     {
-      message (" alias: Two arguments required ");
+      message (" alias: two arguments required ");
       return NULL;
     }
 
@@ -2501,7 +2520,7 @@ cmd_unalias (int interactive, void *data)
   
   if (data == NULL)
     {
-      message (" unalias: One argument required ");
+      message (" unalias: one argument required ");
       return NULL;
     }
 
@@ -2547,7 +2566,7 @@ cmd_nextscreen (int interactive, void *data)
   /* No need to go through the motions when we don't have to. */
   if (num_screens <= 1)
     {
-      message (" nextscreen: No other screen ");
+      message (" nextscreen: no other screen ");
       return NULL;
     }
   new_screen = rp_current_screen + 1;
@@ -2567,7 +2586,7 @@ cmd_prevscreen (int interactive, void *data)
   /* No need to go through the motions when we don't have to. */
   if (num_screens <= 1) 
     {
-      message (" prevscreen: No other screen ");
+      message (" prevscreen: no other screen ");
       return NULL;
     }
 
@@ -2588,7 +2607,7 @@ cmd_warp (int interactive, void *data)
 
   if (data == NULL)
     {
-      message (" warp; one argument required ");
+      message (" warp: one argument required ");
       return NULL;
     }
 
@@ -2597,7 +2616,7 @@ cmd_warp (int interactive, void *data)
   else if (!strcasecmp (data, "off"))
     defaults.warp = 0;
   else
-    message (" warp; Invalid argument ");
+    message (" warp: invalid argument ");
  
   return NULL;
 }
