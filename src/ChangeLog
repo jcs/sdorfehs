@@ -1,5 +1,8 @@
 2001-02-11  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* ratpoison.h: #include "sbuf.h"
+	removed duplicate #include "messages.h"
+
 	* Makefile.am (ratpoison_SOURCES): added sbuf.c sbuf.h
 
 	* bar.c (calc_bar_width): removed function
