@@ -564,6 +564,7 @@ is_transient_ancestor (rp_window *win, rp_window *transient_for)
 }
 #endif
 
+/* In the current frame, set the active window to win. win will have focus. */
 void
 set_active_window (rp_window *win)
 {
@@ -583,8 +584,8 @@ set_active_window (rp_window *win)
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
   if (!win->transient
       && !(win->hints->flags & PMaxSize 
-	   && win->hints->max_width < win->scr->root_attr.width
-	   && win->hints->max_height < win->scr->root_attr.height))
+	   && (win->hints->max_width < win->scr->root_attr.width
+	       || win->hints->max_height < win->scr->root_attr.height)))
 #else
   if (!win->transient)
 #endif
