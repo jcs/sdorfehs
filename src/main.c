@@ -172,9 +172,10 @@ alrm_handler (int signum)
 void
 chld_handler (int signum)
 {
-  int pid, status, serrno;
-  serrno = errno;
   rp_child_info *cur;
+  int pid, status, serrno;
+
+  serrno = errno;
 
   while (1)
     {

@@ -1,5 +1,8 @@
 2003-05-17  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/main.c (chld_handler): Variable declaration placed in proper
+	location.
+
 	* src/actions.c (spawn): always put the DISPLAY string in the
 	environment.
 
