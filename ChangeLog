@@ -1,5 +1,10 @@
 2001-06-10  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/actions.c (cmd_generate): return if there is no current
+	window.
+
+	* src/split.c (split_frame): empty frames can be split.
+
 	* src/main.c (rp_rat_bits): remove
 	(rp_rat_mask_bits): remove include <X11/cursorfont.h>
 	(sighandler): only increment kill_signalled

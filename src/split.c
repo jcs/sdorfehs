@@ -185,9 +185,6 @@ split_frame (rp_window_frame *frame, int way)
   rp_window *win;
   rp_window_frame *new_frame;
 
-  /* You can't split a frame unless it has a window in it. */
-  if (!frame->win) return;
-
   new_frame = xmalloc (sizeof (rp_window_frame));
 
   /* append the new frame to the list */
@@ -236,8 +233,11 @@ split_frame (rp_window_frame *frame, int way)
     }
 
   /* resize the existing frame */
-  maximize (frame->win);
-  XRaiseWindow (dpy, frame->win->w);
+  if (frame->win)
+    {
+      maximize (frame->win);
+      XRaiseWindow (dpy, frame->win->w);
+    }
 
   show_frame_indicator();
 }
