@@ -86,8 +86,11 @@ initialize_default_keybindings (void)
   key_actions = (rp_action*) malloc (sizeof (rp_action) * key_actions_table_size);
   key_actions_last = 0;
 
-  add_keybinding (XK_t, C, "other");
-  add_keybinding (XK_t, 0, "generate");
+  prefix_key.sym = KEY_PREFIX;
+  prefix_key.state = MODIFIER_PREFIX;
+
+  add_keybinding (prefix_key.sym, prefix_key.state, "other");
+  add_keybinding (prefix_key.sym, 0, "generate");
   add_keybinding (XK_g, C, "abort");
   add_keybinding (XK_0, 0, "select 0");
   add_keybinding (XK_1, 0, "select 1");
@@ -151,6 +154,7 @@ user_command user_commands[] =
     {"version",		cmd_version,		arg_VOID},
     {"bind",		cmd_bind,		arg_VOID},
     {"source",		cmd_source,		arg_STRING},
+    {"escape",          cmd_escape,             arg_STRING},
 
     /* the following screen commands may or may not be able to be
        implemented.  See the screen documentation for what should be
@@ -181,11 +185,11 @@ user_command user_commands[] =
     {"startup_message",	cmd_unimplemented,	arg_VOID},
     {0,			0,		0} };
 
-struct key*
+struct rp_key*
 parse_keydesc (char *keydesc)
 {
-  static struct key key;
-  struct key *p = &key;
+  static struct rp_key key;
+  struct rp_key *p = &key;
 
   if (!keydesc) 
     return NULL;
@@ -231,14 +235,14 @@ cmd_bind (void *data)
 	message (" FIXME: cmd_bind: need a command to bind to key ");
       else
 	{
-	  struct key *key = parse_keydesc (keydesc);
+	  struct rp_key *key = parse_keydesc (keydesc);
 	  
 	  if (key)
 	    {
 	      rp_action *key_action;
 	      char foo[1000];
 
-	      sprintf (foo, " %ld %ld : '%s' ", key->state, key->sym, cmd);
+	      sprintf (foo, " %d %ld : '%s' ", key->state, key->sym, cmd);
 	      message (foo);
 
 	      if ((key_action = find_keybinding (key->sym, key->state)))
@@ -303,8 +307,8 @@ cmd_generate (void *data)
 /*   ev1.xkey.x_root == */
 /*   ev1.xkey.y_root == */
 
-  ev1.xkey.state = MODIFIER_PREFIX;
-  ev1.xkey.keycode = XKeysymToKeycode (dpy, KEY_PREFIX);
+  ev1.xkey.state = prefix_key.state;
+  ev1.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
 
   XSendEvent (dpy, rp_current_window->w, False, KeyPressMask, &ev1);
 
@@ -689,4 +693,49 @@ void
 cmd_maximize (void *data)
 {
   force_maximize (rp_current_window);
+}
+
+/* Reassign the prefix key. */
+void
+cmd_escape (void *data)
+{
+  rp_window *cur;
+  struct rp_key *key;
+  rp_action *action;
+
+  key = parse_keydesc (data);
+
+  if (key)
+    {
+      /* Update the "generate" keybinding */
+      action = find_keybinding(prefix_key.sym, 0);
+      if (action != NULL)
+	{
+	  action->key = key->sym;
+	  action->state = 0;
+	}
+
+      /* Remove the grab on the current prefix key */
+      for (cur = rp_mapped_window_sentinel->next; 
+	   cur != rp_mapped_window_sentinel; 
+	   cur = cur->next)
+	{
+	  ungrab_prefix_key (cur->w);
+	}
+
+      prefix_key.sym = key->sym;
+      prefix_key.state = key->state;
+
+      /* Add the grab for the new prefix key */
+      for (cur = rp_mapped_window_sentinel->next; 
+	   cur != rp_mapped_window_sentinel; 
+	   cur = cur->next)
+	{
+	  grab_prefix_key (cur->w);
+	}
+    }
+  else
+    {
+      message (" FIXME: cmd_bind: couldnt parse key ");
+    }
 }

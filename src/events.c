@@ -358,7 +358,7 @@ key_press (XEvent *ev)
 
   if (!s) return;
 
-  if (ks == KEY_PREFIX && (modifier == MODIFIER_PREFIX))
+  if (ks == prefix_key.sym && (modifier == prefix_key.state))
     {
       handle_key (s);
     }

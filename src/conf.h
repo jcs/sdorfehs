@@ -25,9 +25,8 @@
 #include "data.h"
 #include "actions.h"
 
-#define KEY_PREFIX      't'
+#define KEY_PREFIX      XK_t
 #define MODIFIER_PREFIX ControlMask
-
 
 /* Quit ratpoison when there are no more managed windows. */
 //#define AUTO_CLOSE		

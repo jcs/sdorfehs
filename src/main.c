@@ -63,6 +63,8 @@ char **myargv;
 
 XGCValues gv;
 
+struct rp_key prefix_key;
+
 /* Command line options */
 static struct option ratpoison_longopts[] = { {"help", no_argument, 0, 'h'},
 					      {"version", no_argument, 0, 'v'},
@@ -325,6 +327,7 @@ main (int argc, char *argv[])
 
   init_numbers ();
   init_window_list ();
+  initialize_default_keybindings ();
 
   font = XLoadQueryFont (dpy, FONT);
   if (font == NULL)
@@ -347,8 +350,6 @@ main (int argc, char *argv[])
     {
       init_screen (&screens[i], i);
     }
-
-  initialize_default_keybindings ();
 
   read_startup_files ();
 

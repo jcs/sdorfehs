@@ -1,6 +1,30 @@
 2001-02-27  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* manage.h (ungrab_prefix_key): new prototype
+	(grab_prefix_key): likewise
+
+	* manage.c (ungrab_prefix_key): new function
+
+	* main.c (main): calls initialize_default_keybindings after
+	init_window_list.
+	
+	* data.h (struct rp_action): key is of type KeySym. state is
+	unsigned int.
+
+	* conf.h (KEY_PREFIX): set to XK_t
+
+	* actions.h (cmd_escape): new prototype
+
+	* actions.c (cmd_escape): new function
+
+	* data.h (struct key): move from actions.h
+	(struct rp_key): rename from struct key. dependant code updated.
+	(prefix_key): new global variable. code dependant on KEY_PREFIX
+	and MODIFIER_PREFIX updated to use this.
+
 	* actions.c: "maximize" user command calls cmd_maximize
+	(initialize_default_keybindings): initializes prefix_key.
+	Added "escape" command.
 
 	* manage.c (force_maximize): moved from actions.c
 	(maximize): likewise

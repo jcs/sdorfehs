@@ -78,11 +78,20 @@ struct screen_info
 
 struct rp_action
 {
-  int key;
-  int state;
+  KeySym key;
+  unsigned int state;
   void *data;			/* misc data to be passed to the function */
 /*   void (*func)(void *); */
 };
+
+struct rp_key
+{
+  KeySym sym;
+  unsigned int state;
+};
+
+/* The prefix key also known as the command character under screen. */
+extern struct rp_key prefix_key;
 
 /* These _sentinel pointers point to a special rp_window whose next
    pointer points to the head of the list and whose prev pointer

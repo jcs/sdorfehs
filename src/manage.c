@@ -41,15 +41,24 @@ const char *unmanaged_window_list[] = {
 
 extern Atom wm_state;
 
-static void
+void
 grab_prefix_key (Window w)
 {
 #ifdef HIDE_MOUSE
   XGrabKey(dpy, AnyKey, AnyModifier, w, True, 
 	   GrabModeAsync, GrabModeAsync);
 #else
-  XGrabKey(dpy, XKeysymToKeycode (dpy, KEY_PREFIX ), MODIFIER_PREFIX, w, True, 
-	   GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode (dpy, prefix_key.sym ), prefix_key.state, 
+	   w, True, GrabModeAsync, GrabModeAsync);
+#endif
+}
+
+void
+ungrab_prefix_key (Window w)
+{
+#ifdef HIDE_MOUSE
+#else
+  XUngrabKey(dpy, XKeysymToKeycode (dpy, prefix_key.sym ), prefix_key.state, w);
 #endif
 }
 

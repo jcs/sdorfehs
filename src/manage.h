@@ -38,4 +38,7 @@ void set_state (rp_window *win, int state);
 void maximize (rp_window *win);
 void force_maximize (rp_window *win);
 
+void grab_prefix_key (Window w);
+void ungrab_prefix_key (Window w);
+
 #endif /* ! _RATPOISION_MANAGE_H */

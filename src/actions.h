@@ -61,16 +61,11 @@ void cmd_unimplemented (void *data);
 void cmd_bind (void* data);
 void cmd_source (void* data);
 void cmd_maximize (void *data);
+void cmd_escape (void *data);
 
 /* void cmd_xterm (void *data); */
 
 void initialize_default_keybindings (void);
 rp_action* find_keybinding (int keysym, int state);
-
-struct key
-{
-  long sym;
-  long state;
-};
 
 #endif /* ! _RATPOISON_ACTIONS_H */
