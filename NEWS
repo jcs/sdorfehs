@@ -1,6 +1,16 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** Command defbartimeout renamed to msgwait
+This was done to better mirror screen commands.
+
+** Command generate renamed to meta
+This was done to better mirror screen commands.
+
+** Comand maximize renamed to redisplay
+This was done to better mirror screen commands. It is no longer bound
+to C-t m it is now bound to C-t l.
+
 ** Cursor in the input window
 There is now a cheap cursor to help you remember where you are.
 

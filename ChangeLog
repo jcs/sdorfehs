@@ -3,6 +3,14 @@
 	* src/actions.c (command): Gobble the whitespace between the
 	command and the argument list. Code that did this in specific
 	commands has been removed.
+	(cmd_setenv): new function
+	(cmd_meta): rename from cmd_generate. All dependant code updated.
+	(cmd_redisplay): rename from cmd_maximize. All dependant code
+	updated.
+	(initialize_default_keybindings): bind "redisplay" to C-t l and
+	C-t c-l.
+	(cmd_msgwait): rename from cmd_defbartimeout. All dependant code
+	updated.
 
 	* src/input.c (update_input_window): Draw a cheap-o cursor
 

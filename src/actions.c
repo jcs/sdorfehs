@@ -42,11 +42,11 @@ static user_command user_commands[] =
     {"escape",          cmd_escape,     arg_STRING},
     {"exec", 		cmd_exec, 	arg_STRING},
     {"focus",		cmd_next_frame,	arg_VOID},
-    {"generate",	cmd_generate,	arg_STRING},	/* rename to stuff */
+    {"meta",		cmd_meta,	arg_STRING},
     {"help",		cmd_help,	arg_VOID},
     {"hsplit",		cmd_h_split,	arg_VOID},
     {"kill", 		cmd_kill, 	arg_VOID},
-    {"maximize", 	cmd_maximize,	arg_VOID},
+    {"redisplay", 	cmd_redisplay,	arg_VOID},
     {"newwm",		cmd_newwm,	arg_STRING},
     {"next", 		cmd_next, 	arg_VOID},
     {"number", 		cmd_number, 	arg_STRING},
@@ -65,10 +65,11 @@ static user_command user_commands[] =
     {"version",		cmd_version,	arg_VOID},
     {"vsplit",		cmd_v_split,	arg_VOID},
     {"windows", 	cmd_windows, 	arg_VOID},
+    {"setenv",		cmd_setenv,	arg_STRING},
 
     /* Commands to set default behavior. */
     {"defbarloc",	cmd_defbarloc, 		arg_STRING},
-    {"defbartimeout",	cmd_defbartimeout, 	arg_STRING},
+    {"msgwait",		cmd_msgwait,	 	arg_STRING},
     {"defborder", 	cmd_defborder, 		arg_STRING},
     {"deffont", 	cmd_deffont, 		arg_STRING},
     {"definputwidth",	cmd_definputwidth,	arg_STRING},
@@ -90,22 +91,11 @@ static user_command user_commands[] =
        implemented.  See the screen documentation for what should be
        emulated with these commands */
 #if 0
-    {"hardcopy",	cmd_unimplemented,	arg_VOID},
     {"lastmsg",		cmd_unimplemented,	arg_VOID},
     {"license",		cmd_unimplemented,	arg_VOID},
-    {"lockscreen",	cmd_unimplemented,	arg_VOID},
-    {"meta",		cmd_unimplemented,	arg_VOID},
     {"msgminwait",	cmd_unimplemented,	arg_VOID},
-    {"msgwait",		cmd_unimplemented,	arg_VOID},
     {"nethack",		cmd_unimplemented,	arg_VOID},
-    {"redisplay",	cmd_unimplemented,	arg_VOID},
-    {"screen",		cmd_unimplemented,	arg_VOID},
-    {"setenv",		cmd_unimplemented,	arg_VOID},
-    {"shell",		cmd_unimplemented,	arg_VOID},
-    {"shelltitle",	cmd_unimplemented,	arg_VOID},
     {"sleep",		cmd_unimplemented,	arg_VOID},
-    {"sorendition",	cmd_unimplemented,	arg_VOID},
-    {"startup_message",	cmd_unimplemented,	arg_VOID},
     {"stuff", 		cmd_unimplemented, 	arg_VOID},
 #endif
     {0,			0,		0} };
@@ -208,7 +198,7 @@ initialize_default_keybindings (void)
   prefix_key.state = MODIFIER_PREFIX;
 
   add_keybinding (prefix_key.sym, prefix_key.state, "other");
-  add_keybinding (prefix_key.sym, 0, "generate");
+  add_keybinding (prefix_key.sym, 0, "meta");
   add_keybinding (XK_g, ControlMask, "abort");
   add_keybinding (XK_0, 0, "select 0");
   add_keybinding (XK_1, 0, "select 1");
@@ -238,8 +228,8 @@ initialize_default_keybindings (void)
   add_keybinding (XK_exclam, ControlMask, "colon exec " TERM_PROG " -e ");
   add_keybinding (XK_k, 0, "delete");
   add_keybinding (XK_k, ControlMask, "delete");
-  add_keybinding (XK_m, 0, "maximize");
-  add_keybinding (XK_m, ControlMask, "maximize");
+  add_keybinding (XK_l, 0, "redisplay");
+  add_keybinding (XK_l, ControlMask, "redisplay");
   add_keybinding (XK_n, 0, "next");
   add_keybinding (XK_n, ControlMask, "next");
   add_keybinding (XK_p, 0, "prev");
@@ -468,7 +458,7 @@ cmd_source (int interactive, void *data)
 }
 
 char *
-cmd_generate (int interactive, void *data)
+cmd_meta (int interactive, void *data)
 {
   XEvent ev1, ev;
   ev = rp_current_event;
@@ -1038,12 +1028,11 @@ cmd_abort (int interactive, void *data)
   return NULL;
 }  
 
-/* Maximize the current window. */
+/* Redisplay the current window by sending 2 resize events. */
 char *
-cmd_maximize (int interactive, void *data)
+cmd_redisplay (int interactive, void *data)
 {
   force_maximize (current_window());
-  
   return NULL;
 }
 
@@ -1067,9 +1056,9 @@ cmd_escape (int interactive, void *data)
 	  action->state = key->state;
 	}
 
-      /* Update the "generate" keybinding */
+      /* Update the "meta" keybinding */
       action = find_keybinding(prefix_key.sym, 0);
-      if (action != NULL && !strcmp (action->data, "generate"))
+      if (action != NULL && !strcmp (action->data, "meta"))
 	{
 	  action->key = key->sym;
 	  action->state = 0;
@@ -1455,20 +1444,20 @@ cmd_defmaxsizepos (int interactive, void *data)
 }
 
 char *
-cmd_defbartimeout (int interactive, void *data)
+cmd_msgwait (int interactive, void *data)
 {
   int tmp;
 
   if (data == NULL 
       || sscanf (data, "%d", &tmp) < 1)
     {
-      message (" defbartimeout: One argument required ");
+      message (" msgwait: One argument required ");
     }
 
   if (tmp >= 0)
     defaults.bar_timeout = tmp;
   else
-    message (" defbartimeout: Bad argument ");    
+    message (" msgwait: Bad argument ");    
 
   return NULL;
 }
@@ -1774,5 +1763,34 @@ cmd_defbgcolor (int interactive, void *data)
       XSetWindowBackground (dpy, screens[i].help_window, color.pixel);
     }
 
+  return NULL;
+}
+
+char *
+cmd_setenv (int interactive, void *data)
+{
+  char *var, *string;
+
+  if (data == NULL)
+    {
+      message (" setenv: Two arguments required ");
+      return NULL;
+    }
+
+  /* Get the 2 arguments. */
+  var = xmalloc (strlen (data) + 1);
+  string = xmalloc (strlen (data) + 1);
+  if (sscanf (data, "%s %s", var, string) < 2)
+    {
+      message (" setenv: Two arguments required ");
+      free (var);
+      free (string);
+      return NULL;
+    }
+
+  setenv (var, string, 1);
+
+  free (var);
+  free (string);
   return NULL;
 }

@@ -41,7 +41,7 @@ void spawn(void *data);
 char * command (int interactive, char *data);
 
 char * cmd_newwm(int interactive, void *which);
-char * cmd_generate (int interactive, void *data);
+char * cmd_meta (int interactive, void *data);
 char * cmd_abort (int interactive, void *data);
 char * cmd_exec (int interactive, void *data);
 char * cmd_colon (int interactive, void *data);
@@ -61,7 +61,7 @@ char * cmd_version (int interactive, void *data);
 char * cmd_unimplemented (int interactive, void *data);
 char * cmd_bind (int interactive, void* data);
 char * cmd_source (int interactive, void* data);
-char * cmd_maximize (int interactive, void *data);
+char * cmd_redisplay (int interactive, void *data);
 char * cmd_escape (int interactive, void *data);
 char * cmd_echo (int interactive, void *data);
 char * cmd_h_split (int interactive, void *data);
@@ -79,7 +79,7 @@ char * cmd_pos (int interactive, void *data);
 char * cmd_defwinpos (int interactive, void *data);
 char * cmd_deftranspos (int interactive, void *data);
 char * cmd_defmaxsizepos (int interactive, void *data);
-char * cmd_defbartimeout (int interactive, void *data);
+char * cmd_msgwait (int interactive, void *data);
 char * cmd_defbarloc (int interactive, void *data);
 char * cmd_deffont (int interactive, void *data);
 char * cmd_defpadding (int interactive, void *data);
@@ -90,6 +90,7 @@ char * cmd_defwinfmt (int interactive, void *data);
 char * cmd_defwinname (int interactive, void *data);
 char * cmd_deffgcolor (int interactive, void *data);
 char * cmd_defbgcolor (int interactive, void *data);
+char * cmd_setenv (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 
