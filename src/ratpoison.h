@@ -26,6 +26,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <X11/Xlib.h>
 
 /* Some error reporting macros */
 #define PRE_PRINT_LOCATION fprintf (stderr, "%s:%s():%d: ", __FILE__, __FUNCTION__, __LINE__);
@@ -39,6 +40,8 @@
 #else
 #  define PRINT_DEBUG(format, args...) 
 #endif /* DEBUG */
+
+extern XGCValues gv;
 
 #include "conf.h"
 
