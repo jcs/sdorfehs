@@ -19,7 +19,7 @@ info ratpoison
 
 or if you use emacs, type:
 
-C-h i m nethack RET
+C-h i m ratpoison RET
 
 ** The Gimp is impossible to use under ratpoison!
 
