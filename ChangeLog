@@ -1,3 +1,12 @@
+2001-03-14  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/events.c (delegate_event): calls focus_change on FocusOut
+	and FocusIn events.
+	(focus_change): new function
+
+	* src/list.c (add_to_window_list): add FocusChangeMask to the
+	window's event mask.
+
 2001-03-13  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* configure.in: warn the user if the x terminal emulator cannot be

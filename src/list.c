@@ -63,7 +63,8 @@ add_to_window_list (screen_info *s, Window w)
 
   get_mouse_root_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
 
-  XSelectInput (dpy, new_window->w, PropertyChangeMask | ColormapChangeMask);
+  XSelectInput (dpy, new_window->w, 
+		PropertyChangeMask | ColormapChangeMask | FocusChangeMask);
 
   new_window->name = xmalloc (strlen ("Unnamed") + 1);
 

@@ -438,6 +438,23 @@ colormap_notify (XEvent *ev)
     }
 }	  
 
+static void
+focus_change (XFocusChangeEvent *ev)
+{
+  rp_window *win;
+
+  /* We're only interested in the NotifyGrab mode */
+  if (ev->mode != NotifyGrab) return;
+
+  win = find_window (ev->window);
+
+  if (win != NULL)
+    {
+      PRINT_DEBUG ("Re-grabbing prefix key\n");
+      grab_prefix_key (win->w);
+    }
+}
+
 /* Given an event, call the correct function to handle it. */
 void
 delegate_event (XEvent *ev)
@@ -486,9 +503,6 @@ delegate_event (XEvent *ev)
     case ReparentNotify:
       PRINT_DEBUG ("ReparentNotify\n");
       break;
-    case FocusIn:
-      PRINT_DEBUG ("FocusIn\n");
-      break;
 
     case MapRequest:
       PRINT_DEBUG ("MapRequest\n");
@@ -518,6 +532,11 @@ delegate_event (XEvent *ev)
       break;
     case FocusOut:
       PRINT_DEBUG ("FocusOut\n");
+      focus_change (&ev->xfocus);
+      break;
+    case FocusIn:
+      PRINT_DEBUG ("FocusIn\n");
+      focus_change (&ev->xfocus);
       break;
     case ConfigureNotify:
       PRINT_DEBUG ("ConfigureNotify\n");
