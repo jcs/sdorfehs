@@ -1,3 +1,8 @@
+2004-12-04  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/frame.c (frame_dump): use a hyphen instead of underscore for
+	f->last_access.
+
 2004-11-22  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_verbexec): rewritten to fix crash bug.

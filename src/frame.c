@@ -171,7 +171,7 @@ frame_dump (rp_frame *frame)
   win = find_window_number (frame->win_number);
 
   s = sbuf_new (0);
-  sbuf_printf (s, "(frame :number %d :x %d :y %d :width %d :height %d :window %ld :last_access %d :dedicated %d)", 
+  sbuf_printf (s, "(frame :number %d :x %d :y %d :width %d :height %d :window %ld :last-access %d :dedicated %d)", 
 	       frame->number,
 	       frame->x,
 	       frame->y,
