@@ -18,7 +18,6 @@ its printed to stderr or stdout.
 ** the mouse warp feature is now turned off by default
 to turn it back on, run 'warp on'.
 
-* Changes since 1.3.0
 ** version now displays the date and time
 
 ** new command, sselect
