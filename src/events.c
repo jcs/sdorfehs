@@ -483,7 +483,7 @@ execute_remote_command (Window w)
    RP_COMMAND Atom. receive_command reads the list of Windows and
    executes their associated command. */
 static void
-receive_command ()
+receive_command (Window root)
 {
   char *result;
   Atom type_ret;
@@ -505,7 +505,7 @@ receive_command ()
       Window w;
 
       length = sizeof (Window) / 4 + (sizeof (Window) % 4 ?1:0);
-      ret = XGetWindowProperty (dpy, DefaultRootWindow (dpy),
+      ret = XGetWindowProperty (dpy, root,
 				rp_command_request, 
 				offset, length, 
 				True, XA_WINDOW, &type_ret, &format_ret,
@@ -565,7 +565,7 @@ property_notify (XEvent *ev)
       && ev->xproperty.state == PropertyNewValue)
     {
       PRINT_DEBUG (("ratpoison command\n"));
-      receive_command();
+      receive_command(ev->xproperty.window);
     }
 
   win = find_window (ev->xproperty.window);

@@ -1,3 +1,10 @@
+2004-10-05  Shawn Betts  <katia_dilkina@verizon.net>
+
+	* src/events.c (property_notify): pass the root window to
+	receive_command.
+	(receive_command): take a root window as an argument and use it to
+	listen for the command.
+
 2004-10-04  Shawn Betts  <katia_dilkina@verizon.net>
 
 	* src/screen.h (is_a_root_window): new prototype
