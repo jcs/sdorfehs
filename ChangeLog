@@ -1,3 +1,41 @@
+2001-06-10  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* src/main.c (rp_rat_bits): remove
+	(rp_rat_mask_bits): remove include <X11/cursorfont.h>
+	(sighandler): only increment kill_signalled
+	(hup_handler): only increment hup_signalled
+	(alrm_handler): only increment alarm_signalled
+	(read_startup_files): use PRINT_ERROR for error messages.
+	(init_rat_cursor): Use a standard X cursor for the screen's rat.
+
+	* src/events.h (unmap_notify): remove prototype
+	(delegate_event): likewise
+	(key_press): likewise
+	(keymapstate): likewise
+	(map_request): likewise
+
+	* src/events.c: includes <signal.h> <sys/time.h> and <error.h>
+	(new_window): static function
+	(unmap_notify): likewise
+	(map_request): likewise
+	(destroy_window): likewise
+	(configure_notify): likewise
+	(configure_request): likewise
+	(key_press): likewise
+	(property_notify): likewise
+	(colormap_notify): likewise
+	(delegate_event): likewise
+	(get_event): new function
+	(more_destroy_events): remove function
+	(handle_events): call get_event.
+
+	* src/data.h: rp_current_event is an XEvent dependant code
+	updated. new globals alarm_signalled, kill_signalled,
+	hup_signalled.
+
+	* src/actions.c (initialize_default_keybindings): new bindings for
+	"split" and "vsplit".
+
 2001-06-06  Shawn Betts  <sabetts@van.gobasis.com>
 
 	* src/list.c (unhide_transient_for): abort if the transient_for

@@ -27,15 +27,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <errno.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 #include "ratpoison.h"
 
 /* The event currently being processed. Mostly used in functions from
    action.c which need to forward events to other windows. */
-XEvent *rp_current_event;
+XEvent rp_current_event;
 
-void
+static void
 new_window (XCreateWindowEvent *e)
 {
   rp_window *win;
@@ -85,7 +88,7 @@ cleanup_frame (rp_window_frame *frame)
     }
 }
 
-void 
+static void 
 unmap_notify (XEvent *ev)
 {
   screen_info *s;
@@ -126,7 +129,7 @@ unmap_notify (XEvent *ev)
     }
 }
 
-void 
+static void 
 map_request (XEvent *ev)
 {
   screen_info *s;
@@ -177,20 +180,7 @@ map_request (XEvent *ev)
     }
 }
 
-int
-more_destroy_events ()
-{
-  XEvent ev;
-
-  if (XCheckTypedEvent (dpy, DestroyNotify, &ev))
-    {
-      XPutBackEvent (dpy, &ev);
-      return 1;
-    }
-  return 0;
-}
-
-void
+static void
 destroy_window (XDestroyWindowEvent *ev)
 {
   rp_window *win;
@@ -212,7 +202,7 @@ destroy_window (XDestroyWindowEvent *ev)
   ignore_badwindow--;
 }
 
-void
+static void
 configure_notify (XConfigureEvent *e)
 {
   rp_window *win;
@@ -222,14 +212,10 @@ configure_notify (XConfigureEvent *e)
     {
       PRINT_DEBUG ("'%s' window notify: %d %d %d %d %d\n", win->name,
 		   e->x, e->y, e->width, e->height, e->border_width);
-
-      /* Once we get the notify that everything went through, try
-	 maximizing. Netscape doesn't seem to like it here. */
-/*       maximize (win); */
     }
 }
 
-void
+static void
 configure_request (XConfigureRequestEvent *e)
 {
   rp_window *win;
@@ -403,7 +389,7 @@ handle_key (screen_info *s)
   ungrab_rat();
 }
 
-void
+static void
 key_press (XEvent *ev)
 {
   screen_info *s;
@@ -518,7 +504,7 @@ receive_command ()
 			  
 }
 
-void
+static void
 property_notify (XEvent *ev)
 {
   rp_window *win;
@@ -561,7 +547,7 @@ property_notify (XEvent *ev)
     }
 }
 
-void
+static void
 colormap_notify (XEvent *ev)
 {
   rp_window *win;
@@ -638,7 +624,7 @@ mapping_notify (XMappingEvent *ev)
 }
 
 /* Given an event, call the correct function to handle it. */
-void
+static void
 delegate_event (XEvent *ev)
 {
   switch (ev->type)
@@ -736,17 +722,80 @@ delegate_event (XEvent *ev)
     }
 }
 
-void
-handle_events ()
+static void
+get_event (XEvent *ev)
 {
-  XEvent ev;
+  int x_fd;
+  fd_set fds;
+  struct timeval t;
 
-  for (;;) 
+  /* An alarm means we need to hide the popup windows. */
+  if (alarm_signalled > 0)
     {
-      XNextEvent (dpy, &ev);
-      rp_current_event = &ev;
-      delegate_event (&ev);
+      int i;
+
+      PRINT_DEBUG ("Alarm recieved.\n");
+
+      for (i=0; i<num_screens; i++)
+	{
+	  hide_bar (&screens[i]);
+	}
+      hide_frame_indicator();
+      alarm_signalled = 0;
+    }
+
+  if (hup_signalled > 0)
+    {
+      PRINT_DEBUG ("Restarting with a fresh plate.\n"); 
+      send_restart ();
+    }
+
+  if (kill_signalled > 0)
+    {
+      fprintf (stderr, "ratpoison: Agg! I've been SHOT!\n"); 
+      clean_up ();
+      exit (EXIT_FAILURE);
+    }
+
+  /* Is there anything in the event qeue? */
+  if (QLength (dpy) > 0)
+    {
+      XNextEvent (dpy, ev);
+      return;
+    }
+
+  /* If the event queue is empty, then select on it until there is
+     something. */
+  x_fd = ConnectionNumber (dpy);
+  FD_ZERO (&fds);
+  FD_SET (x_fd, &fds);
+  t.tv_sec = 0;
+  t.tv_usec = 0;
+
+  if (select(x_fd+1, &fds, NULL, NULL, &t) == 1) 
+    {
+    XNextEvent(dpy, ev);
+    return;
+    }
+
+  XFlush(dpy);
+  FD_SET(x_fd, &fds);
+  t.tv_sec = 1;
+  t.tv_usec = 0;
+
+  if (select(x_fd+1, &fds, NULL, NULL, NULL) == 1) 
+    {
+    XNextEvent(dpy, ev);
+    return;
     }
 }
 
-
+void
+handle_events ()
+{
+  for (;;) 
+    {
+      get_event (&rp_current_event);
+      delegate_event (&rp_current_event);
+    }
+}

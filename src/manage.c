@@ -536,10 +536,10 @@ withdraw_window (rp_window *win)
 {
   if (win == NULL) return;
 
-  PRINT_DEBUG ("withdawn_window on '%s'\n", win->name);
+  PRINT_DEBUG ("withdraw_window on '%s'\n", win->name);
 
   /* Give back the window number. the window will get another one,
-         if it is remapped. */
+     if it is remapped. */
   return_window_number (win->number);
   win->number = -1;
 

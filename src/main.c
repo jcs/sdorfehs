@@ -24,6 +24,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/Xproto.h>
+#include <X11/cursorfont.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -37,19 +38,9 @@
 
 static void init_screen (screen_info *s, int screen_num);
 
-/* When a user hits the prefix key, the rat switches to a different
-   pixmap to indicate that ratpoison expects the user to hit another
-   key, these are the pixmaps. */
-static unsigned char rp_rat_bits[] = {
-  0x00, 0x00, 0xfe, 0x7f, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40,
-  0x02, 0x40, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40, 0x02, 0x40,
-  0x02, 0x40, 0x02, 0x40, 0xfe, 0x7f, 0x00, 0x00};
-
-static unsigned char rp_rat_mask_bits[] = {
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-
+int alarm_signalled = 0;
+int kill_signalled = 0;
+int hup_signalled = 0;
 int rat_x;
 int rat_y;
 int rat_visible = 1;		/* rat is visible by default */
@@ -123,39 +114,19 @@ xrealloc (void *ptr, size_t size)
 void
 sighandler (int signum)
 {
-  fprintf (stderr, "ratpoison: Agg! I've been SHOT!\n"); 
-  clean_up ();
-  exit (EXIT_FAILURE);
+  kill_signalled++;
 }
 
 void
 hup_handler (int signum)
 {
-  /* Doesn't function correctly. The event IS placed on the queue but
-     XSync() doesn't seem to sync it and until other events come in
-     the restart event won't be processed. */
-  PRINT_DEBUG ("Restarting with a fresh plate.\n"); 
-
-  send_restart ();
-  XSync(dpy, False); 
+  hup_signalled++;
 }
 
 void
 alrm_handler (int signum)
 {
-  int i;
-
-  PRINT_DEBUG ("alarm recieved.\n");
-
-  /* FIXME: should only hide 1 bar, but we hide them all. */
-  for (i=0; i<num_screens; i++)
-    {
-      hide_bar (&screens[i]);
-    }
-
-  hide_frame_indicator();
-
-  XSync (dpy, False);
+  alarm_signalled++;
 }
 
 int
@@ -294,7 +265,9 @@ read_startup_files ()
 
   homedir = getenv ("HOME");
   if (!homedir)
-    fprintf (stderr, "ratpoison: $HOME not set!?\n");
+    {
+      PRINT_ERROR ("ratpoison: $HOME not set!?\n");
+    }
   else
     {
       char *filename = (char*)xmalloc (strlen (homedir) + strlen ("/.ratpoisonrc") + 1);
@@ -454,25 +427,7 @@ main (int argc, char *argv[])
 static void
 init_rat_cursor (screen_info *s)
 {
-  Pixmap fore, mask;
-  XColor fg, bg, dummy;
-
-  XAllocNamedColor(dpy, DefaultColormap(dpy, s->screen_num),
-		   "black", &fg, &dummy);
-  XAllocNamedColor(dpy, DefaultColormap(dpy, s->screen_num),
-		   "white", &bg, &dummy);
-
-  fore = XCreatePixmapFromBitmapData (dpy, s->root,
-				      rp_rat_bits, RAT_WIDTH, RAT_HEIGHT, 
-				      1, 0, 1);
-  mask = XCreatePixmapFromBitmapData (dpy, s->root,
-				      rp_rat_mask_bits, RAT_WIDTH, RAT_HEIGHT,
-				      1, 0, 1);
-  s->rat = XCreatePixmapCursor(dpy, fore, mask, 
-			       &fg, &bg, RAT_HOT_X, RAT_HOT_Y);
-
-  XFreePixmap (dpy, fore);
-  XFreePixmap (dpy, mask);
+  s->rat = XCreateFontCursor( dpy, XC_icon );
 }
 
 static void
@@ -508,11 +463,6 @@ init_screen (screen_info *s, int screen_num)
       fprintf (stderr, "ratpoison: Unknown color '%s'\n", BACKGROUND);
     }
 
-/*   if (!XAllocNamedColor (dpy, s->def_cmap, BAR_BOLD_COLOR, &bold_color, &junk)) */
-/*     { */
-/*       fprintf (stderr, "ratpoison: Unknown color '%s'\n", BAR_BOLD_COLOR); */
-/*     } */
-
   /* Setup the GC for drawing the font. */
   gv.foreground = fg_color.pixel;
   gv.background = bg_color.pixel;
@@ -524,11 +474,6 @@ init_screen (screen_info *s, int screen_num)
 			   GCForeground | GCBackground | GCFunction 
 			   | GCLineWidth | GCSubwindowMode | GCFont, 
 			   &gv);
-/*   gv.foreground = bold_color.pixel; */
-/*   s->bold_gc = XCreateGC(dpy, s->root,  */
-/* 			 GCForeground | GCBackground | GCFunction  */
-/* 			 | GCLineWidth | GCSubwindowMode | GCFont,  */
-/* 			 &gv); */
 
   /* Create the program bar window. */
   s->bar_is_raised = 0;

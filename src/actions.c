@@ -127,7 +127,9 @@ initialize_default_keybindings (void)
   add_keybinding (XK_v, ControlMask, "version");
   add_keybinding (XK_w, 0, "windows");
   add_keybinding (XK_w, ControlMask, "windows");
-  add_keybinding (XK_S, 0, "split");
+  add_keybinding (XK_s, 0, "split");
+  add_keybinding (XK_s, ControlMask, "split");
+  add_keybinding (XK_S, 0, "vsplit");
   add_keybinding (XK_S, ControlMask, "vsplit");
   add_keybinding (XK_Tab, 0, "focus");
   add_keybinding (XK_Q, 0, "only");
@@ -359,7 +361,7 @@ void
 cmd_generate (void *data)
 {
   XEvent ev1, ev;
-  ev = *rp_current_event;
+  ev = rp_current_event;
 
   PRINT_DEBUG ("type==%d\n", ev.xkey.type);
   PRINT_DEBUG ("serial==%ld\n", ev.xkey.serial);

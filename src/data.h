@@ -130,7 +130,7 @@ extern rp_window_frame *rp_current_frame;
 extern screen_info *screens;
 extern int num_screens;
 
-extern XEvent *rp_current_event;
+extern XEvent rp_current_event;
 
 extern Display *dpy;
 extern Atom rp_restart;
@@ -171,5 +171,11 @@ struct modifier_info
 
 /* Keeps track of which mod mask each modifier is under. */
 extern struct modifier_info rp_modifier_info;
+
+/* nonzero if an alarm signal was raised. This means ratpoison should
+   hide its popup windows. */
+extern int alarm_signalled;
+extern int kill_signalled;
+extern int hup_signalled;
 
 #endif /* _RATPOISON_DATA_H */
