@@ -142,11 +142,11 @@ send_configure (rp_window *win)
   ce.type = ConfigureNotify;
   ce.event = win->w;
   ce.window = win->w;
-  ce.x = PADDING_LEFT;
-  ce.y = PADDING_TOP;
-  ce.width = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
-  ce.height = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
-  ce.border_width = 0;      
+  ce.x = win->x;
+  ce.y = win->y;
+  ce.width = win->width;
+  ce.height = win->height;
+  ce.border_width = win->border;
   ce.above = None;
   ce.override_redirect = 0;
 
@@ -244,3 +244,19 @@ unmanaged_window (Window w)
   return 0;
 }
 
+/* Set the state of the window.
+
+   FIXME: This is sort of broken. We should really record the state in
+   win->state and mimic the X states NormalState, WithdrawnState,
+   IconicState */
+void
+set_state (rp_window *win, int state)
+{
+  long data[2];
+  
+  data[0] = (long)state;
+  data[1] = (long)None;
+
+  XChangeProperty (dpy, win->w, wm_state, wm_state, 32,
+		   PropModeReplace, (unsigned char *)data, 2);
+}

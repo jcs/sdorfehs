@@ -1,3 +1,20 @@
+2001-02-11  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* manage.h (set_state): Added prototype
+
+	* manage.c (send_configure): Now sends the window's x,y,width,height
+	coordinates.
+	(set_state): Added
+
+	* events.c (map_request): Calls set_state when mapping an unmapped
+	window.
+
+	* actions.c (maximize_transient): takes an rp_window as the
+	argument. Removed code to handle void *data. Incremental resizing
+	only happens if the maximum size isn't set. Removed actual X
+	maximization code.
+	(maximize): Moved meat to maximize_normal().
+
 2001-02-10  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* ratpoison.h: #include "messages.h"

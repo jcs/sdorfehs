@@ -119,7 +119,9 @@ map_request (XEvent *ev)
 	    }
 	case STATE_MAPPED:
 	  PRINT_DEBUG ("Mapped Window\n");
+	  XMapWindow (dpy, win->w);
 	  XMapRaised (dpy, win->w);
+	  set_state (win, NormalState);
 	  set_active_window (win);
 	}
     }
