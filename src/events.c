@@ -171,7 +171,7 @@ map_request (XEvent *ev)
 	  break;
 	case IconicState:
 	  PRINT_DEBUG ("Mapped iconic window\n");
-	  unhide_window (win);
+	  set_active_window (win);
 	  break;
 	}
     }

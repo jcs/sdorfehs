@@ -39,9 +39,13 @@ update_modifier_map ()
 
 /*   rp_modifier_info.mode_switch_mask = 0; */
   rp_modifier_info.meta_mod_mask = 0;
+  rp_modifier_info.meta_sym = 0;
   rp_modifier_info.alt_mod_mask = 0;
+  rp_modifier_info.alt_sym = 0;
   rp_modifier_info.super_mod_mask = 0;
+  rp_modifier_info.super_sym = 0;
   rp_modifier_info.hyper_mod_mask = 0;
+  rp_modifier_info.hyper_sym = 0;
 
   mods = XGetModifierMapping (dpy);
 
@@ -56,6 +60,7 @@ update_modifier_map ()
 	  {
 	    case XK_Meta_L:
 	    case XK_Meta_R:
+	      rp_modifier_info.meta_sym = XKeycodeToKeysym(dpy, code, 0);
 	      rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
 	      PRINT_DEBUG ("Found Meta on %d\n",
 			   rp_modifier_info.meta_mod_mask);
@@ -63,6 +68,7 @@ update_modifier_map ()
 
 	    case XK_Alt_L:
 	    case XK_Alt_R:
+	      rp_modifier_info.alt_sym = XKeycodeToKeysym(dpy, code, 0);
 	      rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
 	      PRINT_DEBUG ("Found Alt on %d\n",
 			   rp_modifier_info.alt_mod_mask);
@@ -70,6 +76,8 @@ update_modifier_map ()
 
 	    case XK_Super_L:
 	    case XK_Super_R:
+	      rp_modifier_info.super_sym = XKeycodeToKeysym(dpy, code, 0);
+	      rp_modifier_info.super_sym = XKeycodeToKeysym(dpy, code, 0);
 	      rp_modifier_info.super_mod_mask |= modmasks[row - 3];
 	      PRINT_DEBUG ("Found Super on %d\n",
 			   rp_modifier_info.super_mod_mask);
@@ -77,6 +85,8 @@ update_modifier_map ()
 
 	    case XK_Hyper_L:
 	    case XK_Hyper_R:
+	      rp_modifier_info.hyper_sym = XKeycodeToKeysym(dpy, code, 0);
+	      rp_modifier_info.hyper_sym = XKeycodeToKeysym(dpy, code, 0);
 	      rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
 	      PRINT_DEBUG ("Found Hyper on %d\n",
 			   rp_modifier_info.hyper_mod_mask);
@@ -98,7 +108,9 @@ update_modifier_map ()
   if (! rp_modifier_info.meta_mod_mask)
     {
       rp_modifier_info.meta_mod_mask = rp_modifier_info.alt_mod_mask;
+      rp_modifier_info.meta_sym = rp_modifier_info.alt_sym;
       rp_modifier_info.alt_mod_mask = 0;
+      rp_modifier_info.alt_sym = 0;
     }
 
   /* If some keys are both alt and meta,
