@@ -186,15 +186,15 @@ marked_message (char *msg, int mark_start, int mark_end)
 		     width,
 		     height);
 
-  XClearWindow (dpy, s->bar_window);
   XRaiseWindow (dpy, s->bar_window);
-
+  XClearWindow (dpy, s->bar_window);
+  XSync (dpy, False);
   XDrawString (dpy, s->bar_window, s->normal_gc, 
 	       defaults.bar_x_padding, 
 	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
 	       msg, strlen (msg));
-
-
+  XSync (dpy, False);
+  
   /* Crop to boundary conditions. */
   if (mark_start < 0)
     mark_start = 0;

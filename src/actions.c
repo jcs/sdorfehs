@@ -77,6 +77,7 @@ static user_command user_commands[] =
     {"lastmsg",		cmd_lastmsg,	arg_VOID},
     {"restart",		cmd_restart,	arg_VOID},
     {"startup_message",	cmd_startup_message, arg_STRING},
+    {"link",		cmd_link,	arg_STRING},
 
     /* Commands to set default behavior. */
     {"defbarloc",		cmd_defbarloc, 		arg_STRING},
@@ -138,6 +139,46 @@ find_keybinding (KeySym keysym, int state)
     }
   return NULL;
 }
+
+static char *
+find_command_by_keydesc (char *desc)
+{
+  int i = 0;
+  char *keysym_name;
+
+  while (i < key_actions_last)
+    {
+      keysym_name = keysym_to_string (key_actions[i].key, key_actions[i].state);
+      if (!strcmp (keysym_name, desc))
+        {
+          free (keysym_name);
+          return key_actions[i].data;
+        }
+      free (keysym_name);
+      i++;
+    }
+
+  return NULL;
+}
+
+static char *
+resolve_command_from_keydesc (char *desc, int depth)
+{
+  char *cmd, *command;
+
+  command = find_command_by_keydesc (desc);
+  if (!command)
+    return NULL;
+
+  /* is it a link? */
+  if (strncmp (command, "link", 4) || depth > MAX_LINK_DEPTH)
+    /* it is not */
+    return command;
+
+  cmd = resolve_command_from_keydesc (&command[5], depth + 1);
+  return (cmd != NULL) ? cmd : command;
+}
+
 
 static void
 add_keybinding (KeySym keysym, int state, char *cmd)
@@ -1227,9 +1268,7 @@ cmd_help (int interactive, void *data)
 		       keysym_name, strlen (keysym_name));
 
 	  if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
-	    {
-	      max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
-	    }
+	    max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
 
 	  free (keysym_name);
 	}
@@ -1935,6 +1974,21 @@ cmd_focuslast (int interactive, void *data)
       set_active_frame (frame);
   else
     message (" focuslast: No other frame ");
+
+  return NULL;
+}
+
+char *
+cmd_link (int interactive, void *data)
+{
+  char *cmd = NULL;
+
+  if (!data)
+    return NULL;
+
+  cmd = resolve_command_from_keydesc ((char *)data, 0);
+  if (cmd)
+    return command (interactive, cmd);
 
   return NULL;
 }

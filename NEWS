@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** new command "link"
+Call the command that a keybinding is bound to. for instance, 'link
+C-t' would call the command 'other'.
+
 ** new command "focuslast"
 Switch between the current frame and the last focused frame. It is
 bound to C-t M-Tab.

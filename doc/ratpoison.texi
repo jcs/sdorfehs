@@ -491,6 +491,11 @@ misbehaving window this command should do the trick. Also available as
 @item lastmsg
 Display the last message.
 
+@item link @var{key}
+Call the command that @var{key} is bound to. For instance
+@command{link C-t} would call the command @command{other} and switch
+to the last window.
+
 @item redisplay
 Redisplay the current window, just like @kbd{C-t l} would do.
 

@@ -630,8 +630,9 @@ show_frame_indicator ()
 		     width, height);
 
   XMapRaised (dpy, current_screen()->frame_window);
-
   XClearWindow (dpy, s->frame_window);
+  XSync (dpy, False);
+
   XDrawString (dpy, s->frame_window, s->normal_gc, 
 	       defaults.bar_x_padding, 
 	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,

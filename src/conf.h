@@ -47,4 +47,7 @@
    mostly for use with hand-helds. */
 #define UNMANAGED_WINDOW_LIST "xapm","xclock","xscribble"
 
+/* Maximum depth of a link. Used in the 'link' command. */
+#define MAX_LINK_DEPTH 16
+
 #endif /* !_ _RATPOISON_CONF_H */

@@ -1,5 +1,22 @@
 2001-10-18  shawn  <sabetts@vcn.bc.ca>
 
+	* src/split.c (show_frame_indicator): call XSync after clearing the window.
+
+	* src/input.c (get_more_input): clear the window after it is
+	raised. Call XSync aftwards.
+
+	* src/conf.h (MAX_LINK_DEPTH): new define
+
+	* src/bar.c (marked_message): clear the window after it is
+	raised. Call XSync aftwards.
+
+	* src/actions.h (cmd_link): new prototype
+
+	* src/actions.c (user_command): new command 'link'
+	(find_command_by_keydesc): new function
+	(resolve_command_from_keydesc): likewise
+	(cmd_link): likewise
+
 	* src/split.h (find_last_frame): new prototype
 
 	* src/split.c (update_last_access): new function

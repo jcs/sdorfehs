@@ -281,6 +281,7 @@ update_input_window (screen_info *s, char *prompt, char *input, int input_len)
 		     (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2));
 
   XClearWindow (dpy, s->input_window);
+  XSync (dpy, False);
 
   XDrawString (dpy, s->input_window, s->normal_gc, 
 	       defaults.bar_x_padding, 
@@ -333,8 +334,9 @@ get_more_input (char *prompt, char *preinput)
   hide_bar (s);
 
   XMapWindow (dpy, s->input_window);
-  XClearWindow (dpy, s->input_window);
   XRaiseWindow (dpy, s->input_window);
+  XClearWindow (dpy, s->input_window);
+  XSync (dpy, False);
 
   update_input_window (s, prompt, str, cur_len);
 
