@@ -1,5 +1,12 @@
 2003-04-13  Shawn Betts  <sabetts@sfu.ca>
 
+	* src/main.c (main): if the screen was specified on the
+	command-line, send the command to the correct screen.
+
+	* src/communications.c (send_command): new argument,
+	screen_num. Get the root window for the specified
+	screen. prototype updated.
+
 	* src/main.c (init_screen): print the display string for
 	debugging.
 	(ratpoison_opts): fix -c option by adding a : after it.

@@ -568,7 +568,11 @@ main (int argc, char *argv[])
 
       for (i=0; i<cmd_count; i++)
 	{
-	  send_command (command[i]);
+	  if (screen_arg)
+	    send_command (command[i], screen_num);
+	  else
+	    send_command (command[i], -1);
+
 	  free (command[i]);
 	}
 

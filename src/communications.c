@@ -81,13 +81,23 @@ recieve_command_result (Window w)
 }
 
 int
-send_command (unsigned char *cmd)
+send_command (unsigned char *cmd, int screen_num)
 {
   Window w;
   int done = 0;
 
-  w = XCreateSimpleWindow (dpy, DefaultRootWindow (dpy),
-			   0, 0, 1, 1, 0, 0, 0);
+  /* If the user specified a specific screen, then send the event to
+     that screen. */
+  if (screen_num >= 0)
+    {
+      w = XCreateSimpleWindow (dpy, RootWindow (dpy, screen_num),
+			       0, 0, 1, 1, 0, 0, 0);
+    }
+  else
+    {
+      w = XCreateSimpleWindow (dpy, DefaultRootWindow (dpy),
+			       0, 0, 1, 1, 0, 0, 0);
+    }
 
   /* Select first to avoid race condition */
   XSelectInput (dpy, w, PropertyChangeMask);
