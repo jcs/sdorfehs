@@ -1,3 +1,11 @@
+2001-04-10  Gergely Nagy  <algernon@debian.org>
+
+	* debian/rules: sync it up a bit, so it works with both
+	the current CVS ratpoison
+
+	* debian/ratpoison.examples: new file listing examples installed
+	to /usr/share/doc/ratpoison/examples
+
 2001-04-08  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/main.c (clean_up): destroys resources stored in screens
