@@ -6,6 +6,11 @@
 
 	* src/input.c (update_input_window): Draw a cheap-o cursor
 
+2001-09-12  Gergely Nagy  <algernon@debian.org>
+
+	* src/actions.c (cmd_bind): binding an empty string to a key will
+	unbind the key.
+	
 2001-09-09  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/conf.h (MAXSIZE_WINDOWS_ARE_TRANSIENTS): defined

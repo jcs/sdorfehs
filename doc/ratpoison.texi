@@ -306,6 +306,9 @@ restart ratpoison:
 : bind R exec ratpoison --restart
 @end example
 
+If no command is specified then bind works exactly like @command{unbind},
+unbinding the key.
+
 @item clock
 Show current time. Disappears after 5 seconds, like all other info bars.
 In the default setup, the @kbd{C-t a} keystroke is bound to this command.

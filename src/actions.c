@@ -367,7 +367,7 @@ cmd_bind (int interactive, void *data)
 
   if (!data)
     {
-      message (" bind: two arguments required ");
+      message (" bind: at least one argument required ");
       return NULL;
     }
 
@@ -382,11 +382,14 @@ cmd_bind (int interactive, void *data)
     }
   
   if (!keydesc)
-    message (" bind: two arguments required ");
+    message (" bind: at least one argument required ");
   else
     {
       if (!cmd || !*cmd)
-	message (" bind: need a command to bind to key ");
+	{
+	  /* If no comand is specified, then unbind the key. */
+	  cmd_unbind (interactive, keydesc);
+	}
       else
 	{
 	  struct rp_key *key = parse_keydesc (keydesc);

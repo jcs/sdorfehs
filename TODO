@@ -1,15 +1,12 @@
 -*- outline -*-
 
 * command stuff
-** binding an empty string should wipe out old binding
-ryan
-
 ** general argument parsing strategy
 ryan
 
 ** return the current setting for the def* command suite
 When in non-interactive mode, so scripts that need to change them can
-change them back when they're done.
+change them back when they're done. Low priority.
 
 
 * implement these screen commands (see the screen info for documentation):
