@@ -42,7 +42,7 @@ build-deb/$(DEB_HOST_ARCH)/config-stamp:
 build: config build-deb/$(DEB_HOST_ARCH)/build-stamp
 build-deb/$(DEB_HOST_ARCH)/build-stamp:
 	dh_testdir
-	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) all
+	-$(MAKE) -C build-deb/$(DEB_HOST_ARCH) all
 	touch $@
 
 # clean - remove build directories
