@@ -1310,6 +1310,20 @@ Send a @kbd{C-t} to the current window.
 Quit ratpoison.
 @end deffn
 
+@deffn Command ratrelwarp @var{x} @var{y}
+Warp the rat to the specified location relative to the current rat
+position.
+@end deffn
+
+@deffn Command ratwarp @var{x} @var{y}
+Warp the rat to the specified absolute location.
+@end deffn
+
+@deffn Command ratclick @var{button}
+click the rat. @var{button} is either 1, 2, or 3. @var{button}
+defaults to button 1.
+@end deffn
+
 @deffn Command redisplay
 Redisplay the current window. This is often used to fix xterms that
 didn't catch ratpoison's initial maximize event.

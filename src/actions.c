@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <X11/keysym.h>
+#include <X11/extensions/XTest.h>
 #include <string.h>
 #include <strings.h>
 #include <time.h>
@@ -88,6 +89,9 @@ static user_command user_commands[] =
     {"prev", 		cmd_prev, 		arg_VOID},
     {"prevscreen",	cmd_prevscreen,		arg_VOID},
     {"quit",		cmd_quit,		arg_VOID},
+    {"ratwarp",         cmd_ratwarp,            arg_VOID},
+    {"ratrelwarp",      cmd_ratrelwarp,         arg_VOID},
+    {"ratclick",        cmd_ratclick,           arg_VOID},
     {"readkey",         cmd_readkey,            arg_STRING},
     {"redisplay", 	cmd_redisplay,		arg_VOID},
     {"remhook",         cmd_remhook,            arg_STRING},
@@ -1877,6 +1881,73 @@ cmd_banish (int interactive, char *data)
   XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2, s->top + s->height - 2); 
   return NULL;
 }
+
+char *
+cmd_ratwarp (int interactive, char *data)
+{
+  rp_screen *s;
+  int x, y;
+
+  s = current_screen ();
+
+  if (data == NULL)
+    {
+      message("ratwarp: 2 arguments required");
+      return NULL;
+    }
+
+  if (sscanf(data, "%d %d", &x, &y) < 2 || x < 0 || y < 0)
+    {
+      message("ratwarp: Invalid arguments");
+      return NULL;
+    }
+
+  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, x, y); 
+  return NULL;  
+}
+
+char *
+cmd_ratrelwarp (int interactive, char *data)
+{
+  rp_screen *s;
+  int x, y;
+
+  s = current_screen ();
+
+  if (data == NULL)
+    {
+      message("ratrelwarp: 2 arguments required");
+      return NULL;
+    }
+
+  if (sscanf(data, "%d %d", &x, &y) < 2)
+    {
+      message("ratrelwarp: Invalid arguments");
+      return NULL;
+    }
+
+  XWarpPointer (dpy, None, None, 0, 0, 0, 0, x, y); 
+  return NULL;  
+}
+
+char *
+cmd_ratclick (int interactive, char *data)
+{
+  int button = 1;
+
+  if (data != NULL)
+    {
+      if (sscanf (data, "%d", &button) < 1 || button < 1 || button > 3)
+	{
+	  message("ratclick: invalid argument");
+	}
+    }
+
+  XTestFakeButtonEvent(dpy, button, True, CurrentTime); 
+  XTestFakeButtonEvent(dpy, button, False, CurrentTime);
+  return NULL;  
+}
+
 
 char *
 cmd_curframe (int interactive, char *data)

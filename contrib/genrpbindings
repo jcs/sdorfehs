@@ -27,11 +27,14 @@
 # require "ratpoison"
 # Ratpoison.echo ("hello world")
 #
+# ;;; Common Lisp
+# (load "ratpoison.lisp")
+# (ratpoison:rp-echo "hello world")
 
 $\="\n";
 
 # set this to your rp binary
-$RATPOISON="/usr/local/bin/ratpoison";
+$RATPOISON="/home/sabetts/src/ratpoison/src/ratpoison";
 
 # open source file
 $ACTIONS_C="../src/actions.c";
@@ -41,9 +44,11 @@ open ACTIONS_C or die "Can't open $ACTIONS_C";
 $PERL_FILE="./Ratpoison.pm";
 $ELISP_FILE="./ratpoison-cmd.el";
 $RUBY_FILE="./ratpoison.rb";
+$COMMONLISP_FILE="./ratpoison.lisp";
 open PERL, ">$PERL_FILE" or die "Can't create $PERL_FILE";
 open ELISP, ">$ELISP_FILE" or die "Can't create $ELISP_FILE";
 open RUBY, ">$RUBY_FILE" or die "Can't create $RUBY_FILE";
+open COMMONLISP, ">$COMMONLISP_FILE" or die "Can't create $COMMONLISP_FILE";
 
 # PERL preamble
 print PERL 'package Ratpoison;';
@@ -55,8 +60,8 @@ print ELISP '(defvar ratpoison-program "',$RATPOISON,'")';
 print ELISP <<PREAMBLE;
 
 (defmacro defun-ratpoison (cmd)
-  `(defun ,(intern (concat "ratpoison-" (symbol-name cmd))) (&rest args)
-     (apply 'ratpoison-cmd ,(symbol-name cmd) args)))
+  `(progn (defun ,(intern (concat "ratpoison-" (symbol-name cmd))) (&rest args)
+          (apply 'ratpoison-cmd ,(symbol-name cmd) args)))
 
 (defun ratpoison-cmd (cmd &rest args)
   (with-temp-buffer
@@ -85,6 +90,46 @@ module Ratpoison
   module_function :command
 PREAMBLE
 
+# Scheme preamble
+
+print COMMONLISP <<PREAMBLE;
+(defpackage :ratpoison
+  (:use :cl))
+
+;; Needs the CLOCC PORT package
+(asdf:operate 'asdf:load-op :port)
+
+(in-package :ratpoison)
+
+(defvar ratpoison-program "/home/sabetts/src/ratpoison/src/ratpoison")
+
+(defmacro defun-ratpoison (cmd)
+  (let ((sym (intern (concatenate 'string "RP-" (symbol-name cmd)))))
+    `(progn (defun ,sym (&rest args)
+	      (apply 'ratpoison-cmd ,(string-downcase (symbol-name cmd)) args))
+	    (export ',sym))))
+
+(defun ratpoison-cmd (cmd &rest args)
+  (labels ((mapconcat (fn list sep)
+		     (apply 'concatenate 'string
+			    (loop for x on list
+				  collect (if (cdr x)
+					      (concatenate 'string (funcall fn (car x)) sep)
+					    (funcall fn (car x))))))
+	 (build-cmd (cmd args)
+		    (mapconcat (lambda (x)
+				 (if (stringp x)
+				     x
+				   (prin1-to-string x)))
+			       (nconc (list cmd) args) " ")))
+    (let ((stream (port:pipe-input ratpoison-program
+				   "-c" (build-cmd cmd args))))
+    (do ((line (read-line stream nil nil)
+	       (read-line stream nil nil))
+	 (accum nil (cons line accum)))
+	((null line) accum)))))
+PREAMBLE
+
 # bindings
 while (<ACTIONS_C>) {
     if (m!/\*\@begin !) {
@@ -95,6 +140,7 @@ while (<ACTIONS_C>) {
 	      $nbindings++;
 	      print PERL "sub $1 { return command (\"$1\", \@_); }";
 	      print ELISP "(defun-ratpoison $1)";
+	      print COMMONLISP "(defun-ratpoison $1)";
 	      print RUBY "  def $1 (*args)";
 	      print RUBY "    return command (\"$1\", args)";
 	      print RUBY "  end";
@@ -120,3 +166,5 @@ close ELISP;
 print "Created $ELISP_FILE";
 close RUBY;
 print "Created $RUBY_FILE";
+close COMMONLISP;
+print "Created $COMMONLISP_FILE";

@@ -17,7 +17,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.46 2004/10/05 16:45:24 sabetts Exp $
+dnl $Id: configure.in,v 1.47 2004/11/12 01:55:04 sabetts Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 1.3.1-CVS)
@@ -94,6 +94,7 @@ AC_CHECK_HEADERS([X11/extensions/Xinerama.h], [], [], [
 ])
 AC_CHECK_LIB(Xext, XMissingExtension, [LIBS="-lXext $LIBS"],, $CFLAGS $LDFLAGS)
 AC_CHECK_LIB(Xinerama, XineramaQueryScreens, [LIBS="-lXinerama $LIBS"],, $CFLAGS $LDFLAGS)
+AC_CHECK_LIB(Xtst, XTestFakeButtonEvent, [LIBS="-lXtst $LIBS"],, $CFLAGS $LDFLAGS)
 
 
 dnl Check for electric fence library
