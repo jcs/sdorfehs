@@ -155,7 +155,16 @@ rp_window *
 find_last_accessed_window ()
 {
   int last_access = 0;
-  rp_window *cur, *most_recent = NULL;
+  rp_window *cur, *most_recent;
+
+  /* Find the first mapped window */
+  for (most_recent = rp_window_head; most_recent; most_recent=most_recent->next)
+    {
+      if (most_recent->state == STATE_MAPPED) break;
+    }
+
+  /* If there are no mapped windows, don't bother with the next part */
+  if (most_recent == NULL) return NULL;
 
   for (cur=rp_window_head; cur; cur=cur->next)
     {
@@ -164,7 +173,7 @@ find_last_accessed_window ()
 	  && cur->state == STATE_MAPPED) 
 	{
 	  most_recent = cur;
-	  last_access = most_recent->last_access;
+	  last_access = cur->last_access;
 	}
     }
 
