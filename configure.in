@@ -17,12 +17,12 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.8 2001/02/17 02:06:15 algernon Exp $
+dnl $Id: configure.in,v 1.9 2001/02/17 03:16:05 algernon Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 0.0.6)
 
-AC_CONFIG_HEADER(src/config.h)
+AM_CONFIG_HEADER(src/config.h)
 
 AC_CANONICAL_HOST
 AC_SUBST(host_os)
