@@ -1,5 +1,10 @@
 2001-09-17  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* src/actions.h (cmd_unsetenv): new prototype
+
+	* src/actions.c (cmd_unsetenv): new function
+	(user_commands): new "unsetenv" command
+
 	* src/ratpoison.h (xstrdup): new prototype
 
 	* src/main.c (xstrdup): new function. All calls to strdup replaced

@@ -1,6 +1,12 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.0.0
+** New command unsetenv
+Remove an environment variable from...well...the environment.
+
+** New command chdir
+Change the current directory.
+
 ** Multiple commands passed to ratpoison via the command-line are now processed
 A stream of commands like, `ratpoison -c next -c prev -c next' are
 processed in order.

@@ -92,6 +92,7 @@ char * cmd_deffgcolor (int interactive, void *data);
 char * cmd_defbgcolor (int interactive, void *data);
 char * cmd_setenv (int interactive, void *data);
 char * cmd_chdir (int interactive, void *data);
+char * cmd_unsetenv (int interactive, void *data);
 
 /* void cmd_xterm (void *data); */
 

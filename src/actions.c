@@ -67,6 +67,7 @@ static user_command user_commands[] =
     {"windows", 	cmd_windows, 	arg_VOID},
     {"setenv",		cmd_setenv,	arg_STRING},
     {"chdir",		cmd_chdir,	arg_STRING},
+    {"unsetenv",	cmd_unsetenv,	arg_STRING},
 
     /* Commands to set default behavior. */
     {"defbarloc",	cmd_defbarloc, 		arg_STRING},
@@ -1822,5 +1823,19 @@ cmd_chdir (int interactive, void *data)
     }
 
   chdir ((char *)data);
+  return NULL;
+}
+
+char *
+cmd_unsetenv (int interactive, void *data)
+{
+  if (data == NULL)
+    {
+      message (" unsetenv: One argument is required ");
+      return NULL;
+    }
+
+  unsetenv ((char *)data);
+
   return NULL;
 }
