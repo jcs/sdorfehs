@@ -162,6 +162,9 @@ This destroys the current window. Normally you should only need to use
 misbehaving window this command should do the trick.
 
 @item C-t C-a
+Show current time. Disappears after 5 seconds, like all other info bars.
+
+@item C-t C-A
 Rename the currently active window. This name will remain for the
 duration of the window's life.
 
