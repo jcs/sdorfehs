@@ -126,9 +126,15 @@ destroy_window (XDestroyWindowEvent *ev)
   if (s && win)
     {
       /* Goto the last accessed window. */
-      if (win->state == STATE_MAPPED) last_window (); 
-
-      unmanage (win);
+      if (win == rp_current_window) 
+	{
+	  last_window (); 
+	  unmanage (win);
+	}
+      else
+	{
+	  unmanage (win);
+	}
     }
 
 #ifdef DEBUG
@@ -285,19 +291,21 @@ key_press (XEvent *ev)
     }
 }
 
-/* Not complete. I just update the name everytime, but I should really
-   check what kind of property update it is. */
 void
 property_notify (XEvent *ev)
 {
   rp_window *win;
 
-  win = find_window (ev->xproperty.window);
+  printf ("atom: %ld\n", ev->xproperty.atom);
 
+  win = find_window (ev->xproperty.window);
   if (win)
     {
-      printf ("updating window name\n");
-      update_window_name (win);      
+      if (ev->xproperty.atom == XA_WM_NAME) 
+	{
+	  printf ("updating window name\n");
+	  update_window_name (win);      
+	}
     }
 }
 
@@ -308,8 +316,8 @@ delegate_event (XEvent *ev)
   switch (ev->type)
     {
     case ConfigureRequest:
-      configure_request (&ev->xconfigurerequest);
       printf ("ConfigureRequest\n");
+      configure_request (&ev->xconfigurerequest);
       break;
     case CirculateRequest:
       printf ("CirculateRequest\n");
@@ -330,8 +338,8 @@ delegate_event (XEvent *ev)
       printf ("ColormapNotify\n");
       break;
     case PropertyNotify:
-      property_notify (ev);
       printf ("PropertyNotify\n");
+      property_notify (ev);
       break;
     case SelectionClear:
       printf ("SelectionClear\n");
@@ -363,9 +371,9 @@ delegate_event (XEvent *ev)
       break;
       
     case UnmapNotify:
-      unmap_notify (ev);
       printf ("UnmapNotify\n");
- break;
+      unmap_notify (ev);
+      break;
 
     case MotionNotify:
       printf ("MotionNotify\n");
