@@ -566,6 +566,16 @@ main (int argc, char *argv[])
 	}
     }
 
+  /* Report extra unparsed arguments. */
+  if (optind < argc)
+    {
+      fprintf (stderr, "Error: junk arguments: ");
+      while (optind < argc)
+	fprintf (stderr, "%s ", argv[optind++]);
+      fputc ('\n', stderr);
+      exit (EXIT_FAILURE);
+    }
+
   if (!(dpy = XOpenDisplay (display)))
     {
       fprintf (stderr, "Can't open display\n");
