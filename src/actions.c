@@ -115,7 +115,7 @@ static user_command user_commands[] =
     {"defbgcolor",		cmd_defbgcolor,		arg_STRING},
     {"defbarpadding", 		cmd_defbarpadding, 	arg_STRING},
     {"defresizeunit", 		cmd_defresizeunit, 	arg_STRING},
-    {"defwrapwinlist",		cmd_defwrapwinlist,	arg_STRING},
+    {"defwinliststyle",		cmd_defwinliststyle,	arg_STRING},
     /*@end (tag required for genrpbindings) */
 
     /* Commands to help debug ratpoison. */
@@ -3119,16 +3119,29 @@ cmd_verbexec (int interactive, void *data)
 }
 
 char *
-cmd_defwrapwinlist (int interactive, void *data)
+cmd_defwinliststyle (int interactive, void *data)
 {
   if (data == NULL && !interactive)
-    return xsprintf ("%d", defaults.wrap_window_list);
+    return xsprintf ("%s", defaults.window_list_style ? "column":"row");
 
-  if (data == NULL
-      || sscanf (data, "%d", &defaults.wrap_window_list) < 1)
+  if (data == NULL)
     {
       message (" defwrapwinlist: One argument required ");
+      return NULL;
      }
- 
+
+  if (!strcmp ("column", data))
+    {
+      defaults.window_list_style = STYLE_COLUMN;
+    }
+  else if (!strcmp ("row", data))
+    {
+      defaults.window_list_style = STYLE_ROW;
+    }
+  else
+    {
+      message (" defwrapwinlist: Bad argument ");
+    }
+
    return NULL;    
 }

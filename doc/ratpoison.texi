@@ -515,6 +515,10 @@ Set the default gravity for normal windows. See the
 When called non-interactively with no arguments, the current setting is
 returned.
 
+@item defwinliststyle @var{setting}
+The window list can be displayed in a row or a column. @var{setting}
+can be @samp{row} or @samp{column}.
+
 @item defwinname @var{name}
 There are three resources ratpoison can get a window's name from: the
 WMNAME hint, the res_name from the WMCLASS hint, or the res_class from
@@ -789,6 +793,10 @@ Unbind a keystroke.
 
 @item unsetenv @var{env}
 Clear the value of the environment variable, @var{env}.
+
+@item verbexec @var{command}
+Verbosely exec the shell command @var{command}. Raptoison displays a
+message saying command was executed.
 
 @item version
 Print ratpoison version.  By default, this is bound to @kbd{C-t v}.

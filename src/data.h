@@ -37,6 +37,8 @@
    window/frame/screen/etc, Use EMPTY to denote a lack there of. */
 #define EMPTY -1
 
+#define STYLE_ROW    0 
+#define STYLE_COLUMN 1
 
 typedef struct rp_window rp_window;
 typedef struct screen_info screen_info;
@@ -175,8 +177,9 @@ struct rp_defaults
 
   int startup_message;
 
-  /* A toggle for wrapping the window list. */
-  int wrap_window_list;
+  /* Decides whether the window list is displayed in a row or a
+     column. */
+  int window_list_style;
 
   /* Pointer warping toggle. */
   int warp;

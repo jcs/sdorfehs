@@ -666,7 +666,7 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
 	sbuf_concat (buffer, delim);
 
       if (w == current_window()) {
-	if(!defaults.wrap_window_list){
+	if(defaults.window_list_style == STYLE_ROW){
 	  *mark_end = strlen (sbuf_get (buffer));
 	} else {
 	  *mark_end = strlen (sbuf_get(buffer)) - *mark_start;

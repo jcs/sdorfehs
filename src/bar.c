@@ -146,7 +146,7 @@ update_window_names (screen_info *s)
 
   bar_buffer = sbuf_new (0);
 
-  if(!defaults.wrap_window_list)
+  if(defaults.window_list_style == STYLE_ROW)
     {
       get_window_list (defaults.window_fmt, NULL, bar_buffer, &mark_start, &mark_end);
       marked_message (sbuf_get (bar_buffer), mark_start, mark_end);

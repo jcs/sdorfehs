@@ -1,15 +1,15 @@
 2003-04-05  Shawn Betts  <sabetts@sfu.ca>
 
-	* src/window.c (get_window_list): if wrap_window_list is on then
+	* src/window.c (get_window_list): if window_list_style is STYLE_COLUMN then
 	the end of the mark is the length of the buffer minus the start of
 	the mark.
 
-	* src/main.c (init_defaults): init wrap_window_list to 0.
+	* src/main.c (init_defaults): init window_list_style to STYLE_ROW.
 
 	* src/input.c (update_input_window): store the height in a
 	variable.
 
-	* src/data.h (struct rp_defaults): new member, wrap_window_list.
+	* src/data.h (struct rp_defaults): new member, window_list_style.
 
 	* src/bar.h [message]: wrap msg arg in parens.
 	(marked_wrapped_message): new prototype
@@ -17,7 +17,7 @@
 	* src/bar.c (bar_y): new argument, height. All callers updated.
 	(bar_y): use height in calculations.
 	(update_window_names): print a column of windows if
-	defaults.wrap_window_list is on.
+	defaults.window_list_style is in column mode.
 	(count_lines): new function
 	(max_line_length): likewise
 	(pos_in_line): likewise
@@ -25,9 +25,9 @@
 	(marked_wrapped_message): likewise
 
 	* src/actions.c (user_commands): new commands 'verbexec' and
-	'defwrapwinlist'. Move @end take to after the def* commands.
+	'defwinliststyle'. Move @end take to after the def* commands.
 	(cmd_verbexec): new function. Added prototype.
-	(cmd_defwrapwinlist): likewise
+	(cmd_defwinliststyle): likewise
 
 2003-04-04  Shawn Betts  <sabetts@sfu.ca>
 
