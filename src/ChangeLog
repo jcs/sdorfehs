@@ -1,3 +1,12 @@
+2000-10-19  Ryan yeske  <rcyeske@van.gobasis.com>
+
+	* manage.c (unmanaged_window): added.
+
+	* conf.h (PADDING_LEFT, PADDING_TOP, PADDING_RIGHT,
+	PADDING_BOTTOM, UNMANAGED_WINDOW_LIST): added.  Windows listed in
+	UNMANAGED_WINDOW_LIST will not be managed.  Space reserved for
+	unmanaged windows can be defined with PADDING_*
+
 2000-10-19  shawn  <sabetts@badbox.secure.basis.org>
 
 	* manage.c (get_window_name): added

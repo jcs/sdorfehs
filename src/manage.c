@@ -30,6 +30,13 @@
 
 #include "ratpoison.h"
 
+const char *unmanaged_window_list[] = {
+#ifdef UNMANAGED_WINDOW_LIST
+  UNMANAGED_WINDOW_LIST,
+#endif
+  NULL
+};
+
 extern Atom wm_state;
 
 static void
@@ -109,7 +116,11 @@ manage (rp_window *win, screen_info *s)
 
   /* We successfully got the name, which means we can start managing! */
   XMapWindow (dpy, win->w);
-  XMoveResizeWindow (dpy, win->w, 0, 0, s->root_attr.width, s->root_attr.height);
+  XMoveResizeWindow (dpy, win->w, 
+		     PADDING_LEFT, 
+		     PADDING_TOP, 
+		     s->root_attr.width - PADDING_LEFT - PADDING_RIGHT, 
+		     s->root_attr.height - PADDING_TOP - PADDING_BOTTOM);
   XSelectInput (dpy, win->w, PropertyChangeMask);
   XAddToSaveSet(dpy, win->w);
   grab_prefix_key (win->w);
@@ -144,8 +155,9 @@ scanwins(screen_info *s)
       XGetWindowAttributes(dpy, wins[i], &attr);
       if (wins[i] == s->bar_window || wins[i] == s->key_window || wins[i] == s->input_window) continue;
 
-      if (attr.override_redirect != True)
+      if (attr.override_redirect != True && !unmanaged_window (wins[i]))
 	{
+	  
 	  win = add_to_window_list (s, wins[i]);
 	  PRINT_DEBUG ("map_state: %d\n", attr.map_state);
 	  if (attr.map_state == IsViewable) manage (win, s);
@@ -153,3 +165,16 @@ scanwins(screen_info *s)
     }
   XFree((void *) wins);	/* cast is to shut stoopid compiler up */
 }
+
+int
+unmanaged_window (Window w)
+{
+  int i;
+
+  for (i = 0; unmanaged_window_list[i]; i++) 
+    if (!strcmp (unmanaged_window_list[i], get_window_name (w)))
+      return 1;
+
+  return 0;
+}
+

@@ -32,3 +32,9 @@
 #define BAR_LOCATION    3	/* 0=bottom-left 1=top-left 2=bottom-right 3=top-right */
 #define BAR_TIMEOUT     5	/* Number of seconds before the progam bar autohides 0=don't autohide */
 
+#define PADDING_LEFT 	100	/* space not to be taken up around managed windows */
+#define PADDING_TOP 	100
+#define PADDING_RIGHT 	100
+#define PADDING_BOTTOM 	100
+
+#define UNMANAGED_WINDOW_LIST "xapm","xclock","xscribble"

@@ -99,7 +99,13 @@ map_request (XEvent *ev)
       switch (win->state)
 	{
 	case STATE_UNMAPPED:
-	  manage (win, s);
+	  if (unmanaged_window (win->w))
+	    {
+	      XMapRaised (dpy, win->w);
+	      break;
+	    }
+	  else
+	    manage (win, s);	/* fall through */
 	case STATE_MAPPED:
 	  XMapRaised (dpy, win->w);
 	  rp_current_window = win;
@@ -168,19 +174,19 @@ configure_request (XConfigureRequestEvent *e)
     {
       PRINT_DEBUG ("window req: %d %d %d %d %d\n", e->x, e->y, e->width, e->height, e->border_width);
 
-      wc.x = 0;
-      wc.y = 0;
-      wc.width = win->scr->root_attr.width - 1;
-      wc.height = win->scr->root_attr.height - 1;
+      wc.x = PADDING_LEFT;
+      wc.y = PADDING_TOP;
+      wc.width = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
+      wc.height = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
       wc.border_width = 0;
 
       ce.type = ConfigureNotify;
       ce.event = e->window;
       ce.window = e->window;
-      ce.x = 0;
-      ce.y = 0;
-      ce.width = win->scr->root_attr.width - 1;
-      ce.height = win->scr->root_attr.height - 1;
+      ce.x = PADDING_LEFT;
+      ce.y = PADDING_TOP;
+      ce.width = win->scr->root_attr.width - PADDING_LEFT - PADDING_RIGHT;
+      ce.height = win->scr->root_attr.height - PADDING_TOP - PADDING_BOTTOM;
       ce.border_width = 0;      
       ce.above = None;
       ce.override_redirect = 0;
