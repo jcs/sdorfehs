@@ -4309,19 +4309,23 @@ cmd_set (int interactive, char *data)
       if (!strcmp (var, set_vars[i].var)) 
 	{
 	  result = set_vars[i].set_fn (rest);
-	  free (var);
 	  /* If rest is not NULL then result must be NULL. */
 	  if (rest == NULL) 
 	    {
 	      if (interactive) 
 		{
 		  marked_message_printf (0, 0, " %s: %s ", var, result);
+		  free (var);
 		  free (result);
 		  return NULL;
 		}
 	      else
-		return result;
+		{
+		  free (var);
+		  return result;
+		}
 	    }
+	  free (var);
 	  free (rest);
 	  return NULL;
 	}

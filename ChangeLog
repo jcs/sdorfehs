@@ -2,6 +2,7 @@
 
 	* src/actions.c: new command, sselect
 	(cmd_sselect): new function. added prototype.
+	(cmd_set): free 'var' at the appropriate places.
 
 	* src/events.c (property_notify): pass the root window to
 	receive_command.
