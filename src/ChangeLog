@@ -1,7 +1,19 @@
 2001-02-21  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
+	* actions.c (find_keybinding): return an rp_action*, not a char*
+	(user_commands): add bind command
+	(parse_keydesc): new function
+	(cmd_bind): new function
+
+	* actions.h: update find_keybinding prototype
+
+	* events.c (handle_key): handle new return value of
+	find_keybinding
+
 	* actions.c (cmd_generate): Send the modifier prefix state as well
 	as the keycode.
+	(find_keybinding): Do not strdup the key action data.
+	(add_keybinding): Strdup the key action data.
 
 2001-02-19  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
