@@ -1,3 +1,8 @@
+2001-10-09  shawn  <sabetts@vcn.bc.ca>
+
+	* src/list.c (format_window_name): add formatting option '%l' to
+	grab the last_access field from the window.
+
 2001-10-05  Gergely Nagy  <algernon@debian.org>
 
 	* contrib/ratpoisonrc-mode.el: superceded by..

@@ -629,6 +629,7 @@ print_window_information (rp_window *win)
    %a - application name
    %c - resource class
    %i - X11 Window ID
+   %l - last access number
    
  */
 static void
@@ -678,6 +679,11 @@ format_window_name (char *fmt, rp_window *win, rp_window *other_win,
 
 	    case 'i':
 	      snprintf (dbuf, 9, "%ld", (unsigned long)win->w);
+	      sbuf_concat (buffer, dbuf);
+	      break;
+
+	    case 'l':
+	      snprintf (dbuf, 9, "%d", win->last_access);
 	      sbuf_concat (buffer, dbuf);
 	      break;
 
