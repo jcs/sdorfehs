@@ -17,7 +17,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
-dnl $Id: configure.in,v 1.14 2001/02/26 01:47:38 sabetts Exp $
+dnl $Id: configure.in,v 1.15 2001/03/02 09:40:59 sabetts Exp $
 
 AC_INIT(src/main.c)
 AM_INIT_AUTOMAKE(ratpoison, 0.0.6-cvs)
@@ -42,10 +42,6 @@ AC_ARG_WITH(xterm, [ --with-xterm=PROG        set the x terminal emulator used b
 term_prog=$withval, term_prog="xterm")
 AC_DEFINE_UNQUOTED(TERM_PROG,"$term_prog")
 
-AC_ARG_WITH(emacs, [ --with-emacs=PROG        set the Emacs used by ratpoison ],
-emacs_prog=$withval, emacs_prog="emacs")
-AC_DEFINE_UNQUOTED(EMACS_PROG,"$emacs_prog")
-
 dnl Checks for programs.
 CFLAGS="$CFLAGS -Wall -g"
 AC_CHECK_TOOL(CC, gcc)
@@ -55,12 +51,6 @@ dnl check for an x terminal emulator
 AC_CHECK_PROG(TERM_PROG,$term_prog,yes,no)
 if test x$TERM_PROG = xno; then
    AC_MSG_ERROR([*** Can't find x terminal emulator \`$term_prog'])
-fi
-
-dnl check for an Emacs (we dont really want to do this, c'mon)
-AC_CHECK_PROG(EMACS_PROG,$emacs_prog,yes,no)
-if test x$EMACS_PROG = xno; then
-   AC_MSG_WARN([*** Can't find Emacs \`$emacs_prog'])
 fi
 
 dnl Check for the X libs
@@ -87,4 +77,4 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 
-AC_OUTPUT(Makefile doc/Makefile src/Makefile man/Makefile)
+AC_OUTPUT(Makefile doc/Makefile src/Makefile)

@@ -198,10 +198,6 @@ Open a new X terminal.
 @item C-t C-:
 This allows you to execute a single ratpoison command.
 
-@item C-t e
-@item C-t C-e
-Run Emacs (you know you want to).
-
 @item C-t !
 Run a shell command.
 

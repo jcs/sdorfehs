@@ -1,6 +1,11 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes Since 0.0.5
+** C-t e removed
+
+Since you can custo your own keystrokes, there's not much sense
+cluttering things with a binding to launch emacs.
+
 ** XErrorEvents don't bring down ratpoison
 
 A friendly message pops up displaying the error message. This does

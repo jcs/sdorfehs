@@ -1,3 +1,8 @@
+2001-03-02  shawn  <sabetts@diggin.lamenet.tmp>
+
+	* actions.c (initialize_default_keybindings): removed emacs
+	binding.
+
 2001-03-01  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* ratpoison.h (xmalloc, xrealloc, fatal): Prototype.

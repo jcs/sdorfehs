@@ -113,8 +113,6 @@ initialize_default_keybindings (void)
   add_keybinding (XK_c, 0, "exec " TERM_PROG);
   add_keybinding (XK_c, C, "exec " TERM_PROG);
   add_keybinding (XK_colon, 0, "colon");
-  add_keybinding (XK_e, 0, "exec " EMACS_PROG);
-  add_keybinding (XK_e, C, "exec " EMACS_PROG);
   add_keybinding (XK_exclam, 0, "exec");
   add_keybinding (XK_exclam, C, "colon exec " TERM_PROG " -e ");
   add_keybinding (XK_k, 0, "delete");

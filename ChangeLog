@@ -1,5 +1,12 @@
 2001-03-02  shawn  <sabetts@diggin.lamenet.tmp>
 
+	* Makefile.am (SUBDIRS): removed man/
+
+	* configure.in (AC_OUTPUT): removed man/Makefile
+	removed references to emacs.
+
+	* doc/Makefile.am (man_MANS): ratpoison.1 moved to doc/
+
 	* doc/ratpoison.texi: minor updates.
 
 	* man/ratpoison.1: added changes from texinfo docs.
