@@ -287,7 +287,7 @@ split_frame (rp_window_frame *frame, int way, int pixels)
   win = find_window_for_frame (new_frame);
   if (win)
     {
-      PRINT_DEBUG ("Found a window for the frame!\n");
+      PRINT_DEBUG (("Found a window for the frame!\n"));
 
       set_frames_window (new_frame, win);
 
@@ -297,7 +297,7 @@ split_frame (rp_window_frame *frame, int way, int pixels)
     }
   else
     {
-      PRINT_DEBUG ("No window fits the frame.\n");
+      PRINT_DEBUG (("No window fits the frame.\n"));
 
       set_frames_window (new_frame, NULL);
     }
@@ -655,7 +655,7 @@ remove_frame (rp_window_frame *frame)
   s = frames_screen (frame);
 
   area = total_frame_area(s);
-  PRINT_DEBUG ("Total Area: %d\n", area);
+  PRINT_DEBUG (("Total Area: %d\n", area));
 
   list_del (&frame->node);
   hide_window (frame->win);
@@ -668,11 +668,11 @@ remove_frame (rp_window_frame *frame)
 
       if (cur->win)
 	{
-	  PRINT_DEBUG ("Trying frame containing window '%s'\n", window_name (cur->win));
+	  PRINT_DEBUG (("Trying frame containing window '%s'\n", window_name (cur->win)));
 	}
       else
 	{
-	  PRINT_DEBUG ("Trying some empty frame\n");
+	  PRINT_DEBUG (("Trying some empty frame\n"));
 	}
 
       /* Backup the frame */
@@ -686,8 +686,8 @@ remove_frame (rp_window_frame *frame)
 	  cur->height += frame->height;
 	}
 
-      PRINT_DEBUG ("Attempting vertical Frame y=%d height=%d\n", cur->y, cur->height);
-      PRINT_DEBUG ("New Total Area: %d\n", total_frame_area(s));
+      PRINT_DEBUG (("Attempting vertical Frame y=%d height=%d\n", cur->y, cur->height));
+      PRINT_DEBUG (("New Total Area: %d\n", total_frame_area(s)));
 
       /* If the area is bigger than before, the frame takes up too
 	 much space. If the current frame and the deleted frame DON'T
@@ -698,14 +698,14 @@ remove_frame (rp_window_frame *frame)
 	 frame but obviously didn't fit. */
       if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
 	{
-	  PRINT_DEBUG ("Didn't fit vertically\n");
+	  PRINT_DEBUG (("Didn't fit vertically\n"));
 
 	  /* Restore the current window's frame */
 	  memcpy (cur, &tmp_frame, sizeof (rp_window_frame));
 	}
       else
 	{
-	  PRINT_DEBUG ("It fit vertically!!\n");
+	  PRINT_DEBUG (("It fit vertically!!\n"));
 
 	  /* update the frame backup */
 	  memcpy (&tmp_frame, cur, sizeof (rp_window_frame));
@@ -720,20 +720,20 @@ remove_frame (rp_window_frame *frame)
 	  cur->width += frame->width;
 	}
 
-      PRINT_DEBUG ("Attempting horizontal Frame x=%d width=%d\n", cur->x, cur->width);
-      PRINT_DEBUG ("New Total Area: %d\n", total_frame_area(s));
+      PRINT_DEBUG (("Attempting horizontal Frame x=%d width=%d\n", cur->x, cur->width));
+      PRINT_DEBUG (("New Total Area: %d\n", total_frame_area(s)));
 
       /* Same test as the vertical test, above. */
       if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
 	{
-	  PRINT_DEBUG ("Didn't fit horizontally\n");
+	  PRINT_DEBUG (("Didn't fit horizontally\n"));
 
 	  /* Restore the current window's frame */
 	  memcpy (cur, &tmp_frame, sizeof (rp_window_frame));
 	}
       else
 	{
-	  PRINT_DEBUG ("It fit horizontally!!\n");
+	  PRINT_DEBUG (("It fit horizontally!!\n"));
 	  fits = 1;
 	}
 

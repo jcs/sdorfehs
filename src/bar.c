@@ -178,7 +178,7 @@ marked_message (char *msg, int mark_start, int mark_end)
   int width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
   int height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
-  PRINT_DEBUG ("%s\n", msg);
+  PRINT_DEBUG (("%s\n", msg));
 
   /* Map the bar if needed */
   if (!s->bar_is_raised)
@@ -245,7 +245,7 @@ marked_message (char *msg, int mark_start, int mark_end)
 
       width = end - start;
 
-      PRINT_DEBUG ("start = %d, end = %d, width = %d\n", start, end, width);
+      PRINT_DEBUG (("start = %d, end = %d, width = %d\n", start, end, width));
 
       lgv.foreground = current_screen()->fg_color;
       lgv.function = GXxor;

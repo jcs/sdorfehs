@@ -122,7 +122,7 @@ add_to_window_list (screen_info *s, Window w)
   new_window->hints = XAllocSizeHints ();
   new_window->colormap = DefaultColormap (dpy, s->screen_num);
   new_window->transient = XGetTransientForHint (dpy, new_window->w, &new_window->transient_for);
-  PRINT_DEBUG ("transient %d\n", new_window->transient);
+  PRINT_DEBUG (("transient %d\n", new_window->transient));
 
   update_window_gravity (new_window);
 
@@ -377,7 +377,7 @@ unhide_transient_for (rp_window *win)
   transient_for = find_window (win->transient_for);
   if (transient_for == NULL) 
     {
-      PRINT_DEBUG ("Can't find transient_for for '%s'", win->name );
+      PRINT_DEBUG (("Can't find transient_for for '%s'", win->name ));
       return;
     }
 
@@ -386,7 +386,7 @@ unhide_transient_for (rp_window *win)
       set_frames_window (frame, transient_for);
       maximize (transient_for);
 
-      PRINT_DEBUG ("unhide transient window: %s\n", transient_for->name);
+      PRINT_DEBUG (("unhide transient window: %s\n", transient_for->name));
       
       unhide_window_below (transient_for);
 
@@ -417,13 +417,13 @@ hide_transient_for_between (rp_window *win, rp_window *last)
   transient_for = find_window (win->transient_for);
   if (transient_for == last) 
     {
-      PRINT_DEBUG ("Can't find transient_for for '%s'", win->name );
+      PRINT_DEBUG (("Can't find transient_for for '%s'", win->name ));
       return;
     }
 
   if (find_windows_frame (transient_for) == NULL)
     {
-      PRINT_DEBUG ("hide transient window: %s\n", transient_for->name);
+      PRINT_DEBUG (("hide transient window: %s\n", transient_for->name));
       hide_window (transient_for);
     }
 
@@ -478,8 +478,8 @@ set_active_window (rp_window *win)
 
   last_win = set_frames_window (win->scr->rp_current_frame, win);
 
-  if (last_win) PRINT_DEBUG ("last window: %s\n", window_name (last_win));
-  PRINT_DEBUG ("new window: %s\n", window_name (win));
+  if (last_win) PRINT_DEBUG (("last window: %s\n", window_name (last_win)));
+  PRINT_DEBUG (("new window: %s\n", window_name (win)));
 
   /* Make sure the window comes up full screen */
   maximize (win);
@@ -638,7 +638,7 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
 
   list_for_each_entry (w,&rp_mapped_window,node)
     {
-      PRINT_DEBUG ("%d-%s\n", w->number, window_name (w));
+      PRINT_DEBUG (("%d-%s\n", w->number, window_name (w)));
 
       if (w == current_window())
 	*mark_start = strlen (sbuf_get (buffer));

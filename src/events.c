@@ -115,11 +115,11 @@ unmap_notify (XEvent *ev)
   switch (win->state)
     {
     case IconicState:
-      PRINT_DEBUG ("Withdrawing iconized window '%s'\n", window_name (win));
+      PRINT_DEBUG (("Withdrawing iconized window '%s'\n", window_name (win)));
       if (ev->xunmap.send_event) withdraw_window (win);
       break;
     case NormalState:
-      PRINT_DEBUG ("Withdrawing normal window '%s'\n", window_name (win));
+      PRINT_DEBUG (("Withdrawing normal window '%s'\n", window_name (win)));
       /* If the window was inside a frame, fill the frame with another
 	 window. */
       frame = find_windows_frame (win);
@@ -141,31 +141,31 @@ map_request (XEvent *ev)
   win = find_window (ev->xmap.window);
   if (win == NULL) 
     {
-      PRINT_DEBUG ("Map request from an unknown window.\n");
+      PRINT_DEBUG (("Map request from an unknown window.\n"));
       XMapWindow (dpy, ev->xmap.window);
       return;
     }
 
-  PRINT_DEBUG ("Map request from a managed window\n");
+  PRINT_DEBUG (("Map request from a managed window\n"));
 
   switch (win->state)
     {
     case WithdrawnState:
       if (unmanaged_window (win->w))
 	{
-	  PRINT_DEBUG ("Mapping Unmanaged Window\n");
+	  PRINT_DEBUG (("Mapping Unmanaged Window\n"));
 	  XMapWindow (dpy, win->w);
 	  break;
 	}
       else
 	{
-	  PRINT_DEBUG ("Mapping Withdrawn Window\n");
+	  PRINT_DEBUG (("Mapping Withdrawn Window\n"));
 	  map_window (win);
 	  break;
 	}
       break;
     case IconicState:
-      PRINT_DEBUG ("Mapping Iconic window\n");
+      PRINT_DEBUG (("Mapping Iconic window\n"));
       if (win->last_access == 0)
 	{
 	  /* Depending on the rudeness level, actually map the
@@ -254,46 +254,46 @@ configure_request (XConfigureRequestEvent *e)
 
 	    }
 
-	  PRINT_DEBUG("request CWStackMode %d\n", e->detail);
+	  PRINT_DEBUG(("request CWStackMode %d\n", e->detail));
 	}
 
-      PRINT_DEBUG ("'%s' window size: %d %d %d %d %d\n", window_name (win),
-		   win->x, win->y, win->width, win->height, win->border);
+      PRINT_DEBUG (("'%s' window size: %d %d %d %d %d\n", window_name (win),
+		   win->x, win->y, win->width, win->height, win->border));
 
       /* Collect the changes to be granted. */
       if (e->value_mask & CWBorderWidth)
 	{
 	  changes.border_width = e->border_width;
 	  win->border = e->border_width;
-	  PRINT_DEBUG("request CWBorderWidth %d\n", e->border_width);
+	  PRINT_DEBUG(("request CWBorderWidth %d\n", e->border_width));
 	}
 
       if (e->value_mask & CWWidth)
 	{
 	  changes.width = e->width;
 	  win->width = e->width;
-	  PRINT_DEBUG("request CWWidth %d\n", e->width);
+	  PRINT_DEBUG(("request CWWidth %d\n", e->width));
 	}
 
       if (e->value_mask & CWHeight)
 	{
 	  changes.height = e->height;
 	  win->height = e->height;
-	  PRINT_DEBUG("request CWHeight %d\n", e->height);
+	  PRINT_DEBUG(("request CWHeight %d\n", e->height));
 	}
 
       if (e->value_mask & CWX)
 	{
 	  changes.x = e->x;
 	  win->x = e->x;
-	  PRINT_DEBUG("request CWX %d\n", e->x);
+	  PRINT_DEBUG(("request CWX %d\n", e->x));
 	}
 
       if (e->value_mask & CWY)
 	{
 	  changes.y = e->y;
 	  win->y = e->y;
-	  PRINT_DEBUG("request CWY %d\n", e->y);
+	  PRINT_DEBUG(("request CWY %d\n", e->y));
 	}
 
       if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
@@ -325,13 +325,13 @@ configure_request (XConfigureRequestEvent *e)
 static void
 client_msg (XClientMessageEvent *ev)
 {
-  PRINT_DEBUG ("Received client message.\n");
+  PRINT_DEBUG (("Received client message.\n"));
 
   if (ev->message_type == wm_change_state)
     {
       rp_window *win;
 
-      PRINT_DEBUG ("WM_CHANGE_STATE\n");
+      PRINT_DEBUG (("WM_CHANGE_STATE\n"));
 
       win = find_window (ev->window);
       if (win == NULL) return;
@@ -341,7 +341,7 @@ client_msg (XClientMessageEvent *ev)
 	     user's intervention. This is bad, but Emacs is the only
 	     program I know of that iconifies itself and this is
 	     generally from the user pressing C-z.  */
-	  PRINT_DEBUG ("Iconify Request.\n");
+	  PRINT_DEBUG (("Iconify Request.\n"));
 	  if (win->state == NormalState)
 	    {
 	      rp_window *w = find_window_other();
@@ -354,7 +354,7 @@ client_msg (XClientMessageEvent *ev)
 	}
       else
 	{
-	  PRINT_ERROR ("Non-standard WM_CHANGE_STATE format\n");
+	  PRINT_ERROR (("Non-standard WM_CHANGE_STATE format\n"));
 	}
     }
 }
@@ -384,7 +384,7 @@ handle_key (screen_info *s)
   unsigned int mod;		/* Modifiers */
   int rat_grabbed = 0;
 
-  PRINT_DEBUG ("handling key...\n");
+  PRINT_DEBUG (("handling key...\n"));
 
   /* All functions hide the program bar and the frame indicator. */
   if (defaults.bar_timeout > 0) hide_bar (s);
@@ -490,14 +490,14 @@ execute_remote_command (Window w)
     {
       if (req)
 	{
-	  PRINT_DEBUG ("command: %s\n", req);
+	  PRINT_DEBUG (("command: %s\n", req));
 	  result = command (0, req);
 	}
       XFree (req);
     }
   else
     {
-      PRINT_DEBUG ("Couldn't get RP_COMMAND Property\n");
+      PRINT_DEBUG (("Couldn't get RP_COMMAND Property\n"));
     }
 
   return result;
@@ -548,10 +548,10 @@ receive_command ()
 	    }
 	  else
 	    {
-	      PRINT_DEBUG ("Couldn't get RP_COMMAND_REQUEST Property\n");
+	      PRINT_DEBUG (("Couldn't get RP_COMMAND_REQUEST Property\n"));
 	    }
 
-	  PRINT_DEBUG ("command requests: %ld\n", nitems);
+	  PRINT_DEBUG (("command requests: %ld\n", nitems));
 	}
     } while (nitems > 0);
 			  
@@ -562,13 +562,13 @@ property_notify (XEvent *ev)
 {
   rp_window *win;
 
-  PRINT_DEBUG ("atom: %ld\n", ev->xproperty.atom);
+  PRINT_DEBUG (("atom: %ld\n", ev->xproperty.atom));
 
   if (ev->xproperty.atom == rp_command_request
       && ev->xproperty.window == DefaultRootWindow (dpy)
       && ev->xproperty.state == PropertyNewValue)
     {
-      PRINT_DEBUG ("ratpoison command\n");
+      PRINT_DEBUG (("ratpoison command\n"));
       receive_command();
     }
 
@@ -579,25 +579,25 @@ property_notify (XEvent *ev)
       switch (ev->xproperty.atom)
 	{
 	case XA_WM_NAME:
-	  PRINT_DEBUG ("updating window name\n");
+	  PRINT_DEBUG (("updating window name\n"));
 	  update_window_name (win);
 	  update_window_names (win->scr);
 	  break;
 
 	case XA_WM_NORMAL_HINTS:
-	  PRINT_DEBUG ("updating window normal hints\n");
+	  PRINT_DEBUG (("updating window normal hints\n"));
 	  update_normal_hints (win);
 	  if (win->state == NormalState)
 	    maximize (win);
 	  break;
 
 	case XA_WM_TRANSIENT_FOR:
-	  PRINT_DEBUG ("Transient for\n");
+	  PRINT_DEBUG (("Transient for\n"));
 	  win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);
 	  break;
 
 	default:
-	  PRINT_DEBUG ("Unhandled property notify event\n");
+	  PRINT_DEBUG (("Unhandled property notify event\n"));
 	  break;
 	}
     }
@@ -642,7 +642,7 @@ focus_change (XFocusChangeEvent *ev)
 
   if (win != NULL)
     {
-      PRINT_DEBUG ("Re-grabbing prefix key\n");
+      PRINT_DEBUG (("Re-grabbing prefix key\n"));
       grab_prefix_key (win->w);
     }
 }
@@ -682,62 +682,62 @@ delegate_event (XEvent *ev)
   switch (ev->type)
     {
     case ConfigureRequest:
-      PRINT_DEBUG ("--- Handling ConfigureRequest ---\n");
+      PRINT_DEBUG (("--- Handling ConfigureRequest ---\n"));
       configure_request (&ev->xconfigurerequest);
       break;
 
     case CreateNotify:
-      PRINT_DEBUG ("--- Handling CreateNotify ---\n");
+      PRINT_DEBUG (("--- Handling CreateNotify ---\n"));
       new_window (&ev->xcreatewindow);
       break;
 
     case DestroyNotify:
-      PRINT_DEBUG ("--- Handling DestroyNotify ---\n");
+      PRINT_DEBUG (("--- Handling DestroyNotify ---\n"));
       destroy_window (&ev->xdestroywindow);
       break;
 
     case ClientMessage:
-      PRINT_DEBUG ("--- Handling ClientMessage ---\n");
+      PRINT_DEBUG (("--- Handling ClientMessage ---\n"));
       client_msg (&ev->xclient);
       break;
 
     case ColormapNotify:
-      PRINT_DEBUG ("--- Handling ColormapNotify ---\n");
+      PRINT_DEBUG (("--- Handling ColormapNotify ---\n"));
       colormap_notify (ev);
       break;
 
     case PropertyNotify:
-      PRINT_DEBUG ("--- Handling PropertyNotify ---\n");
+      PRINT_DEBUG (("--- Handling PropertyNotify ---\n"));
       property_notify (ev);
       break;
 
     case MapRequest:
-      PRINT_DEBUG ("--- Handling MapRequest ---\n");
+      PRINT_DEBUG (("--- Handling MapRequest ---\n"));
       map_request (ev);
       break;
 
     case KeyPress:
-      PRINT_DEBUG ("--- Handling KeyPress ---\n");
+      PRINT_DEBUG (("--- Handling KeyPress ---\n"));
       key_press (ev);
       break;
 
     case UnmapNotify:
-      PRINT_DEBUG ("--- Handling UnmapNotify ---\n");
+      PRINT_DEBUG (("--- Handling UnmapNotify ---\n"));
       unmap_notify (ev);
       break;
 
     case FocusOut:
-      PRINT_DEBUG ("--- Handling FocusOut ---\n");
+      PRINT_DEBUG (("--- Handling FocusOut ---\n"));
       focus_change (&ev->xfocus);
       break;
 
     case FocusIn:
-      PRINT_DEBUG ("--- Handling FocusIn ---\n");
+      PRINT_DEBUG (("--- Handling FocusIn ---\n"));
       focus_change (&ev->xfocus);
       break;
 
     case MappingNotify:
-      PRINT_DEBUG ("--- Handling MappingNotify ---\n");
+      PRINT_DEBUG (("--- Handling MappingNotify ---\n"));
       mapping_notify( &ev->xmapping );
       break;
 
@@ -756,7 +756,7 @@ delegate_event (XEvent *ev)
       break;
 
     default:
-      PRINT_DEBUG ("--- Unknown event %d ---\n",- ev->type);
+      PRINT_DEBUG (("--- Unknown event %d ---\n",- ev->type));
     }
 }
 
@@ -768,7 +768,7 @@ handle_signals ()
     {
       int i;
 
-      PRINT_DEBUG ("Alarm recieved.\n");
+      PRINT_DEBUG (("Alarm recieved.\n"));
 
       /* Only hide the bar if it times out. */
       if (defaults.bar_timeout > 0)
@@ -793,7 +793,7 @@ handle_signals ()
 
   if (kill_signalled > 0)
     {
-      PRINT_DEBUG ("Exiting\n");
+      PRINT_DEBUG (("Exiting\n"));
       clean_up ();
       exit (EXIT_SUCCESS);
     }

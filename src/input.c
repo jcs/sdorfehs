@@ -40,7 +40,7 @@ x11_mask_to_rp_mask (unsigned int mask)
 {
   unsigned int result = 0;
 
-  PRINT_DEBUG ("x11 mask = %x\n", mask);
+  PRINT_DEBUG (("x11 mask = %x\n", mask));
 
   result |= mask & ControlMask ? RP_CONTROL_MASK:0;
   result |= mask & rp_modifier_info.meta_mod_mask ? RP_META_MASK:0;
@@ -48,7 +48,7 @@ x11_mask_to_rp_mask (unsigned int mask)
   result |= mask & rp_modifier_info.hyper_mod_mask ? RP_HYPER_MASK:0;
   result |= mask & rp_modifier_info.super_mod_mask ? RP_SUPER_MASK:0;
 
-  PRINT_DEBUG ("rp mask = %x\n", mask);
+  PRINT_DEBUG (("rp mask = %x\n", mask));
 
   return result;
 }
@@ -61,7 +61,7 @@ rp_mask_to_x11_mask (unsigned int mask)
 {
   unsigned int result = 0;
 
-  PRINT_DEBUG ("rp mask = %x\n", mask);
+  PRINT_DEBUG (("rp mask = %x\n", mask));
 
   result |= mask & RP_CONTROL_MASK ? ControlMask:0;
   result |= mask & RP_META_MASK ? rp_modifier_info.meta_mod_mask:0;
@@ -69,7 +69,7 @@ rp_mask_to_x11_mask (unsigned int mask)
   result |= mask & RP_HYPER_MASK ? rp_modifier_info.hyper_mod_mask:0;
   result |= mask & RP_SUPER_MASK ? rp_modifier_info.super_mod_mask:0;
 
-  PRINT_DEBUG ("x11 mask = %x\n", mask);
+  PRINT_DEBUG (("x11 mask = %x\n", mask));
 
   return result;
 }
@@ -105,41 +105,41 @@ update_modifier_map ()
 	  case XK_Meta_L:
 	  case XK_Meta_R:
 	    rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
-	    PRINT_DEBUG ("Found Meta on %d\n",
-			 rp_modifier_info.meta_mod_mask);
+	    PRINT_DEBUG (("Found Meta on %d\n",
+			 rp_modifier_info.meta_mod_mask));
 	    break;
 
 	  case XK_Alt_L:
 	  case XK_Alt_R:
 	    rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
-	    PRINT_DEBUG ("Found Alt on %d\n",
-			 rp_modifier_info.alt_mod_mask);
+	    PRINT_DEBUG (("Found Alt on %d\n",
+			 rp_modifier_info.alt_mod_mask));
 	    break;
 
 	  case XK_Super_L:
 	  case XK_Super_R:
 	    rp_modifier_info.super_mod_mask |= modmasks[row - 3];
-	    PRINT_DEBUG ("Found Super on %d\n",
-			 rp_modifier_info.super_mod_mask);
+	    PRINT_DEBUG (("Found Super on %d\n",
+			 rp_modifier_info.super_mod_mask));
 	    break;
 
 	  case XK_Hyper_L:
 	  case XK_Hyper_R:
 	    rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
-	    PRINT_DEBUG ("Found Hyper on %d\n",
-			 rp_modifier_info.hyper_mod_mask);
+	    PRINT_DEBUG (("Found Hyper on %d\n",
+			 rp_modifier_info.hyper_mod_mask));
 	    break;
 
 	  case XK_Num_Lock:
 	    rp_modifier_info.num_lock_mask |= modmasks[row - 3];
-	    PRINT_DEBUG ("Found NumLock on %d\n", 
-			 rp_modifier_info.num_lock_mask);
+	    PRINT_DEBUG (("Found NumLock on %d\n", 
+			 rp_modifier_info.num_lock_mask));
 	    break;
 
 	  case XK_Scroll_Lock:
 	    rp_modifier_info.scroll_lock_mask |= modmasks[row - 3];
-	    PRINT_DEBUG ("Found ScrollLock on %d\n", 
-			 rp_modifier_info.scroll_lock_mask);
+	    PRINT_DEBUG (("Found ScrollLock on %d\n", 
+			 rp_modifier_info.scroll_lock_mask));
 	    break;
 	  default:
 	    break;
@@ -360,7 +360,7 @@ get_more_input (char *prompt, char *preinput)
   nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize);
   while (ch != XK_Return) 
     {
-      PRINT_DEBUG ("key %ld\n", ch);
+      PRINT_DEBUG (("key %ld\n", ch));
       if (ch == XK_BackSpace)
 	{
 	  if (cur_len > 0) cur_len--;

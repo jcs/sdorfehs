@@ -1,5 +1,13 @@
 2003-02-22  Shawn Betts  <sabetts@sfu.ca>
 
+	* configure.in: don't check for variable argument support in
+	preprocessor.
+
+	* src/ratpoison.h (PRINT_LINE): new macro.
+	(PRE_PRINT_LOCATION): remove macro
+	(PRINT_ERROR): takes one argument which is the argument list
+	,parens and all, to be passed to printf. Callers updated.
+
 	* src/linkedlist.h (list_direction_entry): no longer returns NULL
 	if there is only one element in the list. Instead, returns the
 	same element again and again.

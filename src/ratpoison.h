@@ -31,31 +31,25 @@
 #include <stdarg.h>
 #include <X11/Xlib.h>
 
-/* Some error reporting macros */
-#define PRE_PRINT_LOCATION fprintf (stderr, "%s:%s():%d: ", __FILE__, __FUNCTION__, __LINE__);
+/* Helper macro for error and debug reporting. */
+#define PRINT_LINE(type) printf (PACKAGE ":%s:%d: %s: ",__FILE__,  __LINE__, #type)
 
-/* FIXME: Some preprocessors don't have variable args. In that case
-   they don't get error or debugging output. */
-#ifdef HAVE_VARARG_MACROS
+/* Error and debug reporting macros. */
+#define PRINT_ERROR(fmt)			\
+do {						\
+  PRINT_LINE (error);				\
+  printf fmt;					\
+} while (0)
 
-#define PRINT_ERROR(format, args...) \
-        { fprintf (stderr, PACKAGE ":error -- "); PRE_PRINT_LOCATION; fprintf (stderr, format, ## args); }
-
-/* Some debugging macros */
 #ifdef DEBUG
-#  define PRINT_DEBUG(format, args...) \
-          { fprintf (stderr, PACKAGE ":debug -- "); PRE_PRINT_LOCATION; fprintf (stderr, format, ## args); }
+#define PRINT_DEBUG(fmt)			\
+do {						\
+  PRINT_LINE (debug);				\
+  printf fmt;					\
+} while (0)
 #else
-#  define PRINT_DEBUG(format, args...) 
+#define PRINT_DEBUG(fmt)
 #endif /* DEBUG */
-
-#else  /* !HAVE_VARARG_MACROS */
-
-#define PRINT_ERROR (void)
-#define PRINT_DEBUG (void)
-
-#endif /* HAVE_VARARG_MACROS */
-
 
 extern XGCValues gv;
 

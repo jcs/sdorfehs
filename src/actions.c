@@ -213,7 +213,7 @@ add_keybinding (KeySym keysym, int state, char *cmd)
       /* double the key table size */
       key_actions_table_size *= 2;
       key_actions = (rp_action*) xrealloc (key_actions, sizeof (rp_action) * key_actions_table_size);
-      PRINT_DEBUG ("realloc()ed key_table %d\n", key_actions_table_size);
+      PRINT_DEBUG (("realloc()ed key_table %d\n", key_actions_table_size));
     }
 
   key_actions[key_actions_last].key = keysym;
@@ -561,19 +561,19 @@ cmd_meta (int interactive, void *data)
 
   if (current_window() == NULL) return NULL;
 
-  PRINT_DEBUG ("type==%d\n", ev.xkey.type);
-  PRINT_DEBUG ("serial==%ld\n", ev.xkey.serial);
-  PRINT_DEBUG ("send_event==%d\n", ev.xkey.send_event);
-  PRINT_DEBUG ("display=%p\n", ev.xkey.display);
+  PRINT_DEBUG (("type==%d\n", ev.xkey.type));
+  PRINT_DEBUG (("serial==%ld\n", ev.xkey.serial));
+  PRINT_DEBUG (("send_event==%d\n", ev.xkey.send_event));
+  PRINT_DEBUG (("display=%p\n", ev.xkey.display));
   /*   PRINT_DEBUG ("root==%x  ???\n", ev.xkey.root); */
   /*   PRINT_DEBUG ("window==%x  ???\n", ev.xkey.window); */
   /*   PRINT_DEBUG ("subwindow==%x  ???\n", ev.xkey.subwindow); */
-  PRINT_DEBUG ("time==%ld\n", ev.xkey.time);
-  PRINT_DEBUG ("x==%d  y==%d\n", ev.xkey.x, ev.xkey.y);
-  PRINT_DEBUG ("x_root==%d  y_root==%d\n", ev.xkey.x_root, ev.xkey.y_root);
-  PRINT_DEBUG ("state==%d\n", ev.xkey.state);
-  PRINT_DEBUG ("keycode==%d\n", ev.xkey.keycode);
-  PRINT_DEBUG ("same_screen=%d\n", ev.xkey.same_screen);
+  PRINT_DEBUG (("time==%ld\n", ev.xkey.time));
+  PRINT_DEBUG (("x==%d  y==%d\n", ev.xkey.x, ev.xkey.y));
+  PRINT_DEBUG (("x_root==%d  y_root==%d\n", ev.xkey.x_root, ev.xkey.y_root));
+  PRINT_DEBUG (("state==%d\n", ev.xkey.state));
+  PRINT_DEBUG (("keycode==%d\n", ev.xkey.keycode));
+  PRINT_DEBUG (("same_screen=%d\n", ev.xkey.same_screen));
 
   /* I am not sure which of the following fields I have to fill in or
      what to fill them in with (rcy) I wouldnt be suprised if this
@@ -823,7 +823,7 @@ cmd_delete (int interactive, void *data)
 
   status = XSendEvent(dpy, current_window()->w, False, 0, &ev);
   if (status == 0)
-    PRINT_DEBUG ("Delete window failed\n");
+    PRINT_DEBUG (("Delete window failed\n"));
 
   return NULL;
 }
@@ -879,7 +879,7 @@ command (int interactive, char *data)
 	rest = NULL;
     }
 
-  PRINT_DEBUG ("cmd==%s rest==%s\n", cmd, (char*)rest);
+  PRINT_DEBUG (("cmd==%s rest==%s\n", cmd, (char*)rest));
 
   /* Look for it in the aliases, first. */
   for (i=0; i<alias_list_last; i++)
@@ -1000,7 +1000,7 @@ spawn(void *data)
     }
 
 /*   wait((int *) 0); */
-  PRINT_DEBUG ("spawned %s\n", cmd);
+  PRINT_DEBUG (("spawned %s\n", cmd));
 }
 
 /* Switch to a different Window Manager. Thanks to 
@@ -1019,12 +1019,12 @@ cmd_newwm(int interactive, void *data)
   if (prog == NULL)
     return NULL;
 
-  PRINT_DEBUG ("Switching to %s\n", prog);
+  PRINT_DEBUG (("Switching to %s\n", prog));
 
   putenv(current_screen()->display_string);
   execlp(prog, prog, 0);
 
-  PRINT_ERROR ("exec %s ", prog);
+  PRINT_ERROR (("exec %s ", prog));
   perror(" failed");
 
   free (prog);
@@ -1107,7 +1107,7 @@ cmd_number (int interactive, void *data)
     {
       int win_number;
 
-      PRINT_DEBUG ("2nd: '%s'\n", tmp); 
+      PRINT_DEBUG (("2nd: '%s'\n", tmp));
 
       win_number = string_to_window_number (tmp);
       if (win_number < 0)
@@ -1121,7 +1121,7 @@ cmd_number (int interactive, void *data)
     }
   else
     {
-      PRINT_DEBUG ("2nd: NULL\n");
+      PRINT_DEBUG (("2nd: NULL\n"));
       win = current_window();
     }
 
@@ -1773,7 +1773,7 @@ wingravity_to_string (int g)
       return "se";
     }
 
-  PRINT_DEBUG ("Unknown gravity!\n");
+  PRINT_DEBUG (("Unknown gravity!\n"));
   return "Unknown";
 }
 
@@ -2165,7 +2165,7 @@ cmd_defwinname (int interactive, void *data)
       case 2:
 	return xstrdup ("class");
       default:
-	PRINT_DEBUG ("Unknown win_name\n");
+	PRINT_DEBUG (("Unknown win_name\n"));
 	return xstrdup ("unknown");
       }
 
@@ -2285,7 +2285,7 @@ cmd_setenv (int interactive, void *data)
   free (value);
   
   /* Stick it in the environment. */
-  PRINT_DEBUG("%s\n", sbuf_get(env));
+  PRINT_DEBUG(("%s\n", sbuf_get(env)));
   putenv (sbuf_get (env));
 
   /* According to the docs, the actual string is placed in the

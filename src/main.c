@@ -113,7 +113,7 @@ xrealloc (void *ptr, size_t size)
   register void *value = realloc (ptr, size);
   if (value == 0)
     fatal ("Virtual memory exhausted");
-  PRINT_DEBUG("realloc: %d\n", size);
+  PRINT_DEBUG (("realloc: %d\n", size));
   return value;
 }
 
@@ -216,7 +216,7 @@ chld_handler (int signum)
       if (pid <= 0)
 	break;
 
-      PRINT_DEBUG("Child status: %d\n", WEXITSTATUS (status));
+      PRINT_DEBUG(("Child status: %d\n", WEXITSTATUS (status)));
 
       /* Tell ratpoison about the CHLD signal. We are only interested
 	 in reporting commands that failed to execute. These processes
@@ -270,7 +270,7 @@ set_sig_handler (int sig, void (*action)(int))
   /* check setting for sig */
   if (sigaction (sig, NULL, &act)) 
     {
-      PRINT_ERROR ("Error %d fetching SIGALRM handler\n", errno );
+      PRINT_ERROR (("Error %d fetching SIGALRM handler\n", errno ));
     } 
   else 
     {
@@ -283,7 +283,7 @@ set_sig_handler (int sig, void (*action)(int))
 	  act.sa_flags = 0;
 	  if (sigaction (sig, &act, NULL)) 
 	    {
-	      PRINT_ERROR ("Error %d setting SIGALRM handler\n", errno );
+	      PRINT_ERROR (("Error %d setting SIGALRM handler\n", errno ));
 	    }
 	}
     }
@@ -344,7 +344,7 @@ read_rc_file (FILE *file)
 	  if (*(line + strlen(line) - 1) == '\n')
 	    *(line + strlen(line) - 1) = '\0';
 
-	  PRINT_DEBUG ("rcfile line: %s\n", line);
+	  PRINT_DEBUG (("rcfile line: %s\n", line));
 
 	  /* do it */
 	  if (*line != '#')
@@ -378,7 +378,7 @@ read_startup_files ()
   homedir = getenv ("HOME");
   if (!homedir)
     {
-      PRINT_ERROR ("ratpoison: $HOME not set!?\n");
+      PRINT_ERROR (("ratpoison: $HOME not set!?\n"));
     }
   else
     {
@@ -388,12 +388,12 @@ read_startup_files ()
       if ((fileptr = fopen (filename, "r")) == NULL)
 	{
 	  /* we probably don't need to report this, its not an error */
-	  PRINT_DEBUG ("ratpoison: could not open %s\n", filename);
+	  PRINT_DEBUG (("ratpoison: could not open %s\n", filename));
 
 	  if ((fileptr = fopen ("/etc/ratpoisonrc", "r")) == NULL)
 	    {
 	      /* neither is this */
-	      PRINT_DEBUG ("ratpoison: could not open /etc/ratpoisonrc\n");
+	      PRINT_DEBUG (("ratpoison: could not open /etc/ratpoisonrc\n"));
 	    }
 	}
 
@@ -577,7 +577,7 @@ main (int argc, char *argv[])
   /* Initialize the screens */
   num_screens = ScreenCount (dpy);
   screens = (screen_info *)xmalloc (sizeof (screen_info) * num_screens);
-  PRINT_DEBUG ("%d screens.\n", num_screens);
+  PRINT_DEBUG (("%d screens.\n", num_screens));
 
   for (i=0; i<num_screens; i++)
     {

@@ -77,13 +77,13 @@ update_normal_hints (rp_window *win)
   /* Print debugging output for window hints. */
 #ifdef DEBUG
   if (win->hints->flags & PMinSize)
-    PRINT_DEBUG ("minx: %d miny: %d\n", win->hints->min_width, win->hints->min_height);
+    PRINT_DEBUG (("minx: %d miny: %d\n", win->hints->min_width, win->hints->min_height));
 
   if (win->hints->flags & PMaxSize)
-    PRINT_DEBUG ("maxx: %d maxy: %d\n", win->hints->max_width, win->hints->max_height);
+    PRINT_DEBUG (("maxx: %d maxy: %d\n", win->hints->max_width, win->hints->max_height));
 
   if (win->hints->flags & PResizeInc)
-    PRINT_DEBUG ("incx: %d incy: %d\n", win->hints->width_inc, win->hints->height_inc);
+    PRINT_DEBUG (("incx: %d incy: %d\n", win->hints->width_inc, win->hints->height_inc));
 
 #endif
 }
@@ -99,13 +99,13 @@ get_wmname (Window w)
 
   if (!XGetWMName (dpy, w, &text))
     {
-      PRINT_DEBUG ("I can't get the WMName.\n");
+      PRINT_DEBUG (("I can't get the WMName.\n"));
       return NULL;
     }
 
   if (!XTextPropertyToStringList (&text, &name_list, &list_len))
     {
-      PRINT_DEBUG ("Error retrieving TextList.\n");
+      PRINT_DEBUG (("Error retrieving TextList.\n"));
       return NULL;
     }
 
@@ -134,7 +134,7 @@ get_class_hints (Window w)
 
   if (class == NULL)
     {
-      PRINT_ERROR ("Not enough memory for WM_CLASS structure.\n");
+      PRINT_ERROR (("Not enough memory for WM_CLASS structure.\n"));
       exit (EXIT_FAILURE);
     }
 
@@ -305,7 +305,7 @@ scanwins(screen_info *s)
   Window dw1, dw2, *wins;
 
   XQueryTree(dpy, s->root, &dw1, &dw2, &wins, &nwins);
-  PRINT_DEBUG ("windows: %d\n", nwins);
+  PRINT_DEBUG (("windows: %d\n", nwins));
 
   for (i = 0; i < nwins; i++) 
     {
@@ -320,7 +320,7 @@ scanwins(screen_info *s)
 
       win = add_to_window_list (s, wins[i]);
 
-      PRINT_DEBUG ("map_state: %d\n", attr.map_state);
+      PRINT_DEBUG (("map_state: %d\n", attr.map_state));
       
       /* Collect mapped and iconized windows. */
       if (attr.map_state == IsViewable
@@ -466,8 +466,8 @@ maximize_transient (rp_window *win)
   /* Fit the window inside its frame (if it has one) */
   if (frame)
     {
-      PRINT_DEBUG ("frame width=%d height=%d\n", 
-		   frame->width, frame->height);
+      PRINT_DEBUG (("frame width=%d height=%d\n", 
+		   frame->width, frame->height));
 
       if (maxx + win->border * 2 > frame->width) maxx = frame->width - win->border * 2;
       if (maxy + win->border * 2 > frame->height) maxy = frame->height - win->border * 2;
@@ -493,7 +493,7 @@ maximize_transient (rp_window *win)
       maxy = amount + win->height;
     }
 
-  PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
+  PRINT_DEBUG (("maxsize: %d %d\n", maxx, maxy));
 
   win->width = maxx;
   win->height = maxy;
@@ -531,8 +531,8 @@ maximize_normal (rp_window *win)
   /* Fit the window inside its frame (if it has one) */
   if (frame)
     {
-      PRINT_DEBUG ("frame width=%d height=%d\n", 
-		   frame->width, frame->height);
+      PRINT_DEBUG (("frame width=%d height=%d\n", 
+		   frame->width, frame->height));
 
       if (maxx > frame->width) maxx = frame->width - win->border * 2;
       if (maxy > frame->height) maxy = frame->height - win->border * 2;
@@ -558,7 +558,7 @@ maximize_normal (rp_window *win)
       maxy = amount + win->height;
     }
 
-  PRINT_DEBUG ("maxsize: %d %d\n", maxx, maxy);
+  PRINT_DEBUG (("maxsize: %d %d\n", maxx, maxy));
 
   win->width = maxx;
   win->height = maxy;
@@ -581,8 +581,8 @@ maximize (rp_window *win)
   /* Reposition the window. */
   move_window (win);
 
-  PRINT_DEBUG ("Resizing window '%s' to x:%d y:%d w:%d h:%d\n", window_name (win), 
-	       win->x, win->y, win->width, win->height);
+  PRINT_DEBUG (("Resizing window '%s' to x:%d y:%d w:%d h:%d\n", window_name (win), 
+	       win->x, win->y, win->width, win->height));
 
 
   /* Actually do the maximizing. */
@@ -631,7 +631,7 @@ force_maximize (rp_window *win)
 void
 map_window (rp_window *win)
 {
-  PRINT_DEBUG ("Mapping the unmapped window %s\n", window_name (win));
+  PRINT_DEBUG (("Mapping the unmapped window %s\n", window_name (win)));
 
   /* Fill in the necessary data about the window */
   update_window_information (win);
@@ -715,7 +715,7 @@ withdraw_window (rp_window *win)
 {
   if (win == NULL) return;
 
-  PRINT_DEBUG ("withdraw_window on '%s'\n", window_name (win));
+  PRINT_DEBUG (("withdraw_window on '%s'\n", window_name (win)));
 
   /* Give back the window number. the window will get another one,
      if it is remapped. */
