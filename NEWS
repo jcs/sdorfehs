@@ -1,6 +1,10 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 * Changes since 1.1.1
+** New commands 'resize', 'shrink'
+resize resizes a frame and shrink shrinks a frame to the size of the
+window in it.
+
 ** Shell command exit status
 When a shell command fails to execute then a message is reported in
 ratpoison: "Command not found."

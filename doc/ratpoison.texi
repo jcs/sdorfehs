@@ -456,6 +456,10 @@ Set the padding around the edge of the screen.
 When called non-interactively with no arguments, the current setting is
 returned.
 
+@item defresizeunit @var{pixels}
+Set the number of pixels a frame will grow or shrink by when being
+dynamically resized.
+
 @item deftransgravity @var{g}
 Set the default alignment for transient windows. See the
 @command{gravity} command.
@@ -640,6 +644,16 @@ Redisplay the current window, just like @kbd{C-t l} would do.
 @item remove
 Kill the current frame. This is a no-op if there is only one frame.
 
+@item resize @var{horizontal} @var{vertical}
+Resize the current frame by @var{horizontal} pixels horizontally, and
+@var{vertical} pixels vertically. If no arguments are given and the
+command is called interactively, ratpoison will let the user
+dynamically resize the frame using @kbd{C-p} to shrink vertically,
+@kbd{C-n} to grow vertically, @kbd{C-b} to shrink horizontally,
+@kbd{C-f} to grow horizontally, and @kbd{s} to shrink the frame to the
+size of the window (See the @command{shrink} command). When you have
+resized the frame to your liking, press @kbd{Return} to finish.
+
 @item restart
 Restart ratpoison.
 
@@ -693,6 +707,11 @@ Go to a window by name. A shortcut is @kbd{C-t '}.
 
 @item setenv @var{env} @var{value}
 Set the environment variable @var{env} to @var{value}
+
+@item shrink
+If a window has resize increment hints, such as xterms, the window may
+not be able to take up the whole frame. In this case, use this command
+to suck the frame up to the to window, reclaiming any wasted space.
 
 @item source @var{file}
 Read a text file containing ratpoison commands.
