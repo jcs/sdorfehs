@@ -227,7 +227,8 @@ init_user_commands()
 	       "Keymap: ", arg_KEYMAP);
   add_command ("listhook",	cmd_listhook,	1, 1, 1,
 	       "Hook: ", arg_HOOK);
-  add_command ("meta",		cmd_meta,	0, 0, 0);
+  add_command ("meta",		cmd_meta,	1, 0, 0,
+	       "key: ", arg_KEY);
   add_command ("msgwait",	cmd_msgwait,	1, 0, 0,
 	       "", arg_NUMBER);
   add_command ("newkmap",	cmd_newkmap,	1, 1, 1,
@@ -1009,18 +1010,32 @@ cmd_source (int interactive, struct cmdarg **args)
 cmdret *
 cmd_meta (int interactive, struct cmdarg **args)
 {
+  cmdret *ret = NULL;
+  struct rp_key key;
   XEvent ev1, ev;
   ev = rp_current_event;
 
   if (current_window() == NULL) 
     return cmdret_new (RET_FAILURE, NULL);
 
-  ev1.xkey.type = KeyPress;
-  ev1.xkey.display = dpy;
-  ev1.xkey.window = current_window()->w;
-  ev1.xkey.state = rp_mask_to_x11_mask (prefix_key.state);
-  ev1.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
+      ev1.xkey.type = KeyPress;
+      ev1.xkey.display = dpy;
+      ev1.xkey.window = current_window()->w;
 
+  if (args[0])
+    {
+      if((ret = parse_keydesc (ARG_STRING(0), &key)))
+	return ret;
+
+      ev1.xkey.state = rp_mask_to_x11_mask (key.state);
+      if(!(ev1.xkey.keycode = XKeysymToKeycode (dpy, key.sym)))
+	return cmdret_new (RET_FAILURE, "meta: Couldn't convert keysym to keycode");
+    }
+  else
+    {
+      ev1.xkey.state = rp_mask_to_x11_mask (prefix_key.state);
+      ev1.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
+    }
   XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev1);
 
   /*   XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, 't'), True, 0); */

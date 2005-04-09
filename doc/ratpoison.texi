@@ -1334,8 +1334,18 @@ Display a help screen that lists all bound keystrokes.
 Display ratpoison's license. By default, this is bound to @kbd{C-t V}.
 @end deffn
 
-@deffn Command meta
-Send a @kbd{C-t} to the current window.
+@deffn Command meta @var{key}
+@var{key} is an optional argument. When @var{key} is omitted, send a
+@kbd{C-t} to the current window. Otherwise, send the key described by
+@var{key} to the current window.
+
+For example, if your @samp{Emacs} window is focused,
+
+@example
+meta M-x
+@end example
+
+Would cause emacs to prompt for an extended command.
 @end deffn
 
 @deffn Command prompt @var{prompt}

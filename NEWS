@@ -6,6 +6,10 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
+* Changes since 1.4.0-beta2
+** meta takes a key argument
+This can be used to stuff keys.
+
 * Changes since 1.4.0-beta1
 ** RATPOISON environment variable
 RATPOISON is set to the location of the ratpoison binary. This is

@@ -1,3 +1,8 @@
+2005-04-09  Shawn  <sabetts@monk.lamenet>
+
+	* src/actions.c (init_user_commands): add KEY argument to meta command.
+	(cmd_meta): optionally use the KEY passed in as an argument.
+
 2005-03-05    <sabetts@localhost>
 
 	* src/ratpoison.h (check_child_procs): new prototype
