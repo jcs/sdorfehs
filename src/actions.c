@@ -4755,7 +4755,7 @@ cmd_set (int interactive, struct cmdarg **args)
 	}
 	  
       /* Return the accumulated string. */
-      ret = cmdret_new (RET_SUCCESS, sbuf_get (s));
+      ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (s));
       sbuf_free (s);
       return ret;
     }

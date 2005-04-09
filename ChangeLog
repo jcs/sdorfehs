@@ -1,7 +1,10 @@
 2005-04-09  Shawn  <sabetts@monk.lamenet>
 
-	* src/actions.c (init_user_commands): add KEY argument to meta command.
+	* src/actions.c (init_user_commands): add KEY argument to meta
+	command.
 	(cmd_meta): optionally use the KEY passed in as an argument.
+	(cmd_set): pass the string produced when no args are passid in to
+	cmdret_new using "%s".
 
 2005-03-05    <sabetts@localhost>
 
