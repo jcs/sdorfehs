@@ -5,6 +5,32 @@
 	(cmd_meta): optionally use the KEY passed in as an argument.
 	(cmd_set): pass the string produced when no args are passid in to
 	cmdret_new using "%s".
+	(cmd_windows): return the string using "%s" in call to cmdret_new.
+	(cmd_help): likewise.
+	(cmd_gravity): likewise
+	(cmd_getenv): likewise
+	(cmd_fdump): likewise
+	(cmd_groups): likewise
+	(cmd_listhook): likewise
+	(cmd_sfdump): likewise
+	(cmd_sdump): likewise
+	(cmd_describekey): likewise
+	(cmd_prompt): likewise
+	(cmd_getsel): likewise
+	(cmd_unmanage): likewise
+	(cmd_prev): likewise
+	(cmd_prev_frame): likewise
+	(cmd_next): likewise
+	(cmd_next_frame): likewise
+	(cmd_other): likewise
+	(cmd_version): likewise
+	(cmd_time): likewise
+	(cmd_cnext): likewise
+	(cmd_cprev): likewise
+	(cmd_inext): likewise
+	(cmd_iprev): likewise
+	(cmd_cother): likewise
+	(cmd_iother): likewise
 
 2005-03-05    <sabetts@localhost>
 

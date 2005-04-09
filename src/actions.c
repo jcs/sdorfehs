@@ -902,7 +902,7 @@ cmdret *
 cmd_unmanage (int interactive, struct cmdarg **args)
 {
   if (args[0] == NULL && !interactive)
-    return cmdret_new (RET_SUCCESS, list_unmanaged_windows());
+    return cmdret_new (RET_SUCCESS, "%s", list_unmanaged_windows());
 
   if (args[0])
     add_unmanaged_window(ARG_STRING(0));
@@ -1055,9 +1055,9 @@ cmd_prev (int interactive, struct cmdarg **args)
   if (win)
     set_active_window (win);
   else if (cur)
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
   else
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_MANAGED_WINDOWS);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_MANAGED_WINDOWS);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -1069,7 +1069,7 @@ cmd_prev_frame (int interactive, struct cmdarg **args)
 
   frame = find_frame_prev (current_frame());
   if (!frame)
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_FRAME);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_FRAME);
   else
     set_active_frame (frame);
 
@@ -1086,9 +1086,9 @@ cmd_next (int interactive, struct cmdarg **args)
   if (win)
     set_active_window (win);
   else if (cur)
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
   else
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_MANAGED_WINDOWS);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_MANAGED_WINDOWS);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -1100,7 +1100,7 @@ cmd_next_frame (int interactive, struct cmdarg **args)
 
   frame = find_frame_next (current_frame());
   if (!frame)
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_FRAME);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_FRAME);
   else
     set_active_frame (frame);
 
@@ -1116,7 +1116,7 @@ cmd_other (int interactive, struct cmdarg **args)
   w = group_last_window (rp_current_group, current_screen());
 
   if (!w)
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
   else
     set_active_window_force (w);
 
@@ -1306,7 +1306,7 @@ cmd_kill (int interactive, struct cmdarg **args)
 cmdret *
 cmd_version (int interactive, struct cmdarg **args)
 {
-  return cmdret_new (RET_SUCCESS, PACKAGE " " VERSION " (built " __DATE__ " " __TIME__ ")");
+  return cmdret_new (RET_SUCCESS, "%s", PACKAGE " " VERSION " (built " __DATE__ " " __TIME__ ")");
 }
 
 static char *
@@ -2490,7 +2490,7 @@ cmd_time (int interactive, struct cmdarg **args)
   strncpy(msg, tmp, strlen (tmp) - 1);	/* Remove the newline */
   msg[strlen(tmp) - 1] = 0;
 
-  ret = cmdret_new (RET_SUCCESS, msg);
+  ret = cmdret_new (RET_SUCCESS, "%s", msg);
   free (msg);
   
   return ret;
@@ -2580,7 +2580,7 @@ cmd_windows (int interactive, struct cmdarg **args)
       tmp = sbuf_get (window_list);
       free (window_list);
 
-      return cmdret_new (RET_SUCCESS, tmp);
+      return cmdret_new (RET_SUCCESS, "%s", tmp);
     }
 }
 
@@ -3216,7 +3216,7 @@ cmd_help (int interactive, struct cmdarg **args)
       tmp = sbuf_get (help_list);
       free (help_list);
 
-      return cmdret_new (RET_SUCCESS, tmp);
+      return cmdret_new (RET_SUCCESS, "%s", tmp);
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -3286,7 +3286,7 @@ cmd_gravity (int interactive, struct cmdarg **args)
   win = current_window();
 
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, wingravity_to_string (win->gravity));
+    return cmdret_new (RET_SUCCESS, "%s", wingravity_to_string (win->gravity));
 
   if ((gravity = parse_wingravity (ARG_STRING(0))) < 0)
     return cmdret_new (RET_FAILURE, "gravity: unknown gravity");
@@ -3680,7 +3680,7 @@ cmd_getenv (int interactive, struct cmdarg **args)
   char *value;
 
   value = getenv (ARG_STRING(0));
-  return cmdret_new (RET_SUCCESS, value);
+  return cmdret_new (RET_SUCCESS, "%s", value);
 }
 
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original
@@ -4275,7 +4275,7 @@ cmd_fdump (int interactively, struct cmdarg **args)
   if (args[0] == NULL)
     {
       char *s = fdump (current_screen());
-      cmdret *ret = cmdret_new (RET_SUCCESS, s);
+      cmdret *ret = cmdret_new (RET_SUCCESS, "%s", s);
       free (s);
       return ret;
     }
@@ -4289,7 +4289,7 @@ cmd_fdump (int interactively, struct cmdarg **args)
       else
 	{
 	  char *s = fdump (&screens[snum]);
-	  cmdret *ret = cmdret_new (RET_SUCCESS, s);
+	  cmdret *ret = cmdret_new (RET_SUCCESS, "%s", s);
 	  free (s);
 	  return ret;
 	}
@@ -4522,7 +4522,7 @@ cmd_groups (int interactive, struct cmdarg **args)
     }
   else
     {
-      cmdret *ret = cmdret_new (RET_SUCCESS, sbuf_get(buffer));
+      cmdret *ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get(buffer));
       sbuf_free(buffer);
       return ret;
     }
@@ -4603,7 +4603,7 @@ cmd_listhook (int interactive, struct cmdarg **args)
 	sbuf_printf_concat(buffer, "\n");
     }
 
-  ret = cmdret_new (RET_SUCCESS, sbuf_get (buffer));
+  ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (buffer));
   sbuf_free (buffer);
   return ret;
 }
@@ -4856,7 +4856,7 @@ cmd_sfdump (int interactively, struct cmdarg **args)
 
       free (tmp2);
     }
-  ret = cmdret_new (RET_SUCCESS, sbuf_get (s));
+  ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (s));
   sbuf_free (s);
   return ret;
 }
@@ -4879,7 +4879,7 @@ cmd_sdump (int interactive, struct cmdarg **args)
     free (tmp);
   }
 
-  ret = cmdret_new (RET_SUCCESS, sbuf_get (s));
+  ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (s));
   sbuf_free (s);
   return ret;
 }
@@ -4935,7 +4935,7 @@ cmd_cnext (int interactive, struct cmdarg **args)
 	if (win == last) break;
       }
 
-  return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+  return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
 }
 
 cmdret *
@@ -4965,7 +4965,7 @@ cmd_cprev (int interactive, struct cmdarg **args)
 	if (win == last) break;
       }
 
-  return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+  return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
 }
 
 cmdret *
@@ -4995,7 +4995,7 @@ cmd_inext (int interactive, struct cmdarg **args)
 	if (win == last) break;
       }
 
-  return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+  return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
 }
 
 cmdret *
@@ -5025,7 +5025,7 @@ cmd_iprev (int interactive, struct cmdarg **args)
 	if (win == last) break;
       }
 
-  return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+  return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
 }
 
 cmdret *
@@ -5037,7 +5037,7 @@ cmd_cother (int interactive, struct cmdarg **args)
   w = group_last_window_by_class (rp_current_group, cur->res_class);
 
   if (!w)
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
   else
     set_active_window_force (w);
 
@@ -5053,7 +5053,7 @@ cmd_iother (int interactive, struct cmdarg **args)
   w = group_last_window_by_class_complement (rp_current_group, cur->res_class);
 
   if (!w)
-    return cmdret_new (RET_FAILURE, MESSAGE_NO_OTHER_WINDOW);
+    return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
   else
     set_active_window_force (w);
 
@@ -5104,7 +5104,7 @@ cmd_prompt (int interactive, struct cmdarg **args)
 	  output = get_input (ARG_STRING(0), trivial_completions);
 	}
     }
-  ret = cmdret_new (RET_SUCCESS, output);
+  ret = cmdret_new (RET_SUCCESS, "%s", output);
   if (output)
     free (output);
   return ret;
@@ -5140,7 +5140,7 @@ cmd_describekey (int interactive, struct cmdarg **args)
 
   if ((key_action = find_keybinding (keysym, x11_mask_to_rp_mask (mod), map)))
     {
-      return cmdret_new (RET_SUCCESS, key_action->data);
+      return cmdret_new (RET_SUCCESS, "%s", key_action->data);
     }
   else
     {
@@ -5184,7 +5184,7 @@ cmd_getsel (int interactive, struct cmdarg **args)
 {
   char *sel = get_selection();
   cmdret *ret;
-  ret = cmdret_new (RET_SUCCESS, sel);
+  ret = cmdret_new (RET_SUCCESS, "%s", sel);
   free (sel);
   return ret;
 }
