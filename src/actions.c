@@ -700,7 +700,7 @@ initialize_default_keybindings (void)
 static cmdret *
 cmdret_new (int success, char *fmt, ...)
 {
-  cmdret *ret = xmalloc (sizeof (cmdret *));
+  cmdret *ret = xmalloc (sizeof (cmdret));
   va_list ap;
 
   ret->success = success;
