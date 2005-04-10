@@ -1,4 +1,4 @@
-2005-04-10  Shawn  <katia_dilkina@verizon.net>
+2005-04-10  Shawn  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmdret_new): malloc enough for the cmdret structure.
 
