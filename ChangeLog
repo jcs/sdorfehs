@@ -1,3 +1,7 @@
+2005-04-12  Shawn  <katia_dilkina@verizon.net>
+
+	* contrib/rpws: Replace with Mike O'Connor's perl version.
+
 2005-04-10  Shawn  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmdret_new): malloc enough for the cmdret structure.
