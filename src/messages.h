@@ -30,10 +30,12 @@
 #define MESSAGE_UNKNOWN_COMMAND 	": unknown command '%s'"
 #define MESSAGE_WINDOW_INFORMATION 	"This is window %d (%s)"
 
-#define MESSAGE_RAISE_TRANSIENT "Raise request from transient window %d (%s)"
-#define MESSAGE_RAISE_WINDOW 	"Raise request from window %d (%s)"
-#define MESSAGE_MAP_TRANSIENT 	"New transient window %d (%s)"
-#define MESSAGE_MAP_WINDOW 	"New window %d (%s)"
+#define MESSAGE_RAISE_TRANSIENT 	"Raise request from transient window %d (%s)"
+#define MESSAGE_RAISE_WINDOW 		"Raise request from window %d (%s)"
+#define MESSAGE_RAISE_TRANSIENT_GROUP 	"Raise request from transient window %d (%s) in group %s"
+#define MESSAGE_RAISE_WINDOW_GROUP    	"Raise request from window %d (%s) in group %s"
+#define MESSAGE_MAP_TRANSIENT 		"New transient window %d (%s)"
+#define MESSAGE_MAP_WINDOW 		"New window %d (%s)"
 
 #define MESSAGE_PROMPT_SWITCH_TO_WINDOW "Switch to window: "
 #define MESSAGE_PROMPT_NEW_WINDOW_NAME 	"Set window's title to: "

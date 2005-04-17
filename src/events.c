@@ -42,6 +42,31 @@
    action.c which need to forward events to other windows. */
 XEvent rp_current_event;
 
+void
+show_rudeness_raise_msg (rp_window *win)
+{
+  rp_group *g = groups_find_group_by_window (win);
+  rp_window_elem *elem = group_find_window (&g->mapped_windows, win);
+  if (g == rp_current_group)
+    {
+      if (win->transient)
+	marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT, 
+			       elem->number, window_name (win));
+      else
+	marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
+			       elem->number, window_name (win));
+    }
+  else
+    {
+      if (win->transient)
+	marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT_GROUP,
+			       elem->number, window_name (win), g->name);
+      else
+	marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW_GROUP,
+			       elem->number, window_name (win), g->name);
+    }
+}
+
 static void
 new_window (XCreateWindowEvent *e)
 {
@@ -171,14 +196,7 @@ map_request (XEvent *ev)
 	      || (rp_honour_normal_raise && !win->transient))
 	    set_active_window (win);
 	  else
-	    {
-	      if (win->transient)
-		marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT, 
-				       win->number, window_name (win));
-	      else
-		marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
-				       win->number, window_name (win));
-	    }
+	    show_rudeness_raise_msg (win);
 	}
       break;
     }
@@ -250,12 +268,7 @@ configure_request (XConfigureRequestEvent *e)
 		}
 	      else if (current_window() != win)
 		{
-		  if (win->transient)
-		    marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT,
-					   win->number, window_name (win));
-		  else
-		    marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
-					   win->number, window_name (win));
+		  show_rudeness_raise_msg (win);
 		}
 
 	    }

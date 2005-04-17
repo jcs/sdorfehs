@@ -43,6 +43,7 @@ rp_window *group_prev_window (rp_group *g, rp_window *win);
 rp_window *group_next_window (rp_group *g, rp_window *win);
 rp_group *groups_find_group_by_name (char *s);
 rp_group *groups_find_group_by_number (int n);
+rp_group *groups_find_group_by_window (rp_window *win);
 
 rp_window *group_last_window (rp_group *g, rp_screen *screen);
 

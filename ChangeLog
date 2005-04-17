@@ -1,3 +1,16 @@
+2005-04-17  Shawn  <sabetts@vcn.bc.ca>
+
+	* src/messages.h (MESSAGE_RAISE_TRANSIENT_GROUP): new define
+	(MESSAGE_RAISE_WINDOW_GROUP): likewise
+
+	* src/group.h (groups_find_group_by_window): new prototype
+
+	* src/group.c (groups_find_group_by_window): new function.
+
+	* src/events.c (show_rudeness_raise_msg): new function
+	(map_request): call show_rudeness_raise_msg
+	(configure_request): likewise
+
 2005-04-12  Shawn  <katia_dilkina@verizon.net>
 
 	* contrib/rpws: Replace with Mike O'Connor's perl version.

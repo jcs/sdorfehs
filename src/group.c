@@ -134,6 +134,23 @@ groups_find_group_by_number (int n)
   return NULL;
 }
 
+/* Return the first group that contains the window. */
+rp_group *
+groups_find_group_by_window (rp_window *win)
+{
+  rp_group *cur;
+  rp_window_elem *elem;
+
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      elem = group_find_window (&cur->mapped_windows, win);
+      if (elem)
+	return cur;
+    }
+
+  return NULL;
+}
+
 rp_window_elem *
 group_find_window (struct list_head *list, rp_window *win)
 {
