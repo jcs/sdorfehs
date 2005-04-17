@@ -1,5 +1,10 @@
 2005-04-17  Shawn  <sabetts@vcn.bc.ca>
 
+	* src/actions.h: new prototype compat
+
+	* src/actions.c (initialize_default_keybindings): move def* aliases to cmd_compat
+	(cmd_compat): new function
+
 	* src/messages.h (MESSAGE_RAISE_TRANSIENT_GROUP): new define
 	(MESSAGE_RAISE_WINDOW_GROUP): likewise
 

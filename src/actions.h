@@ -106,6 +106,7 @@ RP_CMD (addhook);
 RP_CMD (alias);
 RP_CMD (banish);
 RP_CMD (bind);
+RP_CMD (compat);
 RP_CMD (chdir);
 RP_CMD (clrunmanaged);
 RP_CMD (colon);
