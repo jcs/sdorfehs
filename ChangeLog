@@ -1,5 +1,7 @@
 2005-06-11  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.h: remove the non-existant command, last.
+
 	* src/window.c (isdigit): new function
 	(format_window_name): read a length argument and crop window names to that length.
 	(get_window_list): length argument applies to %c and %a.

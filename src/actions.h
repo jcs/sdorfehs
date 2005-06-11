@@ -138,7 +138,6 @@ RP_CMD (h_split);
 RP_CMD (help);
 RP_CMD (info);
 RP_CMD (kill);
-RP_CMD (last);
 RP_CMD (lastmsg);
 RP_CMD (license);
 RP_CMD (link);

@@ -97,6 +97,7 @@ Frames
 * Frame Navigation Commands::   
 * Saving and Restoring Frame Sets::  
 * Frame Numbering::             
+* Dedicated Frames::            
 
 Keystrokes
 
@@ -248,7 +249,7 @@ $ ratpoison -c windows
 Instead of a message bar, you will get a list of the windows printed
 to stdout. This allows you to write more advanced scripts than simple
 keyboard macros. This is where @var{fmt} comes into play. If
-@command{windows} is given an arg it treats it as the format string as
+@command{windows} is given an argument it treats it as the format string as
 described in @command{defwinfmt}.
 @end deffn
 
@@ -516,10 +517,10 @@ ratpoison provides functionality to group windows together. This
 coupled with saving and restoring frames configurations is what most
 people would call @dfn{virtual desktops} or @dfn{workspaces}. 
 
-While ratpoison doesn't explicity provide support for such things, it
+While ratpoison doesn't explicitly provide support for such things, it
 does allow you to write scripts to this end. Such a script exists in
 @file{contrib/} called @file{rpws}. Consult that file for details on
-seting up workspaces inside ratpoison.
+setting up workspaces inside ratpoison.
 
 Groups are more general purpose than workspaces. windows from one
 group can be visible along with windows from another group. If you
@@ -584,6 +585,7 @@ time. ratpoison allows you to split the display into frames (see
 * Frame Navigation Commands::   
 * Saving and Restoring Frame Sets::  
 * Frame Numbering::             
+* Dedicated Frames::            
 @end menu
 
 @node Splitting Frames, Resizing Frames, Frames, Frames
@@ -727,6 +729,10 @@ Indicate which frame is the current frame.
 cycle through ratpoison's frames.
 @end deffn
 
+@deffn Command focusprev
+cycle through ratpoison's frames backwards.
+@end deffn
+
 @deffn Command focusdown
 Move to the frame below the current frame.
 @end deffn
@@ -769,10 +775,13 @@ the layout by hand each time is a bit cumbersome. There are some
 simple bindings in @file{doc/sample.ratpoisonrc} that allow you to
 save and restore frame layouts with the press of a key.
 
-@deffn Command fdump
-dump the current frame layout as text. When used non-interactively
+@deffn Command fdump @var{screen-num}
+Dump the current frame layout as text. When used non-interactively
 (from the command-line), ratpoison will print the frame layout. When
 used interactively, nothing happens.
+
+Without an argument the current screen's frames are dumped. With an
+argument the @var{screen-num}th screen is dumped. @xref{Multiple Monitors}.
 @end deffn
 
 @deffn Command frestore @var{frames}
@@ -781,7 +790,13 @@ Restore the frame layout based on the list of frames
 calling @code{fdump}.
 @end deffn
 
-@node Frame Numbering,  , Saving and Restoring Frame Sets, Frames
+@deffn Command undo
+Undo the last change of frame layout. This is especially helpful
+after a @command{only} command. One can step at most @dfn{maxundos}
+steps back in frame layout history.
+@end deffn
+
+@node Frame Numbering, Dedicated Frames, Saving and Restoring Frame Sets, Frames
 @section Frame Numbering
 
 Frames are normally numbered starting from 0. But this can be changed
@@ -798,10 +813,20 @@ Tell ratpoison what alphanumeric character to give each frame and in
 what order.
 @end deffn
 
+@node Dedicated Frames,  , Frame Numbering, Frames
+@section Dedicated Frames
+
+A dedicated frame is a frame that will not allow new windows to appear
+in it. Only the user may switch windows in this frame.
+
+@deffn Command dedicate
+Toggle whether the current frame is dedicated or not.
+@end deffn
+
 @node Multiple Monitors, Keystrokes, Frames, Top
 @chapter Multiple Monitors
 When you've finally accumulated enough computer junk, you'll find
-youself attaching a second monitor to your computer. ratpoison has
+yourself attaching a second monitor to your computer. ratpoison has
 functionality to help you get around your new and improved desktop
 space.
 
@@ -835,6 +860,13 @@ used for dual-head displays and multiple monitor setups.
 This jumps you to the @var{n}th X11 screen. Screen numbers start at 0.
 @end deffn
 
+@deffn Command sdump
+Like fdump, but dump information about each screen instead of each frame.
+@end deffn
+
+@deffn Command sfdump
+Dump all the screen number and the frames on all screens.
+@end deffn
 
 @node Keystrokes, Hooks, Multiple Monitors, Top
 @chapter Keystrokes
@@ -887,7 +919,7 @@ There is also a top level key map, @samp{top}. Any keystroke in this key
 map can be accessed simply by pressing the key. This is where the prefix
 key resides.
 
-The following example adds a @kbd{C-x b} keybinding to switch windows,
+The following example adds a @kbd{C-x b} key binding to switch windows,
 much like @kbd{C-x b} in Emacs. See the functions below for full
 descriptions.
 
@@ -943,6 +975,13 @@ it in the keymap, @var{kmap}.
 Call the command that @var{key} is bound to. For instance
 @command{link C-t} would call the command @command{other} and switch
 to the last window.
+@end deffn
+
+@deffn Command describekey @var{keymap}
+An interactive way to find the command bound to a given key on the
+specified keymap. This command will wait for the user to type a
+key. When the user does, the command will display the command bound to
+this key.
 @end deffn
 
 @node Default Key Bindings,  , Key Maps, Keystrokes
@@ -1104,7 +1143,7 @@ scripts onto certain events.
 
 Each hook contains a list of commands to be executed when the
 appropriate event occurs in ratpoison. For example, if you want to warp
-the rat to corner of the screen everytime you press a top level bound
+the rat to corner of the screen every time you press a top level bound
 key, you could add this to you .ratpoisonrc file:
 
 @example
@@ -1143,6 +1182,9 @@ Remove @var{command} from the hook. See @command{addhook} for a list
 of available hooks.
 @end deffn
 
+@deffn Command listhook @var{hook}
+List the commands that will be run when @var{hook} is fired.
+@end deffn
 
 @node The Status Bar, Using Other Window Managers, Hooks, Top
 @chapter The Status Bar
@@ -1293,6 +1335,11 @@ Change the current directory for ratpoison.
 Run a ratpoison command.
 @end deffn
 
+@deffn Command compat
+Install the now obsolete @samp{def*} commands as aliases to the
+corresponding @samp{set *} command.
+@end deffn
+
 @deffn Command {set padding} @var{left} @var{top} @var{right} @var{bottom}
 @c @deffnx Command defpadding @var{left} @var{top} @var{right} @var{bottom}
 Set the padding around the edge of the screen.
@@ -1376,6 +1423,10 @@ click the rat. @var{button} is either 1, 2, or 3. @var{button}
 defaults to button 1.
 @end deffn
 
+@deffn Command rathold @var{state} @var{button}
+click the rat button down if @var{state} is @samp{down} or release the button if @var{state} is @samp{up}.
+@end deffn
+
 @deffn Command redisplay
 Redisplay the current window. This is often used to fix xterms that
 didn't catch ratpoison's initial maximize event.
@@ -1392,24 +1443,27 @@ Set the value of a ratpoison variable. This command replaces the older
 Here is a list of variables that can be set:
 
 @itemize @bullet
-@item resizeunit
-@item wingravity
-@item transgravity
-@item maxsizegravity
-@item bargravity
-@item font
-@item padding
-@item border
-@item barborder
-@item inputwidth
-@item waitcursor
-@item winfmt
-@item winname
-@item fgcolor
-@item bgcolor
-@item barpadding
+@item framesels
 @item winliststyle
+@item barpadding
+@item bgcolor
+@item fgcolor
+@item winname
+@item winfmt
+@item waitcursor
+@item inputwidth
+@item barborder
+@item border
+@item padding
+@item font
+@item bargravity
+@item maxsizegravity
+@item transgravity
+@item wingravity
+@item maxundos
+@item resizeunit
 @end itemize
+
 @end deffn
 
 @deffn Command setenv @var{env} @var{value}
@@ -1529,7 +1583,7 @@ submit the line of text.
 complete the text up to the point or if there are several possible
 completions, cycle through them. This only works in certain
 contexts. Tab completion will complete a shell command, a window name,
-a group name, and colon commands in their apropriate context
+a group name, and colon commands in their appropriate context
 (i.e. when being asked for a window name).
 
 @item S-iso-lefttab
@@ -1588,7 +1642,7 @@ Here ratpoison would split the current frame twice.
 
 @item -i, --interactive
 Force ratpoison to execute commands in interactive mode. This is used
-in conjuction with the @option{-c} option.
+in conjunction with the @option{-c} option.
 
 @item -f, --file
 Specify an alternate configuration file. @xref{Startup file}.
