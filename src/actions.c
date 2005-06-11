@@ -4173,7 +4173,7 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
   do
     {
       child = waitpid (pid, &status, 0);
-    } while (child != pid);
+    } while (child != -1 && child != pid);
   /* Enable our SIGCHLD handler */
   set_sig_handler (SIGCHLD, chld_handler);
   /* Some processes may have quit while our sigchld handler was
