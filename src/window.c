@@ -622,13 +622,29 @@ isdigit (ch)
   return ch >= '0' && ch <= '9';
 }
 
+/* if width >= 0 then limit the width of s to width chars. */
+static void
+concat_width (struct sbuf *buf, char *s, int width)
+{
+  if (width >= 0)
+    {
+      char *s1 = xsprintf ("%%.%ds", width);
+      char *s2 = xsprintf (s1, s);
+      sbuf_concat (buf, s2);
+      free (s1);
+      free (s2);
+    }
+  else
+    sbuf_concat (buf, s);
+}
+
 static void
 format_window_name (char *fmt, rp_window_elem *win_elem, rp_window *other_win, 
 		    struct sbuf *buffer)
 {
-  #define STATE_READ	0
-  #define STATE_ESCAPE	1
-  #define STATE_NUMBER	2
+#define STATE_READ	0
+#define STATE_ESCAPE	1
+#define STATE_NUMBER	2
   int state = STATE_READ;
   char dbuf[10];
   int width = -1;
@@ -671,31 +687,21 @@ format_window_name (char *fmt, rp_window_elem *win_elem, rp_window *other_win,
 	      break;
 
 	    case 't':
-	      /* If a width is given, honour it. */
-	      if (width >= 0)
-		{
-		  char *s1 = xsprintf ("%%.%ds", width);
-		  char *s2 = xsprintf (s1, window_name (win_elem->win));
-		  sbuf_concat (buffer, s2);
-		  free (s1);
-		  free (s2);
-		}
-	      else
-		sbuf_concat (buffer, window_name (win_elem->win));
+	      concat_width (buffer, window_name (win_elem->win), width);
 	      break;
 
 	    case 'a':
 	      if (win_elem->win->res_name)
-		sbuf_concat (buffer, win_elem->win->res_name);
+		concat_width (buffer, win_elem->win->res_name, width);
 	      else
-		sbuf_concat (buffer, "None");
+		concat_width (buffer, "None", width);
 	      break;
 
 	    case 'c':
 	      if (win_elem->win->res_class)
-		sbuf_concat (buffer, win_elem->win->res_class);
+		concat_width (buffer, win_elem->win->res_class, width);
 	      else
-		sbuf_concat (buffer, "None");
+		concat_width (buffer, "None", width);
 	      break;
 
 	    case 'i':
@@ -739,6 +745,9 @@ format_window_name (char *fmt, rp_window_elem *win_elem, rp_window *other_win,
 	  sbuf_concat (buffer, dbuf);
 	}
     }
+#undef STATE_READ
+#undef STATE_ESCAPE
+#undef STATE_NUMBER
 }
 
 /* get the window list and store it in buffer delimiting each window
