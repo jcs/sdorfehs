@@ -1,3 +1,26 @@
+2005-06-11  Shawn Betts  <sabetts@shitbender.gagrod>
+
+	* src/main.c (clean_up): call del_frame_undo not pop_frame_undo
+
+	* src/globals.h: new global prototype rp_frame_redos 
+
+	* src/globals.c: new global rp_frame_redos
+
+	* src/actions.h: new command 'undo'
+	(del_frame_undo): new prototype
+	(pop_frame_undo): delete prototype
+
+	* src/actions.c (init_user_commands): new command 'undo'
+	(clear_frame_redos): new function
+	(del_frame_undo): likewise
+	(push_frame_undo): call del_frame_undo instead of pop_frame_undo. call clear_frame_redos.
+	(pop_frame_list): new function
+	(pop_frame_undo): returns the popped frame. all callers updated.
+	(pop_frame_redo): new function
+	(initialize_default_keybindings): bind undo to u and C-u, bind redo to U.
+	(set_maxundos): call del_frame_undo instead of pop_frame_redo
+	(cmd_redo): new function
+
 2005-06-11  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.h: remove the non-existant command, last.

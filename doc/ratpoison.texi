@@ -796,6 +796,10 @@ after a @command{only} command. One can step at most @dfn{maxundos}
 steps back in frame layout history.
 @end deffn
 
+@deffn Command redo
+redo the last change that was undone.
+@end deffn
+
 @node Frame Numbering, Dedicated Frames, Saving and Restoring Frame Sets, Frames
 @section Frame Numbering
 

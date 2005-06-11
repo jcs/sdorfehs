@@ -738,7 +738,7 @@ clean_up ()
       /* Delete the oldest node */
       rp_frame_undo *cur;
       list_last (cur, &rp_frame_undos, node);
-      pop_frame_undo (cur);
+      del_frame_undo (cur);
     }
 
   /* Free the global frame numset shared by all screens. */

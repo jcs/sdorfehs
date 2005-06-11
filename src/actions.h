@@ -202,10 +202,11 @@ RP_CMD (prompt);
 RP_CMD (sdump);
 RP_CMD (sfdump);
 RP_CMD (undo);
+RP_CMD (redo);
 RP_CMD (putsel);
 RP_CMD (getsel);
 
-void pop_frame_undo (rp_frame_undo *u);
+void del_frame_undo (rp_frame_undo *u);
 
 rp_keymap *find_keymap (char *name);
 void init_user_commands();

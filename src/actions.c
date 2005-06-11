@@ -319,6 +319,7 @@ init_user_commands()
   add_command ("sdump",		cmd_sdump,	0, 0, 0);
   add_command ("sfdump",	cmd_sfdump,	0, 0, 0);
   add_command ("undo",		cmd_undo,	0, 0, 0);
+  add_command ("redo",		cmd_redo,	0, 0, 0);
   add_command ("putsel",	cmd_putsel,	1, 1, 1,
 	       "Text: ", arg_RAW);
   add_command ("getsel",	cmd_getsel,	0, 0, 0);
@@ -355,6 +356,29 @@ static int alias_list_last;
 static cmdret* frestore (char *data, rp_screen *s);
 static char* fdump (rp_screen *screen);
 
+/* Delete all entries in the redo list. */
+static void
+clear_frame_redos ()
+{
+  rp_frame_undo *cur;
+  struct list_head *tmp, *iter;
+
+  list_for_each_safe_entry (cur, iter, tmp, &rp_frame_redos, node)
+    {
+      if (cur->frames) free (cur->frames);
+      list_del (&(cur->node));
+    }
+}
+
+void
+del_frame_undo (rp_frame_undo *u)
+{
+  if (!u) return;
+  if (u->frames) free (u->frames);
+  list_del (&(u->node));
+  rp_num_frame_undos--;		/* decrement counter */
+}
+
 static void 
 push_frame_undo(rp_screen *screen)
 {
@@ -363,22 +387,51 @@ push_frame_undo(rp_screen *screen)
     {
       /* Delete the oldest node */
       list_last (cur, &rp_frame_undos, node);
-      pop_frame_undo (cur);
+      del_frame_undo (cur);
     }
   cur = xmalloc (sizeof(rp_frame_undo));
   cur->frames = fdump (screen);
   cur->screen = screen;
   list_add (&cur->node, &rp_frame_undos);
   rp_num_frame_undos++;		/* increment counter */
+  /* Since we're creating new frames the redo list is now invalid, so
+     clear it. */
+  clear_frame_redos();
 }
 
-void
-pop_frame_undo (rp_frame_undo *u)
+static rp_frame_undo *
+pop_frame_list (struct list_head *undo_list, struct list_head *redo_list)
 {
-  if (!u) return;
-  if (u->frames) free (u->frames);
-  list_del (&(u->node));
-  rp_num_frame_undos--;		/* decrement counter */
+  rp_screen *screen = current_screen();
+  rp_frame_undo *first, *new;
+
+  /* Is there something to restore? */
+  list_first (first, undo_list, node);
+  if (!first)
+    return NULL;
+
+  /* First save the current layout into undo */
+  new = xmalloc (sizeof(rp_frame_undo));
+  new->frames = fdump (screen);
+  new->screen = screen;
+  list_add (&new->node, redo_list);
+
+  list_del (&(first->node));
+  return first;
+}
+
+/* Pop the head of the frame undo list off and put it in the redo list. */
+static rp_frame_undo *
+pop_frame_undo ()
+{
+  return pop_frame_list (&rp_frame_undos, &rp_frame_redos);
+}
+
+/* Pop the head of the frame redo list off and put it in the undo list. */
+static rp_frame_undo *
+pop_frame_redo ()
+{
+  return pop_frame_list (&rp_frame_redos, &rp_frame_undos);
 }
 
 rp_action*
@@ -673,6 +726,9 @@ initialize_default_keybindings (void)
   add_keybinding (XK_r, RP_CONTROL_MASK, "resize", map);
   add_keybinding (XK_question, 0, "help " ROOT_KEYMAP, map);
   add_keybinding (XK_underscore, RP_CONTROL_MASK, "undo", map);
+  add_keybinding (XK_u, 0, "undo", map);
+  add_keybinding (XK_u, RP_CONTROL_MASK, "undo", map);
+  add_keybinding (XK_U, 0, "redo", map);
 
   add_alias ("unbind", "undefinekey " ROOT_KEYMAP);
   add_alias ("bind", "definekey " ROOT_KEYMAP);
@@ -4884,7 +4940,7 @@ set_maxundos (struct cmdarg **args)
     {
       /* Delete the oldest node */
       list_last (cur, &rp_frame_undos, node);
-      pop_frame_undo (cur);
+      del_frame_undo (cur);
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -5047,7 +5103,7 @@ cmd_undo (int interactive, struct cmdarg **args)
 {
   rp_frame_undo *cur;
 
-  list_first (cur, &rp_frame_undos, node);
+  cur = pop_frame_undo ();
   if (!cur)
     return cmdret_new (RET_FAILURE, "No more undo information available");
   else
@@ -5055,8 +5111,25 @@ cmd_undo (int interactive, struct cmdarg **args)
       cmdret *ret;
 
       ret = frestore (cur->frames, cur->screen);
-      /* Delete the newest node */
-      pop_frame_undo (cur);
+      return ret;
+    }
+}
+
+cmdret *
+cmd_redo (int interactive, struct cmdarg **args)
+{
+  rp_frame_undo *cur;
+
+  /* The current layout goes on the undo. */
+
+  cur = pop_frame_redo ();
+  if (!cur)
+    return cmdret_new (RET_FAILURE, "No more redo information available");
+  else
+    {
+      cmdret *ret;
+
+      ret = frestore (cur->frames, cur->screen);
       return ret;
     }
 }
