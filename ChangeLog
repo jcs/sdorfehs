@@ -1,5 +1,8 @@
 2005-06-11  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/window.c (isdigit): new function
+	(format_window_name): read a length argument and crop window names to that length.
+
 	* src/actions.c (cmd_tmpwm): stop waiting for the child if waitpid
 	produced an error.
 

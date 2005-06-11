@@ -616,22 +616,43 @@ print_window_information (rp_group *group, rp_window *win)
    %f - print the frame number the window is in
    
  */
+static int
+isdigit (ch)
+{
+  return ch >= '0' && ch <= '9';
+}
+
 static void
 format_window_name (char *fmt, rp_window_elem *win_elem, rp_window *other_win, 
 		    struct sbuf *buffer)
 {
-  int esc = 0;
+  #define STATE_READ	0
+  #define STATE_ESCAPE	1
+  #define STATE_NUMBER	2
+  int state = STATE_READ;
   char dbuf[10];
+  int width = -1;
 
   for(; *fmt; fmt++)
     {
-      if (*fmt == '%' && !esc)
+      if (*fmt == '%' && state == STATE_READ)
 	{
-	  esc = 1;
+	  state = STATE_ESCAPE;
 	  continue;
 	}
 
-      if (esc)
+      if ((state == STATE_ESCAPE || state == STATE_NUMBER) && isdigit(*fmt))
+	{
+	  /* Accumulate the width one digit at a time. */
+	  if (state == STATE_ESCAPE)
+	    width = 0;
+	  width *= 10;
+	  width += *fmt - '0';
+	  state = STATE_NUMBER;
+	  continue;
+	}
+
+      if (state == STATE_ESCAPE || state == STATE_NUMBER)
 	{
 	  switch (*fmt)
 	    {
@@ -650,7 +671,17 @@ format_window_name (char *fmt, rp_window_elem *win_elem, rp_window *other_win,
 	      break;
 
 	    case 't':
-	      sbuf_concat (buffer, window_name (win_elem->win));
+	      /* If a width is given, honour it. */
+	      if (width >= 0)
+		{
+		  char *s1 = xsprintf ("%%.%ds", width);
+		  char *s2 = xsprintf (s1, window_name (win_elem->win));
+		  sbuf_concat (buffer, s2);
+		  free (s1);
+		  free (s2);
+		}
+	      else
+		sbuf_concat (buffer, window_name (win_elem->win));
 	      break;
 
 	    case 'a':
@@ -697,7 +728,8 @@ format_window_name (char *fmt, rp_window_elem *win_elem, rp_window *other_win,
 	    }
 
 	  /* Reset the 'escape' state. */
-	  esc = 0;
+	  state = STATE_READ;
+	  width = -1;
 	}
       else
 	{
