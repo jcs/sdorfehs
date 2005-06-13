@@ -11,6 +11,10 @@ notice and this notice are preserved.
 the old def* aliases are depricated and have been moved to this
 command. Execute it to restore these bindings.
 
+** new command redo
+
+** new editor bindings C-m and C-h
+
 * Changes since 1.4.0-beta2
 ** meta takes a key argument
 This can be used to stuff keys.
