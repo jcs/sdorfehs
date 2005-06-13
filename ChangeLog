@@ -1,3 +1,7 @@
+2005-06-13  Shawn Betts  <sabetts@shitbender.gagrod>
+
+	* src/editor.c (edit_bindings): add C-h and C-m
+
 2005-06-11  Shawn Betts  <sabetts@shitbender.gagrod>
 
 	* src/main.c (clean_up): call del_frame_undo not pop_frame_undo
