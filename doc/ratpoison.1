@@ -240,6 +240,9 @@ resource class than the current one.
 .cmd colon ratpoison\-command ( C\-t : )
 Execute \fIratpoison\-command\fP interactively. (i.e. ask for possible
 missing arguments.)
+.cmd compat
+Add aliases for the new \fBset\fP commands starting with \fBdef\fP to support older
+scripts.
 .cmd cother
 Like \fBother\fP but switch to the window of the current group that was last 
 accessed and has an other resource class but is not currently visible.
@@ -255,7 +258,7 @@ If you cannot guess a name of a key, try either \fBC\-t\fP \fIkey\fP
 and look at the error message, or try \fB:describekey root\fP and pressing
 the key.
 .cmd def...
-There are still some aliases stating with "def" around, which
+When \fBcompat\fP was called there are some aliases starting with \fIdef\fP, which
 alias the new form with \fBset\fP. I.e. instead of \fB defresizeunit\fP
 better use the new \fBset resizeunit\fP and so on...
 .cmd dedicate [ \fB0 | \fB1\fP ]
@@ -393,8 +396,9 @@ Otherwise what \fIkey\fP is bound to in keymap \fBroot\fP.
 .cmd listhook event
 List all commands specified with \fBaddhook\fP to be executed when
 even \fIevent\fP occurs.
-.cmd meta ( C\-t t )
+.cmd meta [ key ] ( C\-t t )
 Send the escape key (that which normally is \fBC\-t\fP) to the current window.
+If a \fIkey\fP is specified, this is sent instead.
 .cmd msgwait [ seconds ]
 Set the duration the message window is shown. 
 If \fIseconds\fP is zero, wait infinitely.
@@ -455,6 +459,8 @@ configuration: By pressing \fBC-t\fP, which is the only key in the keymap
 then executes the command in keymap \fBroot\fP belonging to this command.
 .cmd redisplay ( C\-t l )
 Redisplay the current window.
+.cmd redo ( C\-t U )
+Revert the last \fIundo\fP of frame changes.
 .cmd remhook event command
 Remove command \fIcommand\fP from the list of commands to be called when
 event \fIevent\fP is hit. (The command has to specified, as an event can
@@ -557,7 +563,7 @@ Remove the alias \fIalias\fP.
 alias for "\fBundefinekey root\fP \fIkey\fP"
 .cmd undefinekey keymap key
 Remove the binding for \fIkey\fP from \fIkeymap\fP.
-.cmd undo ( C\-t _ )
+.cmd undo ( C\-t _ or C\-t u )
 Un\-do the last change to the frameset.
 (Like splitting, resizing, deleting, ...)
 .br
