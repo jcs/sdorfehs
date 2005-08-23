@@ -1281,8 +1281,8 @@ function so they can build a replacement or patch an existing
 alternative's missing functionality.
 
 According to independant studies, @command{tmpwm} has been used almost
-exclusively to verify it's correct operation -- like a vintage sports
-care: always kept in prime condition and never used. 
+exclusively to verify its correct operation -- like a vintage sports
+car: always kept in prime condition and never used. 
 
 @command{tmpwm} and @command{newwm} are provided for boasting and
 completeness.
