@@ -1,5 +1,7 @@
 2005-08-23  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (cmd_addhook): remove erroneous call to free.
+
 	* contrib/Makefile.am (pkgdata_DATA): add unrat.c
 	(EXTRA_DIST): likewise
 

@@ -4599,7 +4599,6 @@ cmd_addhook (int interactive, struct cmdarg **args)
   sbuf_copy (cmd, ARG_STRING(1));
   hook_add (hook, cmd);
 
-  free (dup);
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
