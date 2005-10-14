@@ -5194,7 +5194,11 @@ cmd_describekey (int interactive, struct cmdarg **args)
 
   if ((key_action = find_keybinding (keysym, x11_mask_to_rp_mask (mod), map)))
     {
-      return cmdret_new (RET_SUCCESS, "%s", key_action->data);
+      cmdret *ret;
+      keysym_name = keysym_to_string (keysym, x11_mask_to_rp_mask (mod));
+      ret = cmdret_new (RET_SUCCESS, "%s bound to '%s'", keysym_name, key_action->data);
+      free (keysym_name);
+      return ret;
     }
   else
     {
