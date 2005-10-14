@@ -907,6 +907,13 @@ Hyper modifier
 Super modifier
 @end table
 
+ratpoison uses the X11 keysym names for keys. Alphanumeric key names
+are exactly what you see on your keyboard. Punctuation and other keys
+have longer names which vary from X server to X server. To find the
+name of a key not yet bound to an action, type @kbd{C-t} and
+then the key. ratpoison will tell you it isn't bound and give you the
+name of the key.
+
 @menu
 * Key Maps::                    
 * Default Key Bindings::        
