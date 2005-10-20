@@ -45,6 +45,10 @@ Atom rp_command_request;
 Atom rp_command_result;
 Atom rp_selection;
 
+/* netwm atoms */
+Atom _net_wm_pid;
+Atom _net_supported;
+
 int rp_current_screen;
 rp_screen *screens;
 int num_screens;

@@ -618,7 +618,7 @@ property_notify (XEvent *ev)
 	  break;
 
 	default:
-	  PRINT_DEBUG (("Unhandled property notify event\n"));
+	  PRINT_DEBUG (("Unhandled property notify event: %ld\n", ev->xproperty.atom));
 	  break;
 	}
     }

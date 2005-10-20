@@ -1,3 +1,35 @@
+2005-10-20  Shawn Betts  <sabetts@shitbender.gagrod>
+
+	* src/window.c: include unistd.h
+	(get_child_info): new function
+	(add_to_window_list): get the window's client's pid if possible
+	and assign the window the appropriate group and frame.
+	(add_to_window_list): init intended_frame_number
+	(save_mouse_position): save the position relative to the window
+	(give_window_focus): restore the position relative to the window
+	(set_active_window_body): put the window in the frame contained in
+	intended_frame_number when appropriate.
+
+	* src/screen.c (screen_find_frame_by_frame): new function
+	(init_screen): add the net_supported atom to the root window.
+
+	* src/main.c (main): init netwm atoms
+
+	* src/group.c (groups_find_group_by_group): new function
+
+	* src/globals.c (_net_wm_pid, _net_supported): new globals
+
+	* src/data.h (struct rp_window): new field intended_frame_number.
+	(struct rp_child_info): new fields group, frame, screen.
+
+	* src/actions.c (spawn): call the command directly when new
+	argument, raw, is non zero. all callers updated.
+	(spawn): fill in the frame, group and screen for the child.
+
+2005-10-14  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (cmd_describekey): print the key name even when it's bound.
+
 2005-08-23  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (cmd_addhook): remove erroneous call to free.

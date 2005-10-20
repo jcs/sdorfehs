@@ -134,6 +134,21 @@ screen_get_frame (rp_screen *s, int frame_num)
   return NULL;
 }
 
+rp_frame *
+screen_find_frame_by_frame (rp_screen *s, rp_frame *f)
+{
+  rp_frame *cur;
+
+  list_for_each_entry (cur, &s->frames, node)
+    {
+      PRINT_DEBUG (("cur=%p f=%p\n", cur, f));
+      if (cur == f)
+	return cur;
+    }
+  
+  return NULL;
+}
+
 /* Given a root window, return the rp_screen struct */
 rp_screen *
 find_screen (Window w)
@@ -253,6 +268,10 @@ init_screen (rp_screen *s, int screen_num)
 	       PropertyChangeMask | ColormapChangeMask
 	       | SubstructureRedirectMask | SubstructureNotifyMask );
   XSync (dpy, False);
+
+  /* Add netwm support. FIXME: I think this is busted. */
+  XChangeProperty (dpy, RootWindow (dpy, screen_num),
+		   _net_supported, XA_ATOM, 32, PropModeReplace, &_net_wm_pid, 1);
 
   /* Set the numset for the frames to our global numset. */
   s->frames_numset = rp_frame_numset;

@@ -592,9 +592,13 @@ main (int argc, char *argv[])
 
   /* Set ratpoison specific Atoms. */
   rp_command = XInternAtom (dpy, "RP_COMMAND", False);
+  PRINT_DEBUG (("RP_COMMAND = %ld\n", rp_command));
   rp_command_request = XInternAtom (dpy, "RP_COMMAND_REQUEST", False);
+  PRINT_DEBUG (("RP_COMMAND_REQUEST = %ld\n", rp_command_request));
   rp_command_result = XInternAtom (dpy, "RP_COMMAND_RESULT", False);
+  PRINT_DEBUG (("RP_COMMAND_RESULT = %ld\n", rp_command_result));
   rp_selection = XInternAtom (dpy, "RP_SELECTION", False);
+  PRINT_DEBUG (("RP_SELECTION = %ld\n", rp_selection));
 
   if (cmd_count > 0)
     {
@@ -623,6 +627,12 @@ main (int argc, char *argv[])
   wm_delete = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
   wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
   wm_colormaps = XInternAtom(dpy, "WM_COLORMAP_WINDOWS", False);
+
+  /* netwm atoms */
+  _net_wm_pid = XInternAtom(dpy, "_NET_WM_PID", False);
+  PRINT_DEBUG (("_NET_WM_PID = %ld\n", _net_wm_pid));
+  _net_supported = XInternAtom(dpy, "_NET_SUPPORTED", False);
+  PRINT_DEBUG (("_NET_SUPPORTED = %ld\n", _net_supported));
 
   /* Setup signal handlers. */
   XSetErrorHandler(handler);  

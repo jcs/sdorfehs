@@ -103,6 +103,10 @@ struct rp_window
      mapped into. */
   int frame_number;
 
+  /* Sometimes a window is intended for a certain frame. When a window
+     is mapped and this is >0 then use the frame (if it exists). */
+  int intended_frame_number;
+
   struct list_head node;
 };
 
@@ -260,6 +264,11 @@ struct rp_child_info
 
   /* When this is != 0 then the process finished. */
   int terminated;
+
+  /* what was current when it was launched? */
+  rp_group *group;
+  rp_frame *frame;
+  rp_screen *screen;
 
   /* This structure can exist in a list. */
   struct list_head node;

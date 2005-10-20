@@ -151,6 +151,22 @@ groups_find_group_by_window (rp_window *win)
   return NULL;
 }
 
+
+/* Return the first group that is g. */
+rp_group *
+groups_find_group_by_group (rp_group *g)
+{
+  rp_group *cur;
+
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      if (cur == g)
+	return cur;
+    }
+
+  return NULL;
+}
+
 rp_window_elem *
 group_find_window (struct list_head *list, rp_window *win)
 {

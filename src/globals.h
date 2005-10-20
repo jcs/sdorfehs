@@ -98,6 +98,10 @@ extern Atom wm_delete;
 extern Atom wm_take_focus;
 extern Atom wm_colormaps;
 
+/* netwm atoms. */
+Atom _net_wm_pid;
+Atom _net_supported;
+
 /* mouse properties */
 extern int rat_x;
 extern int rat_y;

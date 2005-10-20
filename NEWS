@@ -7,6 +7,19 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0-beta4
+** _net_wm_pid property supported
+ratpoison will put windows that have the _net_wm_pid property into the
+frame & group that was current when the windows' client was
+launched. for example:
+
+ ratpoison -c split -c gnew -c "exec firefox" -c focus -c gnext
+
+will Do The Right Thing.
+
+** set warp change
+the mouse position relative to the window is now used, instead of
+relative to the root window.
+
 ** new compat command
 the old def* aliases are depricated and have been moved to this
 command. Execute it to restore these bindings.

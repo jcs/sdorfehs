@@ -96,7 +96,7 @@ user_command
   struct list_head node;
 };
 
-int spawn(char *data);
+int spawn(char *data, int raw);
 cmdret *command (int interactive, char *data);
 
 /* command function prototypes. */

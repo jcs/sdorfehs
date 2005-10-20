@@ -2452,12 +2452,12 @@ cmd_colon (int interactive, struct cmdarg **args)
 cmdret *
 cmd_exec (int interactive, struct cmdarg **args)
 {
-  spawn (ARG_STRING(0));
+  spawn (ARG_STRING(0), 0);
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
 int
-spawn(char *cmd)
+spawn(char *cmd, int raw)
 {
   rp_child_info *child;
   int pid;
@@ -2476,6 +2476,9 @@ spawn(char *cmd)
 #elif defined (HAVE_SETPGRP)
       setpgrp (0, 0);
 #endif
+      /* raw means don't run it through sh.  */
+      if (raw)
+	execl (cmd, 0);
       execl("/bin/sh", "sh", "-c", cmd, 0);
       _exit(EXIT_FAILURE);
     }
@@ -2488,6 +2491,9 @@ spawn(char *cmd)
   child->cmd = strdup (cmd);
   child->pid = pid;
   child->terminated = 0;
+  child->frame = current_frame();
+  child->group = rp_current_group;
+  child->screen = current_screen();
 
   list_add (&child->node, &rp_children);
 
@@ -4224,7 +4230,7 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
   /* Disable our SIGCHLD handler */
   set_sig_handler (SIGCHLD, SIG_IGN);
   /* Launch the new WM and wait for it to terminate. */
-  pid = spawn (ARG_STRING(0));
+  pid = spawn (ARG_STRING(0), 0);
   PRINT_DEBUG (("spawn pid: %d\n", pid));
   do
     {
@@ -4441,7 +4447,7 @@ cmdret *
 cmd_verbexec (int interactive, struct cmdarg **args)
 {
   marked_message_printf(0, 0, "Running %s", ARG_STRING(0));
-  spawn (ARG_STRING(0));
+  spawn (ARG_STRING(0), 0);
   return cmdret_new (RET_SUCCESS, NULL);
 }
 

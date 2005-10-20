@@ -19,6 +19,7 @@
  * Boston, MA 02111-1307 USA
  */
 
+#include <unistd.h>		/* for getsid */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -105,11 +106,71 @@ window_name (rp_window *win)
   return NULL;
 }
 
+/* FIXME: we need to verify that the window is running on the same
+   host as something. otherwise there could be overlapping PIDs. */
+static struct rp_child_info *
+get_child_info (Window w)
+{
+  rp_child_info *cur;
+  int status;
+  int pid;
+  Atom type_ret;
+  int format_ret;
+  unsigned long nitems;
+  unsigned long bytes_after;
+  unsigned char *req;
+  pid_t sid;
+
+  status = XGetWindowProperty (dpy, w, _net_wm_pid,
+			       0, 0, False, XA_CARDINAL,
+			       &type_ret, &format_ret, &nitems, &bytes_after, &req);
+
+  if (status != Success || req == NULL)
+    {
+      PRINT_DEBUG (("Couldn't get _NET_WM_PID Property\n"));
+      return NULL;
+    }
+
+  /* XGetWindowProperty always allocates one extra byte even if
+     the property is zero length. */  
+  XFree (req);
+
+  status = XGetWindowProperty (dpy, w, _net_wm_pid,
+			       0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+			       False, XA_CARDINAL, &type_ret, &format_ret, &nitems, 
+			       &bytes_after, &req);
+
+  if (status != Success || req == NULL)
+    {
+      PRINT_DEBUG (("Couldn't get _NET_WM_PID Property\n"));
+      return NULL;
+    }
+
+  pid = *((int *)req);
+  XFree(req);
+
+  PRINT_DEBUG(("pid: %d\n", pid));
+
+  /* The pids will hopefully be in the same session. */
+  sid = getsid (pid);
+  list_for_each_entry (cur, &rp_children, node)
+    {
+      PRINT_DEBUG(("cur->pid=%d sid=%d\n", cur->pid, getsid (cur->pid)));
+      if (sid == getsid (cur->pid))
+	return cur;
+    }
+  
+  return NULL;
+}
+
 /* Allocate a new window and add it to the list of managed windows */
 rp_window *
 add_to_window_list (rp_screen *s, Window w)
 {
+  struct rp_child_info *child_info;
   rp_window *new_window;
+  rp_group *group = NULL;
+  int frame_num = -1;
 
   new_window = xmalloc (sizeof (rp_window));
 
@@ -119,6 +180,7 @@ add_to_window_list (rp_screen *s, Window w)
   new_window->state = WithdrawnState;
   new_window->number = -1;
   new_window->frame_number = EMPTY;
+  new_window->intended_frame_number = -1;
   new_window->named = 0;
   new_window->hints = XAllocSizeHints ();
   new_window->colormap = DefaultColormap (dpy, s->screen_num);
@@ -140,9 +202,28 @@ add_to_window_list (rp_screen *s, Window w)
   /* Add the window to the end of the unmapped list. */
   list_add_tail (&new_window->node, &rp_unmapped_window);
 
-  /* Add the window to the current group. */
-  group_add_window (rp_current_group, new_window);
+  child_info = get_child_info (w);
 
+  if (child_info) {
+    rp_frame *frame = screen_find_frame_by_frame (child_info->screen, child_info->frame);
+
+    PRINT_DEBUG(("frame=%p\n", frame));
+    group = groups_find_group_by_group (child_info->group);
+    if (frame)
+      frame_num = frame->number;
+  }
+
+  /* Add the window to the group it's pid was launched in or the
+     current one. */
+  if (group)
+    group_add_window (group, new_window);
+  else
+    group_add_window (rp_current_group, new_window);
+
+  PRINT_DEBUG(("frame_num: %d\n", frame_num));
+  if (frame_num >= 0)
+    new_window->intended_frame_number = frame_num;
+  
   return new_window;
 }
 
@@ -296,7 +377,7 @@ static void
 save_mouse_position (rp_window *win)
 {
   Window root_win, child_win;
-  int win_x, win_y;
+  int root_x, root_y;
   unsigned int mask;
   
   /* In the case the XQueryPointer raises a BadWindow error, the
@@ -307,7 +388,7 @@ save_mouse_position (rp_window *win)
   ignore_badwindow++;
 
   XQueryPointer (dpy, win->w, &root_win, &child_win, 
-		 &win->mouse_x, &win->mouse_y, &win_x, &win_y, &mask);
+		 &root_x, &root_y, &win->mouse_x, &win->mouse_y, &mask);
 
   ignore_badwindow--;
 }
@@ -334,7 +415,7 @@ give_window_focus (rp_window *win, rp_window *last_win)
   if (defaults.warp)
     {
       PRINT_DEBUG (("Warp pointer\n"));
-      XWarpPointer (dpy, None, win->scr->root, 
+      XWarpPointer (dpy, None, win->w, 
 		    0, 0, 0, 0, win->mouse_x, win->mouse_y);
     }
   
@@ -465,24 +546,48 @@ void set_active_window_force (rp_window *win)
   set_active_window_body(win, 1);
 }
 
+/* FIXME: This function is probably a mess. I can't remember a time
+   when I didn't think this. It probably needs to be fixed up. */
 void
 set_active_window_body (rp_window *win, int force)
 {
   rp_window *last_win;
-  rp_frame *frame, *last_frame = NULL;
+  rp_frame *frame = NULL, *last_frame = NULL;
 
   if (win == NULL) return;
+
+  PRINT_DEBUG (("intended_frame_number: %d\n", win->intended_frame_number));
 
   /* With Xinerama, we can move a window over to the current screen; otherwise
    * we have to switch to the screen that the window belongs to.
    */
   if (rp_have_xinerama)
     {
-      frame = screen_get_frame (current_screen(), current_screen()->current_frame);
+      /* use the intended frame if we can. */
+      if (win->intended_frame_number >= 0)
+	{
+	  frame = screen_get_frame (current_screen(), win->intended_frame_number);
+	  win->intended_frame_number = -1;
+	  if (frame != current_frame())
+	    last_frame = current_frame();
+	}
+
+      if (!frame)
+	frame = screen_get_frame (current_screen(), current_screen()->current_frame);
     }
   else
     {
-      frame = screen_get_frame (win->scr, win->scr->current_frame);
+      /* use the intended frame if we can. */
+      if (win->intended_frame_number >= 0)
+	{
+	  frame = screen_get_frame (win->scr, win->intended_frame_number);
+	  win->intended_frame_number = -1;
+	  if (frame != current_frame())
+	    last_frame = current_frame();
+	}
+
+      if (!frame)
+	frame = screen_get_frame (win->scr, win->scr->current_frame);
     }
 
   if (frame->dedicated && !force)
