@@ -31,15 +31,15 @@ LIST_HEAD(rp_mapped_window);
 
 struct numset *rp_window_numset;
 
-/* Get the mouse position relative to the root of the specified window */
+/* Get the mouse position relative to the the specified window */
 static void
-get_mouse_root_position (rp_window *win, int *mouse_x, int *mouse_y)
+get_mouse_position (rp_window *win, int *mouse_x, int *mouse_y)
 {
   Window root_win, child_win;
-  int win_x, win_y;
+  int root_x, root_y;
   unsigned int mask;
   
-  XQueryPointer (dpy, win->scr->root, &root_win, &child_win, &win_x, &win_y, mouse_x, mouse_y, &mask);
+  XQueryPointer (dpy, win->scr->root, &root_win, &child_win, mouse_x, mouse_y, &root_x, &root_y, &mask);
 }
 
 void
@@ -189,7 +189,7 @@ add_to_window_list (rp_screen *s, Window w)
 
   update_window_gravity (new_window);
 
-  get_mouse_root_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
+  get_mouse_position (new_window, &new_window->mouse_x, &new_window->mouse_y);
 
   XSelectInput (dpy, new_window->w, WIN_EVENTS);
 

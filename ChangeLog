@@ -1,3 +1,8 @@
+2005-10-22  Shawn Betts  <sabetts@shitbender.gagrod>
+
+	* src/window.c (get_mouse_position): renamed from
+	get_mouse_root_position. get pos relative to window.
+
 2005-10-20  Shawn Betts  <sabetts@shitbender.gagrod>
 
 	* src/window.c: include unistd.h
