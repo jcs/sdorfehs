@@ -905,6 +905,7 @@ handle_signals ()
 
       putenv(current_screen()->display_string);
       unhide_all_windows();
+      XSync(dpy, False);
       execlp(rp_exec_newwm, rp_exec_newwm, 0);
 
       /* Failed. Clean up. */
