@@ -850,6 +850,16 @@ unhide_window (rp_window *win)
   set_state (win, NormalState);
 }
 
+void
+unhide_all_windows ()
+{
+  struct list_head *tmp, *iter;
+  rp_window *win;
+
+  list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
+    unhide_window (win);
+}
+
 /* same as unhide_window except that it makes sure the window is mapped
    on the bottom of the window stack. */
 void

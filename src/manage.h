@@ -51,6 +51,7 @@ void grab_keys_all_wins ();
 
 void hide_window (rp_window *win);
 void unhide_window (rp_window *win);
+void unhide_all_windows ();
 void unhide_window_below (rp_window *win);
 void withdraw_window (rp_window *win);
 void hide_others (rp_window *win);

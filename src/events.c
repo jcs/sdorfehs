@@ -904,6 +904,7 @@ handle_signals ()
       PRINT_DEBUG (("Switching to %s\n", rp_exec_newwm));
 
       putenv(current_screen()->display_string);
+      unhide_all_windows();
       execlp(rp_exec_newwm, rp_exec_newwm, 0);
 
       /* Failed. Clean up. */
