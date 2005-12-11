@@ -904,6 +904,9 @@ withdraw_window (rp_window *win)
   XSync (dpy, False);
 
   ignore_badwindow--;
+
+  /* Call our hook */
+  hook_run (&rp_delete_window_hook);
 }
 
 /* Hide all other mapped windows except for win in win's frame. */

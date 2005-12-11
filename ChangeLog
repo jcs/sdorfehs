@@ -1,4 +1,12 @@
+2005-12-11  Shawn Betts  <sabetts@shitbender.gagrod>
+
+	* src/manage.c (withdraw_window): call rp_delete_window_hook hook
+
+	* src/globals.c: new hook rp_delete_window_hook
+
 2005-11-05  Shawn Betts  <sabetts@shitbender.gagrod>
+
+	* src/events.c (handle_signals): xsync after hiding all windows
 
 	* src/manage.h (unhide_all_windows): new prototype
 
