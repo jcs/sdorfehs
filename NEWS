@@ -7,6 +7,9 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0-beta4
+** new hook deletewindow
+When a window is deleted this hook is called.
+
 ** _net_wm_pid property supported
 ratpoison will put windows that have the _net_wm_pid property into the
 frame & group that was current when the windows' client was
