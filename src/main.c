@@ -592,13 +592,9 @@ main (int argc, char *argv[])
 
   /* Set ratpoison specific Atoms. */
   rp_command = XInternAtom (dpy, "RP_COMMAND", False);
-  PRINT_DEBUG (("RP_COMMAND = %ld\n", rp_command));
   rp_command_request = XInternAtom (dpy, "RP_COMMAND_REQUEST", False);
-  PRINT_DEBUG (("RP_COMMAND_REQUEST = %ld\n", rp_command_request));
   rp_command_result = XInternAtom (dpy, "RP_COMMAND_RESULT", False);
-  PRINT_DEBUG (("RP_COMMAND_RESULT = %ld\n", rp_command_result));
   rp_selection = XInternAtom (dpy, "RP_SELECTION", False);
-  PRINT_DEBUG (("RP_SELECTION = %ld\n", rp_selection));
 
   if (cmd_count > 0)
     {

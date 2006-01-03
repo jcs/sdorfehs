@@ -458,7 +458,10 @@ configuration: By pressing \fBC-t\fP, which is the only key in the keymap
 \fBtop\fP, the command "\fBreadkey root\fP" is executed. The next key
 then executes the command in keymap \fBroot\fP belonging to this command.
 .cmd redisplay ( C\-t l )
-Redisplay the current window.
+Extend the current window to the whole size of its current frame and
+redisplay it. 
+(Useful to redisplay normal windows or bring transient windows to the
+full size of the frame as only normal windows are maximized by ratpoison)
 .cmd redo ( C\-t U )
 Revert the last \fIundo\fP of frame changes.
 .cmd remhook event command

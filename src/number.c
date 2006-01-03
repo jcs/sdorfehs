@@ -71,12 +71,16 @@ numset_find_empty_cell (struct numset *ns)
 int
 numset_add_num (struct numset *ns, int n)
 {
+  int ec;
+
   PRINT_DEBUG(("ns=%p add_num %d\n", ns, n));
 
   if (numset_num_is_taken (ns, n)) 
     return 0; /* failed. */
-  
-  ns->numbers_taken[numset_find_empty_cell(ns)] = n;
+  /* numset_find_empty_cell calls realloc on numbers_taken. So store
+     the ret val in ec then use ec as an index into the array. */
+  ec = numset_find_empty_cell(ns);
+  ns->numbers_taken[ec] = n;
   return 1; /* success! */
 }
 

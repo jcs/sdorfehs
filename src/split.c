@@ -85,8 +85,8 @@ cleanup_frame (rp_frame *frame)
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
   if (!win->transient
       && !(win->hints->flags & PMaxSize
-	   && win->hints->max_width < win->scr->width
-	   && win->hints->max_height < win->scr->height))
+	   && (win->hints->max_width < win->scr->width
+	       || win->hints->max_height < win->scr->height)))
 #else
   if (!win->transient)
 #endif

@@ -209,7 +209,7 @@ init_user_commands()
 	       "Name: ", arg_STRING);
   add_command ("gnext",		cmd_gnext,	0, 0, 0);
   add_command ("gprev",		cmd_gprev,	0, 0, 0);
-  add_command ("gravity",	cmd_gravity,	1, 0, 1,
+  add_command ("gravity",	cmd_gravity,	1, 0, 0,
 	       "Gravity: ", arg_GRAVITY);
   add_command ("groups",	cmd_groups,	0, 0, 0);
   add_command ("gselect",	cmd_gselect,	1, 1, 1,
@@ -3036,8 +3036,13 @@ cmd_rathold (int interactive, struct cmdarg **args)
 cmdret *
 cmd_curframe (int interactive, struct cmdarg **args)
 {
-  show_frame_indicator();
-  return cmdret_new (RET_SUCCESS, NULL);
+  if (interactive)
+    {
+      show_frame_indicator();
+      return cmdret_new (RET_SUCCESS, NULL);
+    }
+  else
+    return cmdret_new(RET_SUCCESS, "%d", current_frame()->number);
 }
 
 /* Thanks to Martin Samuelsson <cosis@lysator.liu.se> for the
@@ -3379,11 +3384,8 @@ set_maxsizegravity (struct cmdarg **args)
 cmdret *
 cmd_msgwait (int interactive, struct cmdarg **args)
 {
-  if (args[0] == NULL && !interactive)
-    return cmdret_new (RET_SUCCESS, "%d", defaults.bar_timeout);
-    
   if (args[0] == NULL)
-    return cmdret_new (RET_FAILURE, "msgwait: one argument required");
+    return cmdret_new (RET_SUCCESS, "%d", defaults.bar_timeout);
 
   if (ARG(0,number) < 0)
     return cmdret_new (RET_FAILURE, "msgwait: invalid argument");

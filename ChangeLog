@@ -1,3 +1,16 @@
+2006-01-03  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/number.c (numset_add_num): store the ret val of
+	numset_find_empty_cell in a variable and use it as an index into
+	the numbers_taken array.
+
+	* src/actions.c (cmd_curframe): return the frame number in
+	non-interactive mode.
+
+	* src/split.c (cleanup_frame): in the maxsize windows are
+	transients check either the width or height must be less than the
+	screen width/height (just like in windows.c).
+
 2005-12-11  Shawn Betts  <sabetts@shitbender.gagrod>
 
 	* src/manage.c (withdraw_window): call rp_delete_window_hook hook

@@ -219,7 +219,7 @@ The following are commands used to manipulate windows.
 @deffn Command select @var{n}
 This jumps you to window @var{n} where @var{n} is the window number as
 shown in the Program Bar. You can do the same trick with
-@command{C-@var{n}} too. To select no window, blanking the current
+@kbd{C-@var{n}} too. To select no window, blanking the current
 frame, type @samp{select -}.
 @end deffn
 
@@ -298,7 +298,7 @@ center the window in the frame. @var{g} and can be abbreviated to the
 standard compass 1 and 2 letter abbreviations (i.e. @samp{nw},
 @samp{s}, etc).
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -315,8 +315,7 @@ the WMCLASS hint. @var{name} can be @samp{title} which is what most
 window managers put in the title bar, @samp{name} which is the
 res_name, or @samp{class} which is the res_class.
 
-When called non-interactively with no arguments, the current setting is
-returned.
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @deffn Command {set wingravity} @var{g}
@@ -324,8 +323,7 @@ returned.
 Set the default gravity for normal windows. See the
 @command{gravity} command.
 
-When called non-interactively with no arguments, the current setting is
-returned.
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @deffn Command {set winliststyle} @var{setting}
@@ -361,7 +359,7 @@ The frame number the window is displayed in or a space if it is not in
 a frame.
 @end table
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -379,7 +377,7 @@ omitted ratpoison defaults to the current window.
 Set the default alignment for transient windows. See the
 @command{gravity} command.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -388,7 +386,7 @@ returned.
 Set the default alignment for windows with maxsize hints. See the
 @command{gravity} command.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -396,7 +394,7 @@ returned.
 @c @deffnx Command defborder @var{n}
 Set the border width for all windows.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -459,7 +457,7 @@ matches any of the strings in the unmanaged window list will not be
 handled in any way by ratpoison. This only applies to new windows (not
 windows already managed by ratpoison).
 
-When called non-interactively with no arguments, the list is returned.
+When called with no arguments, the list is returned.
 @end deffn
 
 @node Rudeness,  , Unmanaged Windows, Windows
@@ -507,7 +505,7 @@ raise requests and display requests you would type @samp{rudeness
 request with a message like @samp{Raise request from window 1
 (emacs)}.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -682,12 +680,14 @@ Abort and restore the frame to its original size.
 @end table
 
 The increment size used to resize the frame interactively is
-customized with the command @command{defresizeunit}.
+customized with the command @command{set resizeunit}.
 
 @deffn Command {set resizeunit} @var{pixels}
 @c @deffnx Command defresizeunit @var{pixels}
 Set the number of pixels a frame will grow or shrink by when being
 dynamically resized.
+
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @deffn Command resize @var{horizontal} @var{vertical}
@@ -776,9 +776,7 @@ simple bindings in @file{doc/sample.ratpoisonrc} that allow you to
 save and restore frame layouts with the press of a key.
 
 @deffn Command fdump @var{screen-num}
-Dump the current frame layout as text. When used non-interactively
-(from the command-line), ratpoison will print the frame layout. When
-used interactively, nothing happens.
+Dump the current frame layout as text.
 
 Without an argument the current screen's frames are dumped. With an
 argument the @var{screen-num}th screen is dumped. @xref{Multiple Monitors}.
@@ -804,17 +802,19 @@ redo the last change that was undone.
 @section Frame Numbering
 
 Frames are normally numbered starting from 0. But this can be changed
-with @command{defframesels} to, for instance, include letters as well.
+with @command{set framesels} to, for instance, include letters as well.
 
 @example
-defframesels abcdefghijklmnopqrstuvwxyz
+set framesels abcdefghijklmnopqrstuvwxyz
 @end example
 
 The above code will bind letters to frames instead of numbers.
 
-@deffn Command defframesels @var{order}
+@deffn Command set framesels @var{order}
 Tell ratpoison what alphanumeric character to give each frame and in
 what order.
+
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @node Dedicated Frames,  , Frame Numbering, Frames
@@ -1216,7 +1216,7 @@ customizations available for those rainy days.
 @deffn Command msgwait @var{n}
 Set the bar's timeout in seconds.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -1232,32 +1232,38 @@ Display @var{text} as a message.
 @c @deffnx Command definputwidth @var{n}
 Set the width of the input window.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
 @deffn Command {set font} @var{font}
 @c @deffnx Command deffont @var{font}
 Set the font. @var{font} is a font string like @samp{9x15bold}.
+
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @deffn Command {set fgcolor} @var{color}
 @c @deffnx Command deffgcolor @var{color}
 Set the foreground color for all text ratpoison displays. @var{color}
 is any valid X11 color.
+
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @deffn Command {set bgcolor} @var{color}
 @c @deffnx Command defbgcolor @var{color}
 Set the background color for all text ratpoison displays. @var{color}
 is any valid X11 color.
+
+When called with no arguments, the current setting is returned.
 @end deffn
 
 @deffn Command {set barpadding} @var{x} @var{y}
 @c @deffnx Command defbarpadding @var{x} @var{y}
 Set the horizontal and vertical padding inside the bar.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -1265,7 +1271,7 @@ returned.
 @c @deffnx Command defbargravity @var{g}
 Set the default alignment for the message bar. See the @command{gravity} command.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
@@ -1273,6 +1279,8 @@ returned.
 @deffn Command {set barborder} @var{n}
 @c @deffnx Command defbarborder @var{n}
 Set the border width for the bar window.
+
+When called with no arguments, the current setting is returned.
 @end deffn
 
 
@@ -1442,8 +1450,14 @@ click the rat button down if @var{state} is @samp{down} or release the button if
 @end deffn
 
 @deffn Command redisplay
-Redisplay the current window. This is often used to fix xterms that
-didn't catch ratpoison's initial maximize event.
+Extend the current window to the whole size of its current frame and
+redisplay it. This can be used to:
+
+@itemize @bullet
+@item redisplay normal windows or bring transient windows to the full size of the frame as only normal windows are maximized by ratpoison.
+@item fix xterms that didn't catch ratpoison's initial maximize event.
+@end itemize
+
 @end deffn
 
 @deffn Command restart
@@ -1492,7 +1506,7 @@ Read a text file containing ratpoison commands.
 Turn on or off the startup_message. This is most useful in your
 .ratpoisonrc file. @var{state} can be @code{on} or @code{off}.
 
-When called non-interactively with no arguments, the current setting is
+When called with no arguments, the current setting is
 returned.
 @end deffn
 
