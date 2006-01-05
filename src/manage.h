@@ -38,6 +38,7 @@ void send_configure (Window w, int x, int y, int width, int height, int border);
 void set_state (rp_window *win, int state);
 long get_state (rp_window *win);
 
+int window_is_transient (rp_window *win);
 void update_window_information (rp_window *win);
 void map_window (rp_window *win);
 

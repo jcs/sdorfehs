@@ -1,3 +1,15 @@
+2006-01-04  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/conf.h (ASPECT_WINDOWS_ARE_TRANSIENTS): new define
+
+	* src/manage.c (window_is_transient): new function
+	(maximize_normal): honour aspect ratio hint
+
+	* src/window.c (update_window_gravity): use maxsize_gravity for windows with aspect hints.
+	(set_active_window_body): call window_is_transient
+
+	* src/split.c (cleanup_frame): call window_is_transient
+
 2006-01-03  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/number.c (numset_add_num): store the ret val of

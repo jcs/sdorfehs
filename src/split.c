@@ -82,14 +82,7 @@ cleanup_frame (rp_frame *frame)
   unhide_window (win);
 
 
-#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
-  if (!win->transient
-      && !(win->hints->flags & PMaxSize
-	   && (win->hints->max_width < win->scr->width
-	       || win->hints->max_height < win->scr->height)))
-#else
-  if (!win->transient)
-#endif
+  if (!window_is_transient (win))
     hide_others (win);
 }
 

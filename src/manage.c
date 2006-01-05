@@ -375,6 +375,23 @@ send_configure (Window w, int x, int y, int width, int height, int border)
   XSendEvent (dpy, w, False, StructureNotifyMask, (XEvent*)&ce);
 }
 
+/* This function is used to determine if the window should be treated
+   as a transient. */
+int
+window_is_transient (rp_window *win)
+{
+  return win->transient
+#ifdef ASPECT_WINDOWS_ARE_TRANSIENTS
+ || win->hints->flags & PAspect
+#endif
+#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
+|| (win->hints->flags & PMaxSize
+    && (win->hints->max_width < win->scr->width
+	|| win->hints->max_height < win->scr->height))
+#endif
+    ;
+}
+
 void
 update_window_information (rp_window *win)
 {
@@ -395,7 +412,7 @@ update_window_information (rp_window *win)
   win->border = attr.border_width;
 
   /* Transient status */
-  win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);  
+  win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);
 
   update_window_gravity (win);
 }
@@ -678,6 +695,25 @@ maximize_normal (rp_window *win)
     {
       maxx = frame->width - win->border * 2;
       maxy = frame->height - win->border * 2;
+    }
+
+  /* Honour the window's aspect ratio. */
+  PRINT_DEBUG (("aspect: %ld\n", win->hints->flags & PAspect));
+  if (win->hints->flags & PAspect) 
+    {
+      float ratio = (float)maxx / maxy;
+      float min_ratio = (float)win->hints->min_aspect.x / win->hints->min_aspect.y;
+      float max_ratio = (float)win->hints->max_aspect.x / win->hints->max_aspect.y;
+      PRINT_DEBUG (("ratio=%f min_ratio=%f max_ratio=%f\n", 
+		    ratio,min_ratio,max_ratio));
+      if (ratio < min_ratio) 
+	{
+	  maxy = (int) (maxx / min_ratio);
+	}
+      else if (ratio > max_ratio) 
+	{
+	  maxx = (int) (maxy * max_ratio);
+	}
     }
 
   /* Fit the window inside its frame (if it has one) */

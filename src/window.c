@@ -64,7 +64,7 @@ update_window_gravity (rp_window *win)
 /*     { */
       if (win->transient)
 	win->gravity = defaults.trans_gravity;
-      else if (win->hints->flags & PMaxSize)
+      else if (win->hints->flags & PMaxSize || win->hints->flags & PAspect)
 	win->gravity = defaults.maxsize_gravity;
       else
 	win->gravity = defaults.win_gravity;
@@ -650,14 +650,7 @@ set_active_window_body (rp_window *win, int force)
 
   /* The other windows in the frame will be hidden if this window
      doesn't qualify as a transient window (ie dialog box. */
-#ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
-  if (!win->transient
-      && !(win->hints->flags & PMaxSize 
-	   && (win->hints->max_width < win->scr->width
-	       || win->hints->max_height < win->scr->height)))
-#else
-  if (!win->transient)
-#endif
+  if (!window_is_transient (win))
     hide_others(win);
 
   /* Make sure the program bar is always on the top */
