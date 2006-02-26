@@ -67,4 +67,7 @@ rp_frame *win_get_frame (rp_window *win);
 
 void set_active_window_force (rp_window *win);
 void set_active_window_body (rp_window *win, int force);
+
+struct rp_child_info *get_child_info (Window w);
+
 #endif /* ! _RATPOISON_LIST_H */

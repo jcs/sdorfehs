@@ -1,3 +1,20 @@
+2006-02-26  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/window.c (add_to_window_list): only change the window's
+	group and frame if window_mapped is 0.
+
+	* src/data.h (struct rp_child_info): new field window_mapped
+
+	* src/actions.c (spawn): init window_mapped field in child_info.
+
+2006-01-18  Bernhard R. Link  <brlink@debian.org>
+
+	* src/events.c: look for _NET_WM_PID notify events and adopt the
+	intended frame number accordingly.
+	
+	* src/window.c, src/window.h: make get_child_info accessible from
+	events.c
+
 2006-01-04  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/conf.h (ASPECT_WINDOWS_ARE_TRANSIENTS): new define

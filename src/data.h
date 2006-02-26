@@ -270,6 +270,11 @@ struct rp_child_info
   rp_frame *frame;
   rp_screen *screen;
 
+  /* Non-zero when the pid has mapped a window. This is to prevent
+     every window the program opens from getting mapped in the frame
+     it was launched from. Only the first window should do this. */
+  int window_mapped;
+
   /* This structure can exist in a list. */
   struct list_head node;
 };

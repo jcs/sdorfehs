@@ -597,30 +597,46 @@ property_notify (XEvent *ev)
   
   if (win)
     {
-      switch (ev->xproperty.atom)
+      if (ev->xproperty.atom == _net_wm_pid)
 	{
-	case XA_WM_NAME:
-	  PRINT_DEBUG (("updating window name\n"));
-	  update_window_name (win);
-	  update_window_names (win->scr);
-	  break;
+	  struct rp_child_info *child_info;
 
-	case XA_WM_NORMAL_HINTS:
-	  PRINT_DEBUG (("updating window normal hints\n"));
-	  update_normal_hints (win);
-	  if (win->state == NormalState)
-	    maximize (win);
-	  break;
+	  PRINT_DEBUG (("updating _NET_WM_PID\n"));
+	  child_info = get_child_info(win->w);
+	  if (child_info) 
+	    {
+              if (child_info->frame)
+	        {
+                  PRINT_DEBUG (("frame=%p\n", child_info->frame));
+                  win->intended_frame_number = child_info->frame->number;
+	        }
+	      /* TODO: also adopt group information? */
+	    }
+	} else 
+	switch (ev->xproperty.atom)
+	  {
+	  case XA_WM_NAME:
+	    PRINT_DEBUG (("updating window name\n"));
+	    update_window_name (win);
+	    update_window_names (win->scr);
+	    break;
 
-	case XA_WM_TRANSIENT_FOR:
-	  PRINT_DEBUG (("Transient for\n"));
-	  win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);
-	  break;
+	  case XA_WM_NORMAL_HINTS:
+	    PRINT_DEBUG (("updating window normal hints\n"));
+	    update_normal_hints (win);
+	    if (win->state == NormalState)
+	      maximize (win);
+	    break;
 
-	default:
-	  PRINT_DEBUG (("Unhandled property notify event: %ld\n", ev->xproperty.atom));
-	  break;
-	}
+	  case XA_WM_TRANSIENT_FOR:
+	    PRINT_DEBUG (("Transient for\n"));
+	    win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);
+	    break;
+
+	  default:
+	    PRINT_DEBUG (("Unhandled property notify event: %ld\n", ev->xproperty.atom));
+	    break;
+	  }
     }
 }
 

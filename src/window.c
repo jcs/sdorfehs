@@ -108,7 +108,7 @@ window_name (rp_window *win)
 
 /* FIXME: we need to verify that the window is running on the same
    host as something. otherwise there could be overlapping PIDs. */
-static struct rp_child_info *
+struct rp_child_info *
 get_child_info (Window w)
 {
   rp_child_info *cur;
@@ -204,13 +204,15 @@ add_to_window_list (rp_screen *s, Window w)
 
   child_info = get_child_info (w);
 
-  if (child_info) {
+  if (child_info && !child_info->window_mapped) {
     rp_frame *frame = screen_find_frame_by_frame (child_info->screen, child_info->frame);
 
     PRINT_DEBUG(("frame=%p\n", frame));
     group = groups_find_group_by_group (child_info->group);
     if (frame)
       frame_num = frame->number;
+    /* Only map the first window in the launch frame. */
+    child_info->window_mapped = 1;
   }
 
   /* Add the window to the group it's pid was launched in or the

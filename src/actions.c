@@ -2494,6 +2494,7 @@ spawn(char *cmd, int raw)
   child->frame = current_frame();
   child->group = rp_current_group;
   child->screen = current_screen();
+  child->window_mapped = 0;
 
   list_add (&child->node, &rp_children);
 
