@@ -1406,7 +1406,9 @@ Display ratpoison's license. By default, this is bound to @kbd{C-t V}.
 @deffn Command meta @var{key}
 @var{key} is an optional argument. When @var{key} is omitted, send a
 @kbd{C-t} to the current window. Otherwise, send the key described by
-@var{key} to the current window.
+@var{key} to the current window. Note that some applications by
+default ignore the synthetic key that is sent using this command as it
+is considered a security hole. xterm is one such application.
 
 For example, if your @samp{Emacs} window is focused,
 

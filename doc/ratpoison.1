@@ -398,7 +398,9 @@ List all commands specified with \fBaddhook\fP to be executed when
 even \fIevent\fP occurs.
 .cmd meta [ key ] ( C\-t t )
 Send the escape key (that which normally is \fBC\-t\fP) to the current window.
-If a \fIkey\fP is specified, this is sent instead.
+If a \fIkey\fP is specified, this is sent instead. Note that some applications by
+default ignore the synthetic key that is sent using this command as it
+is considered a security hole. xterm is one such application.
 .cmd msgwait [ seconds ]
 Set the duration the message window is shown. 
 If \fIseconds\fP is zero, wait infinitely.
