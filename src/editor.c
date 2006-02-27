@@ -443,26 +443,22 @@ static edit_status
 editor_insert (rp_input_line *line, char *keysym_buf)
 {
   int nbytes;
-  int i;
 
   PRINT_DEBUG (("keysym_buf: '%s'\n", keysym_buf));
 
   nbytes = strlen (keysym_buf);
   if (line->length + nbytes > line->size - 1)
     {
+      /* FIXME: This seems like a very bad idea. */
       line->size += nbytes + 100;
       line->buffer = xrealloc (line->buffer, line->size);
     }
 
-  for (i = line->length + nbytes; i > line->position; i--)
-    line->buffer[i] = line->buffer[i - nbytes];
-
+  memmove (&line->buffer[line->position + nbytes], &line->buffer[line->position], line->length - line->position);
   strncpy (&line->buffer[line->position], keysym_buf, nbytes);
 
   line->length += nbytes;
   line->position += nbytes;
-
-  PRINT_DEBUG (("line->buffer: '%s'\n", line->buffer));
 
   return EDIT_INSERT;
 }

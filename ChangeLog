@@ -1,5 +1,8 @@
 2006-02-26  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/editor.c (editor_insert): use memmove to make room for
+	inserted string.
+
 	* src/window.c (add_to_window_list): only change the window's
 	group and frame if window_mapped is 0.
 
