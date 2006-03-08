@@ -487,6 +487,7 @@ editor_enter (rp_input_line *line)
   else /* result == 0 || result == 1 */
     { 
       history_add (expansion);
+      free (line->buffer);
       line->buffer = expansion;
     }
 #endif /* HAVE_HISTORY */

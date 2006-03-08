@@ -376,6 +376,7 @@ del_frame_undo (rp_frame_undo *u)
   if (!u) return;
   if (u->frames) free (u->frames);
   list_del (&(u->node));
+  free (u);
   rp_num_frame_undos--;		/* decrement counter */
 }
 

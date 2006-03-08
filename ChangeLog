@@ -1,3 +1,13 @@
+2006-03-07  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/main.c (clean_up): properly free rp_frame_numset
+
+	* src/editor.c (editor_enter): free line->buffer before setting it to the history expansion.
+
+	* src/completions.c (completions_free): free the rp_completions struct too
+
+	* src/actions.c (del_frame_undo): free the rp_frame_undo struct too.
+
 2006-02-26  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/editor.c (editor_insert): use memmove to make room for

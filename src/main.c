@@ -748,7 +748,7 @@ clean_up ()
     }
 
   /* Free the global frame numset shared by all screens. */
-  free (rp_frame_numset);
+  numset_free (rp_frame_numset);
 
   free_xinerama();
 

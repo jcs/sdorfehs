@@ -55,6 +55,8 @@ completions_free (rp_completions *c)
   /* Free the partial string. */
   if (c->partial)
     free (c->partial);
+
+  free (c);
 }
 
 static void
