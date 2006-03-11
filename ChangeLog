@@ -1,3 +1,8 @@
+2006-04-10  Bernhard R. Link  <brlink@debian.org>
+
+	* src/manage.c (maximize_transient,maximize_normal):
+	  avoid divide by zero when resize increment is 0.
+
 2006-03-07  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/main.c (clean_up): properly free rp_frame_numset

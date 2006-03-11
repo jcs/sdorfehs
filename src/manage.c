@@ -649,17 +649,24 @@ maximize_transient (rp_window *win)
       int amount;
       int delta;
 
-      amount = maxx - win->width;
-      delta = amount % win->hints->width_inc;
-      amount -= delta;
-      if (amount < 0 && delta) amount -= win->hints->width_inc;
-      maxx = amount + win->width;
+      /* Avoid a divide by zero if width/height_inc is 0. */
+      if (win->hints->width_inc)
+	{
+	  amount = maxx - win->width;
+	  delta = amount % win->hints->width_inc;
+	  amount -= delta;
+	  if (amount < 0 && delta) amount -= win->hints->width_inc;
+	  maxx = amount + win->width;
+	}
 
-      amount = maxy - win->height;
-      delta = amount % win->hints->height_inc;
-      amount -= delta;
-      if (amount < 0 && delta) amount -= win->hints->height_inc;
-      maxy = amount + win->height;
+      if (win->hints->height_inc)
+	{
+	  amount = maxy - win->height;
+	  delta = amount % win->hints->height_inc;
+	  amount -= delta;
+	  if (amount < 0 && delta) amount -= win->hints->height_inc;
+	  maxy = amount + win->height;
+	}
     }
 
   PRINT_DEBUG (("maxsize: %d %d\n", maxx, maxy));
@@ -733,17 +740,23 @@ maximize_normal (rp_window *win)
       int amount;
       int delta;
 
-      amount = maxx - win->width;
-      delta = amount % win->hints->width_inc;
-      if (amount < 0 && delta) amount -= win->hints->width_inc;
-      amount -= delta;
-      maxx = amount + win->width;
+      if (win->hints->width_inc)
+	{
+	  amount = maxx - win->width;
+	  delta = amount % win->hints->width_inc;
+	  if (amount < 0 && delta) amount -= win->hints->width_inc;
+	  amount -= delta;
+	  maxx = amount + win->width;
+	}
 
-      amount = maxy - win->height;
-      delta = amount % win->hints->height_inc;
-      if (amount < 0 && delta) amount -= win->hints->height_inc;
-      amount -= delta;
-      maxy = amount + win->height;
+      if (win->hints->height_inc)
+	{
+	  amount = maxy - win->height;
+	  delta = amount % win->hints->height_inc;
+	  if (amount < 0 && delta) amount -= win->hints->height_inc;
+	  amount -= delta;
+	  maxy = amount + win->height;
+	}
     }
 
   PRINT_DEBUG (("maxsize: %d %d\n", maxx, maxy));
