@@ -687,13 +687,7 @@ focus_change (XFocusChangeEvent *ev)
 static void
 mapping_notify (XMappingEvent *ev)
 {
-  rp_window *cur;
-
-  /* Remove the grab on the current prefix key */
-  list_for_each_entry (cur,&rp_mapped_window,node)
-    {
-      ungrab_top_level_keys (cur->w);
-    }
+  ungrab_keys_all_wins();
 
   switch (ev->request)
     {
@@ -705,11 +699,7 @@ mapping_notify (XMappingEvent *ev)
       break;
     }
 
-  /* Add the grab on the current prefix key */
-  list_for_each_entry (cur, &rp_mapped_window,node)
-    {
-      grab_top_level_keys (cur->w);
-    }
+  grab_keys_all_wins();
 }
 
 /* This is called whan an application has requested the

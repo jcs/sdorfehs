@@ -131,28 +131,7 @@ grab_top_level_keys (Window w)
 void
 ungrab_top_level_keys (Window w)
 {
-  KeySym keysym, upper, lower;
-  rp_keymap *map;
-  int i;
-
-  map = find_keymap (TOP_KEYMAP);
-
-  if (map == NULL)
-    {
-      PRINT_ERROR (("Unable to find " TOP_KEYMAP " keymap\n"));
-      return;
-    }
-
-  /* Make sure we ungrab the right sym. */
-
-  for (i=0; i<map->actions_last; i++)
-    {
-      PRINT_DEBUG(("%d\n", i));
-      keysym = map->actions[i].key;
-      XConvertCase (keysym, &lower, &upper);
-      keysym = lower;
-      XUngrabKey(dpy, XKeysymToKeycode (dpy, keysym), AnyModifier, w);
-    }
+  XUngrabKey(dpy, AnyKey, AnyModifier, w);
 }
 
 void

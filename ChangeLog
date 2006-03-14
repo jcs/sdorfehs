@@ -1,3 +1,9 @@
+2006-03-14  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/manage.c (ungrab_top_level_keys): unconditionally ungrab every key.
+
+	* src/events.c (mapping_notify): call ungrab_keys_all_wins and grab_keys_all_wins.
+
 2006-04-10  Bernhard R. Link  <brlink@debian.org>
 
 	* src/manage.c (maximize_transient,maximize_normal):
