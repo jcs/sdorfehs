@@ -656,7 +656,7 @@ set_active_window_body (rp_window *win, int force)
     hide_others(win);
 
   /* Make sure the program bar is always on the top */
-  update_window_names (win->scr);
+  update_window_names (win->scr, defaults.window_fmt);
 
   XSync (dpy, False);
 
