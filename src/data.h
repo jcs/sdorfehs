@@ -229,6 +229,7 @@ struct rp_defaults
   int wait_for_key_cursor;
 
   char *window_fmt;
+  char *info_fmt;
 
   /* Which name to use: wm_name, res_name, res_class. */
   int win_name;

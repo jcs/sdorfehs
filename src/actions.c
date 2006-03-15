@@ -62,6 +62,7 @@ static cmdret * set_barpadding (struct cmdarg **args);
 static cmdret * set_winliststyle (struct cmdarg **args);
 static cmdret * set_framesels (struct cmdarg **args);
 static cmdret * set_maxundos (struct cmdarg **args);
+static cmdret * set_infofmt (struct cmdarg **args);
 
 LIST_HEAD(set_vars);
 
@@ -113,6 +114,7 @@ init_set_vars()
   add_set_var ("barpadding", set_barpadding, 2, "", arg_NUMBER, "", arg_NUMBER);
   add_set_var ("winliststyle", set_winliststyle, 1, "", arg_STRING);
   add_set_var ("framesels", set_framesels, 1, "", arg_STRING);
+  add_set_var ("infofmt", set_infofmt, 1, "", arg_REST);
 }
 
 /* rp_keymaps is ratpoison's list of keymaps. */
@@ -218,7 +220,8 @@ init_user_commands()
 	       "Keymap: ", arg_KEYMAP);
   add_command ("hsplit",	cmd_h_split,	1, 0, 0,
 	       "Split: ", arg_STRING);
-  add_command ("info",		cmd_info,	0, 0, 0);
+  add_command ("info",		cmd_info,	1, 0, 0,
+	       "Format: ", arg_REST);
   add_command ("kill",		cmd_kill,	0, 0, 0);
   add_command ("lastmsg",	cmd_lastmsg,	0, 0, 0);
   add_command ("license",	cmd_license,	0, 0, 0);
@@ -1586,9 +1589,6 @@ exec_completions (char *str)
 	  /* Add our line to the list. */
 	  elem = sbuf_new (0);
 	  sbuf_copy (elem, s);
-	  /* The space is so when the user completes a space is
-	     conveniently inserted after the command. */
-	  sbuf_concat (elem, " ");
 	  list_add_tail (&elem->node, head);
 
 	  sbuf_clear (line);
@@ -3297,7 +3297,7 @@ cmd_rudeness (int interactive, struct cmdarg **args)
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
-static char *
+char *
 wingravity_to_string (int g)
 {
   switch (g)
@@ -3593,6 +3593,18 @@ set_waitcursor (struct cmdarg **args)
 }
 
 static cmdret *
+set_infofmt (struct cmdarg **args)
+{
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%s", defaults.info_fmt);
+
+  free (defaults.info_fmt);
+  defaults.info_fmt = xstrdup (ARG_STRING(0));
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
 set_winfmt (struct cmdarg **args)
 {
   if (args[0] == NULL)
@@ -3778,22 +3790,32 @@ cmd_unsetenv (int interactive, struct cmdarg **args)
 cmdret *
 cmd_info (int interactive, struct cmdarg **args)
 {
-  if (current_window() == NULL)
-    return cmdret_new (RET_SUCCESS, "(%d, %d) No window", 
-			      current_screen()->width, current_screen()->height);
-  else
+  struct sbuf *buf;
+  char *tmp;
+  if (current_window() != NULL)
     {
       rp_window *win = current_window();
       rp_window_elem *win_elem;
       win_elem = group_find_window (&rp_current_group->mapped_windows, win);
+      if (!win_elem)
+	win_elem = group_find_window (&rp_current_group->unmapped_windows, win);
+
       if (win_elem)
-	return cmdret_new (RET_SUCCESS, "(%d,%d) %d(%s)%s", win->width, win->height,
-			   win_elem->number, window_name (win), 
-			   win->transient ? " Transient":"");
-      else
-	return cmdret_new (RET_SUCCESS, "(%d,%d) (%s)%s", win->width, win->height,
-			   window_name (win), win->transient ? " Transient":"");
+	{
+	  char *s;
+	  
+	  if (args[0] == NULL)
+	    s = defaults.info_fmt;
+	  else
+	    s = ARG_STRING(0);
+	  buf = sbuf_new (0);
+	  format_string (s, win_elem, buf);
+	  tmp = sbuf_free_struct (buf);
+	  return cmdret_new (RET_SUCCESS, "%s", tmp);
+	}
     }
+
+  return cmdret_new (RET_SUCCESS, "No window.");
 }
 
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original

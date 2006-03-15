@@ -7,6 +7,20 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0-beta4
+** New window format characters
+See the info file for details.
+
+** info takes optional argument and new infofmt setting
+the info command takes an optional formatting argument. if no argument
+is supplied a default fmt is used. To change the default use 'set
+infofmt'. See the manual for details.
+
+** shell commands do not insert trailing space
+Until now all completions had a trailing space. Now shell command
+completion doesn't to make it easier to tab complete directories. The
+previous behavior one had to delete the space then type / and
+continue.
+
 ** aspect ratio hint honoured
 windows with aspect ratio hints are treated as transients and are
 given the same default gravity as maxsize windows.

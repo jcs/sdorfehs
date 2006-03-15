@@ -1,3 +1,33 @@
+2006-03-15  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (init_user_commands): add optional argument to "info"
+	(cmd_info): handle optional argument
+
+2006-03-14  Antti Nykänen <aon@iki.fi>
+
+	* src/format.c: new file
+	
+	* src/format.h: new file
+	
+	* Makefile.am (ratpoison_SOURCES): add format.c and format.h
+	
+	* src/actions.c (set_infofmt): new function
+	(wingravity_to_string): char * instead of static char * because	needed in format.c
+	(cmd_info): use format_string
+
+	* src/actions.h (wingravity_to_string): add prototype
+
+	* src/data.h (info_fmt): new variable
+
+	* src/main.c (init_defaults): set a value for defaults.info_fmt
+
+	* src/ratpoison.h: include format.h
+
+	* src/windows.c (get_window_list): use format_string
+	(isdigit): remove function as the formatting is now done in format.c
+	(concat_width): likewise
+	(format_window_name): likewise
+
 2006-03-14  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/manage.c (ungrab_top_level_keys): unconditionally ungrab every key.

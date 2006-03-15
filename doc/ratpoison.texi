@@ -250,7 +250,7 @@ Instead of a message bar, you will get a list of the windows printed
 to stdout. This allows you to write more advanced scripts than simple
 keyboard macros. This is where @var{fmt} comes into play. If
 @command{windows} is given an argument it treats it as the format string as
-described in @command{defwinfmt}.
+described in @command{set winfmt}.
 @end deffn
 
 @deffn Command title @var{title}
@@ -283,8 +283,11 @@ misbehaving window this command should do the trick. Also available as
 @end deffn
 
 
-@deffn Command info
-Display information about the current window.
+@deffn Command info @var{fmt}
+Display information about the current window. At optional @var{fmt}
+argument can be passed to override the default format. @command{info}
+accepts the same format options as @command{windows}.
+
 @end deffn
 
 @deffn Command gravity @var{g}
@@ -305,6 +308,11 @@ returned.
 @deffn Command delete
 This deletes the current window. You can access it with the @kbd{C-t k}
 keystroke.
+@end deffn
+
+@deffn Command {set infofmt} @var{fmt}
+Set the default window format for the @command{info} command. See
+@command{set winfmt} for accepted format characters.
 @end deffn
 
 @deffn Command {set winname} @var{name}
@@ -339,24 +347,40 @@ default it is @samp{%n%s%t}. The following is a list of valid format
 characters:
 
 @table @samp
-@item %n
-The window number
-@item %s
-Window status (current window, last window, etc)
-@item %t
-Window Name
 @item %a
 Application Name
 @item %c
 Resource Class
+@item %f
+The frame number the window is displayed in or a space if it is not in
+a frame.
+@item %g
+The window's gravity setting
+@item %h
+The window's height
+@item %H
+The window's height increment hint.
 @item %i
 X11 Window ID
 @item %l
 A unique number based on when the window was last accessed. The higher
 the number, the more recently it was accessed.
-@item %f
-The frame number the window is displayed in or a space if it is not in
-a frame.
+@item %n
+The window number
+@item %s
+Window status (current window, last window, etc)
+@item %S
+The window's screen
+@item %t
+Window Name
+@item %T
+Whether the window is a transient or not.
+@item %w
+The window's width
+@item %W
+The window's width increment hint
+@item %x
+the window's xinerama screen
 @end table
 
 When called with no arguments, the current setting is
