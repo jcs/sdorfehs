@@ -1273,7 +1273,7 @@ cmd_select (int interactive, struct cmdarg **args)
 	    goto_window (elem->win);
 	  else
 	    /* show the window list as feedback */
-	    show_bar (current_screen ());
+	    show_bar (current_screen (), defaults.window_fmt);
 	}
       else
 	/* try by name */
@@ -1306,7 +1306,7 @@ cmd_rename (int interactive, struct cmdarg **args)
   current_window()->named = 1;
   
   /* Update the program bar. */
-  update_window_names (current_screen());
+  update_window_names (current_screen(), defaults.window_fmt);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -2588,7 +2588,7 @@ cmd_number (int interactive, struct cmdarg **args)
       group_resort_window (rp_current_group, win);
 
       /* Update the window list. */
-      update_window_names (win->win->scr);
+      update_window_names (win->win->scr, defaults.window_fmt);
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -2602,6 +2602,12 @@ cmd_windows (int interactive, struct cmdarg **args)
   char *tmp;
   int dummy;
   rp_screen *s;
+  char *fmt;
+
+  if (args[0] == NULL)
+    fmt = defaults.window_fmt;
+  else
+    fmt = ARG_STRING(0);
 
   if (interactive)
     {
@@ -2612,17 +2618,14 @@ cmd_windows (int interactive, struct cmdarg **args)
 	 off. OR the timeout is >0 then show the bar. Which means,
 	 always show the bar if msgwait is >0 which fixes the case
 	 when a command in the prefix hook displays the bar. */
-      if (!hide_bar (s) || defaults.bar_timeout > 0) show_bar (s);
+      if (!hide_bar (s) || defaults.bar_timeout > 0) show_bar (s, fmt);
       
       return cmdret_new (RET_SUCCESS, NULL);
     }
   else
     {
       window_list = sbuf_new (0);
-      if (args[0])
-	get_window_list (ARG_STRING(0), "\n", window_list, &dummy, &dummy);
-      else
-	get_window_list (defaults.window_fmt, "\n", window_list, &dummy, &dummy);
+      get_window_list (fmt, "\n", window_list, &dummy, &dummy);
       tmp = sbuf_get (window_list);
       free (window_list);
 

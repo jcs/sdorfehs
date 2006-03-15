@@ -68,13 +68,13 @@ hide_bar (rp_screen *s)
 
 /* Show window listing in bar. */
 int
-show_bar (rp_screen *s)
+show_bar (rp_screen *s, char *fmt)
 {
   if (!s->bar_is_raised)
     {
       s->bar_is_raised = BAR_IS_WINDOW_LIST;
       XMapRaised (dpy, s->bar_window);
-      update_window_names (s);
+      update_window_names (s, fmt);
   
       reset_alarm();
       return 1;
@@ -82,7 +82,7 @@ show_bar (rp_screen *s)
 
   /* If the bar is raised we still need to display the window
      names. */
-  update_window_names (s);
+  update_window_names (s, fmt);
   return 0;
 }
 
@@ -148,19 +148,11 @@ update_bar (rp_screen *s)
   if (s->bar_is_raised == BAR_IS_HIDDEN)
     return;
 
-  if (s->bar_is_raised == BAR_IS_MESSAGE)
-    {
-      show_last_message();
-    }
-  else
-    {
-      /* bar is showing a window list. */
-      update_window_names (s);
-    }
+  show_last_message();
 }
 
 void
-update_window_names (rp_screen *s)
+update_window_names (rp_screen *s, char *fmt)
 {
   struct sbuf *bar_buffer;
   int mark_start = 0;
@@ -172,12 +164,12 @@ update_window_names (rp_screen *s)
 
   if(defaults.window_list_style == STYLE_ROW)
     {
-      get_window_list (defaults.window_fmt, NULL, bar_buffer, &mark_start, &mark_end);
+      get_window_list (fmt, NULL, bar_buffer, &mark_start, &mark_end);
       marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
     }
   else
     {
-      get_window_list (defaults.window_fmt, "\n", bar_buffer, &mark_start, &mark_end);
+      get_window_list (fmt, "\n", bar_buffer, &mark_start, &mark_end);
       marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
     }
 

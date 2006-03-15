@@ -1,7 +1,12 @@
 2006-03-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/bar.c (show_bar): accept a fmt argument. all callers and prototype updated.
+	(update_bar): just display the last message if bar isn't hidden.
+	(update_window_names): accept a fmt argument. all callers and prototype updated.
+
 	* src/actions.c (init_user_commands): add optional argument to "info"
 	(cmd_info): handle optional argument
+	(cmd_windows): when called interactively use the argument as the format string.
 
 2006-03-14  Antti Nykänen <aon@iki.fi>
 
