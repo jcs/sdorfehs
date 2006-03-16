@@ -19,6 +19,11 @@
  * Boston, MA 02111-1307 USA
  */
 
+/* Citing getsid(2) here: 
+   To get the prototype under glibc, define both _XOPEN_SOURCE and
+   _XOPEN_SOURCE_EXTENDED, or use "#define _XOPEN_SOURCE n" for some
+   integer n larger than or equal to 500. */
+#define _XOPEN_SOURCE 500
 #include <unistd.h>             /* for getsid */
 #include <stdio.h>
 #include <stdlib.h>

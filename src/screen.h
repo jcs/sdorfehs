@@ -38,7 +38,7 @@ rp_frame *screen_find_frame_by_frame (rp_screen *s, rp_frame *f);
 void init_screens (int screen_arg, int screen_num);
 
 int is_rp_window_for_screen (Window w, rp_screen *s);
-int is_a_root_window (int w);
+int is_a_root_window (unsigned int w);
 
 char *screen_dump (rp_screen *screen);
 

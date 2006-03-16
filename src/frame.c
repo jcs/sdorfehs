@@ -233,8 +233,16 @@ frame_read (char *str)
         read_slot(w);
       else if (!strcmp(tmp, ":last-access"))
         read_slot(f->last_access);
-      else if (!strcmp(tmp, ":dedicated"))
-        read_slot(f->dedicated);
+      else if (!strcmp(tmp, ":dedicated")) {
+  	/* f->dedicated is unsigned, so read into local variable. */
+        long dedicated;
+
+	read_slot(dedicated);
+        if (dedicated <= 0)
+          f->dedicated = 0;
+        else if (f->dedicated >= 1)
+          f->dedicated = 1;
+      }
       else if (!strcmp(tmp, ")"))
         break;
       else
@@ -260,10 +268,6 @@ frame_read (char *str)
     f->height = defaults.window_border_width*2 + 1;
   if (f->last_access < 0)
     f->last_access = 0;
-  if (f->dedicated < 0)
-    f->dedicated = 0;
-  else if (f->dedicated > 1)
-    f->dedicated = 1;
 
   /* Find the window with the X11 window ID. */
   win = find_window_in_list (w, &rp_mapped_window);

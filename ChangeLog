@@ -1,5 +1,24 @@
 2006-03-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/window.c (_XOPEN_SOURCE): new define
+
+	* src/screen.c (is_a_root_window): w is unsigned int
+	(init_screen): typecast _net_wm_pid as unsigned char*.
+
+	* src/main.c (read_rc_file): linesize is size_t
+
+	* src/frame.c (frame_read): use a temp var when reading the
+	:dedicated value.
+
+	* src/bar.c (max_line_length): i and start are size_t
+	(draw_string): i is size_t
+	(get_mark_box): mark_start and mark_end are size_t
+
+	* src/actions.c (find_keybinding): state is unsigned int
+	(remove_keybinding): likewise
+	(frame_selector): n is unsigned int
+	(frame_selector_match): i is size_t. typecast comparison as size_t.
+
 	* src/bar.c (show_bar): accept a fmt argument. all callers and prototype updated.
 	(update_bar): just display the last message if bar isn't hidden.
 	(update_window_names): accept a fmt argument. all callers and prototype updated.

@@ -455,7 +455,7 @@ find_keybinding_by_action (char *action, rp_keymap *map)
 }
 
 rp_action*
-find_keybinding (KeySym keysym, int state, rp_keymap *map)
+find_keybinding (KeySym keysym, unsigned int state, rp_keymap *map)
 {
   int i;
   for (i = 0; i < map->actions_last; i++)
@@ -536,7 +536,7 @@ replace_keybinding (rp_action *key_action, char *newcmd)
 }
 
 static int
-remove_keybinding (KeySym keysym, int state, rp_keymap *map)
+remove_keybinding (KeySym keysym, unsigned int state, rp_keymap *map)
 {
   int i;
   int found = -1;
@@ -1352,7 +1352,7 @@ cmd_version (int interactive, struct cmdarg **args)
 }
 
 static char *
-frame_selector (int n)
+frame_selector (unsigned int n)
 {
   if (n < strlen (defaults.frame_selectors))
     {
@@ -1368,7 +1368,7 @@ frame_selector (int n)
 static int
 frame_selector_match (char ch)
 {
-  int i;
+  size_t i;
 
   /* Is it in the frame selector string? */
   for (i=0; i<strlen (defaults.frame_selectors); i++)
@@ -1380,7 +1380,7 @@ frame_selector_match (char ch)
   /* Maybe it's a number less than 9 and the frame selector doesn't
      define that many selectors. */
   if (ch >= '0' && ch <= '9'
-      && ch - '0' >= strlen (defaults.frame_selectors))
+      && (size_t)(ch - '0') >= strlen (defaults.frame_selectors))
     {
       return ch - '0';
     }

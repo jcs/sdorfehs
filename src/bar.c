@@ -219,8 +219,8 @@ count_lines (char* msg, int len)
 static int
 max_line_length (char* msg)
 {
-  int i;
-  int start;
+  size_t i;
+  size_t start;
   int ret = 0;
 
   /* Count each line and keep the length of the longest one. */
@@ -292,7 +292,7 @@ line_beginning (char* msg, int pos)
 static void
 draw_string (rp_screen *s, char *msg)
 {
-  int i;
+  size_t i;
   int line_no;
   int start;
   int line_height = FONT_HEIGHT (defaults.font);
@@ -376,7 +376,7 @@ prepare_bar (rp_screen *s, int width, int height)
 }
 
 static void
-get_mark_box (char *msg, int mark_start, int mark_end,
+get_mark_box (char *msg, size_t mark_start, size_t mark_end,
               int *x, int *y, int *width, int *height)
 {
   int start, end;

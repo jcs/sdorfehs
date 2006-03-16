@@ -163,7 +163,7 @@ find_screen (Window w)
 
 /* Return 1 if w is a root window of any of the screens. */
 int
-is_a_root_window (int w)
+is_a_root_window (unsigned int w)
 {
   int i;
   for (i=0; i<num_screens; i++)
@@ -271,7 +271,8 @@ init_screen (rp_screen *s, int screen_num)
 
   /* Add netwm support. FIXME: I think this is busted. */
   XChangeProperty (dpy, RootWindow (dpy, screen_num),
-                   _net_supported, XA_ATOM, 32, PropModeReplace, &_net_wm_pid, 1);
+		   _net_supported, XA_ATOM, 32, PropModeReplace, 
+		   (unsigned char*)&_net_wm_pid, 1);
 
   /* Set the numset for the frames to our global numset. */
   s->frames_numset = rp_frame_numset;

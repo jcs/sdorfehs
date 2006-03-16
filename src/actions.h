@@ -216,7 +216,7 @@ void keymap_free (rp_keymap *map);
 void free_aliases ();
 void free_keymaps ();
 char *wingravity_to_string (int g);
-rp_action* find_keybinding (KeySym keysym, int state, rp_keymap *map);
+rp_action* find_keybinding (KeySym keysym, unsigned int state, rp_keymap *map);
 rp_action* find_keybinding_by_action (char *action, rp_keymap *map);
 
 

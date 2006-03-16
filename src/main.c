@@ -321,7 +321,7 @@ read_rc_file (FILE *file)
   size_t n = 256;
   char *partial;
   char *line;
-  int linesize = n;
+  size_t linesize = n;
 
   partial = (char*)xmalloc(n);
   line = (char*)xmalloc(linesize);
