@@ -96,7 +96,7 @@ set_frames_window (rp_frame *frame, rp_window *win)
     {
       frame->win_number = win->number;
       win->frame_number = frame->number;
-      
+
       /* We need to make sure that win and frame are on the same screen,
        * since with Xinerama, windows can move from one screen to another.
        */
@@ -119,8 +119,8 @@ frames_screen (rp_frame *frame)
   for (i=0; i<num_screens; i++)
     list_for_each_entry (cur, &screens[i].frames, node)
       {
-	if (frame == cur)
-	  return &screens[i];
+        if (frame == cur)
+          return &screens[i];
       }
 
   /* This SHOULD be impossible to get to. FIXME: It'll crash higher up if we
@@ -136,9 +136,9 @@ maximize_all_windows_in_frame (rp_frame *frame)
   list_for_each_entry (win, &rp_mapped_window, node)
     {
       if (win->frame_number == frame->number)
-	{
-	  maximize (win);
-	}
+        {
+          maximize (win);
+        }
     }
 }
 
@@ -200,14 +200,14 @@ find_last_frame ()
       rp_screen *s = &screens[i];
 
       list_for_each_entry (cur, &s->frames, node)
-	{
-	  if (cur->number != current_screen()->current_frame
-	      && cur->last_access > last_access)
-	    {
-	      last_access = cur->last_access;
-	      last = cur;
-	    }
-	}
+        {
+          if (cur->number != current_screen()->current_frame
+              && cur->last_access > last_access)
+            {
+              last_access = cur->last_access;
+              last = cur;
+            }
+        }
     }
 
   return last;
@@ -258,11 +258,11 @@ window_fits_in_frame (rp_window *win, rp_frame *frame)
   if (win->hints->flags & PMinSize)
     {
       if (win->hints->min_width > frame->width
-	  ||
-	  win->hints->min_height > frame->height)
-	{
-	  return 0;
-	}
+          ||
+          win->hints->min_height > frame->height)
+        {
+          return 0;
+        }
     }
 
   return 1;
@@ -281,15 +281,15 @@ find_window_for_frame (rp_frame *frame)
   list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
     {
       if ((cur->win->scr == s || rp_have_xinerama)
-	  && cur->win != current_window()
-	  && !find_windows_frame (cur->win)
-	  && cur->win->last_access >= last_access
-	  && window_fits_in_frame (cur->win, frame)
-	  && cur->win->frame_number == EMPTY)
-	{
-	  most_recent = cur;
-	  last_access = cur->win->last_access;
-	}
+          && cur->win != current_window()
+          && !find_windows_frame (cur->win)
+          && cur->win->last_access >= last_access
+          && window_fits_in_frame (cur->win, frame)
+          && cur->win->frame_number == EMPTY)
+        {
+          most_recent = cur;
+          last_access = cur->win->last_access;
+        }
     }
 
   if (most_recent)
@@ -393,17 +393,17 @@ remove_all_splits ()
   list_for_each_entry (win, &rp_mapped_window, node)
     {
       if (win->frame_number != s->current_frame && win->scr == s)
-	hide_window (win);
+        hide_window (win);
     }
 
   /* Delete all the frames except the current one. */
   list_for_each_safe_entry (frame, iter, tmp, &s->frames, node)
     {
       if (frame->number != s->current_frame)
-	{
-	  list_del (&frame->node);
-	  frame_free (s, frame);
-	}
+        {
+          list_del (&frame->node);
+          frame_free (s, frame);
+        }
     }
 
   /* Maximize the frame and the windows in the frame. */
@@ -431,11 +431,11 @@ resize_shrink_to_window (rp_frame *frame)
    success. */
 static int
 resize_frame (rp_frame *frame, rp_frame *pusher, int diff,
-	      int (*c1)(rp_frame *), int (c2)(rp_frame *),
-	      int (*c3)(rp_frame *), int (c4)(rp_frame *),
-	      void (*resize1)(rp_frame *, int),
-	      void (*resize2)(rp_frame *, int),
-	      int (*resize3)(rp_frame *, rp_frame *, int))
+              int (*c1)(rp_frame *), int (c2)(rp_frame *),
+              int (*c3)(rp_frame *), int (c4)(rp_frame *),
+              void (*resize1)(rp_frame *, int),
+              void (*resize2)(rp_frame *, int),
+              int (*resize3)(rp_frame *, rp_frame *, int))
 {
   rp_screen *s = frames_screen (frame);
   rp_frame *cur;
@@ -446,46 +446,46 @@ resize_frame (rp_frame *frame, rp_frame *pusher, int diff,
     {
       if (cur == frame || cur == pusher) continue;
       /* If cur is touching frame along the axis that is being
-	 moved then this frame is affected by the resize. */
+         moved then this frame is affected by the resize. */
       if ((*c1)(cur) == (*c3)(frame))
-	{
-	  /* If the frame can't get any smaller, then fail. */
-	  if (diff > 0 
-	      && abs ((*c3)(cur) - (*c1)(cur)) - diff <= defaults.window_border_width * 2)
-	    return -1;
-	  /* Test for this circumstance:
-	     --+
-	     | |+-+
-	     |f||c|
-	     | |+-+
-	     --+
+        {
+          /* If the frame can't get any smaller, then fail. */
+          if (diff > 0
+              && abs ((*c3)(cur) - (*c1)(cur)) - diff <= defaults.window_border_width * 2)
+            return -1;
+          /* Test for this circumstance:
+             --+
+             | |+-+
+             |f||c|
+             | |+-+
+             --+
 
-	     In this case, resizing cur will not affect any other
-	     frames, so just do the resize.
-	  */
-	  if (((*c2)(cur) >= (*c2)(frame))
-	      && (*c4)(cur) <= (*c4)(frame))
-	    {
-	      (*resize2)(cur, -diff);
-	      maximize_all_windows_in_frame (cur);
-	    }
-	  /* Otherwise, cur's corners are either strictly outside
-	     frame's corners, or one of them is inside and the other
-	     isn't. In either of these cases, resizing cur will affect
-	     other adjacent frames, so find them and resize them first
-	     (recursive step) and then resize cur. */
-	  else if (((*c2)(cur) < (*c2)(frame)
-		    && (*c4)(cur) > (*c4)(frame))
-		   || ((*c2)(cur) >= (*c2)(frame)
-		       && (*c2)(cur) < (*c4)(frame))
-		   || ((*c4)(cur) > (*c2)(frame)
-		       && (*c4)(cur) <= (*c4)(frame)))
-	    {
-	      /* Attempt to resize cur. */
-	      if (resize3 (cur, frame, -diff) == -1)
-		return -1;
-	    }
-	}
+             In this case, resizing cur will not affect any other
+             frames, so just do the resize.
+          */
+          if (((*c2)(cur) >= (*c2)(frame))
+              && (*c4)(cur) <= (*c4)(frame))
+            {
+              (*resize2)(cur, -diff);
+              maximize_all_windows_in_frame (cur);
+            }
+          /* Otherwise, cur's corners are either strictly outside
+             frame's corners, or one of them is inside and the other
+             isn't. In either of these cases, resizing cur will affect
+             other adjacent frames, so find them and resize them first
+             (recursive step) and then resize cur. */
+          else if (((*c2)(cur) < (*c2)(frame)
+                    && (*c4)(cur) > (*c4)(frame))
+                   || ((*c2)(cur) >= (*c2)(frame)
+                       && (*c2)(cur) < (*c4)(frame))
+                   || ((*c4)(cur) > (*c2)(frame)
+                       && (*c4)(cur) <= (*c4)(frame)))
+            {
+              /* Attempt to resize cur. */
+              if (resize3 (cur, frame, -diff) == -1)
+                return -1;
+            }
+        }
     }
 
   /* Finally, resize the frame and the windows inside. */
@@ -505,8 +505,8 @@ static int
 resize_frame_right (rp_frame *frame, rp_frame *pusher, int diff)
 {
   return resize_frame (frame, pusher, diff,
-		       frame_left, frame_top, frame_right, frame_bottom,
-		       frame_resize_right, frame_resize_left, resize_frame_left);
+                       frame_left, frame_top, frame_right, frame_bottom,
+                       frame_resize_right, frame_resize_left, resize_frame_left);
 }
 
 /* Resize frame by moving it's left side. */
@@ -514,8 +514,8 @@ static int
 resize_frame_left (rp_frame *frame, rp_frame *pusher, int diff)
 {
   return resize_frame (frame, pusher, diff,
-		       frame_right, frame_top, frame_left, frame_bottom,
-		       frame_resize_left, frame_resize_right, resize_frame_right);
+                       frame_right, frame_top, frame_left, frame_bottom,
+                       frame_resize_left, frame_resize_right, resize_frame_right);
 }
 
 /* Resize frame by moving it's top side. */
@@ -523,8 +523,8 @@ static int
 resize_frame_top (rp_frame *frame, rp_frame *pusher, int diff)
 {
   return resize_frame (frame, pusher, diff,
-		       frame_bottom, frame_left, frame_top, frame_right,
-		       frame_resize_up, frame_resize_down, resize_frame_bottom);
+                       frame_bottom, frame_left, frame_top, frame_right,
+                       frame_resize_up, frame_resize_down, resize_frame_bottom);
 }
 
 /* Resize frame by moving it's bottom side. */
@@ -532,8 +532,8 @@ static int
 resize_frame_bottom (rp_frame *frame, rp_frame *pusher, int diff)
 {
   return resize_frame (frame, pusher, diff,
-		       frame_top, frame_left, frame_bottom, frame_right,
-		       frame_resize_down, frame_resize_up, resize_frame_top);
+                       frame_top, frame_left, frame_bottom, frame_right,
+                       frame_resize_down, frame_resize_up, resize_frame_top);
 }
 
 /* Resize frame diff pixels by expanding it to the right. If the frame
@@ -696,9 +696,9 @@ frame_overlaps (rp_frame *frame)
   list_for_each_entry (cur, &s->frames, node)
     {
       if (cur != frame && frames_overlap (cur, frame))
-	{
-	  return 1;
-	}
+        {
+          return 1;
+        }
     }
   return 0;
 }
@@ -729,92 +729,92 @@ remove_frame (rp_frame *frame)
       int fits = 0;
 
 /*       if (cur->win_number != EMPTY) */
-/* 	{ */
-/* 	  PRINT_DEBUG (("Trying frame containing window '%s'\n", window_name (cur->win))); */
-/* 	} */
+/*      { */
+/*        PRINT_DEBUG (("Trying frame containing window '%s'\n", window_name (cur->win))); */
+/*      } */
 /*       else */
-/* 	{ */
-/* 	  PRINT_DEBUG (("Trying some empty frame\n")); */
-/* 	} */
+/*      { */
+/*        PRINT_DEBUG (("Trying some empty frame\n")); */
+/*      } */
 
       /* Backup the frame */
       memcpy (&tmp_frame, cur, sizeof (rp_frame));
 
       if (frame_is_below (frame, cur)
-	  || frame_is_above (frame, cur))
-	{
-	  if (frame_is_below (frame, cur))
-	    cur->y = frame->y;
-	  cur->height += frame->height;
-	}
+          || frame_is_above (frame, cur))
+        {
+          if (frame_is_below (frame, cur))
+            cur->y = frame->y;
+          cur->height += frame->height;
+        }
 
       PRINT_DEBUG (("Attempting vertical Frame y=%d height=%d\n", cur->y, cur->height));
       PRINT_DEBUG (("New Total Area: %d\n", total_frame_area(s)));
 
       /* If the area is bigger than before, the frame takes up too
-	 much space. If the current frame and the deleted frame DON'T
-	 overlap then the current window took up just the right amount
-	 of space but didn't take up the space left behind by the
-	 deleted window. If any active frames overlap, it could have
-	 taken up the right amount of space, overlaps with the deleted
-	 frame but obviously didn't fit. */
+         much space. If the current frame and the deleted frame DON'T
+         overlap then the current window took up just the right amount
+         of space but didn't take up the space left behind by the
+         deleted window. If any active frames overlap, it could have
+         taken up the right amount of space, overlaps with the deleted
+         frame but obviously didn't fit. */
       if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
-	{
-	  PRINT_DEBUG (("Didn't fit vertically\n"));
+        {
+          PRINT_DEBUG (("Didn't fit vertically\n"));
 
-	  /* Restore the current window's frame */
-	  memcpy (cur, &tmp_frame, sizeof (rp_frame));
-	}
+          /* Restore the current window's frame */
+          memcpy (cur, &tmp_frame, sizeof (rp_frame));
+        }
       else
-	{
-	  PRINT_DEBUG (("It fit vertically!!\n"));
+        {
+          PRINT_DEBUG (("It fit vertically!!\n"));
 
-	  /* update the frame backup */
-	  memcpy (&tmp_frame, cur, sizeof (rp_frame));
-	  fits = 1;
-	}
+          /* update the frame backup */
+          memcpy (&tmp_frame, cur, sizeof (rp_frame));
+          fits = 1;
+        }
 
       if (frame_is_left (frame, cur)
-	  || frame_is_right (frame, cur))
-	{
-	  if (frame_is_right (frame, cur))
-	    cur->x = frame->x;
-	  cur->width += frame->width;
-	}
+          || frame_is_right (frame, cur))
+        {
+          if (frame_is_right (frame, cur))
+            cur->x = frame->x;
+          cur->width += frame->width;
+        }
 
       PRINT_DEBUG (("Attempting horizontal Frame x=%d width=%d\n", cur->x, cur->width));
       PRINT_DEBUG (("New Total Area: %d\n", total_frame_area(s)));
 
       /* Same test as the vertical test, above. */
       if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
-	{
-	  PRINT_DEBUG (("Didn't fit horizontally\n"));
+        {
+          PRINT_DEBUG (("Didn't fit horizontally\n"));
 
-	  /* Restore the current window's frame */
-	  memcpy (cur, &tmp_frame, sizeof (rp_frame));
-	}
+          /* Restore the current window's frame */
+          memcpy (cur, &tmp_frame, sizeof (rp_frame));
+        }
       else
-	{
-	  PRINT_DEBUG (("It fit horizontally!!\n"));
-	  fits = 1;
-	}
+        {
+          PRINT_DEBUG (("It fit horizontally!!\n"));
+          fits = 1;
+        }
 
       if (fits)
-	{
-	  /* The current frame fits into the new space so keep its
-	     new frame parameters and maximize the window to fit
-	     the new frame size. */
-	  if (cur->win_number != EMPTY)
-	    {
-	      win = find_window_number (cur->win_number);
-	      maximize_all_windows_in_frame (cur);
-	      XRaiseWindow (dpy, win->w);
-	    }
-	}
+        {
+          /* The current frame fits into the new space so keep its
+             new frame parameters and maximize the window to fit
+             the new frame size. */
+          if (cur->win_number != EMPTY)
+            {
+              win = find_window_number (cur->win_number);
+              maximize_all_windows_in_frame (cur);
+              XRaiseWindow (dpy, win->w);
+            }
+        }
       else
-	{
-	  memcpy (cur, &tmp_frame, sizeof (rp_frame));
-	}
+        {
+          memcpy (cur, &tmp_frame, sizeof (rp_frame));
+        }
     }
 
   frame_free (s, frame);
@@ -859,7 +859,7 @@ set_active_frame (rp_frame *frame)
       show_frame_indicator();
 
       /* run the frame switch hook. We call it in here because this is
-	 when a frame switch ACTUALLY (for sure) happens. */
+         when a frame switch ACTUALLY (for sure) happens. */
       hook_run (&rp_switch_frame_hook);
     }
 
@@ -927,18 +927,18 @@ show_frame_message (char *msg)
   hide_frame_indicator ();
 
   XMoveResizeWindow (dpy, s->frame_window,
-		     s->left + frame->x + frame->width / 2 - width / 2,
-		     s->top + frame->y + frame->height / 2 - height / 2,
-		     width, height);
+                     s->left + frame->x + frame->width / 2 - width / 2,
+                     s->top + frame->y + frame->height / 2 - height / 2,
+                     width, height);
 
   XMapRaised (dpy, s->frame_window);
   XClearWindow (dpy, s->frame_window);
   XSync (dpy, False);
 
   XDrawString (dpy, s->frame_window, s->normal_gc,
-	       defaults.bar_x_padding,
-	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-	       msg, strlen (msg));
+               defaults.bar_x_padding,
+               defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+               msg, strlen (msg));
 }
 
 rp_frame *
@@ -950,10 +950,10 @@ find_frame_up (rp_frame *frame)
   list_for_each_entry (cur, &s->frames, node)
     {
       if (frame->y == cur->y + cur->height)
-	{
-	  if (frame->x >= cur->x && frame->x < cur->x + cur->width)
-	    return cur;
-	}
+        {
+          if (frame->x >= cur->x && frame->x < cur->x + cur->width)
+            return cur;
+        }
     }
 
   return NULL;
@@ -968,10 +968,10 @@ find_frame_down (rp_frame *frame)
   list_for_each_entry (cur, &s->frames, node)
     {
       if (frame->y + frame->height == cur->y)
-	{
-	  if (frame->x >= cur->x && frame->x < cur->x + cur->width)
-	    return cur;
-	}
+        {
+          if (frame->x >= cur->x && frame->x < cur->x + cur->width)
+            return cur;
+        }
     }
 
   return NULL;
@@ -986,10 +986,10 @@ find_frame_left (rp_frame *frame)
   list_for_each_entry (cur, &s->frames, node)
     {
       if (frame->x == cur->x + cur->width)
-	{
-	  if (frame->y >= cur->y && frame->y < cur->y + cur->height)
-	    return cur;
-	}
+        {
+          if (frame->y >= cur->y && frame->y < cur->y + cur->height)
+            return cur;
+        }
     }
 
   return NULL;
@@ -1004,10 +1004,10 @@ find_frame_right (rp_frame *frame)
   list_for_each_entry (cur, &s->frames, node)
     {
       if (frame->x + frame->width == cur->x)
-	{
-	  if (frame->y >= cur->y && frame->y < cur->y + cur->height)
-	    return cur;
-	}
+        {
+          if (frame->y >= cur->y && frame->y < cur->y + cur->height)
+            return cur;
+        }
     }
 
   return NULL;
@@ -1022,14 +1022,13 @@ find_frame_number (int num)
   for (i=0; i<num_screens; i++)
     {
       rp_screen *s = &screens[i];
-  
+
       list_for_each_entry (cur, &s->frames, node)
-	{
-	  if (cur->number == num)
-	    return cur;
-	}
+        {
+          if (cur->number == num)
+            return cur;
+        }
     }
 
   return NULL;
 }
-

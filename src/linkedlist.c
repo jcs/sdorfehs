@@ -1,4 +1,4 @@
-/* This file was taken from the Linux kernel and is 
+/* This file was taken from the Linux kernel and is
  * Copyright (C) 2003 Linus Torvalds
  *
  * Modified by Shawn Betts. Portions created by Shawn Betts are
@@ -10,12 +10,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -29,15 +29,15 @@ prefetch(const void *x)
 {;}
 
 /*
- * Insert a new entry between two known consecutive entries. 
+ * Insert a new entry between two known consecutive entries.
  *
  * This is only for internal list manipulation where we know
  * the prev/next entries already!
  */
 void
 __list_add(struct list_head *new,
-	   struct list_head *prev,
-	   struct list_head *next)
+           struct list_head *prev,
+           struct list_head *next)
 {
   next->prev = new;
   new->next = next;
@@ -107,7 +107,7 @@ void
 list_del_init(struct list_head *entry)
 {
   __list_del(entry->prev, entry->next);
-  INIT_LIST_HEAD(entry); 
+  INIT_LIST_HEAD(entry);
 }
 
 /**
@@ -129,7 +129,7 @@ list_move(struct list_head *list, struct list_head *head)
  */
 void
 list_move_tail(struct list_head *list,
-	       struct list_head *head)
+               struct list_head *head)
 {
   __list_del(list->prev, list->next);
   list_add_tail(list, head);
@@ -147,7 +147,7 @@ list_empty(struct list_head *head)
 
 void
 __list_splice(struct list_head *list,
-	      struct list_head *head)
+              struct list_head *head)
 {
   struct list_head *first = list->next;
   struct list_head *last = list->prev;
@@ -181,7 +181,7 @@ list_splice(struct list_head *list, struct list_head *head)
  */
 void
 list_splice_init(struct list_head *list,
-		 struct list_head *head)
+                 struct list_head *head)
 {
   if (!list_empty(list)) {
     __list_splice(list, head);

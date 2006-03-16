@@ -36,48 +36,48 @@ static XineramaScreenInfo *xine_screens = NULL;
 void
 init_xinerama()
 {
-	int evbase, errbase, major, minor;
-	
-	rp_have_xinerama = 0;
+        int evbase, errbase, major, minor;
 
-#ifdef XINERAMA	
-	if (xine_screens) XFree(xine_screens);
+        rp_have_xinerama = 0;
 
-	if (!XineramaQueryExtension(dpy, &evbase, &errbase)) {
-		return;
-	}
+#ifdef XINERAMA
+        if (xine_screens) XFree(xine_screens);
 
-	if (!XineramaQueryVersion(dpy, &major, &minor) != Success) {
-		return;
-	}
+        if (!XineramaQueryExtension(dpy, &evbase, &errbase)) {
+                return;
+        }
 
-	if (major != 1) {
-		fprintf (stderr, "Warning: Xinerama version %d.%d not supported\n", major, minor);
-		return;
-	}
-	
-	if (!XineramaIsActive(dpy)) {
-		return;
-	}
+        if (!XineramaQueryVersion(dpy, &major, &minor) != Success) {
+                return;
+        }
 
-	xine_screens = XineramaQueryScreens(dpy, &xine_screen_count);
-	if ((xine_screens == NULL) || (xine_screen_count < 2)) {
-		return;
-	}
+        if (major != 1) {
+                fprintf (stderr, "Warning: Xinerama version %d.%d not supported\n", major, minor);
+                return;
+        }
 
-	rp_have_xinerama = 1;
+        if (!XineramaIsActive(dpy)) {
+                return;
+        }
+
+        xine_screens = XineramaQueryScreens(dpy, &xine_screen_count);
+        if ((xine_screens == NULL) || (xine_screen_count < 2)) {
+                return;
+        }
+
+        rp_have_xinerama = 1;
 #endif
 }
 
 void xinerama_get_screen_info(int sc, int *x, int *y, int *w, int *h)
 {
 #ifdef XINERAMA
-	if ((sc < xine_screen_count) && (sc >= 0)) {
-		*x = xine_screens[sc].x_org;
-		*y = xine_screens[sc].y_org;
-		*w = xine_screens[sc].width;
-		*h = xine_screens[sc].height;
-	}
+        if ((sc < xine_screen_count) && (sc >= 0)) {
+                *x = xine_screens[sc].x_org;
+                *y = xine_screens[sc].y_org;
+                *w = xine_screens[sc].width;
+                *h = xine_screens[sc].height;
+        }
 #endif
 }
 
@@ -85,10 +85,9 @@ void
 free_xinerama()
 {
 #ifdef XINERAMA
-	if (xine_screens) {
-		XFree(xine_screens);
-	}
-	rp_have_xinerama = 0;
+        if (xine_screens) {
+                XFree(xine_screens);
+        }
+        rp_have_xinerama = 0;
 #endif
 }
-

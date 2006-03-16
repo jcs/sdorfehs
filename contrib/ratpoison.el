@@ -8,7 +8,7 @@
 ;; Maintainer: Gergely Nagy <algernon@debian.org>
 ;; Version: 0.2
 ;; Keywords: faces, ratpoison, X
-;; CVS Id: $Id: ratpoison.el,v 1.4 2004/12/02 00:33:22 sabetts Exp $
+;; CVS Id: $Id: ratpoison.el,v 1.5 2006/03/16 00:33:34 sabetts Exp $
 ;; Last updated: <2001/10/05 17:58:38 algernon>
 
 ;; This file is NOT part of GNU Emacs.
@@ -132,15 +132,15 @@
      ratpoison-commands-rest font-lock-builtin-face "^[ \t]*" "[ \t]+")
     ;; exec <arg>
     (list "^[ \t]*\\(exec\\)[ \t]+\\(.*\\)"
-	  '(1 'font-lock-builtin-face)
-	  '(2 'font-lock-string-face))
+          '(1 'font-lock-builtin-face)
+          '(2 'font-lock-string-face))
     ;; arguments, the first is a keyword, the rest is tring
     (list (concat
-		(car (generic-make-keywords-list
-		      ratpoison-commands-rest font-lock-builtin-face "^[ \t]*" "[ \t]+"))
-		"\\([0-9a-zA-Z\\/\\.\\-]+\\)[ \t]*\\(.*\\)")
-	  '(2 'font-lock-keyword-face)
-	  '(3 'font-lock-string-face)))
+                (car (generic-make-keywords-list
+                      ratpoison-commands-rest font-lock-builtin-face "^[ \t]*" "[ \t]+"))
+                "\\([0-9a-zA-Z\\/\\.\\-]+\\)[ \t]*\\(.*\\)")
+          '(2 'font-lock-keyword-face)
+          '(3 'font-lock-string-face)))
   ;; auto-mode alist
   (list "\\.ratpoisonrc\\'")
   ;; additional setup functions
@@ -174,8 +174,8 @@
 (defun ratpoison-command-on-region (start end)
   (interactive "r")
   (mapcar 'ratpoison-command
-	  (split-string (buffer-substring start end)
-			"\n")))
+          (split-string (buffer-substring start end)
+                        "\n")))
 
 (defun ratpoison-line ()
   "Send the current line to ratpoison."

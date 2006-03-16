@@ -7,12 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -75,7 +75,7 @@ numset_add_num (struct numset *ns, int n)
 
   PRINT_DEBUG(("ns=%p add_num %d\n", ns, n));
 
-  if (numset_num_is_taken (ns, n)) 
+  if (numset_num_is_taken (ns, n))
     return 0; /* failed. */
   /* numset_find_empty_cell calls realloc on numbers_taken. So store
      the ret val in ec then use ec as an index into the array. */
@@ -115,11 +115,11 @@ numset_release (struct numset *ns, int n)
 
   for (i=0; i<ns->num_taken; i++)
     {
-      if (ns->numbers_taken[i] == n) 
-	{
-	  ns->numbers_taken[i] = -1;
-	  return;
-	}
+      if (ns->numbers_taken[i] == n)
+        {
+          ns->numbers_taken[i] = -1;
+          return;
+        }
     }
 }
 

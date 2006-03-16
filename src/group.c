@@ -66,7 +66,7 @@ group_new (int number, char *name)
   g->numset = numset_new();
   INIT_LIST_HEAD (&g->unmapped_windows);
   INIT_LIST_HEAD (&g->mapped_windows);
-  
+
   return g;
 }
 
@@ -111,10 +111,10 @@ groups_find_group_by_name (char *s)
   list_for_each_entry (cur, &rp_groups, node)
     {
       if (cur->name)
-	{
-	  if (str_comp (s, cur->name, strlen (s)))
-	    return cur;
-	}
+        {
+          if (str_comp (s, cur->name, strlen (s)))
+            return cur;
+        }
     }
 
   return NULL;
@@ -128,7 +128,7 @@ groups_find_group_by_number (int n)
   list_for_each_entry (cur, &rp_groups, node)
     {
       if (cur->number == n)
-	return cur;
+        return cur;
     }
 
   return NULL;
@@ -145,7 +145,7 @@ groups_find_group_by_window (rp_window *win)
     {
       elem = group_find_window (&cur->mapped_windows, win);
       if (elem)
-	return cur;
+        return cur;
     }
 
   return NULL;
@@ -161,7 +161,7 @@ groups_find_group_by_group (rp_group *g)
   list_for_each_entry (cur, &rp_groups, node)
     {
       if (cur == g)
-	return cur;
+        return cur;
     }
 
   return NULL;
@@ -175,7 +175,7 @@ group_find_window (struct list_head *list, rp_window *win)
   list_for_each_entry (cur, list, node)
     {
       if (cur->win == win)
-	return cur;
+        return cur;
     }
 
   return NULL;
@@ -189,11 +189,11 @@ group_find_window_by_number (rp_group *g, int num)
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
       if (cur->number == num)
-	return cur;
+        return cur;
     }
 
   return NULL;
-  
+
 }
 
 
@@ -207,10 +207,10 @@ group_insert_window (struct list_head *h, rp_window_elem *w)
   list_for_each_entry (cur, h, node)
     {
       if (cur->number > w->number)
-	{
-	  list_add_tail (&w->node, &cur->node);
-	  return;
-	}
+        {
+          list_add_tail (&w->node, &cur->node);
+          return;
+        }
     }
 
   list_add_tail(&w->node, h);
@@ -224,7 +224,7 @@ group_in_list (struct list_head *h, rp_window_elem *w)
   list_for_each_entry (cur, h, node)
     {
       if (cur == w)
-	return 1;
+        return 1;
     }
 
   return 0;
@@ -321,10 +321,10 @@ group_del_window (rp_group *g, rp_window *win)
   list_for_each_safe_entry (cur, iter, tmp, &g->unmapped_windows, node)
     {
       if (cur->win == win)
-	{
-	  list_del (&cur->node);
-	  free (cur);
-	}
+        {
+          list_del (&cur->node);
+          free (cur);
+        }
     }
 
   /* Make sure the window isn't in the list of mapped windows. This
@@ -333,7 +333,7 @@ group_del_window (rp_group *g, rp_window *win)
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
       if (cur->win == win)
-	PRINT_DEBUG (("This window wasn't removed from the mapped window list.\n"));
+        PRINT_DEBUG (("This window wasn't removed from the mapped window list.\n"));
     }
 #endif
 }
@@ -359,19 +359,19 @@ group_last_window (rp_group *g, rp_screen *s)
 
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
-      if (cur->win->last_access >= last_access 
-	  && cur->win != current_window()
-	  && !find_windows_frame (cur->win)
-	  && (cur->win->scr == s || rp_have_xinerama))
-	{
-	  most_recent = cur;
-	  last_access = cur->win->last_access;
-	}
+      if (cur->win->last_access >= last_access
+          && cur->win != current_window()
+          && !find_windows_frame (cur->win)
+          && (cur->win->scr == s || rp_have_xinerama))
+        {
+          most_recent = cur;
+          last_access = cur->win->last_access;
+        }
     }
 
   if (most_recent)
     return most_recent->win;
-  
+
   return NULL;
 }
 
@@ -381,7 +381,7 @@ group_next_window (rp_group *g, rp_window *win)
   rp_window_elem *cur, *we;
 
   /* If there is no window, then get the last accessed one. */
-  if (win == NULL) 
+  if (win == NULL)
     return group_last_window (g, current_screen());
 
   /* If we can't find the window, then it's in a different group, so
@@ -392,14 +392,14 @@ group_next_window (rp_group *g, rp_window *win)
 
   /* The window is in this group, so find the next one in the list
      that isn't already displayed. */
-  for (cur = list_next_entry (we, &g->mapped_windows, node); 
-       cur != we; 
+  for (cur = list_next_entry (we, &g->mapped_windows, node);
+       cur != we;
        cur = list_next_entry (cur, &g->mapped_windows, node))
     {
       if (!find_windows_frame (cur->win) && (cur->win->scr == win->scr || rp_have_xinerama))
-	{
-	  return cur->win;
-	}
+        {
+          return cur->win;
+        }
     }
 
   return NULL;
@@ -411,7 +411,7 @@ group_prev_window (rp_group *g, rp_window *win)
   rp_window_elem *cur, *we;
 
   /* If there is no window, then get the last accessed one. */
-  if (win == NULL) 
+  if (win == NULL)
     return group_last_window (g, current_screen());
 
   /* If we can't find the window, then it's in a different group, so
@@ -422,14 +422,14 @@ group_prev_window (rp_group *g, rp_window *win)
 
   /* The window is in this group, so find the previous one in the list
      that isn't already displayed. */
-  for (cur = list_prev_entry (we, &g->mapped_windows, node); 
-       cur != we; 
+  for (cur = list_prev_entry (we, &g->mapped_windows, node);
+       cur != we;
        cur = list_prev_entry (cur, &g->mapped_windows, node))
     {
       if (!find_windows_frame (cur->win) && (cur->win->scr == win->scr || rp_have_xinerama))
-	{
-	  return cur->win;
-	}
+        {
+          return cur->win;
+        }
     }
 
   return NULL;
@@ -449,10 +449,10 @@ group_move_window (rp_group *to, rp_window *win)
     {
       we = group_find_window (&cur->mapped_windows, win);
       if (we)
-	{
-	  from = cur;
-	  break;
-	}
+        {
+          from = cur;
+          break;
+        }
     }
 
   if (we == NULL || from == NULL)
@@ -505,7 +505,7 @@ set_current_group (rp_group *g)
     return;
 
   rp_current_group = g;
-  
+
   /* Call the switch group hook. */
   hook_run (&rp_switch_group_hook);
 }
@@ -513,26 +513,26 @@ set_current_group (rp_group *g)
 int
 group_delete_group (rp_group *g)
 {
-  if (list_empty (&(g->mapped_windows)) 
+  if (list_empty (&(g->mapped_windows))
       && list_empty (&(g->unmapped_windows)))
     {
       /* we can safely delete the group */
-      if (g == rp_current_group) 
-	{
-	  rp_current_group = group_next_group ();
-	}
+      if (g == rp_current_group)
+        {
+          rp_current_group = group_next_group ();
+        }
 
       list_del (&(g->node));
       group_free (g);
 
       if (list_empty (&rp_groups))
-	{
-	  /* Create the first group in the list (We always need at least
-	     one). */
-	  g = group_new (numset_request (group_numset), DEFAULT_GROUP_NAME);
-	  rp_current_group = g;
-	  list_add_tail (&g->node, &rp_groups);
-	}
+        {
+          /* Create the first group in the list (We always need at least
+             one). */
+          g = group_new (numset_request (group_numset), DEFAULT_GROUP_NAME);
+          rp_current_group = g;
+          list_add_tail (&g->node, &rp_groups);
+        }
       return GROUP_DELETE_GROUP_OK;
     }
   else
@@ -552,20 +552,20 @@ group_last_window_by_class (rp_group *g, char *class)
 
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
-      if (cur->win->last_access >= last_access 
-	  && cur->win != current_window()
-	  && !find_windows_frame (cur->win)
-	  && (cur->win->scr == s || rp_have_xinerama)
-	  && strcmp(class, cur->win->res_class))
-	{
-	  most_recent = cur;
-	  last_access = cur->win->last_access;
-	}
+      if (cur->win->last_access >= last_access
+          && cur->win != current_window()
+          && !find_windows_frame (cur->win)
+          && (cur->win->scr == s || rp_have_xinerama)
+          && strcmp(class, cur->win->res_class))
+        {
+          most_recent = cur;
+          last_access = cur->win->last_access;
+        }
     }
 
   if (most_recent)
     return most_recent->win;
-  
+
   return NULL;
 }
 
@@ -580,19 +580,19 @@ group_last_window_by_class_complement (rp_group *g, char *class)
 
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
-      if (cur->win->last_access >= last_access 
-	  && cur->win != current_window()
-	  && !find_windows_frame (cur->win)
-	  && (cur->win->scr == s || rp_have_xinerama)
-	  && !strcmp(class, cur->win->res_class))
-	{
-	  most_recent = cur;
-	  last_access = cur->win->last_access;
-	}
+      if (cur->win->last_access >= last_access
+          && cur->win != current_window()
+          && !find_windows_frame (cur->win)
+          && (cur->win->scr == s || rp_have_xinerama)
+          && !strcmp(class, cur->win->res_class))
+        {
+          most_recent = cur;
+          last_access = cur->win->last_access;
+        }
     }
 
   if (most_recent)
     return most_recent->win;
-  
+
   return NULL;
 }

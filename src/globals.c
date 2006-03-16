@@ -20,7 +20,7 @@
 
 #include "ratpoison.h"
 
-#include <unistd.h>		/* for usleep(). */
+#include <unistd.h>             /* for usleep(). */
 
 int alarm_signalled = 0;
 int kill_signalled = 0;
@@ -28,7 +28,7 @@ int hup_signalled = 0;
 int chld_signalled = 0;
 int rat_x;
 int rat_y;
-int rat_visible = 1;		/* rat is visible by default */
+int rat_visible = 1;            /* rat is visible by default */
 
 char *rp_exec_newwm = NULL;
 
@@ -89,7 +89,7 @@ x_export_selection ()
   if (XGetSelectionOwner(dpy, XA_PRIMARY) != screens[0].key_window)
     PRINT_ERROR(("can't get primary selection"));
   XChangeProperty(dpy, screens[0].root, XA_CUT_BUFFER0, XA_STRING, 8,
-		  PropModeReplace, selection.text, selection.len);
+                  PropModeReplace, selection.text, selection.len);
 }
 
 void
@@ -119,7 +119,7 @@ set_selection (char *txt)
     free(selection.text);
   selection.text = xstrdup (txt);
   selection.len = strlen (txt);
-  
+
   x_export_selection();
 }
 
@@ -155,9 +155,9 @@ get_primary_selection()
 
   for (nread = 0, bytes_after = 1; bytes_after > 0; nread += ct.nitems) {
     if ((XGetWindowProperty(dpy, current_screen()->input_window, rp_selection, (nread / 4), 4096,
-			    True, AnyPropertyType, &ct.encoding,
-			    &ct.format, &ct.nitems, &bytes_after,
-			    &ct.value) != Success)) {
+                            True, AnyPropertyType, &ct.encoding,
+                            &ct.format, &ct.nitems, &bytes_after,
+                            &ct.value) != Success)) {
       XFree(ct.value);
       sbuf_free(s);
       return NULL;
@@ -194,24 +194,24 @@ get_selection ()
 
       /* This seems like a hack. */
       while (!XCheckTypedWindowEvent (dpy, s->input_window, SelectionNotify, &ev))
-	{
-	  if (loops == 0)
-	    {
-	      PRINT_ERROR (("selection request timed out\n"));
-	      return NULL;
-	    }
-	  usleep (10000);
-	  loops--;
-	}
+        {
+          if (loops == 0)
+            {
+              PRINT_ERROR (("selection request timed out\n"));
+              return NULL;
+            }
+          usleep (10000);
+          loops--;
+        }
 
       PRINT_DEBUG (("SelectionNotify event\n"));
 
       property = ev.xselection.property;
 
       if (property != None)
-	return get_primary_selection ();
+        return get_primary_selection ();
       else
-	return get_cut_buffer ();
+        return get_cut_buffer ();
     }
 }
 
@@ -225,30 +225,30 @@ LIST_HEAD (rp_quit_hook);
 LIST_HEAD (rp_restart_hook);
 LIST_HEAD (rp_delete_window_hook);
 
-struct rp_hook_db_entry rp_hook_db[]= 
-  {{"key", 		&rp_key_hook},
-   {"switchwin", 	&rp_switch_win_hook},
-   {"switchframe", 	&rp_switch_frame_hook},
-   {"switchgroup", 	&rp_switch_group_hook},
-   {"deletewindow", 	&rp_delete_window_hook},
-   {"quit", 		&rp_quit_hook},
-   {"restart", 		&rp_restart_hook},
+struct rp_hook_db_entry rp_hook_db[]=
+  {{"key",              &rp_key_hook},
+   {"switchwin",        &rp_switch_win_hook},
+   {"switchframe",      &rp_switch_frame_hook},
+   {"switchgroup",      &rp_switch_group_hook},
+   {"deletewindow",     &rp_delete_window_hook},
+   {"quit",             &rp_quit_hook},
+   {"restart",          &rp_restart_hook},
    {NULL, NULL}};
 
 void
 set_rp_window_focus (rp_window *win)
 {
   PRINT_DEBUG (("Giving focus to '%s'\n", window_name (win)));
-  XSetInputFocus (dpy, win->w, 
-		  RevertToPointerRoot, CurrentTime);
+  XSetInputFocus (dpy, win->w,
+                  RevertToPointerRoot, CurrentTime);
 }
 
 void
 set_window_focus (Window window)
 {
   PRINT_DEBUG (("Giving focus to %ld\n", window));
-  XSetInputFocus (dpy, window, 
-		  RevertToPointerRoot, CurrentTime);
+  XSetInputFocus (dpy, window,
+                  RevertToPointerRoot, CurrentTime);
 }
 
 LIST_HEAD (rp_frame_undos);

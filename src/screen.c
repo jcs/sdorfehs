@@ -6,12 +6,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -115,7 +115,7 @@ frameset_free (struct list_head *head)
   list_for_each_safe_entry (frame, iter, tmp, head, node)
     {
       /* FIXME: what if frames has memory inside its struct
-	 that needs to be freed? */
+         that needs to be freed? */
       free (frame);
     }
 }
@@ -128,9 +128,9 @@ screen_get_frame (rp_screen *s, int frame_num)
   list_for_each_entry (cur, &s->frames, node)
     {
       if (cur->number == frame_num)
-	return cur;
+        return cur;
     }
-  
+
   return NULL;
 }
 
@@ -143,9 +143,9 @@ screen_find_frame_by_frame (rp_screen *s, rp_frame *f)
     {
       PRINT_DEBUG (("cur=%p f=%p\n", cur, f));
       if (cur == f)
-	return cur;
+        return cur;
     }
-  
+
   return NULL;
 }
 
@@ -176,13 +176,13 @@ void
 init_screens (int screen_arg, int screen_num)
 {
   int i;
-  
+
   /* Get the number of screens */
   if (rp_have_xinerama)
       num_screens = xine_screen_count;
   else
       num_screens = ScreenCount (dpy);
-  
+
   /* make sure the screen specified is valid. */
   if (screen_arg)
     {
@@ -190,18 +190,18 @@ init_screens (int screen_arg, int screen_num)
        * disable Xinerama in this case.
        */
       if (rp_have_xinerama)
-	{
-	    fprintf (stderr, "Warning: selecting a specific Xinerama screen is not implemented.\n");
-	    rp_have_xinerama = 0;
-	    screen_num = 0;
-	    num_screens = ScreenCount(dpy);
-	}
-      
+        {
+            fprintf (stderr, "Warning: selecting a specific Xinerama screen is not implemented.\n");
+            rp_have_xinerama = 0;
+            screen_num = 0;
+            num_screens = ScreenCount(dpy);
+        }
+
       if (screen_num < 0 || screen_num >= num_screens)
-	{
-	  fprintf (stderr, "%d is an invalid screen for the display\n", screen_num);
-	  exit (EXIT_FAILURE);
-	}
+        {
+          fprintf (stderr, "%d is an invalid screen for the display\n", screen_num);
+          exit (EXIT_FAILURE);
+        }
 
       /* we're only going to use one screen. */
       num_screens = 1;
@@ -221,9 +221,9 @@ init_screens (int screen_arg, int screen_num)
   else
     {
       for (i=0; i<num_screens; i++)
-	{
-	  init_screen (&screens[i], i);
-	}
+        {
+          init_screen (&screens[i], i);
+        }
     }
 
 }
@@ -250,7 +250,7 @@ init_screen (rp_screen *s, int screen_num)
       xine_screen_num = screen_num;
       screen_num = DefaultScreen(dpy);
       xinerama_get_screen_info(xine_screen_num,
-		      &s->left, &s->top, &s->width, &s->height);
+                      &s->left, &s->top, &s->width, &s->height);
     }
   else
     {
@@ -265,13 +265,13 @@ init_screen (rp_screen *s, int screen_num)
      there is already a WM running and the X Error handler will catch
      it, terminating ratpoison. */
   XSelectInput(dpy, RootWindow (dpy, screen_num),
-	       PropertyChangeMask | ColormapChangeMask
-	       | SubstructureRedirectMask | SubstructureNotifyMask );
+               PropertyChangeMask | ColormapChangeMask
+               | SubstructureRedirectMask | SubstructureNotifyMask );
   XSync (dpy, False);
 
   /* Add netwm support. FIXME: I think this is busted. */
   XChangeProperty (dpy, RootWindow (dpy, screen_num),
-		   _net_supported, XA_ATOM, 32, PropModeReplace, &_net_wm_pid, 1);
+                   _net_supported, XA_ATOM, 32, PropModeReplace, &_net_wm_pid, 1);
 
   /* Set the numset for the frames to our global numset. */
   s->frames_numset = rp_frame_numset;
@@ -285,7 +285,7 @@ init_screen (rp_screen *s, int screen_num)
 
       dot = strrchr(s->display_string, '.');
       if (dot)
-	sprintf(dot, ".%i", screen_num);
+        sprintf(dot, ".%i", screen_num);
     }
 
   PRINT_DEBUG (("%s\n", s->display_string));
@@ -294,7 +294,7 @@ init_screen (rp_screen *s, int screen_num)
   s->xine_screen_num = xine_screen_num;
   s->root = RootWindow (dpy, screen_num);
   s->def_cmap = DefaultColormap (dpy, screen_num);
-  
+
   init_rat_cursor (s);
 
   s->fg_color = BlackPixel (dpy, s->screen_num);
@@ -307,38 +307,38 @@ init_screen (rp_screen *s, int screen_num)
   gv.line_width = 1;
   gv.subwindow_mode = IncludeInferiors;
   gv.font = defaults.font->fid;
-  s->normal_gc = XCreateGC(dpy, s->root, 
-			   GCForeground | GCBackground | GCFunction 
-			   | GCLineWidth | GCSubwindowMode | GCFont, 
-			   &gv);
+  s->normal_gc = XCreateGC(dpy, s->root,
+                           GCForeground | GCBackground | GCFunction
+                           | GCLineWidth | GCSubwindowMode | GCFont,
+                           &gv);
 
   /* Create the program bar window. */
   s->bar_is_raised = 0;
-  s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 
-				       defaults.bar_border_width, 
-				       s->fg_color, s->bg_color);
+  s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1,
+                                       defaults.bar_border_width,
+                                       s->fg_color, s->bg_color);
 
   /* Setup the window that will receive all keystrokes once the prefix
      key has been pressed. */
-  s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0, 
-				       WhitePixel (dpy, s->screen_num), 
-				       BlackPixel (dpy, s->screen_num));
+  s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0,
+                                       WhitePixel (dpy, s->screen_num),
+                                       BlackPixel (dpy, s->screen_num));
   XSelectInput (dpy, s->key_window, KeyPressMask | KeyReleaseMask);
   XMapWindow (dpy, s->key_window);
 
   /* Create the input window. */
-  s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 
-					 defaults.bar_border_width, 
-					 s->fg_color, s->bg_color);
+  s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1,
+                                         defaults.bar_border_width,
+                                         s->fg_color, s->bg_color);
   XSelectInput (dpy, s->input_window, KeyPressMask | KeyReleaseMask);
 
   /* Create the frame indicator window */
-  s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, defaults.bar_border_width, 
-					 s->fg_color, s->bg_color);
+  s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, defaults.bar_border_width,
+                                         s->fg_color, s->bg_color);
 
   /* Create the help window */
   s->help_window = XCreateSimpleWindow (dpy, s->root, s->left, s->top, s->width,
-					s->height, 0, s->fg_color, s->bg_color);
+                                        s->height, 0, s->fg_color, s->bg_color);
   XSelectInput (dpy, s->help_window, KeyPressMask);
 
   XSync (dpy, 0);
@@ -378,16 +378,16 @@ screen_dump (rp_screen *screen)
 {
   char *tmp;
   struct sbuf *s;
-  
+
   s = sbuf_new (0);
-  sbuf_printf (s, "%d %d %d %d %d %d", 
-	       (rp_have_xinerama)?screen->xine_screen_num:screen->screen_num,
-	       screen->left,
-	       screen->top,
-	       screen->width,
-	       screen->height,
-	       (current_screen() == screen)?1:0 /* is current? */
-	       );
+  sbuf_printf (s, "%d %d %d %d %d %d",
+               (rp_have_xinerama)?screen->xine_screen_num:screen->screen_num,
+               screen->left,
+               screen->top,
+               screen->width,
+               screen->height,
+               (current_screen() == screen)?1:0 /* is current? */
+               );
 
   /* Extract the string and return it, and don't forget to free s. */
   tmp = sbuf_get (s);

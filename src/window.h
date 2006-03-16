@@ -1,4 +1,4 @@
-/* functions for managing the window list 
+/* functions for managing the window list
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This file is part of ratpoison.
@@ -7,12 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -58,8 +58,8 @@ void sort_window_list_by_number ();
 void insert_into_list (rp_window *win, struct list_head *list);
 
 void print_window_information (rp_group *group, rp_window *win);
-void get_window_list (char *fmt, char *delim, struct sbuf *buffer, 
-		      int *mark_start, int *mark_end);
+void get_window_list (char *fmt, char *delim, struct sbuf *buffer,
+                      int *mark_start, int *mark_end);
 void init_window_stuff ();
 void free_window_stuff ();
 

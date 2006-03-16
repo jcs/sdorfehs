@@ -6,12 +6,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -34,7 +34,7 @@ hook_add (struct list_head *hook, struct sbuf *s)
   list_for_each_entry (cur, hook, node)
     {
       if (!strcmp (sbuf_get (cur), sbuf_get (s)))
-	return;
+        return;
     }
 
   /* It's not in the list, so add it. */
@@ -51,10 +51,10 @@ hook_remove (struct list_head *hook, struct sbuf *s)
   list_for_each_safe_entry (cur, iter, tmp, hook, node)
     {
       if (!strcmp (sbuf_get (cur), sbuf_get (s)))
-	{
-	  list_del (&cur->node);
-	  sbuf_free (cur);
-	}
+        {
+          list_del (&cur->node);
+          sbuf_free (cur);
+        }
     }
 }
 
@@ -77,10 +77,10 @@ hook_lookup (char *s)
   for (entry = rp_hook_db; entry->name; entry++)
     {
       if (!strcmp (s, entry->name))
-	{
-	  return entry->hook;
-	}
+        {
+          return entry->hook;
+        }
     }
-  
+
   return NULL;
 }

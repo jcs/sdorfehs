@@ -12,7 +12,7 @@ String manipulation is something C is seriously lacking, and something
 everyone does all the time. When writing ratpoison code, you SHOULD
 NOT be malloc'ing temporary string buffers then using strcat, strcpy,
 etc to patch strings together. The following structures and functions
-should give you just about everything you need. 
+should give you just about everything you need.
 
 If there's something you want to do but can't with the following
 utils, then you should consider adding that functionality (Don't just

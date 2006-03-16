@@ -7,12 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -24,7 +24,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
-#include <X11/Xmd.h>		/* for CARD32. */
+#include <X11/Xmd.h>            /* for CARD32. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,20 +50,20 @@ show_rudeness_raise_msg (rp_window *win)
   if (g == rp_current_group)
     {
       if (win->transient)
-	marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT, 
-			       elem->number, window_name (win));
+        marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT,
+                               elem->number, window_name (win));
       else
-	marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
-			       elem->number, window_name (win));
+        marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
+                               elem->number, window_name (win));
     }
   else
     {
       if (win->transient)
-	marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT_GROUP,
-			       elem->number, window_name (win), g->name);
+        marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT_GROUP,
+                               elem->number, window_name (win), g->name);
       else
-	marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW_GROUP,
-			       elem->number, window_name (win), g->name);
+        marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW_GROUP,
+                               elem->number, window_name (win), g->name);
     }
 }
 
@@ -93,10 +93,10 @@ new_window (XCreateWindowEvent *e)
   if (is_rp_window_for_screen(e->window, s)) return;
 
   if (s && win == NULL
-      && e->window != s->key_window 
-      && e->window != s->bar_window 
-      && e->window != s->input_window 
-      && e->window != s->frame_window 
+      && e->window != s->key_window
+      && e->window != s->bar_window
+      && e->window != s->input_window
+      && e->window != s->frame_window
       && e->window != s->help_window)
     {
       win = add_to_window_list (s, e->window);
@@ -104,7 +104,7 @@ new_window (XCreateWindowEvent *e)
     }
 }
 
-static void 
+static void
 unmap_notify (XEvent *ev)
 {
   rp_frame *frame;
@@ -130,15 +130,15 @@ unmap_notify (XEvent *ev)
     case NormalState:
       PRINT_DEBUG (("Withdrawing normal window '%s'\n", window_name (win)));
       /* If the window was inside a frame, fill the frame with another
-	 window. */
+         window. */
       frame = find_windows_frame (win);
       if (frame)
-	{
-	  cleanup_frame (frame);
-	  if (frame->number == win->scr->current_frame
-	      && current_screen() == win->scr)
-	    set_active_frame (frame);
-	}
+        {
+          cleanup_frame (frame);
+          if (frame->number == win->scr->current_frame
+              && current_screen() == win->scr)
+            set_active_frame (frame);
+        }
 
       withdraw_window (win);
       break;
@@ -147,13 +147,13 @@ unmap_notify (XEvent *ev)
   update_window_names (win->scr, defaults.window_fmt);
 }
 
-static void 
+static void
 map_request (XEvent *ev)
 {
   rp_window *win;
 
   win = find_window (ev->xmap.window);
-  if (win == NULL) 
+  if (win == NULL)
     {
       PRINT_DEBUG (("Map request from an unknown window.\n"));
       XMapWindow (dpy, ev->xmap.window);
@@ -166,38 +166,38 @@ map_request (XEvent *ev)
     {
     case WithdrawnState:
       if (unmanaged_window (win->w))
-	{
-	  PRINT_DEBUG (("Mapping Unmanaged Window\n"));
-	  XMapWindow (dpy, win->w);
-	  break;
-	}
+        {
+          PRINT_DEBUG (("Mapping Unmanaged Window\n"));
+          XMapWindow (dpy, win->w);
+          break;
+        }
       else
-	{
-	  PRINT_DEBUG (("Mapping Withdrawn Window\n"));
-	  map_window (win);
-	  break;
-	}
+        {
+          PRINT_DEBUG (("Mapping Withdrawn Window\n"));
+          map_window (win);
+          break;
+        }
       break;
     case IconicState:
       PRINT_DEBUG (("Mapping Iconic window\n"));
       if (win->last_access == 0)
-	{
-	  /* Depending on the rudeness level, actually map the
-	     window. */
-	  if ((rp_honour_transient_map && win->transient)
-	      || (rp_honour_normal_map && !win->transient))
-	    set_active_window (win);
-	}
+        {
+          /* Depending on the rudeness level, actually map the
+             window. */
+          if ((rp_honour_transient_map && win->transient)
+              || (rp_honour_normal_map && !win->transient))
+            set_active_window (win);
+        }
       else
-	{
-	  /* Depending on the rudeness level, actually map the
-	     window. */
-	  if ((rp_honour_transient_raise && win->transient)
-	      || (rp_honour_normal_raise && !win->transient))
-	    set_active_window (win);
-	  else
-	    show_rudeness_raise_msg (win);
-	}
+        {
+          /* Depending on the rudeness level, actually map the
+             window. */
+          if ((rp_honour_transient_raise && win->transient)
+              || (rp_honour_normal_raise && !win->transient))
+            set_active_window (win);
+          else
+            show_rudeness_raise_msg (win);
+        }
       break;
     }
 }
@@ -210,7 +210,7 @@ destroy_window (XDestroyWindowEvent *ev)
   win = find_window (ev->window);
   if (win == NULL) return;
 
-  ignore_badwindow++;  
+  ignore_badwindow++;
 
   /* If, somehow, the window is not withdrawn before it is destroyed,
      perform the necessary steps to withdraw the window before it is
@@ -227,12 +227,12 @@ destroy_window (XDestroyWindowEvent *ev)
       PRINT_DEBUG (("Destroying Normal Window (%s)\n", window_name (win)));
       frame = find_windows_frame (win);
       if (frame)
-	{
-	  cleanup_frame (frame);
-	  if (frame->number == win->scr->current_frame
-	      && current_screen() == win->scr) 
-	    set_active_frame (frame);
-	}
+        {
+          cleanup_frame (frame);
+          if (frame->number == win->scr->current_frame
+              && current_screen() == win->scr)
+            set_active_frame (frame);
+        }
       withdraw_window (win);
     }
 
@@ -253,91 +253,91 @@ configure_request (XConfigureRequestEvent *e)
   if (win)
     {
       if (e->value_mask & CWStackMode)
-	{
-	  if (e->detail == Above && win->state != WithdrawnState)
-	    {
-	      /* Depending on the rudeness level, actually map the
-		 window. */
-	      if ((rp_honour_transient_raise && win->transient)
-		  || (rp_honour_normal_raise && !win->transient))
-		{
-		  if (win->state == IconicState)
-		    set_active_window (win);
-		  else if (find_windows_frame (win))
-		    goto_window (win);
-		}
-	      else if (current_window() != win)
-		{
-		  show_rudeness_raise_msg (win);
-		}
+        {
+          if (e->detail == Above && win->state != WithdrawnState)
+            {
+              /* Depending on the rudeness level, actually map the
+                 window. */
+              if ((rp_honour_transient_raise && win->transient)
+                  || (rp_honour_normal_raise && !win->transient))
+                {
+                  if (win->state == IconicState)
+                    set_active_window (win);
+                  else if (find_windows_frame (win))
+                    goto_window (win);
+                }
+              else if (current_window() != win)
+                {
+                  show_rudeness_raise_msg (win);
+                }
 
-	    }
+            }
 
-	  PRINT_DEBUG(("request CWStackMode %d\n", e->detail));
-	}
+          PRINT_DEBUG(("request CWStackMode %d\n", e->detail));
+        }
 
       PRINT_DEBUG (("'%s' window size: %d %d %d %d %d\n", window_name (win),
-		   win->x, win->y, win->width, win->height, win->border));
+                   win->x, win->y, win->width, win->height, win->border));
 
       /* Collect the changes to be granted. */
       if (e->value_mask & CWBorderWidth)
-	{
-	  changes.border_width = e->border_width;
-	  win->border = e->border_width;
-	  PRINT_DEBUG(("request CWBorderWidth %d\n", e->border_width));
-	}
+        {
+          changes.border_width = e->border_width;
+          win->border = e->border_width;
+          PRINT_DEBUG(("request CWBorderWidth %d\n", e->border_width));
+        }
 
       if (e->value_mask & CWWidth)
-	{
-	  changes.width = e->width;
-	  win->width = e->width;
-	  PRINT_DEBUG(("request CWWidth %d\n", e->width));
-	}
+        {
+          changes.width = e->width;
+          win->width = e->width;
+          PRINT_DEBUG(("request CWWidth %d\n", e->width));
+        }
 
       if (e->value_mask & CWHeight)
-	{
-	  changes.height = e->height;
-	  win->height = e->height;
-	  PRINT_DEBUG(("request CWHeight %d\n", e->height));
-	}
+        {
+          changes.height = e->height;
+          win->height = e->height;
+          PRINT_DEBUG(("request CWHeight %d\n", e->height));
+        }
 
       if (e->value_mask & CWX)
-	{
-	  changes.x = e->x;
-	  win->x = e->x;
-	  PRINT_DEBUG(("request CWX %d\n", e->x));
-	}
+        {
+          changes.x = e->x;
+          win->x = e->x;
+          PRINT_DEBUG(("request CWX %d\n", e->x));
+        }
 
       if (e->value_mask & CWY)
-	{
-	  changes.y = e->y;
-	  win->y = e->y;
-	  PRINT_DEBUG(("request CWY %d\n", e->y));
-	}
+        {
+          changes.y = e->y;
+          win->y = e->y;
+          PRINT_DEBUG(("request CWY %d\n", e->y));
+        }
 
       if (e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight))
-	{
-	  /* Grant the request, then immediately maximize it. */
-	  XConfigureWindow (dpy, win->w, 
-			    e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
-			    &changes);
-	  XSync(dpy, False);
-	  if (win->state == NormalState)
-	    maximize (win);
-	}
+        {
+          /* Grant the request, then immediately maximize it. */
+          XConfigureWindow (dpy, win->w,
+                            e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight),
+                            &changes);
+          XSync(dpy, False);
+          if (win->state == NormalState)
+            maximize (win);
+        }
     }
   else
     {
       /* Its an unmanaged window, so give it what it wants. But don't
-	 change the stack mode.*/
+         change the stack mode.*/
       if (e->value_mask & CWX) changes.x = e->x;
       if (e->value_mask & CWY) changes.x = e->x;
       if (e->value_mask & CWWidth) changes.x = e->x;
       if (e->value_mask & CWHeight) changes.x = e->x;
       if (e->value_mask & CWBorderWidth) changes.x = e->x;
-      XConfigureWindow (dpy, e->window, 
-			e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight), 
-			&changes);
+      XConfigureWindow (dpy, e->window,
+                        e->value_mask & (CWX|CWY|CWBorderWidth|CWWidth|CWHeight),
+                        &changes);
     }
 }
 
@@ -355,26 +355,26 @@ client_msg (XClientMessageEvent *ev)
       win = find_window (ev->window);
       if (win == NULL) return;
       if (ev->format == 32 && ev->data.l[0] == IconicState)
-	{
-	  /* FIXME: This means clients can hide themselves without the
-	     user's intervention. This is bad, but Emacs is the only
-	     program I know of that iconifies itself and this is
-	     generally from the user pressing C-z.  */
-	  PRINT_DEBUG (("Iconify Request.\n"));
-	  if (win->state == NormalState)
-	    {
-	      rp_window *w = find_window_other(win->scr);
+        {
+          /* FIXME: This means clients can hide themselves without the
+             user's intervention. This is bad, but Emacs is the only
+             program I know of that iconifies itself and this is
+             generally from the user pressing C-z.  */
+          PRINT_DEBUG (("Iconify Request.\n"));
+          if (win->state == NormalState)
+            {
+              rp_window *w = find_window_other(win->scr);
 
-	      if (w)
-		set_active_window (w);
-	      else
-		blank_frame (screen_get_frame (win->scr, win->scr->current_frame));
-	    }
-	}
+              if (w)
+                set_active_window (w);
+              else
+                blank_frame (screen_get_frame (win->scr, win->scr->current_frame));
+            }
+        }
       else
-	{
-	  PRINT_ERROR (("Non-standard WM_CHANGE_STATE format\n"));
-	}
+        {
+          PRINT_ERROR (("Non-standard WM_CHANGE_STATE format\n"));
+        }
     }
 }
 
@@ -414,13 +414,13 @@ handle_key (KeySym ks, unsigned int mod, rp_screen *s)
       PRINT_DEBUG(("%s\n", key_action->data));
 
       result = command (1, key_action->data);
-      
+
       if (result)
-	{
-	  if (result->output)
-	    message (result->output);
-	  cmdret_free (result);
-	}
+        {
+          if (result->output)
+            message (result->output);
+          cmdret_free (result);
+        }
     }
   else
     {
@@ -441,7 +441,7 @@ key_press (XEvent *ev)
     s = find_screen (ev->xkey.root);
 
 #ifdef HIDE_MOUSE
-  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2, s->top + s->height - 2); 
+  XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2, s->top + s->height - 2);
 #endif
 
   if (!s) return;
@@ -468,9 +468,9 @@ execute_remote_command (Window w)
   unsigned char *req;
 
   status = XGetWindowProperty (dpy, w, rp_command,
-			       0, 0, False, XA_STRING,
-			       &type_ret, &format_ret, &nitems, &bytes_after,
-			       &req);
+                               0, 0, False, XA_STRING,
+                               &type_ret, &format_ret, &nitems, &bytes_after,
+                               &req);
 
   if (status != Success || req == NULL)
     {
@@ -479,13 +479,13 @@ execute_remote_command (Window w)
     }
 
   /* XGetWindowProperty always allocates one extra byte even if
-     the property is zero length. */  
+     the property is zero length. */
   XFree (req);
 
   status = XGetWindowProperty (dpy, w, rp_command,
-			       0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-			       True, XA_STRING, &type_ret, &format_ret, &nitems, 
-			       &bytes_after, &req);
+                               0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+                               True, XA_STRING, &type_ret, &format_ret, &nitems,
+                               &bytes_after, &req);
 
   if (status != Success || req == NULL)
     {
@@ -530,49 +530,49 @@ receive_command (Window root)
 
       length = sizeof (Window) / 4 + (sizeof (Window) % 4 ?1:0);
       ret = XGetWindowProperty (dpy, root,
-				rp_command_request, 
-				offset, length, 
-				True, XA_WINDOW, &type_ret, &format_ret,
-				&nitems,
-				&bytes_after, &prop_return);
+                                rp_command_request,
+                                offset, length,
+                                True, XA_WINDOW, &type_ret, &format_ret,
+                                &nitems,
+                                &bytes_after, &prop_return);
 
       /* Update the offset to point to the next window (if there is
-	 another one). */
+         another one). */
       offset += length;
 
       if (ret != Success)
-	{
-	  PRINT_ERROR (("XGetWindowProperty Failed\n"));
-	  if (prop_return)
-	    XFree (prop_return);
-	  break;
-	}
+        {
+          PRINT_ERROR (("XGetWindowProperty Failed\n"));
+          if (prop_return)
+            XFree (prop_return);
+          break;
+        }
 
       /* If there was no window, then we're done. */
       if (prop_return == NULL)
-	{
-	  PRINT_DEBUG (("No property to read\n"));
-	  break;
-	}
+        {
+          PRINT_DEBUG (("No property to read\n"));
+          break;
+        }
 
       /* We grabbed a window, so now read the command stored in
-	 this window and execute it. */
+         this window and execute it. */
       w = *(Window *)prop_return;
       XFree (prop_return);
       cmd_ret = execute_remote_command (w);
 
       /* notify the client of any text that was returned by the
-	 command. */
+         command. */
       if (cmd_ret->output)
-	result = xsprintf ("%c%s", cmd_ret->success ? '1':'0', cmd_ret->output);
+        result = xsprintf ("%c%s", cmd_ret->success ? '1':'0', cmd_ret->output);
       else
-	result = NULL;
+        result = NULL;
       if (result)
-	XChangeProperty (dpy, w, rp_command_result, XA_STRING,
-			 8, PropModeReplace, (unsigned char *)result, strlen (result));
+        XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+                         8, PropModeReplace, (unsigned char *)result, strlen (result));
       else
-	XChangeProperty (dpy, w, rp_command_result, XA_STRING,
-			 8, PropModeReplace, NULL, 0);
+        XChangeProperty (dpy, w, rp_command_result, XA_STRING,
+                         8, PropModeReplace, NULL, 0);
       free (result);
       cmdret_free (cmd_ret);
     } while (bytes_after > 0);
@@ -594,49 +594,49 @@ property_notify (XEvent *ev)
     }
 
   win = find_window (ev->xproperty.window);
-  
+
   if (win)
     {
       if (ev->xproperty.atom == _net_wm_pid)
-	{
-	  struct rp_child_info *child_info;
+        {
+          struct rp_child_info *child_info;
 
-	  PRINT_DEBUG (("updating _NET_WM_PID\n"));
-	  child_info = get_child_info(win->w);
-	  if (child_info) 
-	    {
+          PRINT_DEBUG (("updating _NET_WM_PID\n"));
+          child_info = get_child_info(win->w);
+          if (child_info)
+            {
               if (child_info->frame)
-	        {
+                {
                   PRINT_DEBUG (("frame=%p\n", child_info->frame));
                   win->intended_frame_number = child_info->frame->number;
-	        }
-	      /* TODO: also adopt group information? */
-	    }
-	} else 
-	switch (ev->xproperty.atom)
-	  {
-	  case XA_WM_NAME:
-	    PRINT_DEBUG (("updating window name\n"));
-	    update_window_name (win);
-	    update_window_names (win->scr, defaults.window_fmt);
-	    break;
+                }
+              /* TODO: also adopt group information? */
+            }
+        } else
+        switch (ev->xproperty.atom)
+          {
+          case XA_WM_NAME:
+            PRINT_DEBUG (("updating window name\n"));
+            update_window_name (win);
+            update_window_names (win->scr, defaults.window_fmt);
+            break;
 
-	  case XA_WM_NORMAL_HINTS:
-	    PRINT_DEBUG (("updating window normal hints\n"));
-	    update_normal_hints (win);
-	    if (win->state == NormalState)
-	      maximize (win);
-	    break;
+          case XA_WM_NORMAL_HINTS:
+            PRINT_DEBUG (("updating window normal hints\n"));
+            update_normal_hints (win);
+            if (win->state == NormalState)
+              maximize (win);
+            break;
 
-	  case XA_WM_TRANSIENT_FOR:
-	    PRINT_DEBUG (("Transient for\n"));
-	    win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);
-	    break;
+          case XA_WM_TRANSIENT_FOR:
+            PRINT_DEBUG (("Transient for\n"));
+            win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);
+            break;
 
-	  default:
-	    PRINT_DEBUG (("Unhandled property notify event: %ld\n", ev->xproperty.atom));
-	    break;
-	  }
+          default:
+            PRINT_DEBUG (("Unhandled property notify event: %ld\n", ev->xproperty.atom));
+            break;
+          }
     }
 }
 
@@ -652,20 +652,20 @@ colormap_notify (XEvent *ev)
       XWindowAttributes attr;
 
       /* SDL sets the colormap just before destroying the window, so
-	 ignore BadWindow errors. */
+         ignore BadWindow errors. */
       ignore_badwindow++;
 
       XGetWindowAttributes (dpy, win->w, &attr);
       win->colormap = attr.colormap;
 
       if (win == current_window())
-	{
-	  XInstallColormap (dpy, win->colormap);
-	}
+        {
+          XInstallColormap (dpy, win->colormap);
+        }
 
       ignore_badwindow--;
     }
-}	  
+}
 
 static void
 focus_change (XFocusChangeEvent *ev)
@@ -738,26 +738,26 @@ selection_request (XSelectionRequestEvent *rq)
     target_list[2] = (CARD32) xa_text;
     target_list[3] = (CARD32) xa_compound_text;
     XChangeProperty(dpy, rq->requestor, rq->property, rq->target,
-		    (8 * sizeof(target_list[0])), PropModeReplace,
-		    (unsigned char *)target_list,
-		    (sizeof(target_list) / sizeof(target_list[0])));
+                    (8 * sizeof(target_list[0])), PropModeReplace,
+                    (unsigned char *)target_list,
+                    (sizeof(target_list) / sizeof(target_list[0])));
     ev.xselection.property = rq->property;
   } else if (rq->target == XA_STRING
-	     || rq->target == xa_compound_text
-	     || rq->target == xa_text) {
+             || rq->target == xa_compound_text
+             || rq->target == xa_text) {
     if (rq->target == XA_STRING) {
       style = XStringStyle;
       target = XA_STRING;
     } else {
       target = xa_compound_text;
       style = (rq->target == xa_compound_text) ? XCompoundTextStyle
-	: XStdICCTextStyle;
+        : XStdICCTextStyle;
     }
     cl[0] = selection.text;
     XmbTextListToTextProperty(dpy, cl, 1, style, &ct);
     XChangeProperty(dpy, rq->requestor, rq->property,
-		    target, 8, PropModeReplace,
-		    ct.value, ct.nitems);
+                    target, 8, PropModeReplace,
+                    ct.value, ct.nitems);
     ev.xselection.property = rq->property;
   }
   XSendEvent(dpy, rq->requestor, False, 0, &ev);
@@ -875,8 +875,8 @@ handle_signals ()
 
       /* Only hide the bar if it times out. */
       if (defaults.bar_timeout > 0)
-	for (i=0; i<num_screens; i++)
-	  hide_bar (&screens[i]);
+        for (i=0; i<num_screens; i++)
+          hide_bar (&screens[i]);
 
       hide_frame_indicator();
       alarm_signalled = 0;
@@ -889,18 +889,18 @@ handle_signals ()
 
       /* Report and remove terminated processes. */
       list_for_each_safe_entry (cur, iter, tmp, &rp_children, node)
-	{
-	  if (cur->terminated)
-	    {
-	      /* Report any child that didn't return 0. */
-	      if (cur->status != 0)
-		marked_message_printf (0,0, "/bin/sh -c \"%s\" finished (%d)", 
-				       cur->cmd, cur->status);
-	      list_del  (&cur->node);
-	      free (cur->cmd);
-	      free (cur);
-	    }
-	}
+        {
+          if (cur->terminated)
+            {
+              /* Report any child that didn't return 0. */
+              if (cur->status != 0)
+                marked_message_printf (0,0, "/bin/sh -c \"%s\" finished (%d)",
+                                       cur->cmd, cur->status);
+              list_del  (&cur->node);
+              free (cur->cmd);
+              free (cur);
+            }
+        }
 
       chld_signalled = 0;
     }
@@ -925,7 +925,7 @@ handle_signals ()
     {
       PRINT_DEBUG (("Restarting\n"));
       hook_run (&rp_restart_hook);
-      clean_up (); 
+      clean_up ();
       execvp(myargv[0], myargv);
     }
 
@@ -957,21 +957,20 @@ listen_for_events ()
   FD_ZERO (&fds);
 
   /* Loop forever. */
-  for (;;) 
+  for (;;)
     {
       handle_signals ();
 
       /* Handle the next event. */
       FD_SET (x_fd, &fds);
       XFlush(dpy);
-      
+
       if (QLength (dpy) > 0
-	  || select(x_fd+1, &fds, NULL, NULL, NULL) == 1)
-	{
-	  XNextEvent (dpy, &rp_current_event);
-	  delegate_event (&rp_current_event);
-	  XSync(dpy, False);
-	}
+          || select(x_fd+1, &fds, NULL, NULL, NULL) == 1)
+        {
+          XNextEvent (dpy, &rp_current_event);
+          delegate_event (&rp_current_event);
+          XSync(dpy, False);
+        }
     }
 }
-

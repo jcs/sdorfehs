@@ -78,7 +78,7 @@ add_set_var (char *name, cmdret * (*fn)(struct cmdarg **), int nargs, ...)
   var->set_fn = fn;
   var->nargs = nargs;
   var->args = xmalloc(sizeof(struct argspec) * nargs);
-  
+
   /* Fill var->args */
   va_start(va, nargs);
   for (i=0; i<nargs; i++)
@@ -101,8 +101,8 @@ init_set_vars()
   add_set_var ("maxsizegravity", set_maxsizegravity, 1, "", arg_GRAVITY);
   add_set_var ("bargravity", set_bargravity, 1, "", arg_GRAVITY);
   add_set_var ("font", set_font, 1, "", arg_STRING);
-  add_set_var ("padding", set_padding, 4, 
-	       "", arg_NUMBER, "", arg_NUMBER, "", arg_NUMBER, "", arg_NUMBER);
+  add_set_var ("padding", set_padding, 4,
+               "", arg_NUMBER, "", arg_NUMBER, "", arg_NUMBER, "", arg_NUMBER);
   add_set_var ("border", set_border, 1, "", arg_NUMBER);
   add_set_var ("barborder", set_barborder, 1, "", arg_NUMBER);
   add_set_var ("inputwidth", set_inputwidth, 1, "", arg_NUMBER);
@@ -137,7 +137,7 @@ add_command (char *name, cmdret * (*fn)(int, struct cmdarg **), int nargs, int i
   cmd->ni_required_args = ni_nrequired;
   cmd->i_required_args = i_nrequired;
   cmd->args = xmalloc(sizeof(struct argspec) * nargs);
-  
+
   /* Fill cmd->args */
   va_start(va, ni_nrequired);
   for (i=0; i<nargs; i++)
@@ -154,179 +154,179 @@ void
 init_user_commands()
 {
   /*@begin (tag required for genrpbindings) */
-  add_command ("abort",		cmd_abort,	0, 0, 0);
-  add_command ("addhook",	cmd_addhook,	2, 2, 2,
-	       "Hook: ", arg_HOOK,
-	       "Command: ", arg_REST);
-  add_command ("alias",		cmd_alias,	2, 2, 2,
-	       "Alias: ", arg_STRING,
-	       "Command: ", arg_REST);
-  add_command ("banish",	cmd_banish,	0, 0, 0);
-  add_command ("chdir",		cmd_chdir,	1, 0, 0,
-	       "Dir: ", arg_REST);
-  add_command ("clrunmanaged",	cmd_clrunmanaged, 0, 0, 0);
-  add_command ("colon",		cmd_colon,	1, 0, 0,
-	       "", arg_REST);
-  add_command ("curframe",	cmd_curframe,	0, 0, 0);
-  add_command ("definekey",	cmd_definekey,	3, 3, 3,
-	       "Keymap: ", arg_KEYMAP,
-	       "Key: ", arg_KEY,
-	       "Command: ", arg_REST);
-  add_command ("undefinekey",	cmd_undefinekey, 2, 2, 2,
-	       "Keymap: ", arg_KEYMAP,
-	       "Key: ", arg_KEY);
-  add_command ("delete",	cmd_delete,	0, 0, 0);
-  add_command ("delkmap",	cmd_delkmap,	1, 1, 1,
-	       "Keymap: ", arg_KEYMAP);
-  add_command ("echo",		cmd_echo,	1, 1, 1,
-	       "Echo: ", arg_RAW);
-  add_command ("escape",	cmd_escape,	1, 1, 1,
-	       "Key: ", arg_KEY);
-  add_command ("exec",		cmd_exec,	1, 1, 1, 
-	       "/bin/sh -c ", arg_SHELLCMD);
-  add_command ("fdump",		cmd_fdump,	1, 0, 0,
-	       "", arg_NUMBER);
-  add_command ("focus",		cmd_next_frame,	0, 0, 0);
-  add_command ("focusprev",	cmd_prev_frame,	0, 0, 0);
-  add_command ("focusdown",	cmd_focusdown,	0, 0, 0);
-  add_command ("focuslast",	cmd_focuslast,	0, 0, 0);
-  add_command ("focusleft",	cmd_focusleft,	0, 0, 0);
-  add_command ("focusright",	cmd_focusright,	0, 0, 0);
-  add_command ("focusup",	cmd_focusup,	0, 0, 0);
-  add_command ("frestore",	cmd_frestore,	1, 1, 1,
-	       "Frames: ", arg_REST);
-  add_command ("fselect",	cmd_fselect,	1, 1, 1,
-	       "", arg_FRAME);
-  add_command ("gdelete",	cmd_gdelete,	1, 0, 0,
- 	       "Group:", arg_GROUP);
-  add_command ("getenv",	cmd_getenv,	1, 1, 1,
-	       "Variable: ", arg_STRING);
-  add_command ("gmerge",	cmd_gmerge,	1, 1, 1,
-	       "Group: ", arg_GROUP);
-  add_command ("gmove",		cmd_gmove,	1, 1, 1,
-	       "Group: ", arg_GROUP);
-  add_command ("gnew",		cmd_gnew,	1, 1, 1,
-	       "Name: ", arg_STRING);
-  add_command ("gnewbg",	cmd_gnewbg,	1, 1, 1,
-	       "Name: ", arg_STRING);
-  add_command ("gnext",		cmd_gnext,	0, 0, 0);
-  add_command ("gprev",		cmd_gprev,	0, 0, 0);
-  add_command ("gravity",	cmd_gravity,	1, 0, 0,
-	       "Gravity: ", arg_GRAVITY);
-  add_command ("groups",	cmd_groups,	0, 0, 0);
-  add_command ("gselect",	cmd_gselect,	1, 1, 1,
-	       "Group: ", arg_GROUP);
-  add_command ("help",		cmd_help,	1, 0, 0,
-	       "Keymap: ", arg_KEYMAP);
-  add_command ("hsplit",	cmd_h_split,	1, 0, 0,
-	       "Split: ", arg_STRING);
-  add_command ("info",		cmd_info,	1, 0, 0,
-	       "Format: ", arg_REST);
-  add_command ("kill",		cmd_kill,	0, 0, 0);
-  add_command ("lastmsg",	cmd_lastmsg,	0, 0, 0);
-  add_command ("license",	cmd_license,	0, 0, 0);
-  add_command ("link",		cmd_link,	2, 1, 1,
-	       "Key: ", arg_STRING,
-	       "Keymap: ", arg_KEYMAP);
-  add_command ("listhook",	cmd_listhook,	1, 1, 1,
-	       "Hook: ", arg_HOOK);
-  add_command ("meta",		cmd_meta,	1, 0, 0,
-	       "key: ", arg_KEY);
-  add_command ("msgwait",	cmd_msgwait,	1, 0, 0,
-	       "", arg_NUMBER);
-  add_command ("newkmap",	cmd_newkmap,	1, 1, 1,
-	       "Keymap: ", arg_STRING);
-  add_command ("newwm",		cmd_newwm,	1, 1, 1,
-	       "Switch to wm: ", arg_REST);
-  add_command ("next",		cmd_next,	0, 0, 0);
-  add_command ("nextscreen",	cmd_nextscreen,	0, 0, 0);
-  add_command ("number",	cmd_number,	2, 1, 1,
-	       "Number: ", arg_NUMBER,
-	       "Number: ", arg_NUMBER);
-  add_command ("only",		cmd_only,	0, 0, 0);
-  add_command ("other",		cmd_other,	0, 0, 0);
-  add_command ("prev",		cmd_prev,	0, 0, 0);
-  add_command ("prevscreen",	cmd_prevscreen,	0, 0, 0);
-  add_command ("quit",		cmd_quit,	0, 0, 0);
-  add_command ("ratwarp",	cmd_ratwarp,	2, 2, 2,
-	       "X: ", arg_NUMBER,
-	       "Y: ", arg_NUMBER);
-  add_command ("ratrelwarp",	cmd_ratrelwarp,	2, 2, 2,
-	       "X: ", arg_NUMBER,
-	       "Y: ", arg_NUMBER);
-  add_command ("ratclick",	cmd_ratclick,	1, 0, 0,
-	       "Button: ", arg_NUMBER);
-  add_command ("rathold",	cmd_rathold,	2, 1, 1,
-	       "State: ", arg_STRING,
-	       "Button: ", arg_NUMBER);
-  add_command ("readkey",	cmd_readkey,	1, 1, 1,
-	       "Keymap: ", arg_KEYMAP);
-  add_command ("redisplay",	cmd_redisplay,	0, 0, 0);
-  add_command ("remhook",	cmd_remhook,	2, 2, 2,
-	       "Hook: ", arg_HOOK,
-	       "Command: ", arg_REST);
-  add_command ("remove",	cmd_remove,	0, 0, 0);
-  add_command ("resize",	cmd_resize,	2, 0, 2,
-	       "", arg_NUMBER,
-	       "", arg_NUMBER);
-  add_command ("restart",	cmd_restart,	0, 0, 0);
-  add_command ("rudeness",	cmd_rudeness,	1, 0, 0,
-	       "Rudeness: ", arg_NUMBER);
-  add_command ("select",	cmd_select,	1, 0, 1,
-	       "Select window: ", arg_REST);
-  add_command ("set",		cmd_set,	2, 0, 0,
-	       "", arg_VARIABLE,
-	       "", arg_REST);
-  add_command ("setenv",	cmd_setenv,	2, 2, 2,
-	       "Variable: ", arg_STRING,
-	       "Value: ", arg_REST);
-  add_command ("shrink",	cmd_shrink,	0, 0, 0);
-  add_command ("source",	cmd_source,	1, 1, 1,
-	       "File: ", arg_REST);
-  add_command ("sselect",	cmd_sselect,	1, 1, 1,
-	       "Screen: ", arg_NUMBER);
-  add_command ("startup_message", cmd_startup_message,	1, 1, 1,
-	       "Startup message: ", arg_STRING);
-  add_command ("time",		cmd_time,	0, 0, 0);
-  add_command ("title",		cmd_rename,	1, 1, 1,
-	       "Set window's title to: ", arg_REST);
-  add_command ("tmpwm",		cmd_tmpwm,	1, 1, 1,
-	       "Tmp wm: ", arg_REST);
-  add_command ("unalias",	cmd_unalias,	1, 1, 1,
-	       "Alias: ", arg_STRING);
-  add_command ("unmanage",	cmd_unmanage,	1, 1, 0,
-	       "Unmanage: ", arg_REST);
-  add_command ("unsetenv",	cmd_unsetenv,	1, 1, 1,
-	       "Variable: ", arg_STRING);
-  add_command ("verbexec",	cmd_verbexec,	1, 1, 1,
-	       "/bin/sh -c ", arg_SHELLCMD);
-  add_command ("version",	cmd_version,	0, 0, 0);
-  add_command ("vsplit",	cmd_v_split,	1, 0, 0,
-	       "Split: ", arg_STRING);
-  add_command ("warp",		cmd_warp,	1, 1, 1,
-	       "Warp State: ", arg_STRING);
-  add_command ("windows",	cmd_windows,	1, 0, 0,
-	       "", arg_REST);
-  add_command ("cnext",		cmd_cnext,	0, 0, 0);
-  add_command ("cother",	cmd_cother,	0, 0, 0);
-  add_command ("cprev",		cmd_cprev,	0, 0, 0);
-  add_command ("dedicate",	cmd_dedicate,	1, 0, 0,
-	       "", arg_NUMBER);
-  add_command ("describekey",	cmd_describekey, 1, 1, 1,
-	       "Keymap: ", arg_KEYMAP);
-  add_command ("inext",		cmd_inext,	0, 0, 0);
-  add_command ("iother",	cmd_iother,	0, 0, 0);
-  add_command ("iprev",		cmd_iprev,	0, 0, 0);
-  add_command ("prompt",	cmd_prompt,	1, 0, 0,
-	       "", arg_REST);
-  add_command ("sdump",		cmd_sdump,	0, 0, 0);
-  add_command ("sfdump",	cmd_sfdump,	0, 0, 0);
-  add_command ("undo",		cmd_undo,	0, 0, 0);
-  add_command ("redo",		cmd_redo,	0, 0, 0);
-  add_command ("putsel",	cmd_putsel,	1, 1, 1,
-	       "Text: ", arg_RAW);
-  add_command ("getsel",	cmd_getsel,	0, 0, 0);
-  add_command ("compat",	cmd_compat,	0, 0, 0);
+  add_command ("abort",         cmd_abort,      0, 0, 0);
+  add_command ("addhook",       cmd_addhook,    2, 2, 2,
+               "Hook: ", arg_HOOK,
+               "Command: ", arg_REST);
+  add_command ("alias",         cmd_alias,      2, 2, 2,
+               "Alias: ", arg_STRING,
+               "Command: ", arg_REST);
+  add_command ("banish",        cmd_banish,     0, 0, 0);
+  add_command ("chdir",         cmd_chdir,      1, 0, 0,
+               "Dir: ", arg_REST);
+  add_command ("clrunmanaged",  cmd_clrunmanaged, 0, 0, 0);
+  add_command ("colon",         cmd_colon,      1, 0, 0,
+               "", arg_REST);
+  add_command ("curframe",      cmd_curframe,   0, 0, 0);
+  add_command ("definekey",     cmd_definekey,  3, 3, 3,
+               "Keymap: ", arg_KEYMAP,
+               "Key: ", arg_KEY,
+               "Command: ", arg_REST);
+  add_command ("undefinekey",   cmd_undefinekey, 2, 2, 2,
+               "Keymap: ", arg_KEYMAP,
+               "Key: ", arg_KEY);
+  add_command ("delete",        cmd_delete,     0, 0, 0);
+  add_command ("delkmap",       cmd_delkmap,    1, 1, 1,
+               "Keymap: ", arg_KEYMAP);
+  add_command ("echo",          cmd_echo,       1, 1, 1,
+               "Echo: ", arg_RAW);
+  add_command ("escape",        cmd_escape,     1, 1, 1,
+               "Key: ", arg_KEY);
+  add_command ("exec",          cmd_exec,       1, 1, 1,
+               "/bin/sh -c ", arg_SHELLCMD);
+  add_command ("fdump",         cmd_fdump,      1, 0, 0,
+               "", arg_NUMBER);
+  add_command ("focus",         cmd_next_frame, 0, 0, 0);
+  add_command ("focusprev",     cmd_prev_frame, 0, 0, 0);
+  add_command ("focusdown",     cmd_focusdown,  0, 0, 0);
+  add_command ("focuslast",     cmd_focuslast,  0, 0, 0);
+  add_command ("focusleft",     cmd_focusleft,  0, 0, 0);
+  add_command ("focusright",    cmd_focusright, 0, 0, 0);
+  add_command ("focusup",       cmd_focusup,    0, 0, 0);
+  add_command ("frestore",      cmd_frestore,   1, 1, 1,
+               "Frames: ", arg_REST);
+  add_command ("fselect",       cmd_fselect,    1, 1, 1,
+               "", arg_FRAME);
+  add_command ("gdelete",       cmd_gdelete,    1, 0, 0,
+               "Group:", arg_GROUP);
+  add_command ("getenv",        cmd_getenv,     1, 1, 1,
+               "Variable: ", arg_STRING);
+  add_command ("gmerge",        cmd_gmerge,     1, 1, 1,
+               "Group: ", arg_GROUP);
+  add_command ("gmove",         cmd_gmove,      1, 1, 1,
+               "Group: ", arg_GROUP);
+  add_command ("gnew",          cmd_gnew,       1, 1, 1,
+               "Name: ", arg_STRING);
+  add_command ("gnewbg",        cmd_gnewbg,     1, 1, 1,
+               "Name: ", arg_STRING);
+  add_command ("gnext",         cmd_gnext,      0, 0, 0);
+  add_command ("gprev",         cmd_gprev,      0, 0, 0);
+  add_command ("gravity",       cmd_gravity,    1, 0, 0,
+               "Gravity: ", arg_GRAVITY);
+  add_command ("groups",        cmd_groups,     0, 0, 0);
+  add_command ("gselect",       cmd_gselect,    1, 1, 1,
+               "Group: ", arg_GROUP);
+  add_command ("help",          cmd_help,       1, 0, 0,
+               "Keymap: ", arg_KEYMAP);
+  add_command ("hsplit",        cmd_h_split,    1, 0, 0,
+               "Split: ", arg_STRING);
+  add_command ("info",          cmd_info,       1, 0, 0,
+               "Format: ", arg_REST);
+  add_command ("kill",          cmd_kill,       0, 0, 0);
+  add_command ("lastmsg",       cmd_lastmsg,    0, 0, 0);
+  add_command ("license",       cmd_license,    0, 0, 0);
+  add_command ("link",          cmd_link,       2, 1, 1,
+               "Key: ", arg_STRING,
+               "Keymap: ", arg_KEYMAP);
+  add_command ("listhook",      cmd_listhook,   1, 1, 1,
+               "Hook: ", arg_HOOK);
+  add_command ("meta",          cmd_meta,       1, 0, 0,
+               "key: ", arg_KEY);
+  add_command ("msgwait",       cmd_msgwait,    1, 0, 0,
+               "", arg_NUMBER);
+  add_command ("newkmap",       cmd_newkmap,    1, 1, 1,
+               "Keymap: ", arg_STRING);
+  add_command ("newwm",         cmd_newwm,      1, 1, 1,
+               "Switch to wm: ", arg_REST);
+  add_command ("next",          cmd_next,       0, 0, 0);
+  add_command ("nextscreen",    cmd_nextscreen, 0, 0, 0);
+  add_command ("number",        cmd_number,     2, 1, 1,
+               "Number: ", arg_NUMBER,
+               "Number: ", arg_NUMBER);
+  add_command ("only",          cmd_only,       0, 0, 0);
+  add_command ("other",         cmd_other,      0, 0, 0);
+  add_command ("prev",          cmd_prev,       0, 0, 0);
+  add_command ("prevscreen",    cmd_prevscreen, 0, 0, 0);
+  add_command ("quit",          cmd_quit,       0, 0, 0);
+  add_command ("ratwarp",       cmd_ratwarp,    2, 2, 2,
+               "X: ", arg_NUMBER,
+               "Y: ", arg_NUMBER);
+  add_command ("ratrelwarp",    cmd_ratrelwarp, 2, 2, 2,
+               "X: ", arg_NUMBER,
+               "Y: ", arg_NUMBER);
+  add_command ("ratclick",      cmd_ratclick,   1, 0, 0,
+               "Button: ", arg_NUMBER);
+  add_command ("rathold",       cmd_rathold,    2, 1, 1,
+               "State: ", arg_STRING,
+               "Button: ", arg_NUMBER);
+  add_command ("readkey",       cmd_readkey,    1, 1, 1,
+               "Keymap: ", arg_KEYMAP);
+  add_command ("redisplay",     cmd_redisplay,  0, 0, 0);
+  add_command ("remhook",       cmd_remhook,    2, 2, 2,
+               "Hook: ", arg_HOOK,
+               "Command: ", arg_REST);
+  add_command ("remove",        cmd_remove,     0, 0, 0);
+  add_command ("resize",        cmd_resize,     2, 0, 2,
+               "", arg_NUMBER,
+               "", arg_NUMBER);
+  add_command ("restart",       cmd_restart,    0, 0, 0);
+  add_command ("rudeness",      cmd_rudeness,   1, 0, 0,
+               "Rudeness: ", arg_NUMBER);
+  add_command ("select",        cmd_select,     1, 0, 1,
+               "Select window: ", arg_REST);
+  add_command ("set",           cmd_set,        2, 0, 0,
+               "", arg_VARIABLE,
+               "", arg_REST);
+  add_command ("setenv",        cmd_setenv,     2, 2, 2,
+               "Variable: ", arg_STRING,
+               "Value: ", arg_REST);
+  add_command ("shrink",        cmd_shrink,     0, 0, 0);
+  add_command ("source",        cmd_source,     1, 1, 1,
+               "File: ", arg_REST);
+  add_command ("sselect",       cmd_sselect,    1, 1, 1,
+               "Screen: ", arg_NUMBER);
+  add_command ("startup_message", cmd_startup_message,  1, 1, 1,
+               "Startup message: ", arg_STRING);
+  add_command ("time",          cmd_time,       0, 0, 0);
+  add_command ("title",         cmd_rename,     1, 1, 1,
+               "Set window's title to: ", arg_REST);
+  add_command ("tmpwm",         cmd_tmpwm,      1, 1, 1,
+               "Tmp wm: ", arg_REST);
+  add_command ("unalias",       cmd_unalias,    1, 1, 1,
+               "Alias: ", arg_STRING);
+  add_command ("unmanage",      cmd_unmanage,   1, 1, 0,
+               "Unmanage: ", arg_REST);
+  add_command ("unsetenv",      cmd_unsetenv,   1, 1, 1,
+               "Variable: ", arg_STRING);
+  add_command ("verbexec",      cmd_verbexec,   1, 1, 1,
+               "/bin/sh -c ", arg_SHELLCMD);
+  add_command ("version",       cmd_version,    0, 0, 0);
+  add_command ("vsplit",        cmd_v_split,    1, 0, 0,
+               "Split: ", arg_STRING);
+  add_command ("warp",          cmd_warp,       1, 1, 1,
+               "Warp State: ", arg_STRING);
+  add_command ("windows",       cmd_windows,    1, 0, 0,
+               "", arg_REST);
+  add_command ("cnext",         cmd_cnext,      0, 0, 0);
+  add_command ("cother",        cmd_cother,     0, 0, 0);
+  add_command ("cprev",         cmd_cprev,      0, 0, 0);
+  add_command ("dedicate",      cmd_dedicate,   1, 0, 0,
+               "", arg_NUMBER);
+  add_command ("describekey",   cmd_describekey, 1, 1, 1,
+               "Keymap: ", arg_KEYMAP);
+  add_command ("inext",         cmd_inext,      0, 0, 0);
+  add_command ("iother",        cmd_iother,     0, 0, 0);
+  add_command ("iprev",         cmd_iprev,      0, 0, 0);
+  add_command ("prompt",        cmd_prompt,     1, 0, 0,
+               "", arg_REST);
+  add_command ("sdump",         cmd_sdump,      0, 0, 0);
+  add_command ("sfdump",        cmd_sfdump,     0, 0, 0);
+  add_command ("undo",          cmd_undo,       0, 0, 0);
+  add_command ("redo",          cmd_redo,       0, 0, 0);
+  add_command ("putsel",        cmd_putsel,     1, 1, 1,
+               "Text: ", arg_RAW);
+  add_command ("getsel",        cmd_getsel,     0, 0, 0);
+  add_command ("compat",        cmd_compat,     0, 0, 0);
   /*@end (tag required for genrpbindings) */
 
   /* Commands to help debug ratpoison. */
@@ -351,7 +351,7 @@ typedef struct
   char *name;
   char *alias;
 } alias_t;
-  
+
 static alias_t *alias_list;
 static int alias_list_size;
 static int alias_list_last;
@@ -380,10 +380,10 @@ del_frame_undo (rp_frame_undo *u)
   if (u->frames) free (u->frames);
   list_del (&(u->node));
   free (u);
-  rp_num_frame_undos--;		/* decrement counter */
+  rp_num_frame_undos--;         /* decrement counter */
 }
 
-static void 
+static void
 push_frame_undo(rp_screen *screen)
 {
   rp_frame_undo *cur;
@@ -397,7 +397,7 @@ push_frame_undo(rp_screen *screen)
   cur->frames = fdump (screen);
   cur->screen = screen;
   list_add (&cur->node, &rp_frame_undos);
-  rp_num_frame_undos++;		/* increment counter */
+  rp_num_frame_undos++;         /* increment counter */
   /* Since we're creating new frames the redo list is now invalid, so
      clear it. */
   clear_frame_redos();
@@ -446,9 +446,9 @@ find_keybinding_by_action (char *action, rp_keymap *map)
   for (i=0; i<map->actions_last; i++)
     {
       if (!strcmp (map->actions[i].data, action))
-	{
-	  return &map->actions[i];
-	}
+        {
+          return &map->actions[i];
+        }
     }
 
   return NULL;
@@ -460,9 +460,9 @@ find_keybinding (KeySym keysym, int state, rp_keymap *map)
   int i;
   for (i = 0; i < map->actions_last; i++)
     {
-      if (map->actions[i].key == keysym 
-	  && map->actions[i].state == state)
-	return &map->actions[i];
+      if (map->actions[i].key == keysym
+          && map->actions[i].state == state)
+        return &map->actions[i];
     }
   return NULL;
 }
@@ -521,7 +521,7 @@ add_keybinding (KeySym keysym, int state, char *cmd, rp_keymap *map)
   map->actions[map->actions_last].key = keysym;
   map->actions[map->actions_last].state = state;
   /* free this on shutdown, or re/unbinding */
-  map->actions[map->actions_last].data = xstrdup (cmd); 
+  map->actions[map->actions_last].data = xstrdup (cmd);
 
   map->actions_last++;
 }
@@ -544,20 +544,20 @@ remove_keybinding (KeySym keysym, int state, rp_keymap *map)
   for (i=0; i<map->actions_last; i++)
     {
       if (map->actions[i].key == keysym && map->actions[i].state == state)
-	{
-	  found = i;
-	  break;
-	}
+        {
+          found = i;
+          break;
+        }
     }
 
   if (found >= 0)
     {
       free (map->actions[found].data);
 
-      memmove (&map->actions[found], &map->actions[found+1], 
-	       sizeof (rp_action) * (map->actions_last - found - 1));
+      memmove (&map->actions[found], &map->actions[found+1],
+               sizeof (rp_action) * (map->actions_last - found - 1));
       map->actions_last--;
-      
+
       return 1;
     }
 
@@ -570,7 +570,7 @@ keymap_new (char *name)
   rp_keymap *map;
 
   /* All keymaps must have a name. */
-  if (name == NULL) 
+  if (name == NULL)
     return NULL;
 
   map = xmalloc (sizeof (rp_keymap));
@@ -590,9 +590,9 @@ find_keymap (char *name)
   list_for_each_entry (cur, &rp_keymaps, node)
     {
       if (!strcmp (name, cur->name))
-	{
-	  return cur;
-	}
+        {
+          return cur;
+        }
     }
 
   return NULL;
@@ -627,10 +627,10 @@ add_alias (char *name, char *alias)
   else
     {
       if (alias_list_last >= alias_list_size)
-	{
-	  alias_list_size *= 2;
-	  alias_list = xrealloc (alias_list, sizeof (alias_t) * alias_list_size);
-	}
+        {
+          alias_list_size *= 2;
+          alias_list = xrealloc (alias_list, sizeof (alias_t) * alias_list_size);
+        }
 
       alias_list[alias_list_last].name = xstrdup (name);
       alias_list[alias_list_last].alias = xstrdup (alias);
@@ -679,7 +679,7 @@ initialize_default_keybindings (void)
   add_keybinding (XK_K, 0, "kill", map);
   add_keybinding (XK_K, RP_CONTROL_MASK, "kill", map);
   add_keybinding (XK_Return, 0, "next", map);
-  add_keybinding (XK_Return, RP_CONTROL_MASK,	"next", map);
+  add_keybinding (XK_Return, RP_CONTROL_MASK,   "next", map);
   add_keybinding (XK_a, 0, "time", map);
   add_keybinding (XK_a, RP_CONTROL_MASK, "time", map);
   add_keybinding (XK_b, 0, "banish", map);
@@ -817,9 +817,9 @@ free_aliases ()
 
 /* return a KeySym from a string that contains either a hex value or
    an X keysym description */
-static int string_to_keysym (char *str) 
-{ 
-  int retval; 
+static int string_to_keysym (char *str)
+{
+  int retval;
   int keysym;
 
   retval = sscanf (str, "0x%x", &keysym);
@@ -836,7 +836,7 @@ parse_keydesc (char *s, struct rp_key *key)
 {
   char *token, *next_token, *keydesc;
 
-  if (s == NULL) 
+  if (s == NULL)
     return NULL;
 
   /* Avoid mangling s. */
@@ -852,11 +852,11 @@ parse_keydesc (char *s, struct rp_key *key)
 
       /* A keycode of 0 means the keysym doesn't have a keycode. */
       if (key->sym == NoSymbol || XKeysymToKeycode (dpy, key->sym) == 0)
-	{
-	  cmdret *ret = cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'", keydesc);
-	  free (keydesc);
-	  return ret;
-	}
+        {
+          cmdret *ret = cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'", keydesc);
+          free (keydesc);
+          return ret;
+        }
     }
   else if (keydesc[strlen (keydesc) - 1] == '-')
     {
@@ -870,68 +870,68 @@ parse_keydesc (char *s, struct rp_key *key)
       token = strtok (keydesc, "-");
 
       if (token == NULL)
-	{
-	  /* It was nothing but hyphens */
-	  free (keydesc);
-	  return cmdret_new (RET_FAILURE, "parse_keydesc: Can't parse key '%s'", s);
-	}
+        {
+          /* It was nothing but hyphens */
+          free (keydesc);
+          return cmdret_new (RET_FAILURE, "parse_keydesc: Can't parse key '%s'", s);
+        }
 
       do
-	{
-	  next_token = strtok (NULL, "-");
+        {
+          next_token = strtok (NULL, "-");
 
-	  if (next_token == NULL)
-	    {
-	      /* There is nothing more to parse and token contains the
-		 keysym name. */
-	      key->sym = string_to_keysym (token);
+          if (next_token == NULL)
+            {
+              /* There is nothing more to parse and token contains the
+                 keysym name. */
+              key->sym = string_to_keysym (token);
 
-	      /* A keycode of 0 means the keysym doesn't have a keycode. */
-	      if (key->sym == NoSymbol || XKeysymToKeycode (dpy, key->sym) == 0)
-		{
-		  cmdret *ret = cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'", token);
-		  free (keydesc);
-		  return ret;
-		}
-	    }
-	  else
-	    {
-	      /* Which modifier is it? Only accept modifiers that are
-		 present. ie don't accept a hyper modifier if the keymap
-		 has no hyper key. */
-	      if (!strcmp (token, "C"))
-		{
-		  key->state |= RP_CONTROL_MASK;
-		}
-	      else if (!strcmp (token, "M"))
-		{
-		  key->state |= RP_META_MASK;
-		}
-	      else if (!strcmp (token, "A"))
-		{
-		  key->state |= RP_ALT_MASK;
-		}
-	      else if (!strcmp (token, "S"))
-		{
-		  key->state |= RP_SHIFT_MASK;
-		}
-	      else if (!strcmp (token, "s"))
-		{
-		  key->state |= RP_SUPER_MASK;
-		}
-	      else if (!strcmp (token, "H"))
-		{
-		  key->state |= RP_HYPER_MASK;
-		}
-	      else
-		{
-		  free (keydesc);
-		  return cmdret_new (RET_FAILURE, "parse_keydesc: Unknown modifier '%s'", token);
-		}
-	    }
+              /* A keycode of 0 means the keysym doesn't have a keycode. */
+              if (key->sym == NoSymbol || XKeysymToKeycode (dpy, key->sym) == 0)
+                {
+                  cmdret *ret = cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'", token);
+                  free (keydesc);
+                  return ret;
+                }
+            }
+          else
+            {
+              /* Which modifier is it? Only accept modifiers that are
+                 present. ie don't accept a hyper modifier if the keymap
+                 has no hyper key. */
+              if (!strcmp (token, "C"))
+                {
+                  key->state |= RP_CONTROL_MASK;
+                }
+              else if (!strcmp (token, "M"))
+                {
+                  key->state |= RP_META_MASK;
+                }
+              else if (!strcmp (token, "A"))
+                {
+                  key->state |= RP_ALT_MASK;
+                }
+              else if (!strcmp (token, "S"))
+                {
+                  key->state |= RP_SHIFT_MASK;
+                }
+              else if (!strcmp (token, "s"))
+                {
+                  key->state |= RP_SUPER_MASK;
+                }
+              else if (!strcmp (token, "H"))
+                {
+                  key->state |= RP_HYPER_MASK;
+                }
+              else
+                {
+                  free (keydesc);
+                  return cmdret_new (RET_FAILURE, "parse_keydesc: Unknown modifier '%s'", token);
+                }
+            }
 
-	  token = next_token;
-	} while (next_token != NULL);
+          token = next_token;
+        } while (next_token != NULL);
     }
 
   /* Successfully parsed the key. */
@@ -1057,7 +1057,7 @@ cmd_meta (int interactive, struct cmdarg **args)
   XEvent ev1, ev;
   ev = rp_current_event;
 
-  if (current_window() == NULL) 
+  if (current_window() == NULL)
     return cmdret_new (RET_FAILURE, NULL);
 
       ev1.xkey.type = KeyPress;
@@ -1067,11 +1067,11 @@ cmd_meta (int interactive, struct cmdarg **args)
   if (args[0])
     {
       if((ret = parse_keydesc (ARG_STRING(0), &key)))
-	return ret;
+        return ret;
 
       ev1.xkey.state = rp_mask_to_x11_mask (key.state);
       if(!(ev1.xkey.keycode = XKeysymToKeycode (dpy, key.sym)))
-	return cmdret_new (RET_FAILURE, "meta: Couldn't convert keysym to keycode");
+        return cmdret_new (RET_FAILURE, "meta: Couldn't convert keysym to keycode");
     }
   else
     {
@@ -1261,30 +1261,30 @@ cmd_select (int interactive, struct cmdarg **args)
   if (strlen (str) > 0)
     {
       if (strlen (str) == 1 && str[0] == '-')
-	{
-	  blank_frame (current_frame());
-	}
+        {
+          blank_frame (current_frame());
+        }
       /* try by number */
       else if ((n = string_to_window_number (str)) >= 0)
-	{
-	  rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
+        {
+          rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
 
-	  if (elem)
-	    goto_window (elem->win);
-	  else
-	    /* show the window list as feedback */
-	    show_bar (current_screen (), defaults.window_fmt);
-	}
+          if (elem)
+            goto_window (elem->win);
+          else
+            /* show the window list as feedback */
+            show_bar (current_screen (), defaults.window_fmt);
+        }
       else
-	/* try by name */
-	{
-	  rp_window *win = find_window_name (str);
+        /* try by name */
+        {
+          rp_window *win = find_window_name (str);
 
-	  if (win)
-	    goto_window (win);
-	  else
-	    ret = cmdret_new (RET_FAILURE, "select: unknown window '%s'", str);
-	}
+          if (win)
+            goto_window (win);
+          else
+            ret = cmdret_new (RET_FAILURE, "select: unknown window '%s'", str);
+        }
     }
 
   free (str);
@@ -1298,13 +1298,13 @@ cmd_select (int interactive, struct cmdarg **args)
 cmdret *
 cmd_rename (int interactive, struct cmdarg **args)
 {
-  if (current_window() == NULL) 
+  if (current_window() == NULL)
     return cmdret_new (RET_FAILURE, NULL);
 
   free (current_window()->user_name);
   current_window()->user_name = xstrdup (ARG_STRING(0));
   current_window()->named = 1;
-  
+
   /* Update the program bar. */
   update_window_names (current_screen(), defaults.window_fmt);
 
@@ -1374,7 +1374,7 @@ frame_selector_match (char ch)
   for (i=0; i<strlen (defaults.frame_selectors); i++)
     {
       if (ch == defaults.frame_selectors[i])
-	return i;
+        return i;
     }
 
   /* Maybe it's a number less than 9 and the frame selector doesn't
@@ -1399,7 +1399,7 @@ read_string (struct argspec *spec, struct sbuf *s, completion_fn fn,  struct cmd
     input = get_input (spec->prompt, fn);
 
   if (input)
-    {      
+    {
       *arg = xmalloc (sizeof(struct cmdarg));
       (*arg)->type = spec->type;
       (*arg)->string = input;
@@ -1424,7 +1424,7 @@ read_keymap (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
       rp_keymap *map;
       map = find_keymap (input);
       if (map == NULL)
-	return cmdret_new (RET_FAILURE, "unknown keymap '%s'", input);
+        return cmdret_new (RET_FAILURE, "unknown keymap '%s'", input);
       *arg = xmalloc (sizeof(struct cmdarg));
       (*arg)->type = spec->type;
       (*arg)->arg.keymap = map;
@@ -1451,8 +1451,8 @@ read_keydesc (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
       struct rp_key *key = xmalloc (sizeof(struct rp_key));
       ret = parse_keydesc (input, key);
       if (ret) {
-	free (key);
-	return ret;
+        free (key);
+        return ret;
       }
       *arg = xmalloc (sizeof(struct cmdarg));
       (*arg)->type = spec->type;
@@ -1482,15 +1482,15 @@ group_completions (char *str)
 
       s = sbuf_new (0);
       /* A group may not have a name, so if it doesn't, use it's
-	 number. */
+         number. */
       if (cur->name)
-	{
-	  sbuf_copy (s, cur->name);
-	}
+        {
+          sbuf_copy (s, cur->name);
+        }
       else
-	{
-	  sbuf_printf (s, "%d", cur->number);
-	}
+        {
+          sbuf_printf (s, "%d", cur->number);
+        }
 
       list_add_tail (&s->node, list);
     }
@@ -1516,7 +1516,7 @@ colon_completions (char* str)
       s = sbuf_new (0);
       sbuf_copy (s, alias_list[i].name);
       /* The space is so when the user completes a space is
-	 conveniently inserted after the command. */
+         conveniently inserted after the command. */
       sbuf_concat (s, " ");
       list_add_tail (&s->node, list);
     }
@@ -1527,7 +1527,7 @@ colon_completions (char* str)
       s = sbuf_new (0);
       sbuf_copy (s, uc->name);
       /* The space is so when the user completes a space is
-	 conveniently inserted after the command. */
+         conveniently inserted after the command. */
       sbuf_concat (s, " ");
       list_add_tail (&s->node, list);
     }
@@ -1554,7 +1554,7 @@ exec_completions (char *str)
   /* Initialize our list. */
   head = xmalloc (sizeof (struct list_head));
   INIT_LIST_HEAD (head);
-	
+
   /* FIXME: A Bash dependancy?? */
   completion_string = xsprintf("bash -c \"compgen -ac %s|sort\"", str);
   file = popen (completion_string, "r");
@@ -1576,23 +1576,23 @@ exec_completions (char *str)
       sbuf_concat (line, partial);
 
       if (feof(file) || (*(sbuf_get (line) + strlen(sbuf_get (line)) - 1) == '\n'))
-	{
-	  char *s;
-	  struct sbuf *elem;
+        {
+          char *s;
+          struct sbuf *elem;
 
-	  s = sbuf_get (line);
+          s = sbuf_get (line);
 
-	  /* Frob the newline into */
-	  if (*(s + strlen(s) - 1) == '\n')
-	    *(s + strlen(s) - 1) = '\0';
-	      
-	  /* Add our line to the list. */
-	  elem = sbuf_new (0);
-	  sbuf_copy (elem, s);
-	  list_add_tail (&elem->node, head);
+          /* Frob the newline into */
+          if (*(s + strlen(s) - 1) == '\n')
+            *(s + strlen(s) - 1) = '\0';
 
-	  sbuf_clear (line);
-	}
+          /* Add our line to the list. */
+          elem = sbuf_new (0);
+          sbuf_copy (elem, s);
+          list_add_tail (&elem->node, head);
+
+          sbuf_clear (line);
+        }
     }
 
   free (partial);
@@ -1626,53 +1626,53 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
     {
       frames = 0;
       for (j=0; j<num_screens; j++)
-	frames += num_frames(&screens[j]);
+        frames += num_frames(&screens[j]);
 
       wins = xmalloc (sizeof (Window) * frames);
 
       /* Loop through each frame and display its number in it's top
-	 left corner. */
+         left corner. */
       i = 0;
       for (j=0; j<num_screens; j++)
-	{
-	  XSetWindowAttributes attr;
-	  rp_screen *s = &screens[j];
-      
-	  /* Set up the window attributes to be used in the loop. */
-	  attr.border_pixel = s->fg_color;
-	  attr.background_pixel = s->bg_color;
-	  attr.override_redirect = True;
+        {
+          XSetWindowAttributes attr;
+          rp_screen *s = &screens[j];
 
-	  list_for_each_entry (cur, &s->frames, node)
-	    {
-	      int width, height;
-	      char *num;
+          /* Set up the window attributes to be used in the loop. */
+          attr.border_pixel = s->fg_color;
+          attr.background_pixel = s->bg_color;
+          attr.override_redirect = True;
 
-	      /* Create the string to be displayed in the window and
-		 determine the height and width of the window. */
-	      /* 	      num = xsprintf (" %d ", cur->number); */
-	      num = frame_selector (cur->number);
-	      width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, num, strlen (num));
-	      height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
+          list_for_each_entry (cur, &s->frames, node)
+            {
+              int width, height;
+              char *num;
 
-	      /* Create and map the window. */
-	      wins[i] = XCreateWindow (dpy, s->root, s->left + cur->x, s->top + cur->y, width, height, 1, 
-				       CopyFromParent, CopyFromParent, CopyFromParent,
-				       CWOverrideRedirect | CWBorderPixel | CWBackPixel,
-				       &attr);
-	      XMapWindow (dpy, wins[i]);
-	      XClearWindow (dpy, wins[i]);
+              /* Create the string to be displayed in the window and
+                 determine the height and width of the window. */
+              /*              num = xsprintf (" %d ", cur->number); */
+              num = frame_selector (cur->number);
+              width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, num, strlen (num));
+              height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
-	      /* Display the frame's number inside the window. */
-	      XDrawString (dpy, wins[i], s->normal_gc, 
-			   defaults.bar_x_padding, 
-			   defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-			   num, strlen (num));
+              /* Create and map the window. */
+              wins[i] = XCreateWindow (dpy, s->root, s->left + cur->x, s->top + cur->y, width, height, 1,
+                                       CopyFromParent, CopyFromParent, CopyFromParent,
+                                       CWOverrideRedirect | CWBorderPixel | CWBackPixel,
+                                       &attr);
+              XMapWindow (dpy, wins[i]);
+              XClearWindow (dpy, wins[i]);
 
-	      free (num);
-	      i++;
-	    }
-	}
+              /* Display the frame's number inside the window. */
+              XDrawString (dpy, wins[i], s->normal_gc,
+                           defaults.bar_x_padding,
+                           defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+                           num, strlen (num));
+
+              free (num);
+              i++;
+            }
+        }
       XSync (dpy, False);
 
       /* Read a key. */
@@ -1682,21 +1682,21 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
 
       /* Destroy our number windows and free the array. */
       for (i=0; i<frames; i++)
-	XDestroyWindow (dpy, wins[i]);
+        XDestroyWindow (dpy, wins[i]);
 
       free (wins);
 
       /* FIXME: We only handle one character long keysym names. */
       if (strlen (keysym_buf) == 1)
-	{
-	  fnum = frame_selector_match (keysym_buf[0]);
-	  if (fnum == -1)
-	    goto frame_fail;
-	}
+        {
+          fnum = frame_selector_match (keysym_buf[0]);
+          if (fnum == -1)
+            goto frame_fail;
+        }
       else
-	{
-	  goto frame_fail;
-	}
+        {
+          goto frame_fail;
+        }
     }
   else
     {
@@ -1708,8 +1708,8 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
   if (frame)
     {
       /* We have to return a string, because commands get lists of
-	 strings. Sucky, yes. The command is simply going to parse it
-	 back into an rp_frame. */
+         strings. Sucky, yes. The command is simply going to parse it
+         back into an rp_frame. */
       *arg = xmalloc (sizeof(struct cmdarg));
       (*arg)->type = arg_FRAME;
       (*arg)->string = NULL;
@@ -1739,33 +1739,33 @@ read_window (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
     {
       /* try by number */
       if ((n = string_to_window_number (name)) >= 0)
-	{
-	  rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
-	  if (elem)
-	    win = elem->win;
-	}
+        {
+          rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
+          if (elem)
+            win = elem->win;
+        }
       else
-	/* try by name */
-	{
-	  win = find_window_name (name);
-	}
-  
+        /* try by name */
+        {
+          win = find_window_name (name);
+        }
+
       if (win)
-	{
-	  *arg = xmalloc (sizeof(struct cmdarg));
-	  (*arg)->type = arg_WINDOW;
-	  (*arg)->arg.win = win;
-	  (*arg)->string = name;
-	  return NULL;
-	}
+        {
+          *arg = xmalloc (sizeof(struct cmdarg));
+          (*arg)->type = arg_WINDOW;
+          (*arg)->arg.win = win;
+          (*arg)->string = name;
+          return NULL;
+        }
       else
-	{
-	  free (name);
-	  *arg = NULL;
-	  return cmdret_new (RET_SUCCESS, NULL);
-	}
+        {
+          free (name);
+          *arg = NULL;
+          return cmdret_new (RET_SUCCESS, NULL);
+        }
     }
-  
+
   /* user abort. */
   *arg = NULL;
   return cmdret_new (RET_SUCCESS, NULL);
@@ -1812,18 +1812,18 @@ read_gravity (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
     {
       int g = parse_wingravity (input);
       if (g == -1)
-	{
-	  cmdret *ret = cmdret_new (RET_FAILURE, "bad gravity '%s'", input);
-	  free (input);
-	  return ret;
-	}
+        {
+          cmdret *ret = cmdret_new (RET_FAILURE, "bad gravity '%s'", input);
+          free (input);
+          return ret;
+        }
       *arg = xmalloc (sizeof(struct cmdarg));
       (*arg)->type = arg_GRAVITY;
       (*arg)->arg.gravity = g;
       (*arg)->string = input;
       return NULL;
     }
-  
+
   *arg = NULL;
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -1842,7 +1842,7 @@ find_group (char *str)
     {
       group = groups_find_group_by_number (n);
       if (group)
-	return group;
+        return group;
     }
 
   group = groups_find_group_by_name (str);
@@ -1862,23 +1862,23 @@ read_group (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
   if (input)
     {
       rp_group *g = find_group (input);
-      
+
       if (g)
-	{
-	  *arg = xmalloc (sizeof(struct cmdarg));
-	  (*arg)->type = arg_GROUP;
-	  (*arg)->arg.group = g;
-	  (*arg)->string = input;
-	  return NULL;
-	}
+        {
+          *arg = xmalloc (sizeof(struct cmdarg));
+          (*arg)->type = arg_GROUP;
+          (*arg)->arg.group = g;
+          (*arg)->string = input;
+          return NULL;
+        }
       else
-	{
-	  cmdret *ret = cmdret_new (RET_FAILURE, "unknown group '%s'", input);
-	  free (input);
-	  return ret;
-	}
+        {
+          cmdret *ret = cmdret_new (RET_FAILURE, "unknown group '%s'", input);
+          free (input);
+          return ret;
+        }
     }
-  
+
   *arg = NULL;
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -1892,7 +1892,7 @@ hook_completions (char* str)
   /* Initialize our list. */
   list = xmalloc (sizeof (struct list_head));
   INIT_LIST_HEAD (list);
- 
+
   for (entry = rp_hook_db; entry->name; entry++)
     {
       struct sbuf *hookname;
@@ -1901,7 +1901,7 @@ hook_completions (char* str)
       sbuf_copy (hookname, entry->name);
       list_add_tail (&hookname->node, list);
     }
-  
+
   return list;
 }
 
@@ -1918,23 +1918,23 @@ read_hook (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
   if (input)
     {
       struct list_head *hook = hook_lookup (input);
-      
+
       if (hook)
-	{
-	  *arg = xmalloc (sizeof(struct cmdarg));
-	  (*arg)->type = arg_HOOK;
-	  (*arg)->arg.hook = hook;
-	  (*arg)->string = input;
-	  return NULL;
-	}
+        {
+          *arg = xmalloc (sizeof(struct cmdarg));
+          (*arg)->type = arg_HOOK;
+          (*arg)->arg.hook = hook;
+          (*arg)->string = input;
+          return NULL;
+        }
       else
-	{
-	  cmdret *ret = cmdret_new (RET_FAILURE, "unknown hook '%s'", input);
-	  free (input);
-	  return ret;
-	}
+        {
+          cmdret *ret = cmdret_new (RET_FAILURE, "unknown hook '%s'", input);
+          free (input);
+          return ret;
+        }
     }
-  
+
   *arg = NULL;
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -1946,7 +1946,7 @@ find_variable (char *str)
   list_for_each_entry (cur, &set_vars, node)
     {
       if (!strcmp (str, cur->var))
-	return cur;
+        return cur;
     }
   return NULL;
 }
@@ -1987,11 +1987,11 @@ read_variable (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
     {
       struct set_var *var = find_variable (input);
       if (var == NULL)
-	{
-	  cmdret *ret = cmdret_new (RET_FAILURE, "unknown variable '%s'", input);
-	  free (input);
-	  return ret;
-	}
+        {
+          cmdret *ret = cmdret_new (RET_FAILURE, "unknown variable '%s'", input);
+          free (input);
+          return ret;
+        }
 
       *arg = xmalloc (sizeof(struct cmdarg));
       (*arg)->type = arg_VARIABLE;
@@ -1999,7 +1999,7 @@ read_variable (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
       (*arg)->string = input;
       return NULL;
     }
-  
+
   *arg = NULL;
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -2022,7 +2022,7 @@ read_number (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
       (*arg)->string = input;
       return NULL;
     }
-  
+
   *arg = NULL;
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -2080,7 +2080,7 @@ read_arg (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
 /* Return -1 on failure. Return the number of args on success. */
 static cmdret *
 parsed_input_to_args (int num_args, struct argspec *argspec, struct list_head *list,
-		      struct list_head *args, int *parsed_args)
+                      struct list_head *args, int *parsed_args)
 {
   struct sbuf *s;
   struct cmdarg *arg;
@@ -2097,7 +2097,7 @@ parsed_input_to_args (int num_args, struct argspec *argspec, struct list_head *l
       ret = read_arg (&argspec[*parsed_args], s, &arg);
       /* If there was an error, then abort. */
       if (ret)
-	return ret;
+        return ret;
 
       list_add_tail (&arg->node, args);
       (*parsed_args)++;
@@ -2124,7 +2124,7 @@ fill_in_missing_args (struct user_command *cmd, struct list_head *list, struct l
     {
       ret = read_arg (&cmd->args[i], NULL, &arg);
       if (ret)
-	return ret;
+        return ret;
       list_add_tail (&arg->node, args);
     }
 
@@ -2157,80 +2157,80 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
     {
       /* Have we hit the arg limit? */
       if (raw && parsed_args >= nargs)
-	{
-	  struct sbuf *s = sbuf_new(0);
-	  if (!raw)
-	    while (*i && *i == ' ') i++;
-	  if (*i)
-	    {
-	      sbuf_concat(s, i);
-	      list_add_tail (&s->node, list);
-	    }
-	  len = 0;
-	  break;
-	}
+        {
+          struct sbuf *s = sbuf_new(0);
+          if (!raw)
+            while (*i && *i == ' ') i++;
+          if (*i)
+            {
+              sbuf_concat(s, i);
+              list_add_tail (&s->node, list);
+            }
+          len = 0;
+          break;
+        }
 
       /* Escaped characters always get added. */
       if (str_escape)
-	{
-	  tmp[len] = *i;
-	  len++;
-	  str_escape = 0;
-	}
+        {
+          tmp[len] = *i;
+          len++;
+          str_escape = 0;
+        }
       else if (*i == '\\')
-	{
-	  str_escape = 1;
-	}
+        {
+          str_escape = 1;
+        }
       else if (*i == '"')
-	{
-	  if (in_str)
-	    {
-	      /* End the arg. */
-	      struct sbuf *s = sbuf_new(0);
-	      sbuf_nconcat(s, tmp, len);
-	      list_add_tail (&s->node, list);
-	      len = 0;
-	      gobble = 1;
-	      in_str = 0;
-	      parsed_args++;
-	    }
-	  else if (len == 0)
-	    {
-	      /* A string open can only start at the beginning of an
-		 argument. */
-	      in_str = 1;
-	    }
-	  else
-	    {
-	      ret = cmdret_new (RET_FAILURE, "parse error in '%s'", str);
-	      break;
-	    }
-	}
+        {
+          if (in_str)
+            {
+              /* End the arg. */
+              struct sbuf *s = sbuf_new(0);
+              sbuf_nconcat(s, tmp, len);
+              list_add_tail (&s->node, list);
+              len = 0;
+              gobble = 1;
+              in_str = 0;
+              parsed_args++;
+            }
+          else if (len == 0)
+            {
+              /* A string open can only start at the beginning of an
+                 argument. */
+              in_str = 1;
+            }
+          else
+            {
+              ret = cmdret_new (RET_FAILURE, "parse error in '%s'", str);
+              break;
+            }
+        }
       else if (*i == ' ' && !in_str)
-	{
-	  /* End the current arg, and start a new one. */
-	  struct sbuf *s = sbuf_new(0);
-	  sbuf_nconcat(s, tmp, len);
-	  list_add_tail (&s->node, list);
-	  len = 0;
-	  gobble = 1;
-	  parsed_args++;
-	}
+        {
+          /* End the current arg, and start a new one. */
+          struct sbuf *s = sbuf_new(0);
+          sbuf_nconcat(s, tmp, len);
+          list_add_tail (&s->node, list);
+          len = 0;
+          gobble = 1;
+          parsed_args++;
+        }
       else
-	{
-	  /* Add the character to the argument. */
-	  tmp[len] = *i;
-	  len++;
-	}
+        {
+          /* Add the character to the argument. */
+          tmp[len] = *i;
+          len++;
+        }
 
       /* Should we eat the whitespace? */
       if (gobble)
-	{
-	  while (*i && *i == ' ') i++;
-	  /* Did we go too far? */
-	  if (*i && *i != ' ') i--;
-	  gobble = 0;
-	}
+        {
+          while (*i && *i == ' ') i++;
+          /* Did we go too far? */
+          if (*i && *i != ' ') i--;
+          gobble = 0;
+        }
     }
   /* Add the remaining text in tmp. */
   if (ret == NULL && len)
@@ -2271,31 +2271,31 @@ arg_free (struct cmdarg *arg)
     {
       /* read_frame doesn't fill in string. */
       if (arg->string)
-	free (arg->string);
+        free (arg->string);
       switch (arg->type)
-	{
-	case arg_KEY:
-	  free (arg->arg.key);
-	  break;
-	case arg_REST:
-	case arg_STRING:
-	case arg_NUMBER:
-	case arg_WINDOW:
-	case arg_FRAME:
-	case arg_COMMAND:
-	case arg_SHELLCMD:
-	case arg_KEYMAP:
-	case arg_GRAVITY:
-	case arg_GROUP:
-	case arg_HOOK:
-	case arg_VARIABLE:
-	case arg_RAW:
-	  /* Do nothing */
-	  break;
-	default:
-	  PRINT_ERROR (("Missed an arg type.\n"));
-	  break;
-	}
+        {
+        case arg_KEY:
+          free (arg->arg.key);
+          break;
+        case arg_REST:
+        case arg_STRING:
+        case arg_NUMBER:
+        case arg_WINDOW:
+        case arg_FRAME:
+        case arg_COMMAND:
+        case arg_SHELLCMD:
+        case arg_KEYMAP:
+        case arg_GRAVITY:
+        case arg_GROUP:
+        case arg_HOOK:
+        case arg_VARIABLE:
+        case arg_RAW:
+          /* Do nothing */
+          break;
+        default:
+          PRINT_ERROR (("Missed an arg type.\n"));
+          break;
+        }
       free (arg);
     }
 }
@@ -2310,7 +2310,7 @@ command (int interactive, char *data)
   char *input;
   user_command *uc;
   int i;
-  
+
   if (data == NULL)
     return cmdret_new (RET_FAILURE, NULL);
 
@@ -2330,97 +2330,97 @@ command (int interactive, char *data)
   for (i=0; i<alias_list_last; i++)
     {
       if (!strcmp (cmd, alias_list[i].name))
-	{
-	  struct sbuf *s;
+        {
+          struct sbuf *s;
 
-	  /* Append any arguments onto the end of the alias' command. */
-	  s = sbuf_new (0);
-	  sbuf_concat (s, alias_list[i].alias);
-	  if (rest != NULL)
-	    sbuf_printf_concat (s, " %s", rest);
+          /* Append any arguments onto the end of the alias' command. */
+          s = sbuf_new (0);
+          sbuf_concat (s, alias_list[i].alias);
+          if (rest != NULL)
+            sbuf_printf_concat (s, " %s", rest);
 
-	  alias_recursive_depth++;
-	  if (alias_recursive_depth >= MAX_ALIAS_RECURSIVE_DEPTH)
-	    result = cmdret_new (RET_FAILURE, "command: alias recursion has exceeded maximum depth");
-	  else
-	    result = command (interactive, sbuf_get (s));
-	  alias_recursive_depth--;
+          alias_recursive_depth++;
+          if (alias_recursive_depth >= MAX_ALIAS_RECURSIVE_DEPTH)
+            result = cmdret_new (RET_FAILURE, "command: alias recursion has exceeded maximum depth");
+          else
+            result = command (interactive, sbuf_get (s));
+          alias_recursive_depth--;
 
-	  sbuf_free (s);
-	  goto done;
-	}
+          sbuf_free (s);
+          goto done;
+        }
     }
 
   /* If it wasn't an alias, maybe its a command. */
   list_for_each_entry (uc, &user_commands, node)
     {
       if (!strcmp (cmd, uc->name))
-	{
-	  struct sbuf *scur;
-	  struct cmdarg *acur;
-	  struct list_head *iter, *tmp;
-	  struct list_head head, args;
-	  int i, nargs = 0, raw = 0;
+        {
+          struct sbuf *scur;
+          struct cmdarg *acur;
+          struct list_head *iter, *tmp;
+          struct list_head head, args;
+          int i, nargs = 0, raw = 0;
 
-	  INIT_LIST_HEAD (&args);
-	  INIT_LIST_HEAD (&head);
+          INIT_LIST_HEAD (&args);
+          INIT_LIST_HEAD (&head);
 
-	  /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
-	  for (i=0; i<uc->num_args; i++)
-	    if (uc->args[i].type == arg_REST
-		|| uc->args[i].type == arg_SHELLCMD
-		|| uc->args[i].type == arg_RAW)
-	      {
-		raw = 1;
-		nargs = i;
-		break;
-	      }
+          /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
+          for (i=0; i<uc->num_args; i++)
+            if (uc->args[i].type == arg_REST
+                || uc->args[i].type == arg_SHELLCMD
+                || uc->args[i].type == arg_RAW)
+              {
+                raw = 1;
+                nargs = i;
+                break;
+              }
 
-	  /* Parse the arguments and call the function. */
-	  result = parse_args (rest, &head, nargs, raw);
-	  if (result)
-	    goto free_lists;
-	  
-	  /* Interactive commands prompt the user for missing args. */
-	  if (interactive)
-	    result = fill_in_missing_args (uc, &head, &args);
-	  else
-	    {
-	      int parsed_args;
-	      result = parsed_input_to_args (uc->num_args, uc->args, &head, &args, &parsed_args);
-	    }
+          /* Parse the arguments and call the function. */
+          result = parse_args (rest, &head, nargs, raw);
+          if (result)
+            goto free_lists;
 
-	  if (result == NULL)
-	    {
-	      if ((interactive && list_size (&args) < uc->i_required_args)
-		  || (!interactive && list_size (&args) < uc->ni_required_args))
-		{
-		  result = cmdret_new (RET_FAILURE, "not enough arguments.");
-		  goto free_lists;
-		}
-	      else if (list_size (&head) > uc->num_args)
-		{
-		  result = cmdret_new (RET_FAILURE, "too many arguments.");
-		  goto free_lists;
-		}
-	      else
-		{
-		  struct cmdarg **cmdargs = arg_array (&args);
-		  result = uc->func (interactive, cmdargs);
-		  free (cmdargs);
-		}
-	    }
+          /* Interactive commands prompt the user for missing args. */
+          if (interactive)
+            result = fill_in_missing_args (uc, &head, &args);
+          else
+            {
+              int parsed_args;
+              result = parsed_input_to_args (uc->num_args, uc->args, &head, &args, &parsed_args);
+            }
 
-	free_lists:
-	  /* Free the parsed strings */
-	  list_for_each_safe_entry (scur, iter, tmp, &head, node)
-	    sbuf_free(scur);
-	  /* Free the args */
-	  list_for_each_safe_entry (acur, iter, tmp, &args, node)
-	    arg_free (acur);
+          if (result == NULL)
+            {
+              if ((interactive && list_size (&args) < uc->i_required_args)
+                  || (!interactive && list_size (&args) < uc->ni_required_args))
+                {
+                  result = cmdret_new (RET_FAILURE, "not enough arguments.");
+                  goto free_lists;
+                }
+              else if (list_size (&head) > uc->num_args)
+                {
+                  result = cmdret_new (RET_FAILURE, "too many arguments.");
+                  goto free_lists;
+                }
+              else
+                {
+                  struct cmdarg **cmdargs = arg_array (&args);
+                  result = uc->func (interactive, cmdargs);
+                  free (cmdargs);
+                }
+            }
 
-	  goto done;
-	}
+        free_lists:
+          /* Free the parsed strings */
+          list_for_each_safe_entry (scur, iter, tmp, &head, node)
+            sbuf_free(scur);
+          /* Free the args */
+          list_for_each_safe_entry (acur, iter, tmp, &args, node)
+            arg_free (acur);
+
+          goto done;
+        }
     }
 
   result = cmdret_new (RET_FAILURE, MESSAGE_UNKNOWN_COMMAND, cmd);
@@ -2464,10 +2464,10 @@ spawn(char *cmd, int raw)
   int pid;
 
   pid = fork();
-  if (pid == 0) 
+  if (pid == 0)
     {
       /* Some process setup to make sure the spawned process runs
-	 in its own session. */
+         in its own session. */
       putenv(current_screen()->display_string);
 #ifdef HAVE_SETSID
       setsid();
@@ -2479,7 +2479,7 @@ spawn(char *cmd, int raw)
 #endif
       /* raw means don't run it through sh.  */
       if (raw)
-	execl (cmd, 0);
+        execl (cmd, 0);
       execl("/bin/sh", "sh", "-c", cmd, 0);
       _exit(EXIT_FAILURE);
     }
@@ -2502,7 +2502,7 @@ spawn(char *cmd, int raw)
   return pid;
 }
 
-/* Switch to a different Window Manager. Thanks to 
+/* Switch to a different Window Manager. Thanks to
 "Chr. v. Stuckrad" <stucki@math.fu-berlin.de> for the patch. */
 cmdret *
 cmd_newwm(int interactive, struct cmdarg **args)
@@ -2533,12 +2533,12 @@ cmd_time (int interactive, struct cmdarg **args)
   timep = time(NULL);
   tmp = ctime(&timep);
   msg = xmalloc (strlen (tmp));
-  strncpy(msg, tmp, strlen (tmp) - 1);	/* Remove the newline */
+  strncpy(msg, tmp, strlen (tmp) - 1);  /* Remove the newline */
   msg[strlen(tmp) - 1] = 0;
 
   ret = cmdret_new (RET_SUCCESS, "%s", msg);
   free (msg);
-  
+
   return ret;
 }
 
@@ -2569,17 +2569,17 @@ cmd_number (int interactive, struct cmdarg **args)
       /* Find other window with same number and give it old number. */
       other_win = group_find_window_by_number (rp_current_group, new_number);
       if (other_win != NULL)
-	{
-	  old_number = win->number;
-	  other_win->number = old_number;
+        {
+          old_number = win->number;
+          other_win->number = old_number;
 
-	  /* Resort the window in the list */
-	  group_resort_window (rp_current_group, other_win);
-	}
+          /* Resort the window in the list */
+          group_resort_window (rp_current_group, other_win);
+        }
       else
-	{
-	  numset_release (rp_current_group->numset, win->number);
-	}
+        {
+          numset_release (rp_current_group->numset, win->number);
+        }
 
       win->number = new_number;
       numset_add_num (rp_current_group->numset, new_number);
@@ -2613,13 +2613,13 @@ cmd_windows (int interactive, struct cmdarg **args)
     {
       s = current_screen ();
       /* This is a yukky hack. If the bar already hidden then show the
-	 bar. This handles the case when msgwait is 0 (the bar sticks)
-	 and the user uses this command to toggle the bar on and
-	 off. OR the timeout is >0 then show the bar. Which means,
-	 always show the bar if msgwait is >0 which fixes the case
-	 when a command in the prefix hook displays the bar. */
+         bar. This handles the case when msgwait is 0 (the bar sticks)
+         and the user uses this command to toggle the bar on and
+         off. OR the timeout is >0 then show the bar. Which means,
+         always show the bar if msgwait is >0 which fixes the case
+         when a command in the prefix hook displays the bar. */
       if (!hide_bar (s) || defaults.bar_timeout > 0) show_bar (s, fmt);
-      
+
       return cmdret_new (RET_SUCCESS, NULL);
     }
   else
@@ -2673,9 +2673,9 @@ cmd_escape (int interactive, struct cmdarg **args)
     {
       action->key = key->sym;
       if (key->state != 0)
-	action->state = 0;
+        action->state = 0;
       else
-	action->state = RP_CONTROL_MASK;
+        action->state = RP_CONTROL_MASK;
     }
 
   /* Remove the grab on the current prefix key */
@@ -2712,7 +2712,7 @@ static cmdret *
 read_split (char *str, int max, int *p)
 {
   int a, b;
-  
+
   if (sscanf(str, "%d/%d", &a, &b) == 2)
     {
       *p = (int)(max * (float)(a) / (float)(b));
@@ -2720,7 +2720,7 @@ read_split (char *str, int max, int *p)
   else if (sscanf(str, "%d", p) == 1)
     {
       if (*p < 0)
-	*p = max + *p;
+        *p = max + *p;
     }
   else
     {
@@ -2748,7 +2748,7 @@ cmd_v_split (int interactive, struct cmdarg **args)
     {
       ret = read_split (ARG_STRING(0), frame->height, &pixels);
       if (ret)
-	return ret;
+        return ret;
     }
 
   if (pixels > 0)
@@ -2776,7 +2776,7 @@ cmd_h_split (int interactive, struct cmdarg **args)
     {
       ret = read_split (ARG_STRING(0), frame->width, &pixels);
       if (ret)
-	return ret;
+        return ret;
     }
 
   if (pixels > 0)
@@ -2841,27 +2841,27 @@ struct resize_binding
 };
 
 static resize_binding resize_bindings[] =
-   { {{INPUT_ABORT_KEY,		INPUT_ABORT_MODIFIER},       	RESIZE_ABORT},
-     {{RESIZE_VGROW_KEY,	RESIZE_VGROW_MODIFIER}, 	RESIZE_VGROW},
-     {{RESIZE_VSHRINK_KEY,	RESIZE_VSHRINK_MODIFIER},	RESIZE_VSHRINK},
-     {{RESIZE_HGROW_KEY,	RESIZE_HGROW_MODIFIER}, 	RESIZE_HGROW},
-     {{RESIZE_HSHRINK_KEY,	RESIZE_HSHRINK_MODIFIER},	RESIZE_HSHRINK},
+   { {{INPUT_ABORT_KEY,         INPUT_ABORT_MODIFIER},  RESIZE_ABORT},
+     {{RESIZE_VGROW_KEY,        RESIZE_VGROW_MODIFIER}, RESIZE_VGROW},
+     {{RESIZE_VSHRINK_KEY,      RESIZE_VSHRINK_MODIFIER},       RESIZE_VSHRINK},
+     {{RESIZE_HGROW_KEY,        RESIZE_HGROW_MODIFIER}, RESIZE_HGROW},
+     {{RESIZE_HSHRINK_KEY,      RESIZE_HSHRINK_MODIFIER},       RESIZE_HSHRINK},
      {{RESIZE_SHRINK_TO_WINDOW_KEY,RESIZE_SHRINK_TO_WINDOW_MODIFIER},RESIZE_TO_WINDOW},
-     {{RESIZE_END_KEY,		RESIZE_END_MODIFIER},		RESIZE_END},
-/* Some more default keys 
+     {{RESIZE_END_KEY,          RESIZE_END_MODIFIER},           RESIZE_END},
+/* Some more default keys
  * (after the values from conf.h, so that they have lower priority):
  * first the arrow keys: */
-     {{XK_Escape, 		0},          			RESIZE_ABORT},
-     {{XK_Down, 		0},           			RESIZE_VGROW},
-     {{XK_Up,	 		0},           			RESIZE_VSHRINK},
-     {{XK_Right, 		0},           			RESIZE_HGROW},
-     {{XK_Left,	 		0},           			RESIZE_HSHRINK},
+     {{XK_Escape,               0},                     RESIZE_ABORT},
+     {{XK_Down,         0},                     RESIZE_VGROW},
+     {{XK_Up,                   0},                     RESIZE_VSHRINK},
+     {{XK_Right,                0},                     RESIZE_HGROW},
+     {{XK_Left,                 0},                     RESIZE_HSHRINK},
 /* some vi-like bindings: */
-     {{XK_j,	 		0},           			RESIZE_VGROW},
-     {{XK_k,	 		0},           			RESIZE_VSHRINK},
-     {{XK_l,	 		0},           			RESIZE_HGROW},
-     {{XK_h,	 		0},           			RESIZE_HSHRINK},
-     {{0, 			0},            			RESIZE_UNKNOWN} };
+     {{XK_j,                    0},                     RESIZE_VGROW},
+     {{XK_k,                    0},                     RESIZE_VSHRINK},
+     {{XK_l,                    0},                     RESIZE_HGROW},
+     {{XK_h,                    0},                     RESIZE_HSHRINK},
+     {{0,                       0},                     RESIZE_UNKNOWN} };
 
 
 cmdret *
@@ -2880,9 +2880,9 @@ cmd_resize (int interactive, struct cmdarg **args)
       struct list_head *bk;
 
       /* If we haven't got at least 2 frames, there isn't anything to
-	 scale. */
+         scale. */
       if (num_frames (s) < 2)
-	return cmdret_new (RET_FAILURE, NULL);
+        return cmdret_new (RET_FAILURE, NULL);
 
       XGrabKeyboard (dpy, s->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
@@ -2890,48 +2890,48 @@ cmd_resize (int interactive, struct cmdarg **args)
       bk = screen_copy_frameset (s);
 
       while (1)
-	{
+        {
           struct resize_binding *binding;
 
-	  show_frame_message ("Resize frame");
-	  nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
+          show_frame_message ("Resize frame");
+          nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
 
-	  /* Convert the mask to be compatible with ratpoison. */
-	  mod = x11_mask_to_rp_mask (mod);
+          /* Convert the mask to be compatible with ratpoison. */
+          mod = x11_mask_to_rp_mask (mod);
 
-	  for (binding = resize_bindings; binding->action; binding++)
+          for (binding = resize_bindings; binding->action; binding++)
             {
               if (c == binding->key.sym && mod == binding->key.state)
                   break;
             }
 
-	  if (binding->action == RESIZE_VGROW)
-	    resize_frame_vertically (current_frame(), defaults.frame_resize_unit);
-	  else if (binding->action == RESIZE_VSHRINK)
-	    resize_frame_vertically (current_frame(), -defaults.frame_resize_unit);
-	  else if (binding->action == RESIZE_HGROW)
-	    resize_frame_horizontally (current_frame(), defaults.frame_resize_unit);
-	  else if (binding->action == RESIZE_HSHRINK)
-	    resize_frame_horizontally (current_frame(), -defaults.frame_resize_unit);
-	  else if (binding->action == RESIZE_TO_WINDOW)
-	    resize_shrink_to_window (current_frame());
-	  else if (binding->action == RESIZE_ABORT)
-	    {
-	      rp_frame *cur;
+          if (binding->action == RESIZE_VGROW)
+            resize_frame_vertically (current_frame(), defaults.frame_resize_unit);
+          else if (binding->action == RESIZE_VSHRINK)
+            resize_frame_vertically (current_frame(), -defaults.frame_resize_unit);
+          else if (binding->action == RESIZE_HGROW)
+            resize_frame_horizontally (current_frame(), defaults.frame_resize_unit);
+          else if (binding->action == RESIZE_HSHRINK)
+            resize_frame_horizontally (current_frame(), -defaults.frame_resize_unit);
+          else if (binding->action == RESIZE_TO_WINDOW)
+            resize_shrink_to_window (current_frame());
+          else if (binding->action == RESIZE_ABORT)
+            {
+              rp_frame *cur;
 
-	      screen_restore_frameset (s, bk);
-	      list_for_each_entry (cur, &s->frames, node)
-		{
-		  maximize_all_windows_in_frame (cur);
-		}
-	      break;
-	    }
-	  else if (binding->action == RESIZE_END)
-	    {
-	      frameset_free (bk);
-	      break;
-	    }
-	}
+              screen_restore_frameset (s, bk);
+              list_for_each_entry (cur, &s->frames, node)
+                {
+                  maximize_all_windows_in_frame (cur);
+                }
+              break;
+            }
+          else if (binding->action == RESIZE_END)
+            {
+              frameset_free (bk);
+              break;
+            }
+        }
 
       /* It is our responsibility to free this. */
       free (bk);
@@ -2942,12 +2942,12 @@ cmd_resize (int interactive, struct cmdarg **args)
   else
     {
       if (args[0] && args[1])
-	{
-	  resize_frame_horizontally (current_frame(), ARG(0,number));
-	  resize_frame_vertically (current_frame(), ARG(1,number));
-	}
+        {
+          resize_frame_horizontally (current_frame(), ARG(0,number));
+          resize_frame_vertically (current_frame(), ARG(1,number));
+        }
       else
-	return cmdret_new (RET_FAILURE, "resize: two numeric arguments required");
+        return cmdret_new (RET_FAILURE, "resize: two numeric arguments required");
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -3005,10 +3005,10 @@ cmd_ratclick (int interactive, struct cmdarg **args)
   int button = 1;
 
   if (args[0])
-    {    
+    {
       button = ARG(0,number);
       if (button < 1 || button > 3)
-	return cmdret_new (RET_SUCCESS, "ratclick: invalid argument");
+        return cmdret_new (RET_SUCCESS, "ratclick: invalid argument");
     }
 
   XTestFakeButtonEvent(dpy, button, True, CurrentTime);
@@ -3022,10 +3022,10 @@ cmd_rathold (int interactive, struct cmdarg **args)
   int button = 1;
 
   if (args[1])
-    {    
+    {
       button = ARG(1,number);
       if (button < 1 || button > 3)
-	return cmdret_new (RET_SUCCESS, "ratclick: invalid argument");
+        return cmdret_new (RET_SUCCESS, "ratclick: invalid argument");
     }
 
   if (!strcmp(ARG_STRING(0), "down"))
@@ -3034,7 +3034,7 @@ cmd_rathold (int interactive, struct cmdarg **args)
     XTestFakeButtonEvent(dpy, button, False, CurrentTime);
   else
     return cmdret_new (RET_FAILURE, "rathold: '%s' invalid argument", ARG_STRING(0));
-  
+
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
@@ -3062,30 +3062,30 @@ cmd_license (int interactive, struct cmdarg **args)
   int i;
   int max_width = 0;
   char *license_text[] = { PACKAGE " " VERSION, "(built " __DATE__ " " __TIME__ ")",
-			   "",
-			   "Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts",
-			   "",
-			   "ratpoison is free software; you can redistribute it and/or modify ",
-			   "it under the terms of the GNU General Public License as published by ",
-			   "the Free Software Foundation; either version 2, or (at your option) ",
-			   "any later version.",
-			   "",
-			   "ratpoison is distributed in the hope that it will be useful, ",
-			   "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
-			   "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the ",
-			   "GNU General Public License for more details.",
-			   "",
-			   "You should have received a copy of the GNU General Public License ",
-			   "along with this software; see the file COPYING.  If not, write to ",
-			   "the Free Software Foundation, Inc., 59 Temple Place, Suite 330, ",
-			   "Boston, MA 02111-1307 USA",
-			   "",
-			   "Send bugreports, fixes, enhancements, t-shirts, money, beer & pizza ",
-			   "to ratpoison-devel@nongnu.org or visit ",
-			   "http://www.nongnu.org/ratpoison/",
-			   "",
-			   "[Press any key to end.] ",
-			   NULL};
+                           "",
+                           "Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts",
+                           "",
+                           "ratpoison is free software; you can redistribute it and/or modify ",
+                           "it under the terms of the GNU General Public License as published by ",
+                           "the Free Software Foundation; either version 2, or (at your option) ",
+                           "any later version.",
+                           "",
+                           "ratpoison is distributed in the hope that it will be useful, ",
+                           "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
+                           "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the ",
+                           "GNU General Public License for more details.",
+                           "",
+                           "You should have received a copy of the GNU General Public License ",
+                           "along with this software; see the file COPYING.  If not, write to ",
+                           "the Free Software Foundation, Inc., 59 Temple Place, Suite 330, ",
+                           "Boston, MA 02111-1307 USA",
+                           "",
+                           "Send bugreports, fixes, enhancements, t-shirts, money, beer & pizza ",
+                           "to ratpoison-devel@nongnu.org or visit ",
+                           "http://www.nongnu.org/ratpoison/",
+                           "",
+                           "[Press any key to end.] ",
+                           NULL};
 
   XMapRaised (dpy, s->help_window);
   XGrabKeyboard (dpy, s->help_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
@@ -3097,7 +3097,7 @@ cmd_license (int interactive, struct cmdarg **args)
 
       tmp = XTextWidth (defaults.font, license_text[i], strlen (license_text[i]));
       if (tmp > max_width)
-	max_width = tmp;
+        max_width = tmp;
     }
 
   /* Offset the text so its in the center. */
@@ -3110,8 +3110,8 @@ cmd_license (int interactive, struct cmdarg **args)
   for(i=0; license_text[i]; i++)
   {
     XDrawString (dpy, s->help_window, s->normal_gc,
-	         x, y + defaults.font->max_bounds.ascent,
-	         license_text[i], strlen (license_text[i]));
+                 x, y + defaults.font->max_bounds.ascent,
+                 license_text[i], strlen (license_text[i]));
 
     y += FONT_HEIGHT (defaults.font);
   }
@@ -3148,7 +3148,7 @@ cmd_help (int interactive, struct cmdarg **args)
       int x = 10;
       int y = 0;
       int max_width = 0;
-      int drawing_keys = 1;		/* 1 if we are drawing keys 0 if we are drawing commands */
+      int drawing_keys = 1;             /* 1 if we are drawing keys 0 if we are drawing commands */
       char *keysym_name;
 
       XMapRaised (dpy, s->help_window);
@@ -3176,66 +3176,66 @@ cmd_help (int interactive, struct cmdarg **args)
       i = 0;
       old_i = 0;
       while (i<map->actions_last || drawing_keys)
-	{
-	  if (drawing_keys)
-	    {
-	      keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
+        {
+          if (drawing_keys)
+            {
+              keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
 
-	      XDrawString (dpy, s->help_window, s->normal_gc,
-			   x, y + defaults.font->max_bounds.ascent,
-			   keysym_name, strlen (keysym_name));
+              XDrawString (dpy, s->help_window, s->normal_gc,
+                           x, y + defaults.font->max_bounds.ascent,
+                           keysym_name, strlen (keysym_name));
 
-	      if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
-		max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
+              if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
+                max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
 
-	      free (keysym_name);
-	    }
-	  else
-	    {
-	      XDrawString (dpy, s->help_window, s->normal_gc,
-			   x, y + defaults.font->max_bounds.ascent,
-			   map->actions[i].data, strlen (map->actions[i].data));
+              free (keysym_name);
+            }
+          else
+            {
+              XDrawString (dpy, s->help_window, s->normal_gc,
+                           x, y + defaults.font->max_bounds.ascent,
+                           map->actions[i].data, strlen (map->actions[i].data));
 
-	      if (XTextWidth (defaults.font, map->actions[i].data, strlen (map->actions[i].data)) > max_width)
-		{
-		  max_width = XTextWidth (defaults.font, map->actions[i].data, strlen (map->actions[i].data));
-		}
-	    }
+              if (XTextWidth (defaults.font, map->actions[i].data, strlen (map->actions[i].data)) > max_width)
+                {
+                  max_width = XTextWidth (defaults.font, map->actions[i].data, strlen (map->actions[i].data));
+                }
+            }
 
-	  y += FONT_HEIGHT (defaults.font);
-	  /* Make sure the next line fits entirely within the window. */
-	  if (y + FONT_HEIGHT (defaults.font) >= (s->top + s->height))
-	    {
-	      if (drawing_keys)
-		{
-		  x += max_width + 10;
-		  drawing_keys = 0;
-		  i = old_i;
-		}
-	      else
-		{
-		  x += max_width + 20;
-		  drawing_keys = 1;
-		  i++;
-		  old_i = i;
-		}
+          y += FONT_HEIGHT (defaults.font);
+          /* Make sure the next line fits entirely within the window. */
+          if (y + FONT_HEIGHT (defaults.font) >= (s->top + s->height))
+            {
+              if (drawing_keys)
+                {
+                  x += max_width + 10;
+                  drawing_keys = 0;
+                  i = old_i;
+                }
+              else
+                {
+                  x += max_width + 20;
+                  drawing_keys = 1;
+                  i++;
+                  old_i = i;
+                }
 
-	      max_width = 0;
-	      y = FONT_HEIGHT (defaults.font) * 4;
-	    }
-	  else
-	    {
-	      i++;
-	      if (i >= map->actions_last && drawing_keys)
-		{
-		  x += max_width + 10;
-		  drawing_keys = 0;
-		  y = FONT_HEIGHT (defaults.font) * 4;
-		  i = old_i;
-		  max_width = 0;
-		}
-	    }
-	}
+              max_width = 0;
+              y = FONT_HEIGHT (defaults.font) * 4;
+            }
+          else
+            {
+              i++;
+              if (i >= map->actions_last && drawing_keys)
+                {
+                  x += max_width + 10;
+                  drawing_keys = 0;
+                  y = FONT_HEIGHT (defaults.font) * 4;
+                  i = old_i;
+                  max_width = 0;
+                }
+            }
+        }
 
       XMaskEvent (dpy, KeyPressMask, &ev);
       XUngrabKeyboard (dpy, CurrentTime);
@@ -3257,15 +3257,15 @@ cmd_help (int interactive, struct cmdarg **args)
       help_list = sbuf_new (0);
 
       for (i = 0; i < map->actions_last; i++)
-	{
-	  keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
-	  sbuf_concat (help_list, keysym_name);
-	  free (keysym_name);
-	  sbuf_concat (help_list, " ");
-	  sbuf_concat (help_list, map->actions[i].data);
-	  if (i < map->actions_last - 1)
-	    sbuf_concat (help_list, "\n");
-	}
+        {
+          keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
+          sbuf_concat (help_list, keysym_name);
+          free (keysym_name);
+          sbuf_concat (help_list, " ");
+          sbuf_concat (help_list, map->actions[i].data);
+          if (i < map->actions_last - 1)
+            sbuf_concat (help_list, "\n");
+        }
 
       tmp = sbuf_get (help_list);
       free (help_list);
@@ -3283,10 +3283,10 @@ cmd_rudeness (int interactive, struct cmdarg **args)
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%d",
-		       rp_honour_transient_raise
-		       | (rp_honour_normal_raise << 1)
-		       | (rp_honour_transient_map << 2)
-		       | (rp_honour_normal_map << 3));
+                       rp_honour_transient_raise
+                       | (rp_honour_normal_raise << 1)
+                       | (rp_honour_transient_map << 2)
+                       | (rp_honour_normal_map << 3));
 
   num = ARG(0,number);
   if (num < 0 || num > 15)
@@ -3356,7 +3356,7 @@ cmd_gravity (int interactive, struct cmdarg **args)
 static cmdret *
 set_wingravity (struct cmdarg **args)
 {
-  if (args[0] == NULL) 
+  if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", wingravity_to_string (defaults.win_gravity));
 
   defaults.win_gravity = ARG(0,gravity);
@@ -3423,10 +3423,10 @@ update_gc (rp_screen *s)
   gv.subwindow_mode = IncludeInferiors;
   gv.font = defaults.font->fid;
   XFreeGC (dpy, s->normal_gc);
-  s->normal_gc = XCreateGC(dpy, s->root, 
-			   GCForeground | GCBackground 
-			   | GCFunction | GCLineWidth
-			   | GCSubwindowMode | GCFont, &gv);
+  s->normal_gc = XCreateGC(dpy, s->root,
+                           GCForeground | GCBackground
+                           | GCFunction | GCLineWidth
+                           | GCSubwindowMode | GCFont, &gv);
 }
 
 static void
@@ -3470,11 +3470,11 @@ set_padding (struct cmdarg **args)
   int l, t, r, b;
 
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, "%d %d %d %d", 
-			      defaults.padding_left,
-			      defaults.padding_top,
-			      defaults.padding_right,
-			      defaults.padding_bottom);
+    return cmdret_new (RET_SUCCESS, "%d %d %d %d",
+                              defaults.padding_left,
+                              defaults.padding_top,
+                              defaults.padding_right,
+                              defaults.padding_bottom);
 
   l = ARG(0,number);
   t = ARG(1,number);
@@ -3492,33 +3492,33 @@ set_padding (struct cmdarg **args)
       bk_len = frame->width;
 
       if (frame->x == defaults.padding_left)
-	{
-	  frame->x = l;
-	  frame->width += bk_pos - l;
-	}
+        {
+          frame->x = l;
+          frame->width += bk_pos - l;
+        }
 
       if ((bk_pos + bk_len) == (current_screen()->left + current_screen()->width - defaults.padding_right))
-	frame->width = current_screen()->left + current_screen()->width - r - frame->x;
+        frame->width = current_screen()->left + current_screen()->width - r - frame->x;
 
       /* Resize vertically. */
       bk_pos = frame->y;
       bk_len = frame->height;
 
       if (frame->y == defaults.padding_top)
-	{
-	  frame->y = t;
-	  frame->height += bk_pos - t;
-	}
+        {
+          frame->y = t;
+          frame->height += bk_pos - t;
+        }
 
       if ((bk_pos + bk_len) == (current_screen()->top + current_screen()->height - defaults.padding_bottom))
-	frame->height = current_screen()->top + current_screen()->height - b - frame->y;
+        frame->height = current_screen()->top + current_screen()->height - b - frame->y;
 
       maximize_all_windows_in_frame (frame);
     }
 
   defaults.padding_left   = l;
   defaults.padding_right  = r;
-  defaults.padding_top 	  = t;
+  defaults.padding_top    = t;
   defaults.padding_bottom = b;
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -3541,7 +3541,7 @@ set_border (struct cmdarg **args)
   list_for_each_entry (win,&rp_mapped_window,node)
     {
       if (win_get_frame (win))
-	maximize (win);
+        maximize (win);
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -3628,14 +3628,14 @@ set_winname (struct cmdarg **args)
     switch (defaults.win_name)
       {
       case WIN_NAME_TITLE:
-	return cmdret_new (RET_SUCCESS, "title");
+        return cmdret_new (RET_SUCCESS, "title");
       case WIN_NAME_RES_NAME:
-	return cmdret_new (RET_SUCCESS, "name");
+        return cmdret_new (RET_SUCCESS, "name");
       case WIN_NAME_RES_CLASS:
-	return cmdret_new (RET_SUCCESS, "class");
+        return cmdret_new (RET_SUCCESS, "class");
       default:
-	PRINT_DEBUG (("Unknown win_name\n"));
-	return cmdret_new (RET_FAILURE, "unknown");
+        PRINT_DEBUG (("Unknown win_name\n"));
+        return cmdret_new (RET_FAILURE, "unknown");
       }
 
   name = ARG_STRING(0);
@@ -3666,7 +3666,7 @@ set_fgcolor (struct cmdarg **args)
   for (i=0; i<num_screens; i++)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
-	return cmdret_new (RET_FAILURE, "deffgcolor: unknown color");
+        return cmdret_new (RET_FAILURE, "deffgcolor: unknown color");
 
       screens[i].fg_color = color.pixel;
       update_gc (&screens[i]);
@@ -3694,7 +3694,7 @@ set_bgcolor (struct cmdarg **args)
   for (i=0; i<num_screens; i++)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
-	return cmdret_new (RET_FAILURE, "defbgcolor: unknown color");
+        return cmdret_new (RET_FAILURE, "defbgcolor: unknown color");
 
       screens[i].bg_color = color.pixel;
       update_gc (&screens[i]);
@@ -3758,8 +3758,8 @@ cmd_chdir (int interactive, struct cmdarg **args)
       dir = getenv ("HOME");
       if (dir == NULL || *dir == '\0')
         {
-	  return cmdret_new (RET_FAILURE, "chdir: HOME not set");
-	}
+          return cmdret_new (RET_FAILURE, "chdir: HOME not set");
+        }
     }
   else
     dir = ARG_STRING(0);
@@ -3801,21 +3801,21 @@ cmd_info (int interactive, struct cmdarg **args)
       rp_window_elem *win_elem;
       win_elem = group_find_window (&rp_current_group->mapped_windows, win);
       if (!win_elem)
-	win_elem = group_find_window (&rp_current_group->unmapped_windows, win);
+        win_elem = group_find_window (&rp_current_group->unmapped_windows, win);
 
       if (win_elem)
-	{
-	  char *s;
-	  
-	  if (args[0] == NULL)
-	    s = defaults.info_fmt;
-	  else
-	    s = ARG_STRING(0);
-	  buf = sbuf_new (0);
-	  format_string (s, win_elem, buf);
-	  tmp = sbuf_free_struct (buf);
-	  return cmdret_new (RET_SUCCESS, "%s", tmp);
-	}
+        {
+          char *s;
+
+          if (args[0] == NULL)
+            s = defaults.info_fmt;
+          else
+            s = ARG_STRING(0);
+          buf = sbuf_new (0);
+          format_string (s, win_elem, buf);
+          tmp = sbuf_free_struct (buf);
+          return cmdret_new (RET_SUCCESS, "%s", tmp);
+        }
     }
 
   return cmdret_new (RET_SUCCESS, "No window.");
@@ -3955,7 +3955,7 @@ set_barpadding (struct cmdarg **args)
       defaults.bar_y_padding = y;
     }
   else
-    return cmdret_new (RET_FAILURE, "defbarpadding: invalid arguments");    
+    return cmdret_new (RET_FAILURE, "defbarpadding: invalid arguments");
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3982,9 +3982,9 @@ cmd_unalias (int interactive, struct cmdarg **args)
       alias_list_last--;
 
       /* Free the alias and put the last alias in the the space to
-	 keep alias_list from becoming sparse. This code must jump
-	 through some hoops to correctly handle the case when
-	 alias_list_last == index. */
+         keep alias_list from becoming sparse. This code must jump
+         through some hoops to correctly handle the case when
+         alias_list_last == index. */
       tmp = alias_list[index].alias;
       alias_list[index].alias = xstrdup (alias_list[alias_list_last].alias);
       free (tmp);
@@ -4067,7 +4067,7 @@ cmd_warp (int interactive, struct cmdarg **args)
     defaults.warp = 0;
   else
     return cmdret_new (RET_FAILURE, "warp: invalid argument");
- 
+
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
@@ -4088,131 +4088,131 @@ sync_wins (rp_screen *s)
 
       found = 0;
       for (i=0; i<nwins; i++)
-	{
-	  if (win->w == wins[i])
-	    {
-	      found = 1;
-	      break;
-	    }
-	}
+        {
+          if (win->w == wins[i])
+            {
+              found = 1;
+              break;
+            }
+        }
       if (!found)
-	{
-	  ignore_badwindow++;  
+        {
+          ignore_badwindow++;
 
-	  /* If, somehow, the window is not withdrawn before it is destroyed,
-	     perform the necessary steps to withdraw the window before it is
-	     unmanaged. */
-	  if (win->state == IconicState)
-	    {
-	      PRINT_DEBUG (("Destroying Iconic Window (%s)\n", window_name (win)));
-	      withdraw_window (win);
-	    }
-	  else if (win->state == NormalState)
-	    {
-	      rp_frame *frame;
+          /* If, somehow, the window is not withdrawn before it is destroyed,
+             perform the necessary steps to withdraw the window before it is
+             unmanaged. */
+          if (win->state == IconicState)
+            {
+              PRINT_DEBUG (("Destroying Iconic Window (%s)\n", window_name (win)));
+              withdraw_window (win);
+            }
+          else if (win->state == NormalState)
+            {
+              rp_frame *frame;
 
-	      PRINT_DEBUG (("Destroying Normal Window (%s)\n", window_name (win)));
-	      frame = find_windows_frame (win);
-	      if (frame)
-		{
-		  cleanup_frame (frame);
-		  if (frame->number == win->scr->current_frame) 
-		    set_active_frame (frame);
-		}
-	      withdraw_window (win);
-	    }
+              PRINT_DEBUG (("Destroying Normal Window (%s)\n", window_name (win)));
+              frame = find_windows_frame (win);
+              if (frame)
+                {
+                  cleanup_frame (frame);
+                  if (frame->number == win->scr->current_frame)
+                    set_active_frame (frame);
+                }
+              withdraw_window (win);
+            }
 
-	  /* Now that the window is guaranteed to be in the unmapped window
-	     list, we can safely stop managing it. */
-	  unmanage (win);
-	  ignore_badwindow--;
-	}
+          /* Now that the window is guaranteed to be in the unmapped window
+             list, we can safely stop managing it. */
+          unmanage (win);
+          ignore_badwindow--;
+        }
     }
 
   for (i=0; i<nwins; i++)
     {
       XGetWindowAttributes(dpy, wins[i], &attr);
-      if (wins[i] == s->bar_window 
-	  || wins[i] == s->key_window 
-	  || wins[i] == s->input_window
-	  || wins[i] == s->frame_window
-	  || wins[i] == s->help_window
-	  || attr.override_redirect == True) continue;
-      
+      if (wins[i] == s->bar_window
+          || wins[i] == s->key_window
+          || wins[i] == s->input_window
+          || wins[i] == s->frame_window
+          || wins[i] == s->help_window
+          || attr.override_redirect == True) continue;
+
       /* Find the window in our mapped window list. */
       win = find_window_in_list (wins[i], &rp_mapped_window);
       if (win)
-	{
-	  rp_frame *frame;
-	  /* If the window is viewable and it is in a frame, then
-	     maximize it and go to the next window. */
-	  if (attr.map_state == IsViewable)
-	    {
-	      frame = find_windows_frame (win);
-	      if (frame)
-		{
-		  maximize (win);
-		}
-	      else
-		{
-		  hide_window (win);
-		}
-	    }
-	  else if (attr.map_state == IsUnmapped
-		   && get_state (win) == IconicState)
-	    {
-	      frame = find_windows_frame (win);
-	      if (frame)
-		{
-		  unhide_window (win);
-		  maximize (win);
-		}
-	    }
-	  else
-	    {
-	      PRINT_DEBUG (("I don't know what to do...\n"));
-	    }
-	  
-	  /* We've handled the window. */
-	  continue;
-	}
+        {
+          rp_frame *frame;
+          /* If the window is viewable and it is in a frame, then
+             maximize it and go to the next window. */
+          if (attr.map_state == IsViewable)
+            {
+              frame = find_windows_frame (win);
+              if (frame)
+                {
+                  maximize (win);
+                }
+              else
+                {
+                  hide_window (win);
+                }
+            }
+          else if (attr.map_state == IsUnmapped
+                   && get_state (win) == IconicState)
+            {
+              frame = find_windows_frame (win);
+              if (frame)
+                {
+                  unhide_window (win);
+                  maximize (win);
+                }
+            }
+          else
+            {
+              PRINT_DEBUG (("I don't know what to do...\n"));
+            }
+
+          /* We've handled the window. */
+          continue;
+        }
 
       /* Try the unmapped window list. */
       win = find_window_in_list (wins[i], &rp_unmapped_window);
       if (win)
-	{
-	  /* If the window is viewable and it is in a frame, then
-	     maximize it and go to the next window. */
-	  if (attr.map_state == IsViewable)
-	    {
-	      /* We need to map it since it's visible now. */
-	      map_window (win);
-	    }
-	  else if (attr.map_state == IsUnmapped
-		   && get_state (win) == IconicState)
-	    {
-	      /* We need to map the window and then hide it. */
-	      map_window (win);
-	      hide_window (win);
-	    }
-	  else
-	    {
-	      PRINT_DEBUG (("I think it's all sync'd up...\n"));
-	    }
-	  
-	  /* We've handled the window. */
-	  continue;
-	}
+        {
+          /* If the window is viewable and it is in a frame, then
+             maximize it and go to the next window. */
+          if (attr.map_state == IsViewable)
+            {
+              /* We need to map it since it's visible now. */
+              map_window (win);
+            }
+          else if (attr.map_state == IsUnmapped
+                   && get_state (win) == IconicState)
+            {
+              /* We need to map the window and then hide it. */
+              map_window (win);
+              hide_window (win);
+            }
+          else
+            {
+              PRINT_DEBUG (("I think it's all sync'd up...\n"));
+            }
+
+          /* We've handled the window. */
+          continue;
+        }
 
       /* The window isn't in the mapped or unmapped window list so add
-	 it. */
+         it. */
       win = add_to_window_list (s, wins[i]);
-      
+
       /* If it's visible or iconized. "Map" it. */
       if (attr.map_state == IsViewable
-	  || (attr.map_state == IsUnmapped
-	      && get_state (win) == IconicState))
-	map_window (win);
+          || (attr.map_state == IsUnmapped
+              && get_state (win) == IconicState))
+        map_window (win);
     }
 
 }
@@ -4279,8 +4279,8 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
   for (i=0; i<num_screens; i++)
     {
       XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num),
-		   PropertyChangeMask | ColormapChangeMask
-		   | SubstructureRedirectMask | SubstructureNotifyMask);
+                   PropertyChangeMask | ColormapChangeMask
+                   | SubstructureRedirectMask | SubstructureNotifyMask);
       /* Map its key window */
       XMapWindow (dpy, screens[i].key_window);
     }
@@ -4358,14 +4358,14 @@ cmd_fdump (int interactively, struct cmdarg **args)
       snum = ARG(0,number);
 
       if (snum < 0 || num_screens <= snum)
-	return cmdret_new (RET_FAILURE, "fdump: invalid argument");
+        return cmdret_new (RET_FAILURE, "fdump: invalid argument");
       else
-	{
-	  char *s = fdump (&screens[snum]);
-	  cmdret *ret = cmdret_new (RET_SUCCESS, "%s", s);
-	  free (s);
-	  return ret;
-	}
+        {
+          char *s = fdump (&screens[snum]);
+          cmdret *ret = cmdret_new (RET_SUCCESS, "%s", s);
+          free (s);
+          return ret;
+        }
     }
 }
 
@@ -4395,13 +4395,13 @@ frestore (char *data, rp_screen *s)
     {
       new = frame_read (token);
       if (new == NULL)
-	{
-	  free (dup);
-	  return cmdret_new (RET_SUCCESS, "frestore: invalid frame format");;
-	}
+        {
+          free (dup);
+          return cmdret_new (RET_SUCCESS, "frestore: invalid frame format");;
+        }
       list_add_tail (&new->node, &fset);
       token = strtok_r (NULL, ",", &nexttok);
-    } 
+    }
 
   free (dup);
 
@@ -4427,37 +4427,37 @@ frestore (char *data, rp_screen *s)
       PRINT_DEBUG (("restore %d %d\n", cur->number, cur->win_number));
 
       /* Grab the frame's number, but if it already exists request a
-	 new one. */
+         new one. */
       if (!numset_add_num (s->frames_numset, cur->number)) {
-	cur->number = numset_request (s->frames_numset);
+        cur->number = numset_request (s->frames_numset);
       }
 
       /* Find the current frame based on last_access. */
       if (cur->last_access > max)
-	{
-	  s->current_frame = cur->number;
-	  max = cur->last_access;
-	}
+        {
+          s->current_frame = cur->number;
+          max = cur->last_access;
+        }
 
       /* Update the window the frame points to. */
       if (cur->win_number != EMPTY)
-	{
-	  win = find_window_number (cur->win_number);
-	  set_frames_window (cur, win);
-	}
+        {
+          win = find_window_number (cur->win_number);
+          set_frames_window (cur, win);
+        }
     }
 
   /* Show the windows in the frames. */
   list_for_each_entry (win, &rp_mapped_window, node)
     {
       if (win->frame_number != EMPTY)
-	{
-	  maximize (win);
-	  unhide_window (win);
-	}
+        {
+          maximize (win);
+          unhide_window (win);
+        }
     }
 
-  set_active_frame (current_frame());  
+  set_active_frame (current_frame());
   update_bar (s);
   show_frame_indicator();
 
@@ -4556,34 +4556,34 @@ cmd_groups (int interactive, struct cmdarg **args)
       char separator;
 
       if (cur == rp_current_group)
-	mark_start = strlen (sbuf_get (buffer));
+        mark_start = strlen (sbuf_get (buffer));
 
       /* Pad start of group name with a space for row
-	 style. non-Interactive always gets a column.*/
+         style. non-Interactive always gets a column.*/
       if (defaults.window_list_style == STYLE_ROW && interactive)
-	  sbuf_concat (buffer, " ");
+          sbuf_concat (buffer, " ");
 
       if(cur == rp_current_group)
-	separator = '*';
+        separator = '*';
       else
-	separator = '-';
+        separator = '-';
 
       fmt = xsprintf ("%d%c%s", cur->number, separator, cur->name);
       sbuf_concat (buffer, fmt);
 
       /* Pad end of group name with a space for row style. */
       if (defaults.window_list_style == STYLE_ROW && interactive)
-	{
-	  sbuf_concat (buffer, " ");
-	}
+        {
+          sbuf_concat (buffer, " ");
+        }
       else
-	{
-	  if (cur->node.next != &rp_groups)
-	    sbuf_concat (buffer, "\n");
-	}
+        {
+          if (cur->node.next != &rp_groups)
+            sbuf_concat (buffer, "\n");
+        }
 
       if (cur == rp_current_group)
-	mark_end = strlen (sbuf_get (buffer));
+        mark_end = strlen (sbuf_get (buffer));
     }
 
   /* Display it or return it. */
@@ -4624,7 +4624,7 @@ cmd_addhook (int interactive, struct cmdarg **args)
 {
   struct list_head *hook;
   struct sbuf *cmd;
-  
+
   hook = hook_lookup (ARG_STRING(0));
   if (hook == NULL)
     return cmdret_new (RET_FAILURE, "addhook: unknown hook '%s'", ARG_STRING(0));
@@ -4672,7 +4672,7 @@ cmd_listhook (int interactive, struct cmdarg **args)
     {
       sbuf_printf_concat(buffer, "%s", sbuf_get (cur));
       if (cur->node.next != hook)
-	sbuf_printf_concat(buffer, "\n");
+        sbuf_printf_concat(buffer, "\n");
     }
 
   ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (buffer));
@@ -4689,7 +4689,7 @@ cmd_gdelete (int interactive, struct cmdarg **args)
     g = rp_current_group;
   else
     g = ARG(0,group);
-  
+
   switch (group_delete_group (g))
     {
     case GROUP_DELETE_GROUP_OK:
@@ -4707,9 +4707,9 @@ cmd_gdelete (int interactive, struct cmdarg **args)
 static void
 grab_rat ()
 {
-  XGrabPointer (dpy, current_screen()->root, True, 0, 
-		GrabModeAsync, GrabModeAsync, 
-		None, current_screen()->rat, CurrentTime);
+  XGrabPointer (dpy, current_screen()->root, True, 0,
+                GrabModeAsync, GrabModeAsync,
+                None, current_screen()->rat, CurrentTime);
 }
 
 static void
@@ -4723,8 +4723,8 @@ cmd_readkey (int interactive, struct cmdarg **args)
 {
   char *keysym_name;
   rp_action *key_action;
-  KeySym keysym;		/* Key pressed */
-  unsigned int mod;		/* Modifiers */
+  KeySym keysym;                /* Key pressed */
+  unsigned int mod;             /* Modifiers */
   int rat_grabbed = 0;
   rp_keymap *map;
 
@@ -4816,16 +4816,16 @@ cmd_set (int interactive, struct cmdarg **args)
 
       list_last (last, &set_vars, node);
       list_for_each_entry (cur, &set_vars, node)
-	{
-	  cmdret *ret;
-	  ret = cur->set_fn (args);
-	  sbuf_printf_concat (s, "%s: %s", cur->var, ret->output);
-	  /* Skip a newline on the last line. */
-	  if (cur != last)
-	    sbuf_concat (s, "\n");
-	  cmdret_free (ret);
-	}
-	  
+        {
+          cmdret *ret;
+          ret = cur->set_fn (args);
+          sbuf_printf_concat (s, "%s: %s", cur->var, ret->output);
+          /* Skip a newline on the last line. */
+          if (cur != last)
+            sbuf_concat (s, "\n");
+          cmdret_free (ret);
+        }
+
       /* Return the accumulated string. */
       ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (s));
       sbuf_free (s);
@@ -4848,40 +4848,40 @@ cmd_set (int interactive, struct cmdarg **args)
 
       /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
       for (i=0; i<ARG(0,variable)->nargs; i++)
-	if (ARG(0,variable)->args[i].type == arg_REST
-	    || ARG(0,variable)->args[i].type == arg_SHELLCMD
-	    || ARG(0,variable)->args[i].type == arg_RAW)
-	  {
-	    raw = 1;
-	    nargs = i;
-	    break;
-	  }
+        if (ARG(0,variable)->args[i].type == arg_REST
+            || ARG(0,variable)->args[i].type == arg_SHELLCMD
+            || ARG(0,variable)->args[i].type == arg_RAW)
+          {
+            raw = 1;
+            nargs = i;
+            break;
+          }
 
       /* Parse the arguments and call the function. */
       if (args[1])
-	input = xstrdup (args[1]->string);
+        input = xstrdup (args[1]->string);
       else
-	input = xstrdup ("");
+        input = xstrdup ("");
       result = parse_args (input, &head, nargs, raw);
       free (input);
 
       if (result)
-	goto failed;
+        goto failed;
       result = parsed_input_to_args (ARG(0,variable)->nargs, ARG(0,variable)->args,
-				     &head, &arglist, &parsed_args);
+                                     &head, &arglist, &parsed_args);
       if (result)
-	goto failed;
+        goto failed;
       /* 0 or nargs is acceptable */
       if (list_size (&arglist) > 0 && list_size (&arglist) < ARG(0,variable)->nargs)
-	{
-	  result = cmdret_new (RET_FAILURE, "not enough arguments.");
-	  goto failed;
-	}
+        {
+          result = cmdret_new (RET_FAILURE, "not enough arguments.");
+          goto failed;
+        }
       else if (list_size (&head) > ARG(0,variable)->nargs)
-	{
-	  result = cmdret_new (RET_FAILURE, "too many arguments.");
-	  goto failed;
-	}
+        {
+          result = cmdret_new (RET_FAILURE, "too many arguments.");
+          goto failed;
+        }
 
       cmdargs = arg_array (&arglist);
       result = ARG(0,variable)->set_fn (cmdargs);
@@ -4891,10 +4891,10 @@ cmd_set (int interactive, struct cmdarg **args)
     failed:
       /* Free the parsed strings */
       list_for_each_safe_entry (scur, iter, tmp, &head, node)
-	sbuf_free(scur);
+        sbuf_free(scur);
       /* Free the args */
       list_for_each_safe_entry (acur, iter, tmp, &arglist, node)
-	arg_free (acur);
+        arg_free (acur);
 
       return result;
     }
@@ -4917,14 +4917,14 @@ cmd_sfdump (int interactively, struct cmdarg **args)
 
       /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
       list_for_each_entry (cur, &(screens[i].frames), node)
-	{
-	  char *tmp;
+        {
+          char *tmp;
 
-	  tmp = frame_dump (cur);
-	  sbuf_concat (s, tmp);
-	  sbuf_concat (s, tmp2);
-	  free (tmp);
-	}
+          tmp = frame_dump (cur);
+          sbuf_concat (s, tmp);
+          sbuf_concat (s, tmp2);
+          free (tmp);
+        }
 
       free (tmp2);
     }
@@ -4946,7 +4946,7 @@ cmd_sdump (int interactive, struct cmdarg **args)
   {
     tmp = screen_dump (&screens[i]);
     sbuf_concat (s, tmp);
-    if (i + 1 != num_screens)	/* No trailing comma. */
+    if (i + 1 != num_screens)   /* No trailing comma. */
       sbuf_concat (s, ",");
     free (tmp);
   }
@@ -4986,7 +4986,7 @@ cmd_cnext (int interactive, struct cmdarg **args)
   rp_window *cur, *last, *win;
 
   cur = current_window();
-  if (!cur || !cur->res_class)	/* Can't be done. */
+  if (!cur || !cur->res_class)  /* Can't be done. */
     return cmd_next (interactive, args);
 
   /* CUR !in cycle list, so LAST marks last node. */
@@ -4994,17 +4994,17 @@ cmd_cnext (int interactive, struct cmdarg **args)
 
   if (last)
     for (win = group_next_window (rp_current_group, cur);
-	 win;
-	 win = group_next_window (rp_current_group, win))
+         win;
+         win = group_next_window (rp_current_group, win))
       {
-	if (win->res_class
-	    && strcmp (cur->res_class, win->res_class))
-	  {
-	    set_active_window_force (win);
-	    return cmdret_new (RET_SUCCESS, NULL);
-	  }
+        if (win->res_class
+            && strcmp (cur->res_class, win->res_class))
+          {
+            set_active_window_force (win);
+            return cmdret_new (RET_SUCCESS, NULL);
+          }
 
-	if (win == last) break;
+        if (win == last) break;
       }
 
   return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
@@ -5016,7 +5016,7 @@ cmd_cprev (int interactive, struct cmdarg **args)
   rp_window *cur, *last, *win;
 
   cur = current_window();
-  if (!cur || !cur->res_class)	/* Can't be done. */
+  if (!cur || !cur->res_class)  /* Can't be done. */
     return cmd_next (interactive, args);
 
   /* CUR !in cycle list, so LAST marks last node. */
@@ -5024,17 +5024,17 @@ cmd_cprev (int interactive, struct cmdarg **args)
 
   if (last)
     for (win = group_prev_window (rp_current_group, cur);
-	 win;
-	 win = group_prev_window (rp_current_group, win))
+         win;
+         win = group_prev_window (rp_current_group, win))
       {
-	if (win->res_class
-	    && strcmp (cur->res_class, win->res_class))
-	  {
-	    set_active_window_force (win);
-	    return cmdret_new (RET_SUCCESS, NULL);
-	  }
+        if (win->res_class
+            && strcmp (cur->res_class, win->res_class))
+          {
+            set_active_window_force (win);
+            return cmdret_new (RET_SUCCESS, NULL);
+          }
 
-	if (win == last) break;
+        if (win == last) break;
       }
 
   return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
@@ -5046,7 +5046,7 @@ cmd_inext (int interactive, struct cmdarg **args)
   rp_window *cur, *last, *win;
 
   cur = current_window();
-  if (!cur || !cur->res_class)	/* Can't be done. */
+  if (!cur || !cur->res_class)  /* Can't be done. */
     return cmd_next (interactive, args);
 
   /* CUR !in cycle list, so LAST marks last node. */
@@ -5054,17 +5054,17 @@ cmd_inext (int interactive, struct cmdarg **args)
 
   if (last)
     for (win = group_next_window (rp_current_group, cur);
-	 win;
-	 win = group_next_window (rp_current_group, win))
+         win;
+         win = group_next_window (rp_current_group, win))
       {
-	if (win->res_class
-	    && !strcmp (cur->res_class, win->res_class))
-	  {
-	    set_active_window_force (win);
-	    return cmdret_new (RET_SUCCESS, NULL);
-	  }
+        if (win->res_class
+            && !strcmp (cur->res_class, win->res_class))
+          {
+            set_active_window_force (win);
+            return cmdret_new (RET_SUCCESS, NULL);
+          }
 
-	if (win == last) break;
+        if (win == last) break;
       }
 
   return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
@@ -5076,7 +5076,7 @@ cmd_iprev (int interactive, struct cmdarg **args)
   rp_window *cur, *last, *win;
 
   cur = current_window();
-  if (!cur || !cur->res_class)	/* Can't be done. */
+  if (!cur || !cur->res_class)  /* Can't be done. */
     return cmd_next (interactive, args);
 
   /* CUR !in cycle list, so LAST marks last node. */
@@ -5084,17 +5084,17 @@ cmd_iprev (int interactive, struct cmdarg **args)
 
   if (last)
     for (win = group_prev_window (rp_current_group, cur);
-	 win;
-	 win = group_prev_window (rp_current_group, win))
+         win;
+         win = group_prev_window (rp_current_group, win))
       {
-	if (win->res_class
-	    && !strcmp (cur->res_class, win->res_class))
-	  {
-	    set_active_window_force (win);
-	    return cmdret_new (RET_SUCCESS, NULL);
-	  }
-	
-	if (win == last) break;
+        if (win->res_class
+            && !strcmp (cur->res_class, win->res_class))
+          {
+            set_active_window_force (win);
+            return cmdret_new (RET_SUCCESS, NULL);
+          }
+
+        if (win == last) break;
       }
 
   return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
@@ -5180,18 +5180,18 @@ cmd_prompt (int interactive, struct cmdarg **args)
     {
       prefix = strchr (ARG_STRING(0), ':');
       if (prefix)
-	{
-	  prefix++; 		/* Don't return the colon. */
-	  query = xmalloc (prefix - ARG_STRING(0) + 1);
-	  strncpy (query, ARG_STRING(0), prefix - ARG_STRING(0));
-	  query[prefix - ARG_STRING(0)] = 0;	/* null terminate */
-	  output = get_more_input (query, prefix, trivial_completions);
-	  free (query);
-	}
+        {
+          prefix++;             /* Don't return the colon. */
+          query = xmalloc (prefix - ARG_STRING(0) + 1);
+          strncpy (query, ARG_STRING(0), prefix - ARG_STRING(0));
+          query[prefix - ARG_STRING(0)] = 0;    /* null terminate */
+          output = get_more_input (query, prefix, trivial_completions);
+          free (query);
+        }
       else
-	{
-	  output = get_input (ARG_STRING(0), trivial_completions);
-	}
+        {
+          output = get_input (ARG_STRING(0), trivial_completions);
+        }
     }
   ret = cmdret_new (RET_SUCCESS, "%s", output);
   if (output)
@@ -5204,8 +5204,8 @@ cmd_describekey (int interactive, struct cmdarg **args)
 {
   char *keysym_name;
   rp_action *key_action;
-  KeySym keysym;		/* Key pressed */
-  unsigned int mod;		/* Modifiers */
+  KeySym keysym;                /* Key pressed */
+  unsigned int mod;             /* Modifiers */
   int rat_grabbed = 0;
   rp_keymap *map;
 
@@ -5250,7 +5250,7 @@ cmdret *
 cmd_dedicate (int interactive, struct cmdarg **args)
 {
   rp_frame *f;
-  
+
   f = current_frame();
   if (!f) return cmdret_new (RET_SUCCESS, NULL);
 
@@ -5262,7 +5262,7 @@ cmd_dedicate (int interactive, struct cmdarg **args)
     f->dedicated = !(f->dedicated);
 
   return cmdret_new (RET_SUCCESS, "Consider this frame %s.",
-		     f->dedicated ? "chaste":"promiscuous");
+                     f->dedicated ? "chaste":"promiscuous");
 }
 
 cmdret *

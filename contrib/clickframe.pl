@@ -35,15 +35,15 @@ foreach $frame (@framelist) {
     ($num,$left,$top,$width,$height,$win,$access) = split(/ /,$frame);
     if ($x_loc > $left && $x_loc < $left + $width && $y_loc > $top && $y_loc < $top + $height) {
         # Tell ratpoison to switch to the frame
-	print "User clicked in frame $num\n";
-	system ("$ratpoison_bin -c \"fselect $num\"");
+        print "User clicked in frame $num\n";
+        system ("$ratpoison_bin -c \"fselect $num\"");
     }
 }
 
 __END__
 
---- xbindkeys.c~	2003-04-06 08:43:27.000000000 -0700
-+++ xbindkeys.c	2003-09-24 11:46:20.000000000 -0700
+--- xbindkeys.c~        2003-04-06 08:43:27.000000000 -0700
++++ xbindkeys.c 2003-09-24 11:46:20.000000000 -0700
 @@ -143,7 +143,15 @@
 
 
@@ -61,21 +61,20 @@ __END__
 
  static void
 @@ -240,6 +248,8 @@
- 			       | Button1Mask | Button2Mask | Button3Mask
- 			       | Button4Mask | Button5Mask);
+                               | Button1Mask | Button2Mask | Button3Mask
+                               | Button4Mask | Button5Mask);
 
-+	  add_button_env (e.xbutton.x, e.xbutton.y);
++         add_button_env (e.xbutton.x, e.xbutton.y);
 +
- 	  for (i = 0; i < nb_keys; i++)
- 	    {
- 	      if (keys[i].type == BUTTON && keys[i].event_type == PRESS)
+          for (i = 0; i < nb_keys; i++)
+            {
+              if (keys[i].type == BUTTON && keys[i].event_type == PRESS)
 @@ -266,6 +276,8 @@
- 			       | Button1Mask | Button2Mask | Button3Mask
- 			       | Button4Mask | Button5Mask);
+                               | Button1Mask | Button2Mask | Button3Mask
+                               | Button4Mask | Button5Mask);
 
-+	  add_button_env (e.xbutton.x, e.xbutton.y);
++         add_button_env (e.xbutton.x, e.xbutton.y);
 +
- 	  for (i = 0; i < nb_keys; i++)
- 	    {
- 	      if (keys[i].type == BUTTON && keys[i].event_type == RELEASE)
-
+          for (i = 0; i < nb_keys; i++)
+            {
+              if (keys[i].type == BUTTON && keys[i].event_type == RELEASE)

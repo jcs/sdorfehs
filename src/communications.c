@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -43,9 +43,9 @@ receive_command_result (Window w)
 
   /* First, find out how big the property is. */
   status = XGetWindowProperty (dpy, w, rp_command_result,
-			       0, 0, False, XA_STRING,
-			       &type_ret, &format_ret, &nitems, &bytes_after,
-			       &result);
+                               0, 0, False, XA_STRING,
+                               &type_ret, &format_ret, &nitems, &bytes_after,
+                               &result);
 
   /* Failed to retrieve property. */
   if (status != Success || result == NULL)
@@ -61,9 +61,9 @@ receive_command_result (Window w)
   /* Now that we have the length of the message, we can get the
      whole message. */
   status = XGetWindowProperty (dpy, w, rp_command_result,
-			       0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-			       True, XA_STRING, &type_ret, &format_ret, &nitems, 
-			       &bytes_after, &result);
+                               0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+                               True, XA_STRING, &type_ret, &format_ret, &nitems,
+                               &bytes_after, &result);
 
   /* Failed to retrieve property. */
   if (status != Success || result == NULL)
@@ -76,9 +76,9 @@ receive_command_result (Window w)
   if (strlen ((char *)result))
     {
       if (result[0] == '1')
-	printf ("%s\n", &result[1]);
+        printf ("%s\n", &result[1]);
       else
-	fprintf (stderr, "%s\n", &result[1]);
+        fprintf (stderr, "%s\n", &result[1]);
     }
 
   /* Free the result. */
@@ -109,11 +109,11 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
   XSelectInput (dpy, w, PropertyChangeMask);
 
   XChangeProperty (dpy, w, rp_command, XA_STRING,
-		   8, PropModeReplace, sbuf_get(s), strlen ((char *)cmd) + 2);
+                   8, PropModeReplace, sbuf_get(s), strlen ((char *)cmd) + 2);
 
-  XChangeProperty (dpy, root, 
-		   rp_command_request, XA_WINDOW,
-		   8, PropModeAppend, (unsigned char *)&w, sizeof (Window));
+  XChangeProperty (dpy, root,
+                   rp_command_request, XA_WINDOW,
+                   8, PropModeAppend, (unsigned char *)&w, sizeof (Window));
 
   sbuf_free (s);
 
@@ -122,12 +122,12 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
       XEvent ev;
 
       XMaskEvent (dpy, PropertyChangeMask, &ev);
-      if (ev.xproperty.atom == rp_command_result 
-	  && ev.xproperty.state == PropertyNewValue)
-	{
-	  receive_command_result(ev.xproperty.window);
-	  done = 1;
-	}
+      if (ev.xproperty.atom == rp_command_result
+          && ev.xproperty.state == PropertyNewValue)
+        {
+          receive_command_result(ev.xproperty.window);
+          done = 1;
+        }
     }
 
   XDestroyWindow (dpy, w);

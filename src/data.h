@@ -1,4 +1,4 @@
-/* our datatypes and global variables 
+/* our datatypes and global variables
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This file is part of ratpoison.
@@ -51,7 +51,7 @@ struct rp_frame
   /* For determining the last frame. */
   int last_access;
 
-  /* Boolean that is set when a frame is 
+  /* Boolean that is set when a frame is
      `dedicated' (a.k.a. glued) to one window. */
   unsigned int dedicated;
 
@@ -147,15 +147,15 @@ struct rp_screen
   GC normal_gc;
   Window root, bar_window, key_window, input_window, frame_window, help_window;
   int bar_is_raised;
-  int screen_num;		/* Our screen number as dictated my X */
-  int xine_screen_num;		/* Our screen number for the Xinerama extension */
+  int screen_num;               /* Our screen number as dictated my X */
+  int xine_screen_num;          /* Our screen number for the Xinerama extension */
   Colormap def_cmap;
   Cursor rat;
   unsigned long fg_color, bg_color; /* The pixel color. */
-  
+
   /* Here to abstract over the Xinerama vs X screens difference */
   int left, top, width, height;
-  
+
   char *display_string;
 
   /* A list of frames that may or may not contain windows. There should
@@ -174,7 +174,7 @@ struct rp_action
 {
   KeySym key;
   unsigned int state;
-  char *data;			/* misc data to be passed to the function */
+  char *data;                   /* misc data to be passed to the function */
 /*   void (*func)(void *); */
 };
 
@@ -211,7 +211,7 @@ struct rp_defaults
   int bar_location;
   int bar_timeout;
   int bar_border_width;
-  
+
   int frame_indicator_timeout;
   int frame_resize_unit;
 
@@ -285,10 +285,10 @@ struct rp_child_info
    comes to compare modifier masks. */
 #define RP_SHIFT_MASK   1
 #define RP_CONTROL_MASK 2
-#define RP_META_MASK 	4
-#define RP_ALT_MASK 	8
-#define RP_SUPER_MASK 	16
-#define RP_HYPER_MASK 	32
+#define RP_META_MASK    4
+#define RP_ALT_MASK     8
+#define RP_SUPER_MASK   16
+#define RP_HYPER_MASK   32
 
 struct modifier_info
 {
@@ -299,9 +299,9 @@ struct modifier_info
   unsigned int hyper_mod_mask;
 
   /* Keep track of these because they mess up the grab and should be
-     ignored. */  
+     ignored. */
   unsigned int num_lock_mask;
-  unsigned int scroll_lock_mask; 
+  unsigned int scroll_lock_mask;
 };
 
 typedef struct list_head *(*completion_fn)(char *string);

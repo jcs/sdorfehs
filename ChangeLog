@@ -11,11 +11,11 @@
 2006-03-14  Antti Nykänen <aon@iki.fi>
 
 	* src/format.c: new file
-	
+
 	* src/format.h: new file
-	
+
 	* Makefile.am (ratpoison_SOURCES): add format.c and format.h
-	
+
 	* src/actions.c (set_infofmt): new function
 	(wingravity_to_string): char * instead of static char * because	needed in format.c
 	(cmd_info): use format_string
@@ -70,7 +70,7 @@
 
 	* src/events.c: look for _NET_WM_PID notify events and adopt the
 	intended frame number accordingly.
-	
+
 	* src/window.c, src/window.h: make get_child_info accessible from
 	events.c
 
@@ -167,7 +167,7 @@
 
 	* src/main.c (clean_up): call del_frame_undo not pop_frame_undo
 
-	* src/globals.h: new global prototype rp_frame_redos 
+	* src/globals.h: new global prototype rp_frame_redos
 
 	* src/globals.c: new global rp_frame_redos
 
@@ -617,7 +617,7 @@
 	(set_winliststyle): likewise
 	(set_framesels): likewise
 	(set_maxundos): likewise
-	
+
 	* src/actions.h: include ratpoison.h
 	(argtype): add arg_FRAME, arg_WINDOW, arg_COMMAND, arg_SHELLCMD,
 	arg_KEYMAP, arg_KEY, arg_GRAVITY, arg_GROUP, arg_HOOK,
@@ -878,7 +878,7 @@
 	(struct rp_defaults): add maxundos member.
 	(struct rp_frame_undo): new struct.
 
-	* src/actions.c: new commands, cnext, cother, cprev, 
+	* src/actions.c: new commands, cnext, cother, cprev,
 
 	* src/window.c (print_window_information): add argument,
 	group. print the window's number in the group. All callers
@@ -928,7 +928,7 @@
 
 2004-11-17  Bernhard R. Link <brlink@debian.org>
 
-	* src/actions.c: (initialize_default_keybindings): Added 
+	* src/actions.c: (initialize_default_keybindings): Added
 	default keybindings for focusleft,fcousup,focusright,focusdown.
 	(cmd_resize): Added support for	multiple keybindings
 	per action. Added arrow keys, escape and vi-like h,j,k,l
@@ -991,7 +991,7 @@
 	* doc/ratpoison.texi (Frame Numbering): new topic
 
 2004-07-24  Thien-Thi Nguyen  <ttn@glug.org>
- 
+
 	* autogen.sh: Handle "-f" option. Add usage comment.
 
 2004-10-05  Shawn Betts  <sabetts@vcn.bc.ca>
@@ -1127,7 +1127,7 @@
 
 	* src/actions.c (cmd_set): if non-interactive and no arguments are
 	specified, then output the current value of all variables.
- 
+
 	* src/messages.h (MESSAGE_PROMPT_SELECT_VAR): new define
 	(MESSAGE_PROMPT_VAR_VALUE): likewise
 
@@ -1140,7 +1140,7 @@
 	(cmd_set): new function
 	(var_completions): new function
 	(initialize_default_keybindings): add aliases for def* commands
-	
+
 	* src/events.c (configure_request): only display a raise request
 	if the window isn't already focused.
 
@@ -1326,7 +1326,7 @@
 	* src/communications.c (send_command): send an interactive bit at
 	the beginning of the message. Take an interactive argument. All
 	callers updated. Prototype updated.
-	
+
 	* src/actions.c (cmd_source): call set_close_on_exec on file pointer.
 
 2003-11-16  Ryan Yeske  <rcyeske@vcn.bc.ca>
@@ -1335,32 +1335,32 @@
 	<cantsin@zedat.fu-berlin.de>
 
 2003-11-02  Thien-Thi Nguyen  <ttn@glug.org>
-	
+
 	* AUTHORS: Add self.
- 
- 	* configure.in: Add "--disable-history" handling.
- 	Conditionalize libhistory checks accordingly.
- 
- 	* README: Mention "--disable history".
- 
- 	* src/history.c: Surround most of the code with
- 	"#ifdef HAVE_READLINE_HISTORY_H".
- 
- 	* src/ratpoison.h: Only #include history.h when
- 	"#ifdef HAVE_READLINE_HISTORY_H".
- 
- 	* src/main.c (main, clean_up): Only load and save history,
- 	respectively, when "#ifdef HAVE_READLINE_HISTORY_H".
- 
- 	* src/editor.c (editor_history_previous, editor_history_next):
- 	Return EDIT_NO_OP when not "#ifdef HAVE_READLINE_HISTORY_H".
- 	(editor_enter): Do not do line expansion or history add
- 	when not "#ifdef HAVE_READLINE_HISTORY_H".
- 
- 	* doc/ratpoison.texi: Mention that history cycling and
- 	processing is not available when ratpoison is configured
- 	with the "--disable-history" option.
- 
+
+	* configure.in: Add "--disable-history" handling.
+	Conditionalize libhistory checks accordingly.
+
+	* README: Mention "--disable history".
+
+	* src/history.c: Surround most of the code with
+	"#ifdef HAVE_READLINE_HISTORY_H".
+
+	* src/ratpoison.h: Only #include history.h when
+	"#ifdef HAVE_READLINE_HISTORY_H".
+
+	* src/main.c (main, clean_up): Only load and save history,
+	respectively, when "#ifdef HAVE_READLINE_HISTORY_H".
+
+	* src/editor.c (editor_history_previous, editor_history_next):
+	Return EDIT_NO_OP when not "#ifdef HAVE_READLINE_HISTORY_H".
+	(editor_enter): Do not do line expansion or history add
+	when not "#ifdef HAVE_READLINE_HISTORY_H".
+
+	* doc/ratpoison.texi: Mention that history cycling and
+	processing is not available when ratpoison is configured
+	with the "--disable-history" option.
+
 2003-11-01  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/input.c (cook_keycode): null terminate the string.
@@ -2048,7 +2048,7 @@
 	(add_unmanaged_window): likewise
 	(unmanaged_window): use num_unmanaged_windows to tell how many
 	elements are in the unmanaged list.
-	
+
 	* src/actions.h (cmd_unmanage): new prototype
 	(cmd_clrunmanaged): likewise
 
@@ -2065,7 +2065,7 @@
 	* src/bar.h (update_bar): new prototype.
 
 	* src/bar.c (BAR_IS_HIDDEN): new define.
-	(update_bar): new function. 
+	(update_bar): new function.
 
 	* src/actions.c (cmd_frestore): call update_bar() instead of
 	update_window_names().
@@ -2135,7 +2135,7 @@
 
 	* src/window.c (add_to_window_list): use xstrdup to create the
 	default value for user_name.
-	
+
 2003-04-10  Shawn Betts  <sabetts@sfu.ca>
 
 	* src/events.c (unmap_notify): fix crash bug in NormalState case.
@@ -2303,7 +2303,7 @@
 
 	* src/ratpoison.h: include screen.h
 
-	* src/manage.c (move_window): 
+	* src/manage.c (move_window):
 
 	* src/frame.h (frame_copy): new prototype
 	(frame_dump): likewise
@@ -2426,12 +2426,12 @@
 
 	* src/split.c (create_initial_frame): give a number to the
 	initial frame
-	(split_frame): give the new frame a unique number 
+	(split_frame): give the new frame a unique number
 	(split_frame): add the new frame after the current frame
 	(remove_all_splits): return the frame's number when deleting it.
 	(remove_frame): likewise
 	(find_frame_number): new function
-	
+
 	* src/main.c (init_screen): initialize the frames_numset member
 	(free_screen): free the frames_numset member
 
@@ -2781,7 +2781,7 @@
 
 2002-08-31  Shawn Betts  <sabetts@vcn.bc.ca>
 
-	* src/actions.c (cmd_bind): malloc the correct amount of memory for keydesc 
+	* src/actions.c (cmd_bind): malloc the correct amount of memory for keydesc
 	(cmd_unbind): likewise
 
 2002-07-28  Shawn Betts  <sabetts@vcn.bc.ca>
@@ -3021,7 +3021,7 @@
 	* src/actions.c (cmd_rename): Allows the user to specify a second
 	argument which is the number of the window whose number will be
 	set to the first argument.
- 
+
 2002-01-09  Gergely Nagy  <algernon@debian.org>
 
 	* src/actions.c (setenv, unsetenv): new functions, used when
@@ -3488,7 +3488,7 @@
 
 	* src/actions.c (cmd_bind): binding an empty string to a key will
 	unbind the key.
-	
+
 2001-09-09  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/conf.h (MAXSIZE_WINDOWS_ARE_TRANSIENTS): defined
@@ -3719,7 +3719,7 @@
 	* src/split.c (hide_frame_indicator): always hide the frame
 	indicator.
 	(blank_frame): don't show the frame indicator.
-	
+
 	* src/manage.c (maximize_normal)[MAXSIZE_WINDOWS_ARE_TRANSIENTS]:
 	win are centered properly in the frame.
 
@@ -3939,7 +3939,7 @@
 	* src/actions.c: command functions have been changed to return a
 	result string and take a parameter that tells the function if it
 	was called interactively or not. All callers updated.
-	
+
 	* src/split.c (split_frame): unhide transient_for windows as well
 	as the active window.
 	(remove_all_splits): hide transient_for windows as well as the
@@ -4333,7 +4333,7 @@
 	(current_window): likewise
 	(init_frame_list): likewise
 	(set_active_frame): likewise
-	
+
 	* src/split.c (create_initial_frame): new function
 	(init_frame_list): likewise
 	(find_windows_frame): likewise
@@ -4623,7 +4623,7 @@
 
 	* src/bar.c (update_window_names): Print a '+' for the last accessed
 	window.
-	
+
 2001-03-05  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/events.c (key_press): set rp_mode_switch to 0 before processing
@@ -4786,7 +4786,7 @@
 
 	* src/main.c (main): calls initialize_default_keybindings after
 	init_window_list.
-	
+
 	* src/data.h (struct rp_action): key is of type KeySym. state is
 	unsigned int.
 
@@ -4819,7 +4819,7 @@
 	there are no more mapped windows.
 	(destroy_window): calls set_current_window and find_window_other
 	directly instead of cmd_other.
- 
+
 2001-02-26  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/list.c (save_mouse_position): stores the mouse position relative
@@ -4829,11 +4829,11 @@
 	* src/actions.h: prototype for force_maximize added
 
 	* src/actions.c: the user command "maximize" calls force_maximize
-	(force_maximize): New function 
+	(force_maximize): New function
 
 2001-02-25  shawn  <sabetts@diggin.lamenet.tmp>
 
-	* configure.in (AC_OUTPUT): added man/Makefile 
+	* configure.in (AC_OUTPUT): added man/Makefile
 
 	* Makefile.am (SUBDIRS): added man dir
 
@@ -4856,7 +4856,7 @@
 	(main): read the initialization files
 
 	* src/conf.h: remove themes support
-	
+
 	* src/themes.h: remove file
 
 	* src/actions.c (replace_keybinding): add function
@@ -5013,7 +5013,7 @@
 	(sort_window_list_by_number): Added
 
 	* src/input.c (update_input_window): Added
-	(get_input): calls update_input_window in place of xlib calls. 
+	(get_input): calls update_input_window in place of xlib calls.
 	(get_input): exits if realloc fails
 
 	* src/conf.h: Added INPUT_WINDOW_SIZE
@@ -5047,12 +5047,12 @@
 2001-02-17  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* src/actions.c (generate_key_event): Send KEY_PREFIX.
-	
+
 2001-02-17  Ryan Yeske  <rcyeske@cut.hotdog.tmp>
 
 	* src/manage.c (current_screen): Rename get_screen() and move to this
 	file.
-	
+
 	* src/input.c (get_input): Remove screen_info as paramater.  Call
 	current_screen() to get screen_info.
 
@@ -5129,7 +5129,7 @@
 	by mark_start and mark_end arguments
 
 	* src/conf.h (BAR_FG_COLOR): changed to black
-	(BAR_BG_COLOR): changed to white 
+	(BAR_BG_COLOR): changed to white
 	(FONT_NAME): changed to 9x15bold
 	(BAR_Y_PADDING): changed to zero
 	(BAR_X_PADDING): changed to zero
@@ -5164,7 +5164,7 @@
 	all user functions that need arguments will prompt the user for
 	them, unless they are supplied.  Allows the same function to be
 	used interactively or internally.
-	
+
 	* src/bar.h (display_msg_in_bar): updated prototype
 
 	* src/bar.c (display_msg_in_bar): takes two additional int arguments
@@ -5221,7 +5221,7 @@
 
 	* src/actions.h (goto_window_number): added prototype
 	(goto_window): removed prototype
-	
+
 	* src/Makefile.am (ratpoison_SOURCES): added messages.h
 
 	* src/actions.c (prev_window): display correct message when there is
@@ -5275,7 +5275,7 @@
 	* doc/ratpoison.texi: added keystroke for `Show current time.'
 
 	* debian/ratpoison.1: added keystroke for `Show current time.'
-	
+
 2001-01-02  shawn  <sabetts@diggin.lamenet.tmp>
 
 	* src/communications.c (send_restart): moved from main.c
@@ -5452,7 +5452,7 @@
 	* src/actions.c (rename_current_window): added test to skip renaming
 	if user entered an empty string
 	(execute_command): added command
-	(key_actions): execute_command is called by pressing ':' 
+	(key_actions): execute_command is called by pressing ':'
 
 2000-10-30  shawn  <sabetts@badbox.secure.basis.org>
 

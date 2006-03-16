@@ -69,37 +69,37 @@ struct edit_binding
 };
 
 static edit_binding edit_bindings[] =
-  { {{XK_g, 		RP_CONTROL_MASK},       editor_abort},
-     {{XK_Escape, 	0},          		editor_abort},
-     {{XK_f, 		RP_CONTROL_MASK},       editor_forward_char},
-     {{XK_Right, 	0},           		editor_forward_char},
-     {{XK_b, 		RP_CONTROL_MASK},       editor_backward_char},
-     {{XK_Left, 	0},            		editor_backward_char},
-     {{XK_f, 		RP_META_MASK},          editor_forward_word},
-     {{XK_b, 		RP_META_MASK},          editor_backward_word},
-     {{XK_a, 		RP_CONTROL_MASK},       editor_beginning_of_line},
-     {{XK_Home, 	0},            		editor_beginning_of_line},
-     {{XK_e, 		RP_CONTROL_MASK},       editor_end_of_line},
-     {{XK_End, 		0},             	editor_end_of_line},
-     {{XK_d, 		RP_CONTROL_MASK},       editor_delete_char},
-     {{XK_Delete, 	0},          		editor_delete_char},
-     {{XK_BackSpace, 	0},       		editor_backward_delete_char},
-     {{XK_h,		RP_CONTROL_MASK},      	editor_backward_delete_char},
-     {{XK_BackSpace,	RP_META_MASK},          editor_backward_kill_word},
-     {{XK_d, 		RP_META_MASK},          editor_kill_word},
-     {{XK_k, 		RP_CONTROL_MASK},       editor_kill_line},
-     {{XK_u, 		RP_CONTROL_MASK},       editor_backward_kill_line},
-     {{XK_y, 		RP_CONTROL_MASK},  	editor_paste_selection},
-     {{XK_p, 		RP_CONTROL_MASK},       editor_history_previous},
-     {{XK_Up, 		0},              	editor_history_previous},
-     {{XK_n, 		RP_CONTROL_MASK},       editor_history_next},
-     {{XK_Down, 	0},            		editor_history_next},
-     {{XK_Return, 	0},          		editor_enter},
-     {{XK_m,		RP_CONTROL_MASK},       editor_enter},
-     {{XK_KP_Enter, 	0},        		editor_enter},
-     {{XK_Tab,		0},        		editor_complete_next},
-     {{XK_ISO_Left_Tab,	0},        		editor_complete_prev},
-     { {0, 		0},                	0} };
+  { {{XK_g,             RP_CONTROL_MASK},       editor_abort},
+     {{XK_Escape,       0},             editor_abort},
+     {{XK_f,            RP_CONTROL_MASK},       editor_forward_char},
+     {{XK_Right,        0},             editor_forward_char},
+     {{XK_b,            RP_CONTROL_MASK},       editor_backward_char},
+     {{XK_Left, 0},             editor_backward_char},
+     {{XK_f,            RP_META_MASK},          editor_forward_word},
+     {{XK_b,            RP_META_MASK},          editor_backward_word},
+     {{XK_a,            RP_CONTROL_MASK},       editor_beginning_of_line},
+     {{XK_Home, 0},             editor_beginning_of_line},
+     {{XK_e,            RP_CONTROL_MASK},       editor_end_of_line},
+     {{XK_End,          0},     editor_end_of_line},
+     {{XK_d,            RP_CONTROL_MASK},       editor_delete_char},
+     {{XK_Delete,       0},             editor_delete_char},
+     {{XK_BackSpace,    0},             editor_backward_delete_char},
+     {{XK_h,            RP_CONTROL_MASK},       editor_backward_delete_char},
+     {{XK_BackSpace,    RP_META_MASK},          editor_backward_kill_word},
+     {{XK_d,            RP_META_MASK},          editor_kill_word},
+     {{XK_k,            RP_CONTROL_MASK},       editor_kill_line},
+     {{XK_u,            RP_CONTROL_MASK},       editor_backward_kill_line},
+     {{XK_y,            RP_CONTROL_MASK},       editor_paste_selection},
+     {{XK_p,            RP_CONTROL_MASK},       editor_history_previous},
+     {{XK_Up,           0},     editor_history_previous},
+     {{XK_n,            RP_CONTROL_MASK},       editor_history_next},
+     {{XK_Down, 0},             editor_history_next},
+     {{XK_Return,       0},             editor_enter},
+     {{XK_m,            RP_CONTROL_MASK},       editor_enter},
+     {{XK_KP_Enter,     0},             editor_enter},
+     {{XK_Tab,          0},             editor_complete_next},
+     {{XK_ISO_Left_Tab, 0},             editor_complete_prev},
+     { {0,              0},     0} };
 
 rp_input_line *
 input_line_new (char *prompt, char *preinput, completion_fn fn)
@@ -261,7 +261,7 @@ static edit_status
 editor_kill_word (rp_input_line *line)
 {
   int i, diff;
-  
+
 
   if (line->position < line->length)
     {
@@ -272,7 +272,7 @@ editor_kill_word (rp_input_line *line)
 
       /* Add the word to the X11 selection. */
       set_nselection (&line->buffer[line->position], diff);
-  
+
       for (i = line->position; i <= line->length - diff; i++)
         line->buffer[i] = line->buffer[i + diff];
 
@@ -485,7 +485,7 @@ editor_enter (rp_input_line *line)
       return EDIT_ABORT;
     }
   else /* result == 0 || result == 1 */
-    { 
+    {
       history_add (expansion);
       free (line->buffer);
       line->buffer = expansion;

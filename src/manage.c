@@ -39,12 +39,12 @@ static int num_unmanaged_windows = 0;
 void
 clear_unmanaged_list ()
 {
-  if (unmanaged_window_list) 
+  if (unmanaged_window_list)
     {
       int i;
 
       for (i = 0; i < num_unmanaged_windows; i++)
-	free(unmanaged_window_list[i]);
+        free(unmanaged_window_list[i]);
 
       free(unmanaged_window_list);
 
@@ -57,23 +57,23 @@ char *
 list_unmanaged_windows ()
 {
   char *tmp = NULL;
-  if (unmanaged_window_list) 
+  if (unmanaged_window_list)
     {
       char *tpos;
       int len = 0;
       int i;
 
       for (i = 0; i < num_unmanaged_windows; i++)
-	len += (strlen(unmanaged_window_list[i]) + 1);
+        len += (strlen(unmanaged_window_list[i]) + 1);
 
       tmp = xmalloc(len + 1);
       tpos = tmp;
 
-      for (i = 0; i < num_unmanaged_windows; i++) 
-	{
-	  sprintf(tpos, "%s\n", unmanaged_window_list[i]);
-	  tpos += strlen(unmanaged_window_list[i])+1;
-	}
+      for (i = 0; i < num_unmanaged_windows; i++)
+        {
+          sprintf(tpos, "%s\n", unmanaged_window_list[i]);
+          tpos += strlen(unmanaged_window_list[i])+1;
+        }
       tpos--;
       *tpos = '\0';
     }
@@ -89,7 +89,7 @@ add_unmanaged_window (char *name)
 
   tmp = xmalloc((num_unmanaged_windows + 1) * sizeof(char *));
 
-  if (unmanaged_window_list) 
+  if (unmanaged_window_list)
     {
       memcpy(tmp, unmanaged_window_list, num_unmanaged_windows * sizeof(char *));
       free(unmanaged_window_list);
@@ -107,8 +107,8 @@ void
 grab_top_level_keys (Window w)
 {
 #ifdef HIDE_MOUSE
-  XGrabKey(dpy, AnyKey, AnyModifier, w, True, 
-	   GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, AnyKey, AnyModifier, w, True,
+           GrabModeAsync, GrabModeAsync);
 #else
   rp_keymap *map = find_keymap (TOP_KEYMAP);
   int i;
@@ -166,9 +166,9 @@ current_screen ()
   for (i=0; i<num_screens; i++)
     {
       if (screens[i].xine_screen_num == rp_current_screen)
-	return &screens[i];
+        return &screens[i];
     }
-  
+
   /* This should never happen. */
   return &screens[0];
 }
@@ -193,7 +193,7 @@ update_normal_hints (rp_window *win)
 
 #endif
 }
-		     
+
 
 static char *
 get_wmname (Window w)
@@ -206,12 +206,12 @@ get_wmname (Window w)
   unsigned char *name = NULL;
   char *ret;
 
-  status = XGetWindowProperty (dpy, w, wm_name, 0L, 100L, False, 
-			       XA_STRING, &actual_type, &actual_format, 
-			       &n, &bytes_after, &name);
+  status = XGetWindowProperty (dpy, w, wm_name, 0L, 100L, False,
+                               XA_STRING, &actual_type, &actual_format,
+                               &n, &bytes_after, &name);
 
-  PRINT_DEBUG (("XGetWindowProperty: %d %ld %d %ld %ld '%s'\n", status, actual_type, 
-		actual_format, n, bytes_after, name));
+  PRINT_DEBUG (("XGetWindowProperty: %d %ld %d %ld %ld '%s'\n", status, actual_type,
+                actual_format, n, bytes_after, name));
 
   if (status != Success || name == NULL)
     {
@@ -334,7 +334,7 @@ update_window_name (rp_window *win)
   return 1;
 }
 
-/* Send an artificial configure event to the window. */ 
+/* Send an artificial configure event to the window. */
 void
 send_configure (Window w, int x, int y, int width, int height, int border)
 {
@@ -366,7 +366,7 @@ window_is_transient (rp_window *win)
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
 || (win->hints->flags & PMaxSize
     && (win->hints->max_width < win->scr->width
-	|| win->hints->max_height < win->scr->height))
+        || win->hints->max_height < win->scr->height))
 #endif
     ;
 }
@@ -402,19 +402,19 @@ unmanage (rp_window *w)
   list_del (&w->node);
   groups_del_window (w);
 
-  free_window (w);  
+  free_window (w);
 
 #ifdef AUTO_CLOSE
   if (rp_mapped_window->next == &rp_mapped_window
       && rp_mapped_window->prev == &rp_mapped_window)
     {
       /* If the mapped window list is empty then we have run out of
- 	 managed windows, so kill ratpoison. */
+         managed windows, so kill ratpoison. */
 
       /* FIXME: The unmapped window list may also have to be checked
-	 in the case that the only mapped window in unmapped and
-	 shortly after another window is mapped most likely by the
-	 same app. */
+         in the case that the only mapped window in unmapped and
+         shortly after another window is mapped most likely by the
+         same app. */
 
       kill_signalled = 1;
     }
@@ -433,43 +433,43 @@ scanwins(rp_screen *s)
   XQueryTree(dpy, s->root, &dw1, &dw2, &wins, &nwins);
   PRINT_DEBUG (("windows: %d\n", nwins));
 
-  for (i = 0; i < nwins; i++) 
+  for (i = 0; i < nwins; i++)
     {
       XGetWindowAttributes(dpy, wins[i], &attr);
       if (is_rp_window_for_screen(wins[i], s)
-	  || attr.override_redirect == True
-	  || unmanaged_window (wins[i])) continue;
+          || attr.override_redirect == True
+          || unmanaged_window (wins[i])) continue;
 
       /* FIXME - with this code, windows which are entirely off-screen
        * when RP starts won't ever be managed when Xinerama is enabled.
        */
-      { 
-	XWindowAttributes root_attr;
+      {
+        XWindowAttributes root_attr;
 
-	XGetWindowAttributes (dpy, s->root, &root_attr);
-      PRINT_DEBUG (("attrs: %d %d %d %d %d %d\n", root_attr.x, root_attr.y, 
-		    s->left, s->top, s->left + s->width, s->top + s->height));}
+        XGetWindowAttributes (dpy, s->root, &root_attr);
+      PRINT_DEBUG (("attrs: %d %d %d %d %d %d\n", root_attr.x, root_attr.y,
+                    s->left, s->top, s->left + s->width, s->top + s->height));}
 
       if (rp_have_xinerama
-	  && ((attr.x > s->left + s->width)
+          && ((attr.x > s->left + s->width)
                || (attr.x < s->left)
-	       || (attr.y > s->top + s->height)
-	       || (attr.y < s->top))) continue;
+               || (attr.y > s->top + s->height)
+               || (attr.y < s->top))) continue;
 
       win = add_to_window_list (s, wins[i]);
 
-      PRINT_DEBUG (("map_state: %s\n", 
-		    attr.map_state == IsViewable ? "IsViewable":
-		    attr.map_state == IsUnviewable ? "IsUnviewable" : "IsUnmapped"));
-      PRINT_DEBUG (("state: %s\n", 
-		    get_state(win) == IconicState ? "Iconic":
-		    get_state(win) == NormalState ? "Normal" : "Other"));
-      
+      PRINT_DEBUG (("map_state: %s\n",
+                    attr.map_state == IsViewable ? "IsViewable":
+                    attr.map_state == IsUnviewable ? "IsUnviewable" : "IsUnmapped"));
+      PRINT_DEBUG (("state: %s\n",
+                    get_state(win) == IconicState ? "Iconic":
+                    get_state(win) == NormalState ? "Normal" : "Other"));
+
       /* Collect mapped and iconized windows. */
       if (attr.map_state == IsViewable
-	  || (attr.map_state == IsUnmapped
-	      && get_state (win) == IconicState))
-	map_window (win);
+          || (attr.map_state == IsUnmapped
+              && get_state (win) == IconicState))
+        map_window (win);
     }
 
   XFree(wins);
@@ -483,15 +483,15 @@ unmanaged_window (Window w)
 
   if (!unmanaged_window_list) return 0;
 
-  for (i = 0; i < num_unmanaged_windows; i++) 
+  for (i = 0; i < num_unmanaged_windows; i++)
     {
       wname = get_wmname(w);
       if (!wname) return 0;
-      if (!strcmp(unmanaged_window_list[i], wname)) 
-	{
-	  free(wname);
-	  return 1;
-	}
+      if (!strcmp(unmanaged_window_list[i], wname))
+        {
+          free(wname);
+          return 1;
+        }
       free(wname);
     }
   return 0;
@@ -502,14 +502,14 @@ void
 set_state (rp_window *win, int state)
 {
   long data[2];
-  
+
   win->state = state;
 
   data[0] = (long)win->state;
   data[1] = (long)None;
 
   XChangeProperty (dpy, win->w, wm_state, wm_state, 32,
-		   PropModeReplace, (unsigned char *)data, 2);
+                   PropModeReplace, (unsigned char *)data, 2);
 }
 
 /* Get the WM state of the window. */
@@ -523,13 +523,13 @@ get_state (rp_window *win)
   unsigned long bytes_left;
   unsigned char *data;
 
-  if (win == NULL) 
+  if (win == NULL)
     return state;
 
-  if (XGetWindowProperty (dpy, win->w, wm_state, 0L, 2L, 
-			  False, wm_state, &type, &format, 
-			  &nitems, &bytes_left, 
-			  &data) == Success && nitems > 0)
+  if (XGetWindowProperty (dpy, win->w, wm_state, 0L, 2L,
+                          False, wm_state, &type, &format,
+                          &nitems, &bytes_left,
+                          &data) == Success && nitems > 0)
     {
       state = *(long *)data;
       XFree (data);
@@ -543,7 +543,7 @@ move_window (rp_window *win)
 {
   rp_frame *frame;
 
-  if (win->frame_number == EMPTY) 
+  if (win->frame_number == EMPTY)
     return;
 
   frame = win_get_frame (win);
@@ -614,8 +614,8 @@ maximize_transient (rp_window *win)
   /* Fit the window inside its frame (if it has one) */
   if (frame)
     {
-      PRINT_DEBUG (("frame width=%d height=%d\n", 
-		   frame->width, frame->height));
+      PRINT_DEBUG (("frame width=%d height=%d\n",
+                   frame->width, frame->height));
 
       if (maxx + win->border * 2 > frame->width) maxx = frame->width - win->border * 2;
       if (maxy + win->border * 2 > frame->height) maxy = frame->height - win->border * 2;
@@ -630,22 +630,22 @@ maximize_transient (rp_window *win)
 
       /* Avoid a divide by zero if width/height_inc is 0. */
       if (win->hints->width_inc)
-	{
-	  amount = maxx - win->width;
-	  delta = amount % win->hints->width_inc;
-	  amount -= delta;
-	  if (amount < 0 && delta) amount -= win->hints->width_inc;
-	  maxx = amount + win->width;
-	}
+        {
+          amount = maxx - win->width;
+          delta = amount % win->hints->width_inc;
+          amount -= delta;
+          if (amount < 0 && delta) amount -= win->hints->width_inc;
+          maxx = amount + win->width;
+        }
 
       if (win->hints->height_inc)
-	{
-	  amount = maxy - win->height;
-	  delta = amount % win->hints->height_inc;
-	  amount -= delta;
-	  if (amount < 0 && delta) amount -= win->hints->height_inc;
-	  maxy = amount + win->height;
-	}
+        {
+          amount = maxy - win->height;
+          delta = amount % win->hints->height_inc;
+          amount -= delta;
+          if (amount < 0 && delta) amount -= win->hints->height_inc;
+          maxy = amount + win->height;
+        }
     }
 
   PRINT_DEBUG (("maxsize: %d %d\n", maxx, maxy));
@@ -685,28 +685,28 @@ maximize_normal (rp_window *win)
 
   /* Honour the window's aspect ratio. */
   PRINT_DEBUG (("aspect: %ld\n", win->hints->flags & PAspect));
-  if (win->hints->flags & PAspect) 
+  if (win->hints->flags & PAspect)
     {
       float ratio = (float)maxx / maxy;
       float min_ratio = (float)win->hints->min_aspect.x / win->hints->min_aspect.y;
       float max_ratio = (float)win->hints->max_aspect.x / win->hints->max_aspect.y;
-      PRINT_DEBUG (("ratio=%f min_ratio=%f max_ratio=%f\n", 
-		    ratio,min_ratio,max_ratio));
-      if (ratio < min_ratio) 
-	{
-	  maxy = (int) (maxx / min_ratio);
-	}
-      else if (ratio > max_ratio) 
-	{
-	  maxx = (int) (maxy * max_ratio);
-	}
+      PRINT_DEBUG (("ratio=%f min_ratio=%f max_ratio=%f\n",
+                    ratio,min_ratio,max_ratio));
+      if (ratio < min_ratio)
+        {
+          maxy = (int) (maxx / min_ratio);
+        }
+      else if (ratio > max_ratio)
+        {
+          maxx = (int) (maxy * max_ratio);
+        }
     }
 
   /* Fit the window inside its frame (if it has one) */
   if (frame)
     {
-      PRINT_DEBUG (("frame width=%d height=%d\n", 
-		   frame->width, frame->height));
+      PRINT_DEBUG (("frame width=%d height=%d\n",
+                   frame->width, frame->height));
 
       if (maxx > frame->width) maxx = frame->width - win->border * 2;
       if (maxy > frame->height) maxy = frame->height - win->border * 2;
@@ -720,22 +720,22 @@ maximize_normal (rp_window *win)
       int delta;
 
       if (win->hints->width_inc)
-	{
-	  amount = maxx - win->width;
-	  delta = amount % win->hints->width_inc;
-	  if (amount < 0 && delta) amount -= win->hints->width_inc;
-	  amount -= delta;
-	  maxx = amount + win->width;
-	}
+        {
+          amount = maxx - win->width;
+          delta = amount % win->hints->width_inc;
+          if (amount < 0 && delta) amount -= win->hints->width_inc;
+          amount -= delta;
+          maxx = amount + win->width;
+        }
 
       if (win->hints->height_inc)
-	{
-	  amount = maxy - win->height;
-	  delta = amount % win->hints->height_inc;
-	  if (amount < 0 && delta) amount -= win->hints->height_inc;
-	  amount -= delta;
-	  maxy = amount + win->height;
-	}
+        {
+          amount = maxy - win->height;
+          delta = amount % win->hints->height_inc;
+          if (amount < 0 && delta) amount -= win->hints->height_inc;
+          amount -= delta;
+          maxy = amount + win->height;
+        }
     }
 
   PRINT_DEBUG (("maxsize: %d %d\n", maxx, maxy));
@@ -761,8 +761,8 @@ maximize (rp_window *win)
   /* Reposition the window. */
   move_window (win);
 
-  PRINT_DEBUG (("Resizing window '%s' to x:%d y:%d w:%d h:%d\n", window_name (win), 
-	       win->x, win->y, win->width, win->height));
+  PRINT_DEBUG (("Resizing window '%s' to x:%d y:%d w:%d h:%d\n", window_name (win),
+               win->x, win->y, win->width, win->height));
 
 
   /* Actually do the maximizing. */
@@ -792,8 +792,8 @@ force_maximize (rp_window *win)
   if (win->hints->flags & PResizeInc)
     {
       XMoveResizeWindow (dpy, win->w, win->scr->left + win->x, win->scr->top + win->y,
-			 win->width + win->hints->width_inc, 
-			 win->height + win->hints->height_inc);
+                         win->width + win->hints->width_inc,
+                         win->height + win->hints->height_inc);
     }
   else
     {
@@ -822,7 +822,7 @@ map_window (rp_window *win)
 
   /* Put win in the mapped window list */
   list_del (&win->node);
-  insert_into_list (win, &rp_mapped_window); 
+  insert_into_list (win, &rp_mapped_window);
 
   /* Update all groups. */
   groups_map_window (win);
@@ -841,11 +841,11 @@ map_window (rp_window *win)
   else
     {
       if (win->transient)
-	marked_message_printf (0, 0, MESSAGE_MAP_TRANSIENT, 
-			       win->number, window_name (win));
+        marked_message_printf (0, 0, MESSAGE_MAP_TRANSIENT,
+                               win->number, window_name (win));
       else
-	marked_message_printf (0, 0, MESSAGE_MAP_WINDOW,
-			       win->number, window_name (win));
+        marked_message_printf (0, 0, MESSAGE_MAP_WINDOW,
+                               win->number, window_name (win));
     }
 }
 
@@ -950,10 +950,10 @@ hide_others (rp_window *win)
 
   list_for_each_entry (cur, &rp_mapped_window, node)
     {
-      if (find_windows_frame (cur) 
-	  || cur->state != NormalState 
-	  || cur->frame_number != frame->number)
-	continue;
+      if (find_windows_frame (cur)
+          || cur->state != NormalState
+          || cur->frame_number != frame->number)
+        continue;
 
       hide_window (cur);
     }

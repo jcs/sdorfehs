@@ -85,24 +85,24 @@ This document explains how to use ratpoison.
 
 Windows
 
-* Manipulating Windows::        
-* Window Classes::              
-* Unmanaged Windows::           
-* Rudeness::                    
+* Manipulating Windows::
+* Window Classes::
+* Unmanaged Windows::
+* Rudeness::
 
 Frames
 
-* Splitting Frames::            
-* Resizing Frames::             
-* Frame Navigation Commands::   
-* Saving and Restoring Frame Sets::  
-* Frame Numbering::             
-* Dedicated Frames::            
+* Splitting Frames::
+* Resizing Frames::
+* Frame Navigation Commands::
+* Saving and Restoring Frame Sets::
+* Frame Numbering::
+* Dedicated Frames::
 
 Keystrokes
 
-* Key Maps::                    
-* Default Key Bindings::        
+* Key Maps::
+* Default Key Bindings::
 
 @end detailmenu
 @end menu
@@ -156,7 +156,7 @@ associated with a frame, that window will be opened in the current
 frame and resized to fit that frame.
 
 If the window associated with a frame does not fill the frame
-completely, the various gravity commands control how it is placed. 
+completely, the various gravity commands control how it is placed.
 
 If no window was open in that frame before the current window was
 opened, the X root will be visible behind it.
@@ -205,10 +205,10 @@ its best.
 Windows are what ratpoison manages.
 
 @menu
-* Manipulating Windows::        
-* Window Classes::              
-* Unmanaged Windows::           
-* Rudeness::                    
+* Manipulating Windows::
+* Window Classes::
+* Unmanaged Windows::
+* Rudeness::
 @end menu
 
 @node Manipulating Windows, Window Classes, Windows, Windows
@@ -519,7 +519,7 @@ Tells ratpoison to grant raise requests on normal windows
 @item Bit 2
 Tells ratpoison to grant display requests on new transient windows
 
-@item Bit 3 
+@item Bit 3
 Tells ratpoison to grant display requests on new normal windows
 @end table
 
@@ -537,7 +537,7 @@ returned.
 @chapter Groups
 ratpoison provides functionality to group windows together. This
 coupled with saving and restoring frames configurations is what most
-people would call @dfn{virtual desktops} or @dfn{workspaces}. 
+people would call @dfn{virtual desktops} or @dfn{workspaces}.
 
 While ratpoison doesn't explicitly provide support for such things, it
 does allow you to write scripts to this end. Such a script exists in
@@ -602,12 +602,12 @@ time. ratpoison allows you to split the display into frames (see
 @ref{Concepts}). Each frame can then contain 1 window.
 
 @menu
-* Splitting Frames::            
-* Resizing Frames::             
-* Frame Navigation Commands::   
-* Saving and Restoring Frame Sets::  
-* Frame Numbering::             
-* Dedicated Frames::            
+* Splitting Frames::
+* Resizing Frames::
+* Frame Navigation Commands::
+* Saving and Restoring Frame Sets::
+* Frame Numbering::
+* Dedicated Frames::
 @end menu
 
 @node Splitting Frames, Resizing Frames, Frames, Frames
@@ -940,8 +940,8 @@ key. ratpoison will tell you it isn't bound and give you the name of
 the key.
 
 @menu
-* Key Maps::                    
-* Default Key Bindings::        
+* Key Maps::
+* Default Key Bindings::
 @end menu
 
 @node Key Maps, Default Key Bindings, Keystrokes, Keystrokes
@@ -971,7 +971,7 @@ definekey top C-x readkey ctrl-x
 The following functions control creating, editing, and deleting key maps.
 
 @deffn Command newkmap @var{kmap}
-Create a new keymap named @var{kmap}. 
+Create a new keymap named @var{kmap}.
 
 @end deffn
 
@@ -1228,7 +1228,7 @@ List the commands that will be run when @var{hook} is fired.
 @chapter The Status Bar
 
 ratpoison presents status and output through the status bar. By default
-it is located in the top right corner of the screen. 
+it is located in the top right corner of the screen.
 
 This chapter presents commands for manipulating the status bar.
 
@@ -1324,7 +1324,7 @@ alternative's missing functionality.
 
 According to independant studies, @command{tmpwm} has been used almost
 exclusively to verify its correct operation -- like a vintage sports
-car: always kept in prime condition and never used. 
+car: always kept in prime condition and never used.
 
 @command{tmpwm} and @command{newwm} are provided for boasting and
 completeness.
@@ -1448,7 +1448,7 @@ This command is only useful when called
 non-interactively. @command{prompt} prompts the user for input using
 @var{prompt} and returns the input.
 @end deffn
-       
+
 @deffn Command putsel @var{text}
 Make text the X11 selection.
 @end deffn
@@ -1700,7 +1700,7 @@ in conjunction with the @option{-c} option.
 
 @item -f, --file
 Specify an alternate configuration file. @xref{Startup file}.
- 
+
 @end table
 
 @node Startup file, Command Index, Command Line Arguments, Top
@@ -1711,7 +1711,7 @@ old file I forgot about. You're probably wondering, ``say, didn't he say
 there was no configuration file to customize?''. Okay, ya got me. But let's
 be honest here: ratpoison is so pure and fast-acting, customization is
 barely worth the extra effort. In the off chance that you need to make
-ratpoison your own, we now support it. 
+ratpoison your own, we now support it.
 
 On startup ratpoison looks for @file{~/.ratpoisonrc} and runs it through
 the command parser. If @file{~/.ratpoisonrc} does not exist, ratpoison

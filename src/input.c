@@ -7,12 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -78,9 +78,9 @@ rp_mask_to_x11_mask (unsigned int mask)
 void
 update_modifier_map ()
 {
-  unsigned int modmasks[] = 
+  unsigned int modmasks[] =
     { Mod1Mask, Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask };
-  int row, col;	/* The row and column in the modifier table.  */
+  int row, col; /* The row and column in the modifier table.  */
   XModifierKeymap *mods;
 
   rp_modifier_info.meta_mod_mask = 0;
@@ -95,56 +95,56 @@ update_modifier_map ()
   for (row=3; row < 8; row++)
     for (col=0; col < mods->max_keypermod; col++)
       {
-	KeyCode code = mods->modifiermap[(row * mods->max_keypermod) + col];
-	
-	if (code == 0) continue;
-	
-	switch (XKeycodeToKeysym(dpy, code, 0))
-	  {
-	  case XK_Meta_L:
-	  case XK_Meta_R:
-	    rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
-	    PRINT_DEBUG (("Found Meta on %d\n",
-			 rp_modifier_info.meta_mod_mask));
-	    break;
+        KeyCode code = mods->modifiermap[(row * mods->max_keypermod) + col];
 
-	  case XK_Alt_L:
-	  case XK_Alt_R:
-	    rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
-	    PRINT_DEBUG (("Found Alt on %d\n",
-			 rp_modifier_info.alt_mod_mask));
-	    break;
+        if (code == 0) continue;
 
-	  case XK_Super_L:
-	  case XK_Super_R:
-	    rp_modifier_info.super_mod_mask |= modmasks[row - 3];
-	    PRINT_DEBUG (("Found Super on %d\n",
-			 rp_modifier_info.super_mod_mask));
-	    break;
+        switch (XKeycodeToKeysym(dpy, code, 0))
+          {
+          case XK_Meta_L:
+          case XK_Meta_R:
+            rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
+            PRINT_DEBUG (("Found Meta on %d\n",
+                         rp_modifier_info.meta_mod_mask));
+            break;
 
-	  case XK_Hyper_L:
-	  case XK_Hyper_R:
-	    rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
-	    PRINT_DEBUG (("Found Hyper on %d\n",
-			 rp_modifier_info.hyper_mod_mask));
-	    break;
+          case XK_Alt_L:
+          case XK_Alt_R:
+            rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
+            PRINT_DEBUG (("Found Alt on %d\n",
+                         rp_modifier_info.alt_mod_mask));
+            break;
 
-	  case XK_Num_Lock:
-	    rp_modifier_info.num_lock_mask |= modmasks[row - 3];
-	    PRINT_DEBUG (("Found NumLock on %d\n", 
-			 rp_modifier_info.num_lock_mask));
-	    break;
+          case XK_Super_L:
+          case XK_Super_R:
+            rp_modifier_info.super_mod_mask |= modmasks[row - 3];
+            PRINT_DEBUG (("Found Super on %d\n",
+                         rp_modifier_info.super_mod_mask));
+            break;
 
-	  case XK_Scroll_Lock:
-	    rp_modifier_info.scroll_lock_mask |= modmasks[row - 3];
-	    PRINT_DEBUG (("Found ScrollLock on %d\n", 
-			 rp_modifier_info.scroll_lock_mask));
-	    break;
-	  default:
-	    break;
-	  }
+          case XK_Hyper_L:
+          case XK_Hyper_R:
+            rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
+            PRINT_DEBUG (("Found Hyper on %d\n",
+                         rp_modifier_info.hyper_mod_mask));
+            break;
+
+          case XK_Num_Lock:
+            rp_modifier_info.num_lock_mask |= modmasks[row - 3];
+            PRINT_DEBUG (("Found NumLock on %d\n",
+                         rp_modifier_info.num_lock_mask));
+            break;
+
+          case XK_Scroll_Lock:
+            rp_modifier_info.scroll_lock_mask |= modmasks[row - 3];
+            PRINT_DEBUG (("Found ScrollLock on %d\n",
+                         rp_modifier_info.scroll_lock_mask));
+            break;
+          default:
+            break;
+          }
       }
-  
+
   /* Stolen from Emacs 21.0.90 - xterm.c */
   /* If we couldn't find any meta keys, accept any alt keys as meta keys.  */
   if (! rp_modifier_info.meta_mod_mask)
@@ -189,7 +189,7 @@ grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
   int i;
   KeyCode keycode;
   unsigned int mod;
-      
+
   /* Convert to a modifier mask that X Windows will understand. */
   modifiers = rp_mask_to_x11_mask (modifiers);
   keysym_to_keycode_mod (keysym, &keycode, &mod);
@@ -211,7 +211,7 @@ grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
   for (i=0; i<8; i++)
     {
       XGrabKey(dpy, keycode, modifiers | mod_list[i],
-	       grab_window, True, GrabModeAsync, GrabModeAsync);
+               grab_window, True, GrabModeAsync, GrabModeAsync);
     }
 }
 
@@ -232,7 +232,7 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
   if (modifier & RP_ALT_MASK) sbuf_concat (name, "A-");
   if (modifier & RP_HYPER_MASK) sbuf_concat (name, "H-");
   if (modifier & RP_SUPER_MASK) sbuf_concat (name, "s-");
-    
+
   /* On solaris machines (perhaps other machines as well) this call
      can return NULL. In this case use the "NULL" string. */
   tmp = XKeysymToString (keysym);
@@ -250,7 +250,7 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
 
 /* Cooks a keycode + modifier into a keysym + modifier. This should be
    used anytime meaningful key information is to be extracted from a
-   KeyPress or KeyRelease event. 
+   KeyPress or KeyRelease event.
 
    returns the number of bytes in keysym_name. If you are not
    interested in the keysym name pass in NULL for keysym_name and 0
@@ -261,12 +261,12 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
   int nbytes;
   int shift = 0;
   KeySym lower, upper;
- 
+
   if (ignore_bad_mods)
     {
       ev->state &= ~(LockMask
-		     | rp_modifier_info.num_lock_mask
-		     | rp_modifier_info.scroll_lock_mask);
+                     | rp_modifier_info.num_lock_mask
+                     | rp_modifier_info.scroll_lock_mask);
     }
 
   if (len > 0) len--;
@@ -283,18 +283,18 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
       lower = XKeycodeToKeysym (dpy, ev->keycode, 0);
       upper = XKeycodeToKeysym (dpy, ev->keycode, 1);
       /* If the keysym isn't affected by the shift key, then keep the
-	 shift modifier. */
+         shift modifier. */
       if (lower == upper)
-	shift = ShiftMask;
+        shift = ShiftMask;
     }
 
   *mod = ev->state;
   *mod &= (rp_modifier_info.meta_mod_mask
-	   | rp_modifier_info.alt_mod_mask
-	   | rp_modifier_info.hyper_mod_mask
-	   | rp_modifier_info.super_mod_mask
-	   | ControlMask
-	   | shift);
+           | rp_modifier_info.alt_mod_mask
+           | rp_modifier_info.hyper_mod_mask
+           | rp_modifier_info.super_mod_mask
+           | ControlMask
+           | shift);
 
   return nbytes;
 }
@@ -319,9 +319,9 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
 static void
 update_input_window (rp_screen *s, rp_input_line *line)
 {
-  int 	prompt_width = XTextWidth (defaults.font, line->prompt, strlen (line->prompt));
-  int 	input_width  = XTextWidth (defaults.font, line->buffer, line->length);
-  int 	total_width;
+  int   prompt_width = XTextWidth (defaults.font, line->prompt, strlen (line->prompt));
+  int   input_width  = XTextWidth (defaults.font, line->buffer, line->length);
+  int   total_width;
   GC lgc;
   XGCValues gv;
   int height;
@@ -334,35 +334,35 @@ update_input_window (rp_screen *s, rp_input_line *line)
       total_width = defaults.input_window_size + prompt_width;
     }
 
-  XMoveResizeWindow (dpy, s->input_window, 
-		     bar_x (s, total_width), bar_y (s, height), total_width,
- 		     (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2));
+  XMoveResizeWindow (dpy, s->input_window,
+                     bar_x (s, total_width), bar_y (s, height), total_width,
+                     (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2));
 
   XClearWindow (dpy, s->input_window);
   XSync (dpy, False);
 
-  XDrawString (dpy, s->input_window, s->normal_gc, 
- 	       defaults.bar_x_padding, 
-	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-	       line->prompt, 
-	       strlen (line->prompt));
- 
-  XDrawString (dpy, s->input_window, s->normal_gc, 
- 	       defaults.bar_x_padding + prompt_width,
-	       defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-	       line->buffer, 
-	       line->length);
+  XDrawString (dpy, s->input_window, s->normal_gc,
+               defaults.bar_x_padding,
+               defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+               line->prompt,
+               strlen (line->prompt));
+
+  XDrawString (dpy, s->input_window, s->normal_gc,
+               defaults.bar_x_padding + prompt_width,
+               defaults.bar_y_padding + defaults.font->max_bounds.ascent,
+               line->buffer,
+               line->length);
 
   gv.function = GXxor;
   gv.foreground = s->fg_color ^ s->bg_color;
   lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gv);
 
   /* Draw a cheap-o cursor - MkII */
-  XFillRectangle (dpy, s->input_window, lgc, 
-		  defaults.bar_x_padding + prompt_width + XTextWidth (defaults.font, line->buffer, line->position),
-		  defaults.bar_y_padding, 
-		  XTextWidth (defaults.font, &line->buffer[line->position], 1),
-		  FONT_HEIGHT (defaults.font));
+  XFillRectangle (dpy, s->input_window, lgc,
+                  defaults.bar_x_padding + prompt_width + XTextWidth (defaults.font, line->buffer, line->position),
+                  defaults.bar_y_padding,
+                  XTextWidth (defaults.font, &line->buffer[line->position], 1),
+                  FONT_HEIGHT (defaults.font));
 
   XFlush (dpy);
   XFreeGC (dpy, lgc);
@@ -412,11 +412,11 @@ get_input (char *prompt, completion_fn fn)
 }
 
 char *
-get_more_input (char *prompt, char *preinput, 
-		completion_fn compl_fn)
+get_more_input (char *prompt, char *preinput,
+                completion_fn compl_fn)
 {
   /* Emacs 21 uses a 513 byte string to store the keysym name. */
-  char keysym_buf[513];	
+  char keysym_buf[513];
   int keysym_bufsize = sizeof (keysym_buf);
   int nbytes;
   rp_screen *s = current_screen ();
@@ -449,18 +449,18 @@ get_more_input (char *prompt, char *preinput,
     {
       nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize);
       modifier = x11_mask_to_rp_mask (modifier);
-      PRINT_DEBUG (("ch = %ld, modifier = %d, keysym_buf = %s, keysym_bufsize = %d\n", 
-		    ch, modifier, keysym_buf, keysym_bufsize));
+      PRINT_DEBUG (("ch = %ld, modifier = %d, keysym_buf = %s, keysym_bufsize = %d\n",
+                    ch, modifier, keysym_buf, keysym_bufsize));
       status = execute_edit_action (line, ch, modifier, keysym_buf);
 
       if (status == EDIT_DELETE || status == EDIT_INSERT || status == EDIT_MOVE
-	  || status == EDIT_COMPLETE)
+          || status == EDIT_COMPLETE)
         {
-	  /* If the text changed (and we didn't just complete
-	     something) then set the virgin bit. */
-	  if (status != EDIT_COMPLETE)
-	    line->compl->virgin = 1;
-	  /* In all cases, we need to redisplay the input string. */
+          /* If the text changed (and we didn't just complete
+             something) then set the virgin bit. */
+          if (status != EDIT_COMPLETE)
+            line->compl->virgin = 1;
+          /* In all cases, we need to redisplay the input string. */
           update_input_window (s, line);
         }
       else if (status == EDIT_NO_OP)
@@ -487,4 +487,4 @@ get_more_input (char *prompt, char *preinput,
   XUnmapWindow (dpy, s->input_window);
 
   return final_input;
-}  
+}

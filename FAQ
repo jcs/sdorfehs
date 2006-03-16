@@ -88,13 +88,13 @@ bigger one occupies 640-1663 horizontally and 0-768 vertically.
 +----------+--------------+
 |	   |		  |
 |	   |		  |
-|  640x480 |   	1024x768  |
-|      	   |		  |
-|    	   |		  |
-|   	   |		  |
+|  640x480 |	1024x768  |
+|	   |		  |
+|	   |		  |
+|	   |		  |
 +----------+		  |
-|  	   |		  |
-|dead space|   		  |
+|	   |		  |
+|dead space|		  |
 +----------+--------------+
 
 In your .ratpoisonrc, add this line:

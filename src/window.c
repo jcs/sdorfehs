@@ -1,4 +1,4 @@
-/* functions for handling the window list 
+/* functions for handling the window list
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This file is part of ratpoison.
@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307 USA
  */
 
-#include <unistd.h>		/* for getsid */
+#include <unistd.h>             /* for getsid */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,7 +38,7 @@ get_mouse_position (rp_window *win, int *mouse_x, int *mouse_y)
   Window root_win, child_win;
   int root_x, root_y;
   unsigned int mask;
-  
+
   XQueryPointer (dpy, win->scr->root, &root_win, &child_win, mouse_x, mouse_y, &root_x, &root_y, &mask);
 }
 
@@ -63,11 +63,11 @@ update_window_gravity (rp_window *win)
 /*   if (win->hints->win_gravity == ForgetGravity) */
 /*     { */
       if (win->transient)
-	win->gravity = defaults.trans_gravity;
+        win->gravity = defaults.trans_gravity;
       else if (win->hints->flags & PMaxSize || win->hints->flags & PAspect)
-	win->gravity = defaults.maxsize_gravity;
+        win->gravity = defaults.maxsize_gravity;
       else
-	win->gravity = defaults.win_gravity;
+        win->gravity = defaults.win_gravity;
 /*     } */
 /*   else */
 /*     { */
@@ -87,19 +87,19 @@ window_name (rp_window *win)
     {
     case WIN_NAME_RES_NAME:
       if (win->res_name)
-	return win->res_name;
+        return win->res_name;
       else return win->user_name;
-      
+
     case WIN_NAME_RES_CLASS:
       if (win->res_class)
-	return win->res_class;
+        return win->res_class;
       else return win->user_name;
 
       /* if we're not looking for the res name or res class, then
-	 we're looking for the window title. */
+         we're looking for the window title. */
     default:
       if (win->wm_name)
-	return win->wm_name;
+        return win->wm_name;
       else return win->user_name;
     }
 
@@ -122,8 +122,8 @@ get_child_info (Window w)
   pid_t sid;
 
   status = XGetWindowProperty (dpy, w, _net_wm_pid,
-			       0, 0, False, XA_CARDINAL,
-			       &type_ret, &format_ret, &nitems, &bytes_after, &req);
+                               0, 0, False, XA_CARDINAL,
+                               &type_ret, &format_ret, &nitems, &bytes_after, &req);
 
   if (status != Success || req == NULL)
     {
@@ -132,13 +132,13 @@ get_child_info (Window w)
     }
 
   /* XGetWindowProperty always allocates one extra byte even if
-     the property is zero length. */  
+     the property is zero length. */
   XFree (req);
 
   status = XGetWindowProperty (dpy, w, _net_wm_pid,
-			       0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-			       False, XA_CARDINAL, &type_ret, &format_ret, &nitems, 
-			       &bytes_after, &req);
+                               0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+                               False, XA_CARDINAL, &type_ret, &format_ret, &nitems,
+                               &bytes_after, &req);
 
   if (status != Success || req == NULL)
     {
@@ -157,9 +157,9 @@ get_child_info (Window w)
     {
       PRINT_DEBUG(("cur->pid=%d sid=%d\n", cur->pid, getsid (cur->pid)));
       if (sid == getsid (cur->pid))
-	return cur;
+        return cur;
     }
-  
+
   return NULL;
 }
 
@@ -225,7 +225,7 @@ add_to_window_list (rp_screen *s, Window w)
   PRINT_DEBUG(("frame_num: %d\n", frame_num));
   if (frame_num >= 0)
     new_window->intended_frame_number = frame_num;
-  
+
   return new_window;
 }
 
@@ -252,13 +252,13 @@ find_window (Window w)
 
   win = find_window_in_list (w, &rp_mapped_window);
 
-  if (!win) 
+  if (!win)
     {
       win = find_window_in_list (w, &rp_unmapped_window);
       if (win)
-	PRINT_DEBUG (("Window found in unmapped window list\n"));
+        PRINT_DEBUG (("Window found in unmapped window list\n"));
       else
-	PRINT_DEBUG (("Window not found.\n"));
+        PRINT_DEBUG (("Window not found.\n"));
     }
   else
     {
@@ -296,8 +296,8 @@ find_window_name (char *name)
 
   list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
     {
-      if (str_comp (name, window_name (cur->win), strlen (name))) 
-	return cur->win;
+      if (str_comp (name, window_name (cur->win), strlen (name)))
+        return cur->win;
     }
 
   /* didn't find it */
@@ -313,14 +313,14 @@ find_window_prev (rp_window *w)
 
   if (!w) return NULL;
 
-  for (cur = list_prev_entry (w, &rp_mapped_window, node); 
-       cur != w; 
+  for (cur = list_prev_entry (w, &rp_mapped_window, node);
+       cur != w;
        cur = list_prev_entry (cur, &rp_mapped_window, node))
     {
       if (!find_windows_frame (cur))
-	{
-	  return cur;
-	}
+        {
+          return cur;
+        }
     }
 
   return NULL;
@@ -335,14 +335,14 @@ find_window_next (rp_window *w)
 
   if (!w) return NULL;
 
-  for (cur = list_next_entry (w, &rp_mapped_window, node); 
-       cur != w; 
+  for (cur = list_next_entry (w, &rp_mapped_window, node);
+       cur != w;
        cur = list_next_entry (cur, &rp_mapped_window, node))
     {
       if (!find_windows_frame (cur))
-	{
-	  return cur;
-	}
+        {
+          return cur;
+        }
     }
 
   return NULL;
@@ -366,10 +366,10 @@ insert_into_list (rp_window *win, struct list_head *list)
   list_for_each_entry (cur, list, node)
     {
       if (cur->number > win->number)
-	{
-	  list_add_tail (&win->node, &cur->node);
-	  return;
-	}
+        {
+          list_add_tail (&win->node, &cur->node);
+          return;
+        }
     }
 
   list_add_tail(&win->node, list);
@@ -381,7 +381,7 @@ save_mouse_position (rp_window *win)
   Window root_win, child_win;
   int root_x, root_y;
   unsigned int mask;
-  
+
   /* In the case the XQueryPointer raises a BadWindow error, the
      window is not mapped or has been destroyed so it doesn't matter
      what we store in mouse_x and mouse_y since they will never be
@@ -389,8 +389,8 @@ save_mouse_position (rp_window *win)
 
   ignore_badwindow++;
 
-  XQueryPointer (dpy, win->w, &root_win, &child_win, 
-		 &root_x, &root_y, &win->mouse_x, &win->mouse_y, &mask);
+  XQueryPointer (dpy, win->w, &root_win, &child_win,
+                 &root_x, &root_y, &win->mouse_x, &win->mouse_y, &mask);
 
   ignore_badwindow--;
 }
@@ -417,10 +417,10 @@ give_window_focus (rp_window *win, rp_window *last_win)
   if (defaults.warp)
     {
       PRINT_DEBUG (("Warp pointer\n"));
-      XWarpPointer (dpy, None, win->w, 
-		    0, 0, 0, 0, win->mouse_x, win->mouse_y);
+      XWarpPointer (dpy, None, win->w,
+                    0, 0, 0, 0, win->mouse_x, win->mouse_y);
     }
-  
+
   /* Swap colormaps */
   if (last_win != NULL) XUninstallColormap (dpy, last_win->colormap);
   XInstallColormap (dpy, win->colormap);
@@ -444,7 +444,7 @@ unhide_transient_for (rp_window *win)
   frame = find_windows_frame (win);
 
   transient_for = find_window (win->transient_for);
-  if (transient_for == NULL) 
+  if (transient_for == NULL)
     {
       PRINT_DEBUG (("Can't find transient_for for '%s'\n", win->name ));
       return;
@@ -456,17 +456,17 @@ unhide_transient_for (rp_window *win)
       maximize (transient_for);
 
       PRINT_DEBUG (("unhide transient window: %s\n", transient_for->name));
-      
+
       unhide_window_below (transient_for);
 
-      if (transient_for->transient) 
-	{
-	  unhide_transient_for (transient_for);
-	}
+      if (transient_for->transient)
+        {
+          unhide_transient_for (transient_for);
+        }
 
       set_frames_window (frame, win);
     }
-  else if (transient_for->transient) 
+  else if (transient_for->transient)
     {
       unhide_transient_for (transient_for);
     }
@@ -484,7 +484,7 @@ hide_transient_for_between (rp_window *win, rp_window *last)
   if (!win->transient) return;
 
   transient_for = find_window (win->transient_for);
-  if (transient_for == last) 
+  if (transient_for == last)
     {
       PRINT_DEBUG (("Can't find transient_for for '%s'\n", win->name ));
       return;
@@ -496,7 +496,7 @@ hide_transient_for_between (rp_window *win, rp_window *last)
       hide_window (transient_for);
     }
 
-  if (transient_for->transient) 
+  if (transient_for->transient)
     {
       hide_transient_for (transient_for);
     }
@@ -530,9 +530,9 @@ is_transient_ancestor (rp_window *win, rp_window *transient_for)
     {
       tmp = find_window (tmp->transient_for);
       if (tmp == transient_for)
-	return 1;
+        return 1;
     } while (tmp && tmp->transient);
-  
+
   return 0;
 }
 #endif
@@ -540,7 +540,7 @@ is_transient_ancestor (rp_window *win, rp_window *transient_for)
 /* In the current frame, set the active window to win. win will have focus. */
 void set_active_window (rp_window *win)
 {
-  set_active_window_body(win, 0); 
+  set_active_window_body(win, 0);
 }
 
 void set_active_window_force (rp_window *win)
@@ -567,29 +567,29 @@ set_active_window_body (rp_window *win, int force)
     {
       /* use the intended frame if we can. */
       if (win->intended_frame_number >= 0)
-	{
-	  frame = screen_get_frame (current_screen(), win->intended_frame_number);
-	  win->intended_frame_number = -1;
-	  if (frame != current_frame())
-	    last_frame = current_frame();
-	}
+        {
+          frame = screen_get_frame (current_screen(), win->intended_frame_number);
+          win->intended_frame_number = -1;
+          if (frame != current_frame())
+            last_frame = current_frame();
+        }
 
       if (!frame)
-	frame = screen_get_frame (current_screen(), current_screen()->current_frame);
+        frame = screen_get_frame (current_screen(), current_screen()->current_frame);
     }
   else
     {
       /* use the intended frame if we can. */
       if (win->intended_frame_number >= 0)
-	{
-	  frame = screen_get_frame (win->scr, win->intended_frame_number);
-	  win->intended_frame_number = -1;
-	  if (frame != current_frame())
-	    last_frame = current_frame();
-	}
+        {
+          frame = screen_get_frame (win->scr, win->intended_frame_number);
+          win->intended_frame_number = -1;
+          if (frame != current_frame())
+            last_frame = current_frame();
+        }
 
       if (!frame)
-	frame = screen_get_frame (win->scr, win->scr->current_frame);
+        frame = screen_get_frame (win->scr, win->scr->current_frame);
     }
 
   if (frame->dedicated && !force)
@@ -597,46 +597,46 @@ set_active_window_body (rp_window *win, int force)
       /* Try to find a non-dedicated frame.  */
       rp_frame *cur;
       rp_screen *scr;
-      int done;	  
+      int done;
 
       scr = (rp_have_xinerama)?&screens[rp_current_screen]:win->scr;
       done = 0;
 
       /* Try the only / current screen... */
-      for (cur = list_next_entry (frame, &scr->frames, node); 
-	   cur != frame && !done; 
-	   cur = list_next_entry (cur, &scr->frames, node))
-	{
-	  if (!cur->dedicated)
-	    {
-	      set_active_frame (cur);
-	      last_frame = frame;
-	      frame = cur;
-	      done = 1;
-	    }
-	}
+      for (cur = list_next_entry (frame, &scr->frames, node);
+           cur != frame && !done;
+           cur = list_next_entry (cur, &scr->frames, node))
+        {
+          if (!cur->dedicated)
+            {
+              set_active_frame (cur);
+              last_frame = frame;
+              frame = cur;
+              done = 1;
+            }
+        }
 
       /* If we have Xinerama, we can check *all* screens... */
       if (rp_have_xinerama && !done)
-	{
-	  int i;
+        {
+          int i;
 
-	  for (i=0; i<num_screens && !done; i++)
-	    {
-	      if (scr == &screens[i]) continue;
-	      list_for_each_entry (cur,&screens[i].frames,node)
-		{
-		  if (!cur->dedicated)
-		    {
-		      set_active_frame (cur);
-		      last_frame = frame;
-		      frame = cur;
-		      done = 1;	/* Break outer loop. */
-		      break;	/* Break inner loop. */
-		    }
-		}
-	    }
-	}
+          for (i=0; i<num_screens && !done; i++)
+            {
+              if (scr == &screens[i]) continue;
+              list_for_each_entry (cur,&screens[i].frames,node)
+                {
+                  if (!cur->dedicated)
+                    {
+                      set_active_frame (cur);
+                      last_frame = frame;
+                      frame = cur;
+                      done = 1; /* Break outer loop. */
+                      break;    /* Break inner loop. */
+                    }
+                }
+            }
+        }
     }
 
   last_win = set_frames_window (frame, win);
@@ -698,19 +698,19 @@ print_window_information (rp_group *group, rp_window *win)
      of windows existing in multiple groups. */
   win_elem = group_find_window (&group->mapped_windows, win);
   if (win_elem)
-    marked_message_printf (0, 0, MESSAGE_WINDOW_INFORMATION, 
-			   win_elem->number, window_name (win));
+    marked_message_printf (0, 0, MESSAGE_WINDOW_INFORMATION,
+                           win_elem->number, window_name (win));
   else
     marked_message_printf (0, 0, "%s doesn't exist in group %d\n",
-			   window_name(win), group->number);
+                           window_name(win), group->number);
 }
 
 /* get the window list and store it in buffer delimiting each window
    with delim. mark_start and mark_end will be filled with the text
    positions for the start and end of the current window. */
 void
-get_window_list (char *fmt, char *delim, struct sbuf *buffer, 
-		 int *mark_start, int *mark_end)
+get_window_list (char *fmt, char *delim, struct sbuf *buffer,
+                 int *mark_start, int *mark_end)
 {
   rp_window_elem *we;
   rp_window *other_window;
@@ -726,29 +726,29 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
       PRINT_DEBUG (("%d-%s\n", we->number, window_name (we->win)));
 
       if (we->win == current_window())
-	*mark_start = strlen (sbuf_get (buffer));
+        *mark_start = strlen (sbuf_get (buffer));
 
       /* A hack, pad the window with a space at the beginning and end
          if there is no delimiter. */
       if (!delim)
-	sbuf_concat (buffer, " ");
+        sbuf_concat (buffer, " ");
 
       format_string (fmt, we, buffer);
 
       /* A hack, pad the window with a space at the beginning and end
          if there is no delimiter. */
       if (!delim)
-	sbuf_concat (buffer, " ");
+        sbuf_concat (buffer, " ");
 
       /* Only put the delimiter between the windows, and not after the the last
          window. */
       if (delim && we->node.next != &rp_current_group->mapped_windows)
-	sbuf_concat (buffer, delim);
+        sbuf_concat (buffer, delim);
 
-      if (we->win == current_window()) 
-	{
-	  *mark_end = strlen (sbuf_get (buffer));
-	}
+      if (we->win == current_window())
+        {
+          *mark_end = strlen (sbuf_get (buffer));
+        }
     }
 
   if (!strcmp (sbuf_get (buffer), ""))

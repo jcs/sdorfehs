@@ -556,7 +556,7 @@ make install
 *** Added jump to window by name Hit C-t C-' and a box will pop up
 asking you for the name of the window to jump to.
 
-*** Added rename-window 
+*** Added rename-window
 hit C-t C-a and a box will pop up asking you to rename the current
 window. Once it has been renamed, it will stay renamed.
 

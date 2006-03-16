@@ -85,7 +85,7 @@ void
 history_add (char *item)
 {
   HIST_ENTRY *h = history_get (history_length);
-  
+
   if (item == NULL || *item == '\0' || isspace (*item) || (h != NULL && !strcmp (h->line, item)))
     return;
 

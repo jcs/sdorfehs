@@ -37,17 +37,17 @@
 #define EMPTY -1
 
 /* Possible values for defaults.window_list_style */
-#define STYLE_ROW    0 
+#define STYLE_ROW    0
 #define STYLE_COLUMN 1
 
 /* Possible values for defaults.win_name */
-#define WIN_NAME_TITLE 		0
-#define WIN_NAME_RES_CLASS 	1
-#define WIN_NAME_RES_NAME 	2
+#define WIN_NAME_TITLE          0
+#define WIN_NAME_RES_CLASS      1
+#define WIN_NAME_RES_NAME       2
 
 /* Possible directions to traverse the completions list. */
-#define COMPLETION_NEXT		0
-#define COMPLETION_PREVIOUS 	1
+#define COMPLETION_NEXT         0
+#define COMPLETION_PREVIOUS     1
 
 /* Error codes for group_delete_group() */
 #define GROUP_DELETE_GROUP_OK         0

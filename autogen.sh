@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-# $Id: autogen.sh,v 1.7 2004/12/03 01:20:56 sabetts Exp $
+# $Id: autogen.sh,v 1.8 2006/03/16 00:33:34 sabetts Exp $
 #
 # usage: ./autogen.sh [-f]
 # option "-f" means forcefully create symlinks for missing files
@@ -29,4 +29,3 @@ if [ x"$1" = x-f ]
 fi
 
 aclocal && autoheader && automake -a $am_opt && autoconf
-

@@ -7,12 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -29,7 +29,7 @@ sbuf_new (size_t initsz)
 {
   struct sbuf *b = (struct sbuf*) xmalloc (sizeof (struct sbuf));
 
-  if (initsz < 1) 
+  if (initsz < 1)
     initsz = 1;
 
   b->data = (char*) xmalloc (initsz);
@@ -47,8 +47,8 @@ sbuf_free (struct sbuf *b)
   if (b != NULL)
     {
       if (b->data != NULL)
-	free (b->data);
-      
+        free (b->data);
+
       free (b);
     }
 }
@@ -78,7 +78,7 @@ sbuf_nconcat (struct sbuf *b, const char *str, int len)
       b->data = (char*) xrealloc (b->data, minsz);
       b->maxsz = minsz;
     }
-  
+
   memcpy (b->data + b->len, str, minsz - b->len - 1);
   b->len = minsz - 1;
   *(b->data + b->len) = 0;

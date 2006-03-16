@@ -7,12 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -45,15 +45,15 @@
 #endif
 
 /* Command line options */
-static struct option ratpoison_longopts[] = 
-  { {"help", 		no_argument, 		0, 	'h'},
-    {"interactive", 	no_argument, 		0, 	'i'},
-    {"version", 	no_argument, 		0, 	'v'},
-    {"command", 	required_argument, 	0, 	'c'},
-    {"display", 	required_argument, 	0, 	'd'},
-    {"screen",  	required_argument,      0,      's'},
-    {"file",  		required_argument,      0,      'f'},
-    {0, 		0, 			0, 	0} };
+static struct option ratpoison_longopts[] =
+  { {"help",            no_argument,            0,      'h'},
+    {"interactive",     no_argument,            0,      'i'},
+    {"version", no_argument,            0,      'v'},
+    {"command", required_argument,      0,      'c'},
+    {"display", required_argument,      0,      'd'},
+    {"screen",  required_argument,      0,      's'},
+    {"file",            required_argument,      0,      'f'},
+    {0,         0,                      0,      0} };
 
 static char ratpoison_opts[] = "hvic:d:s:f:";
 
@@ -112,9 +112,9 @@ xvsprintf (char *fmt, va_list ap)
       __va_copy (ap_copy, ap);
 #else
       /* If there is no copy macro then this MAY work. On some systems
-	 this could fail because va_list is a pointer so assigning one
-	 to the other as below wouldn't make a copy of the data, but
-	 just the pointer to the data. */
+         this could fail because va_list is a pointer so assigning one
+         to the other as below wouldn't make a copy of the data, but
+         just the pointer to the data. */
       ap_copy = ap;
 #endif
       nchars = vsnprintf (buffer, size, fmt, ap_copy);
@@ -123,11 +123,11 @@ xvsprintf (char *fmt, va_list ap)
 #endif
 
       if (nchars > -1 && nchars < size)
-	return buffer;
+        return buffer;
       else if (nchars > -1)
-	size = nchars + 1;
+        size = nchars + 1;
       else
-	size *= 2;
+        size *= 2;
 
       /* Resize the buffer and try again. */
       buffer = (char *)xrealloc (buffer, size);
@@ -192,20 +192,20 @@ check_child_procs ()
     {
       pid = waitpid (WAIT_ANY, &status, WNOHANG);
       if (pid <= 0)
-	break;
+        break;
 
       PRINT_DEBUG(("Child status: %d\n", WEXITSTATUS (status)));
 
       /* Find the child and update its structure. */
       list_for_each_entry (cur, &rp_children, node)
-	{
-	  if (cur->pid == pid)
-	    {
-	      cur->terminated = 1;
-	      cur->status = WEXITSTATUS (status);
-	      break;
-	    }
-	}
+        {
+          if (cur->pid == pid)
+            {
+              cur->terminated = 1;
+              cur->status = WEXITSTATUS (status);
+              break;
+            }
+        }
 
       chld_signalled = 1;
     }
@@ -218,7 +218,7 @@ chld_handler (int signum)
 
   serrno = errno;
   check_child_procs();
-  errno = serrno;  
+  errno = serrno;
 }
 
 int
@@ -226,11 +226,11 @@ handler (Display *d, XErrorEvent *e)
 {
   char error_msg[100];
 
-  if (e->request_code == X_ChangeWindowAttributes && e->error_code == BadAccess) 
+  if (e->request_code == X_ChangeWindowAttributes && e->error_code == BadAccess)
     {
       fprintf(stderr, "ratpoison: There can be only ONE.\n");
       exit(EXIT_FAILURE);
-    }  
+    }
 
 #ifdef IGNORE_BADWINDOW
   return 0;
@@ -243,7 +243,7 @@ handler (Display *d, XErrorEvent *e)
 
   /* If there is already an error to report, replace it with this new
      one. */
-  if (rp_error_msg) 
+  if (rp_error_msg)
     free (rp_error_msg);
   rp_error_msg = xstrdup (error_msg);
 
@@ -257,26 +257,26 @@ set_sig_handler (int sig, void (*action)(int))
     handler by default which is a tip of the hat to some god-aweful
     ancient code.  So use the POSIX sigaction call instead. */
   struct sigaction act;
-       
+
   /* check setting for sig */
-  if (sigaction (sig, NULL, &act)) 
+  if (sigaction (sig, NULL, &act))
     {
       PRINT_ERROR (("Error %d fetching SIGALRM handler\n", errno ));
-    } 
-  else 
+    }
+  else
     {
       /* if the existing action is to ignore then leave it intact
-	 otherwise add our handler */
-      if (act.sa_handler != SIG_IGN) 
-	{
-	  act.sa_handler = action;
-	  sigemptyset(&act.sa_mask);
-	  act.sa_flags = 0;
-	  if (sigaction (sig, &act, NULL)) 
-	    {
-	      PRINT_ERROR (("Error %d setting SIGALRM handler\n", errno ));
-	    }
-	}
+         otherwise add our handler */
+      if (act.sa_handler != SIG_IGN)
+        {
+          act.sa_handler = action;
+          sigemptyset(&act.sa_mask);
+          act.sa_flags = 0;
+          if (sigaction (sig, &act, NULL))
+            {
+              PRINT_ERROR (("Error %d setting SIGALRM handler\n", errno ));
+            }
+        }
     }
 }
 
@@ -287,7 +287,7 @@ print_version ()
   printf ("Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts\n\n");
 
   exit (EXIT_SUCCESS);
-}  
+}
 
 void
 print_help ()
@@ -330,39 +330,39 @@ read_rc_file (FILE *file)
   while (fgets (partial, n, file) != NULL)
     {
       if ((strlen (line) + strlen (partial)) >= linesize)
-	{
-	  linesize *= 2;
-	  line = (char*) xrealloc (line, linesize);
-	}
+        {
+          linesize *= 2;
+          line = (char*) xrealloc (line, linesize);
+        }
 
       strcat (line, partial);
 
       if (feof(file) || (*(line + strlen(line) - 1) == '\n'))
-	{
-	  /* FIXME: this is a hack, command() should properly parse
-	     the command and args (ie strip whitespace, etc) 
+        {
+          /* FIXME: this is a hack, command() should properly parse
+             the command and args (ie strip whitespace, etc)
 
-	     We should not care if there is a newline (or vertical
-	     tabs or linefeeds for that matter) at the end of the
-	     command (or anywhere between tokens). */
-	  if (*(line + strlen(line) - 1) == '\n')
-	    *(line + strlen(line) - 1) = '\0';
+             We should not care if there is a newline (or vertical
+             tabs or linefeeds for that matter) at the end of the
+             command (or anywhere between tokens). */
+          if (*(line + strlen(line) - 1) == '\n')
+            *(line + strlen(line) - 1) = '\0';
 
-	  PRINT_DEBUG (("rcfile line: %s\n", line));
+          PRINT_DEBUG (("rcfile line: %s\n", line));
 
-	  /* do it */
-	  if (*line != '#')
-	    {
-	      cmdret *result;
-	      result = command (0, line);
+          /* do it */
+          if (*line != '#')
+            {
+              cmdret *result;
+              result = command (0, line);
 
-	      /* Gobble the result. */
-	      if (result)
-		cmdret_free (result);
-	    }
+              /* Gobble the result. */
+              if (result)
+                cmdret_free (result);
+            }
 
-	  *line = '\0';
-	}
+          *line = '\0';
+        }
     }
 
 
@@ -379,39 +379,39 @@ read_startup_files (char *alt_rcfile)
   if (alt_rcfile)
     {
       if ((fileptr = fopen (alt_rcfile, "r")) == NULL)
-	{
-	  /* we probably don't need to report this, its not an error */
-	  PRINT_DEBUG (("ratpoison: could not open %s\n", alt_rcfile));
-	}
+        {
+          /* we probably don't need to report this, its not an error */
+          PRINT_DEBUG (("ratpoison: could not open %s\n", alt_rcfile));
+        }
     }
   else
     {
       /* first check $HOME/.ratpoisonrc and if that does not exist then try
-	 /etc/ratpoisonrc */
+         /etc/ratpoisonrc */
 
       homedir = getenv ("HOME");
       if (!homedir)
-	{
-	  PRINT_ERROR (("ratpoison: $HOME not set!?\n"));
-	}
+        {
+          PRINT_ERROR (("ratpoison: $HOME not set!?\n"));
+        }
       else
-	{
-	  char *filename;
-	  filename = xsprintf ("%s/.ratpoisonrc", homedir);
-      
-	  if ((fileptr = fopen (filename, "r")) == NULL)
-	    {
-	      /* we probably don't need to report this, its not an error */
-	      PRINT_DEBUG (("ratpoison: could not open %s\n", filename));
+        {
+          char *filename;
+          filename = xsprintf ("%s/.ratpoisonrc", homedir);
 
-	      if ((fileptr = fopen ("/etc/ratpoisonrc", "r")) == NULL)
-		{
-		  /* neither is this */
-		  PRINT_DEBUG (("ratpoison: could not open /etc/ratpoisonrc\n"));
-		}
-	    }
-	  free (filename);
-	}
+          if ((fileptr = fopen (filename, "r")) == NULL)
+            {
+              /* we probably don't need to report this, its not an error */
+              PRINT_DEBUG (("ratpoison: could not open %s\n", filename));
+
+              if ((fileptr = fopen ("/etc/ratpoisonrc", "r")) == NULL)
+                {
+                  /* neither is this */
+                  PRINT_DEBUG (("ratpoison: could not open /etc/ratpoisonrc\n"));
+                }
+            }
+          free (filename);
+        }
     }
 
   if (fileptr)
@@ -430,10 +430,10 @@ show_welcome_message ()
   rp_action *help_action;
   char *prefix, *help;
   rp_keymap *map;
-  
+
   prefix = keysym_to_string (prefix_key.sym, prefix_key.state);
 
-  map = find_keymap (ROOT_KEYMAP); 
+  map = find_keymap (ROOT_KEYMAP);
 
   /* Find the help key binding. */
   help_action = find_keybinding_by_action ("help " ROOT_KEYMAP, map);
@@ -446,11 +446,11 @@ show_welcome_message ()
   if (help)
     {
       /* A little kludge to use ? instead of `question' for the help
-	 key. */
+         key. */
       if (!strcmp (help, "question"))
-	marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, "?");
+        marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, "?");
       else
-	marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, help);
+        marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, help);
 
       free (help);
     }
@@ -458,7 +458,7 @@ show_welcome_message ()
     {
       marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, ":help");
     }
-  
+
   free (prefix);
 }
 
@@ -474,7 +474,7 @@ init_defaults ()
   defaults.bar_x_padding       = 4;
   defaults.bar_y_padding       = 0;
   defaults.bar_location        = NorthEastGravity;
-  defaults.bar_timeout 	       = 5;
+  defaults.bar_timeout         = 5;
   defaults.bar_border_width    = 1;
 
   defaults.frame_indicator_timeout = 1;
@@ -482,7 +482,7 @@ init_defaults ()
 
   defaults.padding_left   = 0;
   defaults.padding_right  = 0;
-  defaults.padding_top 	  = 0;
+  defaults.padding_top    = 0;
   defaults.padding_bottom = 0;
 
   defaults.font = XLoadQueryFont (dpy, DEFAULT_FONT);
@@ -535,44 +535,44 @@ main (int argc, char *argv[])
       if (c == -1) break;
 
       switch (c)
-	{
-	case 'h':
-	  print_help ();
-	  break;
-	case 'v':
-	  print_version ();
-	  break;
-	case 'c':
-	  if (!command)
-	    {
-	      command = xmalloc (sizeof(char *));
-	      cmd_count = 0;
-	    }
-	  else
-	    {
-	      command = xrealloc (command, sizeof (char *) * (cmd_count + 1));
-	    }
+        {
+        case 'h':
+          print_help ();
+          break;
+        case 'v':
+          print_version ();
+          break;
+        case 'c':
+          if (!command)
+            {
+              command = xmalloc (sizeof(char *));
+              cmd_count = 0;
+            }
+          else
+            {
+              command = xrealloc (command, sizeof (char *) * (cmd_count + 1));
+            }
 
-	  command[cmd_count] = xstrdup (optarg);
-	  cmd_count++;
-	  break;
-	case 'd':
-	  display = xstrdup (optarg);
-	  break;
-	case 's':
-	  screen_arg = 1;
-	  screen_num = strtol (optarg, NULL, 10);
-	  break;
-	case 'i':
-	  interactive = 1;
-	  break;
-	case 'f':
-	  alt_rcfile = xstrdup (optarg);
-	  break;
-	  
-	default:
-	  exit (EXIT_FAILURE);
-	}
+          command[cmd_count] = xstrdup (optarg);
+          cmd_count++;
+          break;
+        case 'd':
+          display = xstrdup (optarg);
+          break;
+        case 's':
+          screen_arg = 1;
+          screen_num = strtol (optarg, NULL, 10);
+          break;
+        case 'i':
+          interactive = 1;
+          break;
+        case 'f':
+          alt_rcfile = xstrdup (optarg);
+          break;
+
+        default:
+          exit (EXIT_FAILURE);
+        }
     }
 
   /* Report extra unparsed arguments. */
@@ -580,7 +580,7 @@ main (int argc, char *argv[])
     {
       fprintf (stderr, "Error: junk arguments: ");
       while (optind < argc)
-	fprintf (stderr, "%s ", argv[optind++]);
+        fprintf (stderr, "%s ", argv[optind++]);
       fputc ('\n', stderr);
       exit (EXIT_FAILURE);
     }
@@ -602,14 +602,14 @@ main (int argc, char *argv[])
       int i;
 
       for (i=0; i<cmd_count; i++)
-	{
-	  if (screen_arg)
-	    send_command (interactive, (unsigned char *)command[i], screen_num);
-	  else
-	    send_command (interactive, (unsigned char *)command[i], -1);
+        {
+          if (screen_arg)
+            send_command (interactive, (unsigned char *)command[i], screen_num);
+          else
+            send_command (interactive, (unsigned char *)command[i], -1);
 
-	  free (command[i]);
-	}
+          free (command[i]);
+        }
 
       free (command);
       XCloseDisplay (dpy);
@@ -632,7 +632,7 @@ main (int argc, char *argv[])
   PRINT_DEBUG (("_NET_SUPPORTED = %ld\n", _net_supported));
 
   /* Setup signal handlers. */
-  XSetErrorHandler(handler);  
+  XSetErrorHandler(handler);
   set_sig_handler (SIGALRM, alrm_handler);
   set_sig_handler (SIGTERM, sighandler);
   set_sig_handler (SIGINT, sighandler);
@@ -668,9 +668,9 @@ main (int argc, char *argv[])
     {
       rp_current_screen = 0;
       for (i=0; i<num_screens; i++)
-	{
-	  scanwins (&screens[i]);
-	}
+        {
+          scanwins (&screens[i]);
+        }
     }
 
   read_startup_files (alt_rcfile);
@@ -703,7 +703,7 @@ free_screen (rp_screen *s)
     {
       frame_free (s, frame);
     }
- 
+
   XDestroyWindow (dpy, s->bar_window);
   XDestroyWindow (dpy, s->key_window);
   XDestroyWindow (dpy, s->input_window);
@@ -732,7 +732,7 @@ clean_up ()
   free_groups ();
 
   free_window_stuff ();
-  
+
   for (i=0; i<num_screens; i++)
     {
       free_screen (&screens[i]);
@@ -759,4 +759,3 @@ clean_up ()
   XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
   XCloseDisplay (dpy);
 }
-

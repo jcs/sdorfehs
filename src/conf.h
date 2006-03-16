@@ -1,4 +1,4 @@
-/* Config file for ratpoison. Edit these values and recompile. 
+/* Config file for ratpoison. Edit these values and recompile.
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This file is part of ratpoison.
@@ -45,7 +45,7 @@
 #define RESIZE_VGROW_MODIFIER RP_CONTROL_MASK
 
 /* Key used to shrink frame vertically when in resize mode.  */
-#define RESIZE_VSHRINK_KEY	XK_p
+#define RESIZE_VSHRINK_KEY      XK_p
 #define RESIZE_VSHRINK_MODIFIER RP_CONTROL_MASK
 
 /* Key used to enlarge frame horizontally when in resize mode.  */
@@ -53,15 +53,15 @@
 #define RESIZE_HGROW_MODIFIER RP_CONTROL_MASK
 
 /* Key used to shrink frame horizontally when in resize mode.  */
-#define RESIZE_HSHRINK_KEY	XK_b
+#define RESIZE_HSHRINK_KEY      XK_b
 #define RESIZE_HSHRINK_MODIFIER RP_CONTROL_MASK
 
 /* Key used to shrink frame to fit it's current window.  */
-#define RESIZE_SHRINK_TO_WINDOW_KEY		XK_s
-#define RESIZE_SHRINK_TO_WINDOW_MODIFIER	0
+#define RESIZE_SHRINK_TO_WINDOW_KEY             XK_s
+#define RESIZE_SHRINK_TO_WINDOW_MODIFIER        0
 
 /* Key used to exit resize mode.  */
-#define RESIZE_END_KEY	    XK_Return
+#define RESIZE_END_KEY      XK_Return
 #define RESIZE_END_MODIFIER 0
 
 /* Number of history items to store. */

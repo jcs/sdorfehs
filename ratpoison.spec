@@ -26,14 +26,14 @@ pieces of software.
 %prep
 mkdir -p $RPM_BUILD_ROOT
 
-%setup 
+%setup
 rm -f config.cache
-./configure	--prefix=/usr \
-		--infodir=/usr/info \
-		--mandir=/usr/man
+./configure     --prefix=/usr \
+                --infodir=/usr/info \
+                --mandir=/usr/man
 
 %build
-make 
+make
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT

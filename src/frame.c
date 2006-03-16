@@ -7,12 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * ratpoison is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -171,15 +171,15 @@ frame_dump (rp_frame *frame)
   win = find_window_number (frame->win_number);
 
   s = sbuf_new (0);
-  sbuf_printf (s, "(frame :number %d :x %d :y %d :width %d :height %d :window %ld :last-access %d :dedicated %d)", 
-	       frame->number,
-	       frame->x,
-	       frame->y,
-	       frame->width,
-	       frame->height,
-	       win ? win->w:0,
-	       frame->last_access,
-	       frame->dedicated);
+  sbuf_printf (s, "(frame :number %d :x %d :y %d :width %d :height %d :window %ld :last-access %d :dedicated %d)",
+               frame->number,
+               frame->x,
+               frame->y,
+               frame->width,
+               frame->height,
+               win ? win->w:0,
+               frame->last_access,
+               frame->dedicated);
 
   /* Extract the string and return it, and don't forget to free s. */
   tmp = sbuf_get (s);
@@ -203,7 +203,7 @@ frame_read (char *str)
   init_frame(f);
 
   PRINT_DEBUG(("parsing '%s'\n", str));
-  
+
   dup = xstrdup(str);
   tmp = strtok (dup, " ");
 
@@ -220,25 +220,25 @@ frame_read (char *str)
   while (tmp)
     {
       if (!strcmp(tmp, ":number"))
-	read_slot(f->number);
+        read_slot(f->number);
       else if (!strcmp(tmp, ":x"))
-	read_slot(f->x);
+        read_slot(f->x);
       else if (!strcmp(tmp, ":y"))
-	read_slot(f->y);
+        read_slot(f->y);
       else if (!strcmp(tmp, ":width"))
-	read_slot(f->width);
+        read_slot(f->width);
       else if (!strcmp(tmp, ":height"))
-	read_slot(f->height);
+        read_slot(f->height);
       else if (!strcmp(tmp, ":window"))
-	read_slot(w);
+        read_slot(w);
       else if (!strcmp(tmp, ":last-access"))
-	read_slot(f->last_access);
+        read_slot(f->last_access);
       else if (!strcmp(tmp, ":dedicated"))
-	read_slot(f->dedicated);
+        read_slot(f->dedicated);
       else if (!strcmp(tmp, ")"))
-	break;
+        break;
       else
-	PRINT_ERROR(("Unknown slot %s\n", tmp));
+        PRINT_ERROR(("Unknown slot %s\n", tmp));
       /* Read the next token. */
       tmp = strtok(NULL, " ");
     }

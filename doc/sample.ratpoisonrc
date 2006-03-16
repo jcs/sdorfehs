@@ -18,7 +18,7 @@ exec xterm
 bind e exec emacs
 
 # bind s to interactively run a surfraw query on freshmeat
-bind s colon exec xterm -e freshmeat 
+bind s colon exec xterm -e freshmeat
 
 # bind b (`b' for browse) to interactively ask for an URL to open
 bind b colon exec mozilla http://www.

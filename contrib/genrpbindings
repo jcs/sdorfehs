@@ -73,16 +73,16 @@ print ELISP <<PREAMBLE;
 (defun ratpoison-cmd (cmd &rest args)
   (with-temp-buffer
     (call-process ratpoison-program nil (current-buffer) t
-		  "-c" (format "%s %s"
-			       cmd
-			       (mapconcat (lambda (x)
-					    (if (stringp x)
-						x
-					      (prin1-to-string x)))
-					  args " ")))
+                  "-c" (format "%s %s"
+                               cmd
+                               (mapconcat (lambda (x)
+                                            (if (stringp x)
+                                                x
+                                              (prin1-to-string x)))
+                                          args " ")))
     (buffer-substring (point-min) (if (> (point-max) 1)
-				      (- (point-max) 1)
-				    (point-max)))))
+                                      (- (point-max) 1)
+                                    (point-max)))))
 PREAMBLE
 
 # RUBY preamble
@@ -113,28 +113,28 @@ print COMMONLISP <<PREAMBLE;
 (defmacro defun-ratpoison (cmd)
   (let ((sym (intern (concatenate 'string "RP-" (symbol-name cmd)))))
     `(progn (defun ,sym (&rest args)
-	      (apply 'ratpoison-cmd ,(string-downcase (symbol-name cmd)) args))
-	    (export ',sym))))
+              (apply 'ratpoison-cmd ,(string-downcase (symbol-name cmd)) args))
+            (export ',sym))))
 
 (defun ratpoison-cmd (cmd &rest args)
   (labels ((mapconcat (fn list sep)
-		     (apply 'concatenate 'string
-			    (loop for x on list
-				  collect (if (cdr x)
-					      (concatenate 'string (funcall fn (car x)) sep)
-					    (funcall fn (car x))))))
-	 (build-cmd (cmd args)
-		    (mapconcat (lambda (x)
-				 (if (stringp x)
-				     x
-				   (prin1-to-string x)))
-			       (nconc (list cmd) args) " ")))
+                     (apply 'concatenate 'string
+                            (loop for x on list
+                                  collect (if (cdr x)
+                                              (concatenate 'string (funcall fn (car x)) sep)
+                                            (funcall fn (car x))))))
+         (build-cmd (cmd args)
+                    (mapconcat (lambda (x)
+                                 (if (stringp x)
+                                     x
+                                   (prin1-to-string x)))
+                               (nconc (list cmd) args) " ")))
     (let ((stream (port:pipe-input ratpoison-program
-				   "-c" (build-cmd cmd args))))
+                                   "-c" (build-cmd cmd args))))
     (do ((line (read-line stream nil nil)
-	       (read-line stream nil nil))
-	 (accum nil (cons line accum)))
-	((null line) accum)))))
+               (read-line stream nil nil))
+         (accum nil (cons line accum)))
+        ((null line) accum)))))
 PREAMBLE
 
 # python preamble
@@ -146,37 +146,37 @@ def rp_command( *args ):
     p = os.popen( ratpoison + '"' + (' '.join(  args  ) ) + '"', 'r' )
     r = p.readlines();
     p.close();
-    return r 
+    return r
 
 PREAMBLE
 
 # bindings
 while (<ACTIONS_C>) {
     if (m!/\*\@begin !) {
-	while (<ACTIONS_C>)
-	{
-	    last if (m!/\*\@end !);
-	    if (/\s*add_command\s*\(\"([^\"]+)\",\s*[^\"]+,\s*([0-9]+),\s*[0-9]+,\s*([0-9]+)/) {
-	      my $name = $1;
-	      my $numargs = $2;
-	      my $optargs = $3;
+        while (<ACTIONS_C>)
+        {
+            last if (m!/\*\@end !);
+            if (/\s*add_command\s*\(\"([^\"]+)\",\s*[^\"]+,\s*([0-9]+),\s*[0-9]+,\s*([0-9]+)/) {
+              my $name = $1;
+              my $numargs = $2;
+              my $optargs = $3;
 
-	      # Skip the arguments
-	      for (my $i=0; $i<$numargs; $i++) {
-		<ACTIONS_C>;
-	      }
+              # Skip the arguments
+              for (my $i=0; $i<$numargs; $i++) {
+                <ACTIONS_C>;
+              }
 
-	      $nbindings++;
-	      print PERL "sub $name { return command (\"$name\", \@_); }";
-	      print ELISP "(defun-ratpoison $name)";
-	      print COMMONLISP "(defun-ratpoison $name)";
-	      print RUBY "  def $name (*args)";
-	      print RUBY "    return command (\"$name\", args)";
-	      print RUBY "  end";
-	      print RUBY "  module_function :$name\n";
-	      print PYTHON "def rp_$name( *args ): return rp_command ( '$name ' +  ' '.join( args ) )";
-	    }
-	}
+              $nbindings++;
+              print PERL "sub $name { return command (\"$name\", \@_); }";
+              print ELISP "(defun-ratpoison $name)";
+              print COMMONLISP "(defun-ratpoison $name)";
+              print RUBY "  def $name (*args)";
+              print RUBY "    return command (\"$name\", args)";
+              print RUBY "  end";
+              print RUBY "  module_function :$name\n";
+              print PYTHON "def rp_$name( *args ): return rp_command ( '$name ' +  ' '.join( args ) )";
+            }
+        }
     }
 }
 print "$nbindings bindings.";

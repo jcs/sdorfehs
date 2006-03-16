@@ -1,5 +1,5 @@
 /* Functionality for a bar across the bottom of the screen listing the
- * windows currently managed. 
+ * windows currently managed.
  *
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
@@ -75,7 +75,7 @@ show_bar (rp_screen *s, char *fmt)
       s->bar_is_raised = BAR_IS_WINDOW_LIST;
       XMapRaised (dpy, s->bar_window);
       update_window_names (s, fmt);
-  
+
       reset_alarm();
       return 1;
     }
@@ -128,14 +128,14 @@ bar_y (rp_screen *s, int height)
     case EastGravity:
     case CenterGravity:
     case WestGravity:
-      y = s->top + (s->height - height 
-	   - defaults.bar_border_width * 2) / 2;
+      y = s->top + (s->height - height
+           - defaults.bar_border_width * 2) / 2;
       break;
     case SouthEastGravity:
     case SouthGravity:
     case SouthWestGravity:
-      y = s->top + (s->height - height 
-	   - defaults.bar_border_width * 2);
+      y = s->top + (s->height - height
+           - defaults.bar_border_width * 2);
       break;
     }
 
@@ -207,7 +207,7 @@ count_lines (char* msg, int len)
   if (len < 1)
     return 1;
 
-  for(i=0; i<len; i++) 
+  for(i=0; i<len; i++)
     {
       if (msg[i] == '\n') ret++;
     }
@@ -222,24 +222,24 @@ max_line_length (char* msg)
   int i;
   int start;
   int ret = 0;
-  
+
   /* Count each line and keep the length of the longest one. */
-  for(start=0, i=0; i <= strlen(msg); i++) 
+  for(start=0, i=0; i <= strlen(msg); i++)
     {
-      if(msg[i] == '\n' || msg[i] == '\0') 
-	{
-	  int current_width;
+      if(msg[i] == '\n' || msg[i] == '\0')
+        {
+          int current_width;
 
-	  /* Check if this line is the longest so far. */
-	  current_width = XTextWidth (defaults.font, msg + start, i - start);
-	  if(current_width > ret)
-	    {
-	      ret = current_width;
-	    }
+          /* Check if this line is the longest so far. */
+          current_width = XTextWidth (defaults.font, msg + start, i - start);
+          if(current_width > ret)
+            {
+              ret = current_width;
+            }
 
-	  /* Update the start of the new line. */
-	  start = i + 1;
-	}
+          /* Update the start of the new line. */
+          start = i + 1;
+        }
     }
 
   return ret;
@@ -259,8 +259,8 @@ pos_in_line (char* msg, int pos)
   ret = 0;
   for(i=pos-1; i>=0; ret++, i--)
     {
-      if(msg[i]=='\n') 
-	break;
+      if(msg[i]=='\n')
+        break;
     }
 
   return ret;
@@ -272,18 +272,18 @@ line_beginning (char* msg, int pos)
   int ret = 0;
   int i;
 
-  if(pos <= 0) 
+  if(pos <= 0)
     return 0;
 
   /* Go backwards until we hit a new line or the beginning of the
      string. */
-  for(i=pos-1; i>=0; --i) 
+  for(i=pos-1; i>=0; --i)
     {
       if (msg[i]=='\n')
-	{
-	  ret = i + 1;
-	  break;
-	}
+        {
+          ret = i + 1;
+          break;
+        }
     }
 
   return ret;
@@ -300,28 +300,28 @@ draw_string (rp_screen *s, char *msg)
   /* Walk through the string, print each line. */
   start = 0;
   line_no = 0;
-  for(i=0; i < strlen(msg); ++i) 
+  for(i=0; i < strlen(msg); ++i)
     {
       /* When we encounter a new line, print the text up to the new
-	 line, and move down one line. */
+         line, and move down one line. */
       if (msg[i] == '\n')
-	{
-	  XDrawString (dpy, s->bar_window, s->normal_gc,
-		       defaults.bar_x_padding,
-		       defaults.bar_y_padding + defaults.font->max_bounds.ascent
-		       +  line_no * line_height,
-		       msg + start, i - start);
-	  line_no++;
-	  start = i + 1;
-	}
+        {
+          XDrawString (dpy, s->bar_window, s->normal_gc,
+                       defaults.bar_x_padding,
+                       defaults.bar_y_padding + defaults.font->max_bounds.ascent
+                       +  line_no * line_height,
+                       msg + start, i - start);
+          line_no++;
+          start = i + 1;
+        }
     }
-    
+
   /* Print the last line. */
   XDrawString (dpy, s->bar_window, s->normal_gc,
-	       defaults.bar_x_padding,
-	       defaults.bar_y_padding + defaults.font->max_bounds.ascent
-	       +  line_no * line_height,
-	       msg + start, strlen (msg) - start);
+               defaults.bar_x_padding,
+               defaults.bar_y_padding + defaults.font->max_bounds.ascent
+               +  line_no * line_height,
+               msg + start, strlen (msg) - start);
 
   XSync (dpy, False);
 }
@@ -359,9 +359,9 @@ correct_mark (int msg_len, int *mark_start, int *mark_end)
 static void
 prepare_bar (rp_screen *s, int width, int height)
 {
-  XMoveResizeWindow (dpy, s->bar_window, 
-		     bar_x (s, width), bar_y (s, height),
-		     width, height);
+  XMoveResizeWindow (dpy, s->bar_window,
+                     bar_x (s, width), bar_y (s, height),
+                     width, height);
 
   /* Map the bar if needed */
   if (!s->bar_is_raised)
@@ -376,8 +376,8 @@ prepare_bar (rp_screen *s, int width, int height)
 }
 
 static void
-get_mark_box (char *msg, int mark_start, int mark_end, 
-	      int *x, int *y, int *width, int *height)
+get_mark_box (char *msg, int mark_start, int mark_end,
+              int *x, int *y, int *width, int *height)
 {
   int start, end;
   int mark_end_is_new_line = 0;
@@ -406,20 +406,20 @@ get_mark_box (char *msg, int mark_start, int mark_end,
   end_line_beginning = line_beginning(msg, mark_end);
 
   PRINT_DEBUG (("start_line = %d, end_line = %d\n", start_line, end_line));
-  PRINT_DEBUG (("start_line_beginning = %d, end_line_beginning = %d\n", 
-		start_line_beginning, end_line_beginning));
+  PRINT_DEBUG (("start_line_beginning = %d, end_line_beginning = %d\n",
+                start_line_beginning, end_line_beginning));
 
   if (mark_start == 0 || start_pos_in_line == 0)
     start = 0;
   else
-    start = XTextWidth (defaults.font, 
-			&msg[start_line_beginning], 
-			start_pos_in_line) + defaults.bar_x_padding;
+    start = XTextWidth (defaults.font,
+                        &msg[start_line_beginning],
+                        start_pos_in_line) + defaults.bar_x_padding;
 
-  end = XTextWidth (defaults.font, 
-		    &msg[end_line_beginning], 
-		    end_pos_in_line) + defaults.bar_x_padding * 2;
-      
+  end = XTextWidth (defaults.font,
+                    &msg[end_line_beginning],
+                    end_pos_in_line) + defaults.bar_x_padding * 2;
+
   if (mark_end != strlen (msg))
     end -= defaults.bar_x_padding;
 
@@ -433,7 +433,7 @@ get_mark_box (char *msg, int mark_start, int mark_end,
     {
       *width = end - start;
     }
-  
+
   *x = start;
   *y = (start_line - 1) * FONT_HEIGHT (defaults.font) + defaults.bar_y_padding;
   *height = (end_line - start_line + 1) * FONT_HEIGHT (defaults.font);
@@ -451,15 +451,15 @@ draw_inverse_box (rp_screen *s, int x, int y, int width, int height)
   mask = GCForeground | GCFunction;
   lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
-  XFillRectangle (dpy, s->bar_window, lgc, 
-		  x, y, width, height);
+  XFillRectangle (dpy, s->bar_window, lgc,
+                  x, y, width, height);
   XFreeGC (dpy, lgc);
 
   lgv.foreground = s->bg_color;
   lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
-  XFillRectangle (dpy, s->bar_window, lgc, 
-		  x, y, width, height);
+  XFillRectangle (dpy, s->bar_window, lgc,
+                  x, y, width, height);
   XFreeGC (dpy, lgc);
 }
 
@@ -472,8 +472,8 @@ draw_mark (rp_screen *s, char *msg, int mark_start, int mark_end)
   if (mark_end == 0 || mark_start == mark_end)
     return;
 
-  get_mark_box (msg, mark_start, mark_end, 
-		&x, &y, &width, &height);
+  get_mark_box (msg, mark_start, mark_end,
+                &x, &y, &width, &height);
   draw_inverse_box (s, x, y, width, height);
 }
 

@@ -105,56 +105,56 @@ format_string (char *fmt, rp_window_elem *win_elem, struct sbuf *buffer)
   for(; *fmt; fmt++)
     {
       if (*fmt == '%' && state == STATE_READ)
-	{
-	  state = STATE_ESCAPE;
-	  continue;
-	}
+        {
+          state = STATE_ESCAPE;
+          continue;
+        }
 
       if ((state == STATE_ESCAPE || state == STATE_NUMBER) && isdigit(*fmt))
-	{
-	  /* Accumulate the width one digit at a time. */
-	  if (state == STATE_ESCAPE)
-	    width = 0;
-	  width *= 10;
-	  width += *fmt - '0';
-	  state = STATE_NUMBER;
-	  continue;
-	}
+        {
+          /* Accumulate the width one digit at a time. */
+          if (state == STATE_ESCAPE)
+            width = 0;
+          width *= 10;
+          width += *fmt - '0';
+          state = STATE_NUMBER;
+          continue;
+        }
 
       found = 0;
       if (state == STATE_ESCAPE || state == STATE_NUMBER)
-	{
-	  if (*fmt == '%')
-	      sbuf_concat (buffer, "%");
-	  else
-	    {
-	      for (fip = 0; fmt_items[fip].fmt_char; fip++)
-		{
-		  if (fmt_items[fip].fmt_char == *fmt)
-		    {
-		      sbuf_clear (retbuf);
-		      fmt_items[fip].fmt_fn(win_elem, retbuf);
-		      concat_width (buffer, sbuf_get (retbuf), width);
-		      found = 1;
-		      break;
-		    }
-		}
-	      if (!found)
-		{
-		  sbuf_printf_concat (buffer, "%%%c", *fmt);
-		  break;
-		}
-	    }
-	  state = STATE_READ;
-	  width = -1;
-	}
+        {
+          if (*fmt == '%')
+              sbuf_concat (buffer, "%");
+          else
+            {
+              for (fip = 0; fmt_items[fip].fmt_char; fip++)
+                {
+                  if (fmt_items[fip].fmt_char == *fmt)
+                    {
+                      sbuf_clear (retbuf);
+                      fmt_items[fip].fmt_fn(win_elem, retbuf);
+                      concat_width (buffer, sbuf_get (retbuf), width);
+                      found = 1;
+                      break;
+                    }
+                }
+              if (!found)
+                {
+                  sbuf_printf_concat (buffer, "%%%c", *fmt);
+                  break;
+                }
+            }
+          state = STATE_READ;
+          width = -1;
+        }
       else
-	{
-	  /* Insert the character. */
-	  dbuf[0] = *fmt;
-	  dbuf[1] = 0;
-	  sbuf_concat (buffer, dbuf);
-	}
+        {
+          /* Insert the character. */
+          dbuf[0] = *fmt;
+          dbuf[1] = 0;
+          sbuf_concat (buffer, dbuf);
+        }
     }
   sbuf_free (retbuf);
 #undef STATE_READ
