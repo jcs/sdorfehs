@@ -1,5 +1,12 @@
 2006-03-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/main.c (clean_up): use list_size not rp_num_frame_undos
+
+	* src/globals.c: remove global var rp_num_frame_undos. All callers updated.
+
+	* src/actions.c (push_frame_undo): use list_size, not rp_num_frame_undos
+	(set_maxundos): likewise
+
 	* src/window.c (_XOPEN_SOURCE): new define
 
 	* src/screen.c (is_a_root_window): w is unsigned int

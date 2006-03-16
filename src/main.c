@@ -740,7 +740,7 @@ clean_up ()
   free (screens);
 
   /* Delete the undo histories */
-  while (rp_num_frame_undos > 0)
+  while (list_size (&rp_frame_undos) > 0)
     {
       /* Delete the oldest node */
       rp_frame_undo *cur;

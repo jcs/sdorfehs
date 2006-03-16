@@ -253,7 +253,6 @@ set_window_focus (Window window)
 
 LIST_HEAD (rp_frame_undos);
 LIST_HEAD (rp_frame_redos);
-int rp_num_frame_undos = 0;
 
 void
 init_globals ()

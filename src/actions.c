@@ -380,14 +380,13 @@ del_frame_undo (rp_frame_undo *u)
   if (u->frames) free (u->frames);
   list_del (&(u->node));
   free (u);
-  rp_num_frame_undos--;         /* decrement counter */
 }
 
 static void
 push_frame_undo(rp_screen *screen)
 {
   rp_frame_undo *cur;
-  if (rp_num_frame_undos > defaults.maxundos)
+  if (list_size (&rp_frame_undos) > defaults.maxundos)
     {
       /* Delete the oldest node */
       list_last (cur, &rp_frame_undos, node);
@@ -397,7 +396,6 @@ push_frame_undo(rp_screen *screen)
   cur->frames = fdump (screen);
   cur->screen = screen;
   list_add (&cur->node, &rp_frame_undos);
-  rp_num_frame_undos++;         /* increment counter */
   /* Since we're creating new frames the redo list is now invalid, so
      clear it. */
   clear_frame_redos();
@@ -4970,7 +4968,7 @@ set_maxundos (struct cmdarg **args)
   defaults.maxundos = ARG(0,number);
 
   /* Delete any superfluous undos */
-  while (rp_num_frame_undos > defaults.maxundos)
+  while (list_size (&rp_frame_undos) > defaults.maxundos)
     {
       /* Delete the oldest node */
       list_last (cur, &rp_frame_undos, node);
