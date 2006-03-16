@@ -7,6 +7,11 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0-beta4
+** new parameters in frame dumps
+:screenh and :screenw specify the size of the screen the frame was
+on. using these values (when present) ratpoison will scale the frames
+to fit the new screen size (if different).
+
 ** New window format characters
 See the info file for details.
 

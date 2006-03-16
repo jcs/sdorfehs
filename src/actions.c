@@ -4278,7 +4278,8 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
     {
       XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num),
                    PropertyChangeMask | ColormapChangeMask
-                   | SubstructureRedirectMask | SubstructureNotifyMask);
+		   | SubstructureRedirectMask | SubstructureNotifyMask
+		   | StructureNotifyMask);
       /* Map its key window */
       XMapWindow (dpy, screens[i].key_window);
     }
@@ -4329,7 +4330,7 @@ fdump (rp_screen *screen)
     {
       char *tmp;
 
-      tmp = frame_dump (cur);
+      tmp = frame_dump (cur, screen);
       sbuf_concat (s, tmp);
       sbuf_concat (s, ",");
       free (tmp);
@@ -4391,7 +4392,7 @@ frestore (char *data, rp_screen *s)
   /* Build the new frame set. */
   while (token != NULL)
     {
-      new = frame_read (token);
+      new = frame_read (token, s);
       if (new == NULL)
         {
           free (dup);
@@ -4918,7 +4919,7 @@ cmd_sfdump (int interactively, struct cmdarg **args)
         {
           char *tmp;
 
-          tmp = frame_dump (cur);
+	  tmp = frame_dump (cur, &screens[i]);
           sbuf_concat (s, tmp);
           sbuf_concat (s, tmp2);
           free (tmp);

@@ -702,6 +702,18 @@ mapping_notify (XMappingEvent *ev)
   grab_keys_all_wins();
 }
 
+static void
+configure_notify (XConfigureEvent *ev)
+{
+  rp_screen *s;
+
+  s = find_screen(ev->window);
+  if (s != NULL)
+    /* This is a root window of a screen,
+     * look if its width or height changed: */
+    screen_update(s,ev->width,ev->height);
+}
+
 /* This is called whan an application has requested the
    selection. Copied from rxvt. */
 static void
@@ -847,6 +859,10 @@ delegate_event (XEvent *ev)
       break;
 
     case ConfigureNotify:
+      PRINT_DEBUG (("--- Handling ConfigureNotify ---\n"));
+      configure_notify( &ev->xconfigure );
+      break;
+	
     case MapNotify:
     case Expose:
     case MotionNotify:

@@ -266,7 +266,8 @@ init_screen (rp_screen *s, int screen_num)
      it, terminating ratpoison. */
   XSelectInput(dpy, RootWindow (dpy, screen_num),
                PropertyChangeMask | ColormapChangeMask
-               | SubstructureRedirectMask | SubstructureNotifyMask );
+	       | SubstructureRedirectMask | SubstructureNotifyMask
+	       | StructureNotifyMask);
   XSync (dpy, False);
 
   /* Add netwm support. FIXME: I think this is busted. */
@@ -394,4 +395,34 @@ screen_dump (rp_screen *screen)
   tmp = sbuf_get (s);
   free (s);
   return tmp;
+}
+
+void
+screen_update (rp_screen *s, int width, int height)
+{
+  rp_frame *f;
+  int oldwidth,oldheight;
+
+  PRINT_DEBUG (("screen_update(%d,%d)\n", width, height));
+  if (rp_have_xinerama)
+    {
+      /* TODO: how to do this with xinerama? */
+      return;
+    }
+
+  if (s->width == width && s->height == height)
+    /* nothing to do */
+    return;
+
+  oldwidth = s->width; oldheight = s->height;
+  s->width = width; s->height = height;
+
+  list_for_each_entry (f, &s->frames, node)
+    {
+      f->x = (f->x*width)/oldwidth;
+      f->width = (f->width*width)/oldwidth;
+      f->y = (f->y*height)/oldheight;
+      f->height = (f->height*height)/oldheight;
+      maximize_all_windows_in_frame (f);
+    }
 }

@@ -39,7 +39,7 @@ int frame_left (rp_frame *frame);
 rp_frame *frame_new (rp_screen *s);
 void frame_free (rp_screen *s, rp_frame *f);
 rp_frame *frame_copy (rp_frame *frame);
-char *frame_dump (rp_frame *frame);
-rp_frame *frame_read (char *str);
+char *frame_dump (rp_frame *frame, rp_screen *screen);
+rp_frame *frame_read (char *str, rp_screen *screen);
 
 #endif

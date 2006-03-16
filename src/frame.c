@@ -161,7 +161,7 @@ frame_copy (rp_frame *frame)
 }
 
 char *
-frame_dump (rp_frame *frame)
+frame_dump (rp_frame *frame, rp_screen *screen)
 {
   rp_window *win;
   char *tmp;
@@ -171,12 +171,14 @@ frame_dump (rp_frame *frame)
   win = find_window_number (frame->win_number);
 
   s = sbuf_new (0);
-  sbuf_printf (s, "(frame :number %d :x %d :y %d :width %d :height %d :window %ld :last-access %d :dedicated %d)",
+  sbuf_printf (s, "(frame :number %d :x %d :y %d :width %d :height %d :screenw %d :screenh %d :window %ld :last-access %d :dedicated %d)", 
                frame->number,
                frame->x,
                frame->y,
                frame->width,
                frame->height,
+	       screen->width,
+	       screen->height,
                win ? win->w:0,
                frame->last_access,
                frame->dedicated);
@@ -191,12 +193,14 @@ frame_dump (rp_frame *frame)
 #define read_slot(x) do { tmp = strtok (NULL, " "); x = strtol(tmp,NULL,10); } while(0)
 
 rp_frame *
-frame_read (char *str)
+frame_read (char *str, rp_screen *screen)
 {
   Window w = 0L;
   rp_window *win;
   rp_frame *f;
   char *tmp, *dup;
+  int screen_width = -1;
+  int screen_height = -1;
 
   /* Create a blank frame. */
   f = xmalloc (sizeof (rp_frame));
@@ -229,6 +233,10 @@ frame_read (char *str)
         read_slot(f->width);
       else if (!strcmp(tmp, ":height"))
         read_slot(f->height);
+      else if (!strcmp(tmp, ":screenw"))
+	read_slot(screen_width);
+      else if (!strcmp(tmp, ":screenh"))
+	read_slot(screen_height);
       else if (!strcmp(tmp, ":window"))
         read_slot(w);
       else if (!strcmp(tmp, ":last-access"))
@@ -253,6 +261,18 @@ frame_read (char *str)
   if (tmp)
     PRINT_ERROR(("Frame has trailing garbage\n"));
   free (dup);
+
+  /* adjust x, y, width and height to a possible screen size change */
+  if (screen_width > 0)
+    {
+      f->x = (f->x*screen->width)/screen_width;
+      f->width = (f->width*screen->width)/screen_width;
+    }
+  if (screen_height > 0)
+    {
+      f->y = (f->y*screen->height)/screen_height;
+      f->height = (f->height*screen->height)/screen_height;
+    }
 
   /* Perform some integrity checks on what we got and fix any
      problems. */

@@ -1,3 +1,22 @@
+2006-03-15  Bernhard R. Link  <brlink@debian.org>
+
+	* src/screen.c (screen_update): new function
+	(init_screen): listen for screen resizes
+	* src/screen.h: new prototype
+
+	* src/events.c (configure_notify): new function
+	(delegate_event): call configure_notify for ConfigureNotify events
+
+	* src/frame.c (frame_dump): remember the size of the screen the
+	frame coordinates are relative to.
+	(frame_restore): adopt coordinates to possible screen resizes.
+
+	* src/frame.h (frame_fump): take a screen argument
+	(frame_read): likewise
+
+	* src/actions.c (cmd_tmpwm): listen for screen resizes again
+	(fdump, frestore, cmd_fdump): supply screen to frame_dump, frameread
+
 2006-03-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/main.c (clean_up): use list_size not rp_num_frame_undos

@@ -42,4 +42,5 @@ int is_a_root_window (unsigned int w);
 
 char *screen_dump (rp_screen *screen);
 
+void screen_update (rp_screen *s, int width, int height);
 #endif
