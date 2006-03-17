@@ -1,3 +1,7 @@
+2006-03-16  Ryan Yeske  <rcyeske@gmail.com>
+
+	* doc/ratpoison.texi (Groups): Fix description of gnew command.
+
 2006-03-15  Bernhard R. Link  <brlink@debian.org>
 
 	* src/screen.c (screen_update): new function

@@ -555,7 +555,7 @@ The following is a list of of commands used for manipulating groups.
 
 @deffn Command gnew @var{name}
 Create a new group with the name @var{name}. @var{name} is
-optional. This new group becomes the new group.
+optional. The new group becomes the current group.
 @end deffn
 
 @deffn Command gnewbg @var{name}
