@@ -1,5 +1,12 @@
 2006-04-02  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* 1.4.0 release
+	
+2006-04-02  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* contrib/Makefile.am (pkgdata_DATA): add sloppy.c
+	(EXTRA_DIST): likewise
+
 	* src/events.c (handle_key): call XAllowEvents
 
 2006-04-01  Shawn Betts  <sabetts@vcn.bc.ca>
