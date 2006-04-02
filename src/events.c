@@ -426,6 +426,7 @@ handle_key (KeySym ks, unsigned int mod, rp_screen *s)
     {
       PRINT_ERROR(("Impossible: No matching key\n"));
     }
+  XAllowEvents (dpy, AsyncKeyboard, CurrentTime);
 }
 
 static void

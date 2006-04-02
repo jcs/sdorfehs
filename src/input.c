@@ -211,7 +211,7 @@ grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
   for (i=0; i<8; i++)
     {
       XGrabKey(dpy, keycode, modifiers | mod_list[i],
-               grab_window, True, GrabModeAsync, GrabModeASync);
+               grab_window, True, GrabModeAsync, GrabModeSync);
     }
 }
 

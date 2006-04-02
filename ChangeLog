@@ -1,3 +1,12 @@
+2006-04-02  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/events.c (handle_key): call XAllowEvents
+
+2006-04-01  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/input.c (grab_key): grab the keyboard synchronously
+
+
 2006-03-16  Ryan Yeske  <rcyeske@gmail.com>
 
 	* doc/ratpoison.texi (Groups): Fix description of gnew command.
