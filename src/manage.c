@@ -839,14 +839,7 @@ map_window (rp_window *win)
       || (rp_honour_normal_map && !win->transient))
     set_active_window (win);
   else
-    {
-      if (win->transient)
-        marked_message_printf (0, 0, MESSAGE_MAP_TRANSIENT,
-                               win->number, window_name (win));
-      else
-        marked_message_printf (0, 0, MESSAGE_MAP_WINDOW,
-                               win->number, window_name (win));
-    }
+    show_rudeness_msg (win, 0);
 }
 
 void

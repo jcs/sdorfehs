@@ -23,4 +23,6 @@
 #define _RATPOISON_EVENTS_H 1
 
 void listen_for_events ();
+void show_rudeness_msg (rp_window *win, int raised);
+
 #endif /* _RATPOISON_EVENTS_H */

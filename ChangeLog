@@ -1,3 +1,16 @@
+2006-04-03  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/messages.h (MESSAGE_MAP_TRANSIENT_GROUP): new define
+	(MESSAGE_MAP_WINDOW_GROUP): likewise
+
+	* src/manage.c (map_window): call show_rudeness_msg
+
+	* src/events.h (show_rudeness_msg): new prototype
+
+	* src/events.c (show_rudeness_msg): renamed from
+	show_rudeness_raise_msg. handle the MAP messages as well. all
+	callers updated.
+
 2006-04-02  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* 1.4.0 release

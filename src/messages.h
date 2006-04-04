@@ -36,6 +36,8 @@
 #define MESSAGE_RAISE_WINDOW_GROUP      "Raise request from window %d (%s) in group %s"
 #define MESSAGE_MAP_TRANSIENT           "New transient window %d (%s)"
 #define MESSAGE_MAP_WINDOW              "New window %d (%s)"
+#define MESSAGE_MAP_TRANSIENT_GROUP     "New transient window %d (%s) in group %s"
+#define MESSAGE_MAP_WINDOW_GROUP        "New window %d (%s) in group %s"
 
 #define MESSAGE_PROMPT_SWITCH_TO_WINDOW "Switch to window: "
 #define MESSAGE_PROMPT_NEW_WINDOW_NAME  "Set window's title to: "

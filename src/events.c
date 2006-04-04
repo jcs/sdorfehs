@@ -42,27 +42,28 @@
    action.c which need to forward events to other windows. */
 XEvent rp_current_event;
 
+/* RAISED is non zero if a raised message should be used 0 for a map message. */
 void
-show_rudeness_raise_msg (rp_window *win)
+show_rudeness_msg (rp_window *win, int raised)
 {
   rp_group *g = groups_find_group_by_window (win);
   rp_window_elem *elem = group_find_window (&g->mapped_windows, win);
   if (g == rp_current_group)
     {
       if (win->transient)
-        marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT,
+        marked_message_printf (0, 0, raised ? MESSAGE_RAISE_TRANSIENT:MESSAGE_MAP_TRANSIENT,
                                elem->number, window_name (win));
       else
-        marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW,
+        marked_message_printf (0, 0, raised ? MESSAGE_RAISE_WINDOW:MESSAGE_MAP_WINDOW,
                                elem->number, window_name (win));
     }
   else
     {
       if (win->transient)
-        marked_message_printf (0, 0, MESSAGE_RAISE_TRANSIENT_GROUP,
+        marked_message_printf (0, 0, raised ? MESSAGE_RAISE_TRANSIENT_GROUP:MESSAGE_MAP_TRANSIENT_GROUP,
                                elem->number, window_name (win), g->name);
       else
-        marked_message_printf (0, 0, MESSAGE_RAISE_WINDOW_GROUP,
+        marked_message_printf (0, 0, raised ? MESSAGE_RAISE_WINDOW_GROUP:MESSAGE_MAP_WINDOW_GROUP,
                                elem->number, window_name (win), g->name);
     }
 }
@@ -196,7 +197,7 @@ map_request (XEvent *ev)
               || (rp_honour_normal_raise && !win->transient))
             set_active_window (win);
           else
-            show_rudeness_raise_msg (win);
+            show_rudeness_msg (win, 1);
         }
       break;
     }
@@ -268,7 +269,7 @@ configure_request (XConfigureRequestEvent *e)
                 }
               else if (current_window() != win)
                 {
-                  show_rudeness_raise_msg (win);
+                  show_rudeness_msg (win, 1);
                 }
 
             }
