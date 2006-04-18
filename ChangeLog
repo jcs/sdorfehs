@@ -1,3 +1,8 @@
+2006-04-18  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/hook.c (hook_run): echo the result of each command. free the
+	result.
+
 2006-04-03  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/messages.h (MESSAGE_MAP_TRANSIENT_GROUP): new define

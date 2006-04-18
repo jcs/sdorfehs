@@ -62,10 +62,17 @@ void
 hook_run (struct list_head *hook)
 {
   struct sbuf *cur;
+  cmdret *result;
 
   list_for_each_entry (cur, hook, node)
     {
-      command (1, sbuf_get (cur));
+      result = command (1, sbuf_get (cur));
+      if (result)
+        {
+          if (result->output)
+            message (result->output);
+          cmdret_free (result);
+        }
     }
 }
 
