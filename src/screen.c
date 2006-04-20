@@ -308,10 +308,9 @@ init_screen (rp_screen *s, int screen_num)
   gv.function = GXcopy;
   gv.line_width = 1;
   gv.subwindow_mode = IncludeInferiors;
-  gv.font = defaults.font->fid;
   s->normal_gc = XCreateGC(dpy, s->root,
                            GCForeground | GCBackground | GCFunction
-                           | GCLineWidth | GCSubwindowMode | GCFont,
+                           | GCLineWidth | GCSubwindowMode,
                            &gv);
 
   /* Create the program bar window. */

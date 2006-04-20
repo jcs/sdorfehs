@@ -1,3 +1,41 @@
+2006-04-19  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/split.c (show_frame_message): use XmbDrawString and XmbTextEscapement
+
+	* src/screen.c (init_screen): don't include the font in the gc
+
+	* src/ratpoison.h: include Xlocale.h
+
+	* src/manage.c (get_wmname): support i18n characters
+
+	* src/main.c (init_defaults): call load_query_font_set and set_extents_of_fontset
+	(main): call setlocale
+	(clean_up): call XFreeFontSet
+	(set_extents_of_fontset): new function
+	(load_query_font_set): likewise
+
+	* src/input.c (update_input_window): use XmbTextEscapement and XmbDrawString
+
+	* src/globals.h (FONT_HEIGHT): use rp_font_ascent and rp_font_descent
+	(MAX_FONT_WIDTH): use rp_font_width
+	new globals rp_font_ascent, rp_font_descent, rp_font_width
+
+	* src/globals.c: new globals rp_font_ascent, rp_font_descent, rp_font_width
+
+	* src/data.h (struct rp_defaults): font is a XFontSet
+
+	* src/bar.c (max_line_length): call XmbTextEscapement
+	(draw_string): call XmbDrawString
+	(get_mark_box): call XmbTextEscapement
+
+	* src/actions.c (read_frame): call XmbTextEscapement
+	(cmd_license): likewise
+	(read_frame): call XmbDrawString
+	(cmd_license): likewise
+	(cmd_help): likewise
+	(update_gc): don't include the font
+	(set_font): call load_query_font_set
+
 2006-04-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/hook.c (hook_run): echo the result of each command. free the

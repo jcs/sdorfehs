@@ -319,8 +319,8 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
 static void
 update_input_window (rp_screen *s, rp_input_line *line)
 {
-  int   prompt_width = XTextWidth (defaults.font, line->prompt, strlen (line->prompt));
-  int   input_width  = XTextWidth (defaults.font, line->buffer, line->length);
+  int   prompt_width = XmbTextEscapement (defaults.font, line->prompt, strlen (line->prompt));
+  int   input_width  = XmbTextEscapement (defaults.font, line->buffer, line->length);
   int   total_width;
   GC lgc;
   XGCValues gv;
@@ -341,17 +341,17 @@ update_input_window (rp_screen *s, rp_input_line *line)
   XClearWindow (dpy, s->input_window);
   XSync (dpy, False);
 
-  XDrawString (dpy, s->input_window, s->normal_gc,
-               defaults.bar_x_padding,
-               defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-               line->prompt,
-               strlen (line->prompt));
+  XmbDrawString (dpy, s->input_window, defaults.font, s->normal_gc,
+		 defaults.bar_x_padding,
+		 defaults.bar_y_padding + rp_font_ascent,
+		 line->prompt,
+		 strlen (line->prompt));
 
-  XDrawString (dpy, s->input_window, s->normal_gc,
-               defaults.bar_x_padding + prompt_width,
-               defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-               line->buffer,
-               line->length);
+  XmbDrawString (dpy, s->input_window, defaults.font, s->normal_gc,
+		 defaults.bar_x_padding + prompt_width,
+		 defaults.bar_y_padding + rp_font_ascent,
+		 line->buffer,
+		 line->length);
 
   gv.function = GXxor;
   gv.foreground = s->fg_color ^ s->bg_color;
@@ -359,9 +359,9 @@ update_input_window (rp_screen *s, rp_input_line *line)
 
   /* Draw a cheap-o cursor - MkII */
   XFillRectangle (dpy, s->input_window, lgc,
-                  defaults.bar_x_padding + prompt_width + XTextWidth (defaults.font, line->buffer, line->position),
+                  defaults.bar_x_padding + prompt_width + XmbTextEscapement (defaults.font, line->buffer, line->position),
                   defaults.bar_y_padding,
-                  XTextWidth (defaults.font, &line->buffer[line->position], 1),
+                  XmbTextEscapement (defaults.font, &line->buffer[line->position], 1),
                   FONT_HEIGHT (defaults.font));
 
   XFlush (dpy);

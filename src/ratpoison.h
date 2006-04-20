@@ -32,6 +32,7 @@
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <X11/Xlocale.h>
 #include <fcntl.h>
 
 /* Some systems don't define the close-on-exec flag in fcntl.h */
@@ -106,5 +107,8 @@ int str_comp (char *s1, char *s2, int len);
 void check_child_procs ();
 void chld_handler (int signum);
 void set_sig_handler (int sig, void (*action)(int));
+/* Font functions. */
+void set_extents_of_fontset (XFontSet font);
+XFontSet load_query_font_set (Display *disp, const char *fontset_name);
 
 #endif /* ! _RATPOISON_H */

@@ -1650,7 +1650,7 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
                  determine the height and width of the window. */
               /*              num = xsprintf (" %d ", cur->number); */
               num = frame_selector (cur->number);
-              width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, num, strlen (num));
+              width = defaults.bar_x_padding * 2 + XmbTextEscapement (defaults.font, num, strlen (num));
               height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
               /* Create and map the window. */
@@ -1662,10 +1662,10 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
               XClearWindow (dpy, wins[i]);
 
               /* Display the frame's number inside the window. */
-              XDrawString (dpy, wins[i], s->normal_gc,
-                           defaults.bar_x_padding,
-                           defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-                           num, strlen (num));
+              XmbDrawString (dpy, wins[i], defaults.font, s->normal_gc,
+			     defaults.bar_x_padding,
+			     defaults.bar_y_padding + rp_font_ascent,
+			     num, strlen (num));
 
               free (num);
               i++;
@@ -3093,7 +3093,7 @@ cmd_license (int interactive, struct cmdarg **args)
     {
       int tmp;
 
-      tmp = XTextWidth (defaults.font, license_text[i], strlen (license_text[i]));
+      tmp = XmbTextEscapement (defaults.font, license_text[i], strlen (license_text[i]));
       if (tmp > max_width)
         max_width = tmp;
     }
@@ -3107,9 +3107,9 @@ cmd_license (int interactive, struct cmdarg **args)
   /* Print the text. */
   for(i=0; license_text[i]; i++)
   {
-    XDrawString (dpy, s->help_window, s->normal_gc,
-                 x, y + defaults.font->max_bounds.ascent,
-                 license_text[i], strlen (license_text[i]));
+    XmbDrawString (dpy, s->help_window, defaults.font, s->normal_gc,
+		   x, y + rp_font_ascent,
+		   license_text[i], strlen (license_text[i]));
 
     y += FONT_HEIGHT (defaults.font);
   }
@@ -3152,21 +3152,21 @@ cmd_help (int interactive, struct cmdarg **args)
       XMapRaised (dpy, s->help_window);
       XGrabKeyboard (dpy, s->help_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
-      XDrawString (dpy, s->help_window, s->normal_gc,
-                   10, y + defaults.font->max_bounds.ascent,
-                   "ratpoison key bindings", strlen ("ratpoison key bindings"));
+      XmbDrawString (dpy, s->help_window, defaults.font, s->normal_gc,
+		     10, y + rp_font_ascent,
+		     "ratpoison key bindings", strlen ("ratpoison key bindings"));
 
       y += FONT_HEIGHT (defaults.font) * 2;
 
-      XDrawString (dpy, s->help_window, s->normal_gc,
-                   10, y + defaults.font->max_bounds.ascent,
-                   "Command key: ", strlen ("Command key: "));
+      XmbDrawString (dpy, s->help_window, defaults.font, s->normal_gc,
+		     10, y + rp_font_ascent,
+		     "Command key: ", strlen ("Command key: "));
 
       keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
-      XDrawString (dpy, s->help_window, s->normal_gc,
-                   10 + XTextWidth (defaults.font, "Command key: ", strlen ("Command key: ")),
-                   y + defaults.font->max_bounds.ascent,
-                   keysym_name, strlen (keysym_name));
+      XmbDrawString (dpy, s->help_window, defaults.font, s->normal_gc,
+		     10 + XmbTextEscapement (defaults.font, "Command key: ", strlen ("Command key: ")),
+		     y + rp_font_ascent,
+		     keysym_name, strlen (keysym_name));
       free (keysym_name);
 
       y += FONT_HEIGHT (defaults.font) * 2;
@@ -3179,24 +3179,24 @@ cmd_help (int interactive, struct cmdarg **args)
             {
               keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
 
-              XDrawString (dpy, s->help_window, s->normal_gc,
-                           x, y + defaults.font->max_bounds.ascent,
-                           keysym_name, strlen (keysym_name));
+              XmbDrawString (dpy, s->help_window, defaults.font, s->normal_gc,
+			     x, y + rp_font_ascent,
+			     keysym_name, strlen (keysym_name));
 
-              if (XTextWidth (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
-                max_width = XTextWidth (defaults.font, keysym_name, strlen (keysym_name));
+              if (XmbTextEscapement (defaults.font, keysym_name, strlen (keysym_name)) > max_width)
+                max_width = XmbTextEscapement (defaults.font, keysym_name, strlen (keysym_name));
 
               free (keysym_name);
             }
           else
             {
-              XDrawString (dpy, s->help_window, s->normal_gc,
-                           x, y + defaults.font->max_bounds.ascent,
-                           map->actions[i].data, strlen (map->actions[i].data));
+              XmbDrawString (dpy, s->help_window, defaults.font, s->normal_gc,
+			     x, y + rp_font_ascent,
+			     map->actions[i].data, strlen (map->actions[i].data));
 
-              if (XTextWidth (defaults.font, map->actions[i].data, strlen (map->actions[i].data)) > max_width)
+              if (XmbTextEscapement (defaults.font, map->actions[i].data, strlen (map->actions[i].data)) > max_width)
                 {
-                  max_width = XTextWidth (defaults.font, map->actions[i].data, strlen (map->actions[i].data));
+                  max_width = XmbTextEscapement (defaults.font, map->actions[i].data, strlen (map->actions[i].data));
                 }
             }
 
@@ -3419,12 +3419,11 @@ update_gc (rp_screen *s)
   gv.function = GXcopy;
   gv.line_width = 1;
   gv.subwindow_mode = IncludeInferiors;
-  gv.font = defaults.font->fid;
   XFreeGC (dpy, s->normal_gc);
   s->normal_gc = XCreateGC(dpy, s->root,
                            GCForeground | GCBackground
                            | GCFunction | GCLineWidth
-                           | GCSubwindowMode | GCFont, &gv);
+                           | GCSubwindowMode, &gv);
 }
 
 static void
@@ -3441,18 +3440,19 @@ update_all_gcs ()
 static cmdret *
 set_font (struct cmdarg **args)
 {
-  XFontStruct *font;
+  XFontSet font;
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.font_string);
 
-  font = XLoadQueryFont (dpy, ARG_STRING(0));
+  font = load_query_font_set (dpy, ARG_STRING(0));
   if (font == NULL)
     return cmdret_new (RET_FAILURE, "deffont: unknown font");
 
   /* Save the font as the default. */
-  XFreeFont (dpy, defaults.font);
+  XFreeFontSet (dpy, defaults.font);
   defaults.font = font;
+  set_extents_of_fontset(font);
   update_all_gcs();
 
   free (defaults.font_string);

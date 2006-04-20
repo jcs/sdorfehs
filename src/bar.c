@@ -231,7 +231,7 @@ max_line_length (char* msg)
           int current_width;
 
           /* Check if this line is the longest so far. */
-          current_width = XTextWidth (defaults.font, msg + start, i - start);
+          current_width = XmbTextEscapement (defaults.font, msg + start, i - start);
           if(current_width > ret)
             {
               ret = current_width;
@@ -306,22 +306,22 @@ draw_string (rp_screen *s, char *msg)
          line, and move down one line. */
       if (msg[i] == '\n')
         {
-          XDrawString (dpy, s->bar_window, s->normal_gc,
-                       defaults.bar_x_padding,
-                       defaults.bar_y_padding + defaults.font->max_bounds.ascent
-                       +  line_no * line_height,
-                       msg + start, i - start);
+          XmbDrawString (dpy, s->bar_window, defaults.font, s->normal_gc,
+			 defaults.bar_x_padding,
+			 defaults.bar_y_padding + rp_font_ascent
+			 +  line_no * line_height,
+			 msg + start, i - start);
           line_no++;
           start = i + 1;
         }
     }
 
   /* Print the last line. */
-  XDrawString (dpy, s->bar_window, s->normal_gc,
-               defaults.bar_x_padding,
-               defaults.bar_y_padding + defaults.font->max_bounds.ascent
-               +  line_no * line_height,
-               msg + start, strlen (msg) - start);
+  XmbDrawString (dpy, s->bar_window, defaults.font, s->normal_gc,
+		 defaults.bar_x_padding,
+		 defaults.bar_y_padding + rp_font_ascent
+		 +  line_no * line_height,
+		 msg + start, strlen (msg) - start);
 
   XSync (dpy, False);
 }
@@ -412,11 +412,11 @@ get_mark_box (char *msg, size_t mark_start, size_t mark_end,
   if (mark_start == 0 || start_pos_in_line == 0)
     start = 0;
   else
-    start = XTextWidth (defaults.font,
+    start = XmbTextEscapement (defaults.font,
                         &msg[start_line_beginning],
                         start_pos_in_line) + defaults.bar_x_padding;
 
-  end = XTextWidth (defaults.font,
+  end = XmbTextEscapement (defaults.font,
                     &msg[end_line_beginning],
                     end_pos_in_line) + defaults.bar_x_padding * 2;
 

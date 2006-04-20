@@ -220,7 +220,7 @@ struct rp_defaults
   int padding_top;
   int padding_bottom;
 
-  XFontStruct *font;
+  XFontSet font;
   char *font_string;
 
   char *fgcolor_string;

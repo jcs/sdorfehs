@@ -27,8 +27,8 @@
 #define RET_SUCCESS 1
 #define RET_FAILURE 0
 
-#define FONT_HEIGHT(f) ((f)->max_bounds.ascent + (f)->max_bounds.descent)
-#define MAX_FONT_WIDTH(f) ((f)->max_bounds.width)
+#define FONT_HEIGHT(f) (rp_font_ascent + rp_font_descent)
+#define MAX_FONT_WIDTH(f) (rp_font_width)
 
 #define WIN_EVENTS (StructureNotifyMask | PropertyChangeMask | ColormapChangeMask | FocusChangeMask)
 /* EMPTY is used when a frame doesn't contain a window, or a window
@@ -66,6 +66,9 @@ extern rp_group *rp_current_group;
 extern struct list_head rp_children;
 
 extern struct rp_defaults defaults;
+
+/* Cached font info. */
+extern int rp_font_ascent, rp_font_descent, rp_font_width;
 
 /* The prefix key also known as the command character under screen. */
 extern struct rp_key prefix_key;

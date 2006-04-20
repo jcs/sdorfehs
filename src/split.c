@@ -918,7 +918,7 @@ show_frame_message (char *msg)
 
   frame = current_frame();
 
-  width = defaults.bar_x_padding * 2 + XTextWidth (defaults.font, msg, strlen (msg));
+  width = defaults.bar_x_padding * 2 + XmbTextEscapement (defaults.font, msg, strlen (msg));
   height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
   /* We don't want another frame indicator to be displayed on another
@@ -935,10 +935,10 @@ show_frame_message (char *msg)
   XClearWindow (dpy, s->frame_window);
   XSync (dpy, False);
 
-  XDrawString (dpy, s->frame_window, s->normal_gc,
-               defaults.bar_x_padding,
-               defaults.bar_y_padding + defaults.font->max_bounds.ascent,
-               msg, strlen (msg));
+  XmbDrawString (dpy, s->frame_window, defaults.font, s->normal_gc,
+		 defaults.bar_x_padding,
+		 defaults.bar_y_padding + rp_font_ascent,
+		 msg, strlen (msg));
 }
 
 rp_frame *

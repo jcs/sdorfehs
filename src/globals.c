@@ -32,6 +32,8 @@ int rat_visible = 1;            /* rat is visible by default */
 
 char *rp_exec_newwm = NULL;
 
+int rp_font_ascent, rp_font_descent, rp_font_width;
+
 Atom wm_name;
 Atom wm_state;
 Atom wm_change_state;

@@ -198,33 +198,29 @@ update_normal_hints (rp_window *win)
 static char *
 get_wmname (Window w)
 {
-  Atom actual_type;
-  int actual_format;
-  int status;
-  unsigned long n;
-  unsigned long bytes_after;
   unsigned char *name = NULL;
   char *ret;
+  XTextProperty text_prop;
+  int n;
+  char** cl;
 
-  status = XGetWindowProperty (dpy, w, wm_name, 0L, 100L, False,
-                               XA_STRING, &actual_type, &actual_format,
-                               &n, &bytes_after, &name);
-
-  PRINT_DEBUG (("XGetWindowProperty: %d %ld %d %ld %ld '%s'\n", status, actual_type,
-                actual_format, n, bytes_after, name));
-
-  if (status != Success || name == NULL)
-    {
-      PRINT_DEBUG (("I can't get the WMName.\n"));
-      return NULL;
+  if (XGetWMName(dpy, w, &text_prop) != 0) {
+    if (text_prop.encoding == XA_STRING) {
+      name = (char *)text_prop.value;
+    } else {
+      XmbTextPropertyToTextList(dpy, &text_prop, &cl, &n);
+      if (cl) {
+        name = strdup(cl[0]);
+        XFreeStringList(cl);
+      } else {
+        PRINT_DEBUG (("I can't get the WMName.\n"));
+        return NULL;
+      }
     }
-
-  if (n == 0)
-    {
-      PRINT_DEBUG (("I can't get the WMName.\n"));
-      XFree (name);
-      return NULL;
-    }
+  } else {
+    PRINT_DEBUG (("I can't get the WMName.\n"));
+    return NULL;
+  }
 
   PRINT_DEBUG (("WM_NAME: '%s'\n", name));
 
