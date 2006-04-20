@@ -605,12 +605,14 @@ property_notify (XEvent *ev)
 
           PRINT_DEBUG (("updating _NET_WM_PID\n"));
           child_info = get_child_info(win->w);
-          if (child_info)
+          if (child_info && !child_info->window_mapped)
             {
               if (child_info->frame)
                 {
                   PRINT_DEBUG (("frame=%p\n", child_info->frame));
                   win->intended_frame_number = child_info->frame->number;
+		  /* Only map the first window in the launch frame. */
+		  child_info->window_mapped = 1;
                 }
               /* TODO: also adopt group information? */
             }

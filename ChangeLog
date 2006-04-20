@@ -1,5 +1,7 @@
 2006-04-19  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/events.c (property_notify): Only map the first window in the launch frame.
+
 	* src/split.c (show_frame_message): use XmbDrawString and XmbTextEscapement
 
 	* src/screen.c (init_screen): don't include the font in the gc
