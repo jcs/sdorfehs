@@ -1,3 +1,7 @@
+2006-04-21  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/main.c (print_version): print build date
+
 2006-04-20  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.h: new command sfrestore

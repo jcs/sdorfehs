@@ -7,10 +7,12 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0
-** support for i18n fonts
+** build date in ratpoison -v
 
 ** new command sfrestore
 restores frame configurations for multiple screens.
+
+** support for i18n fonts
 
 * Changes since 1.4.0-beta4
 ** new parameters in frame dumps

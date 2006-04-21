@@ -283,8 +283,8 @@ set_sig_handler (int sig, void (*action)(int))
 void
 print_version ()
 {
-  printf ("%s %s\n", PACKAGE, VERSION);
-  printf ("Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts\n\n");
+  printf ("%s %s (built %s %s)\n", PACKAGE, VERSION, __DATE__, __TIME__);
+  printf ("Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006 Shawn Betts\n\n");
 
   exit (EXIT_SUCCESS);
 }
