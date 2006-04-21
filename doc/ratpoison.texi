@@ -896,6 +896,10 @@ Like fdump, but dump information about each screen instead of each frame.
 Dump all the screen number and the frames on all screens.
 @end deffn
 
+@deffn Command sfrestore
+restore a frame configuration created using @command{sfdump}.
+@end deffn
+
 @node Keystrokes, Hooks, Multiple Monitors, Top
 @chapter Keystrokes
 

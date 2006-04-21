@@ -9,6 +9,9 @@ notice and this notice are preserved.
 * Changes since 1.4.0
 ** support for i18n fonts
 
+** new command sfrestore
+restores frame configurations for multiple screens.
+
 * Changes since 1.4.0-beta4
 ** new parameters in frame dumps
 :screenh and :screenw specify the size of the screen the frame was

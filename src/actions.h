@@ -201,6 +201,7 @@ RP_CMD (iprev);
 RP_CMD (prompt);
 RP_CMD (sdump);
 RP_CMD (sfdump);
+RP_CMD (sfrestore);
 RP_CMD (undo);
 RP_CMD (redo);
 RP_CMD (putsel);

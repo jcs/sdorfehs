@@ -1,3 +1,10 @@
+2006-04-20  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.h: new command sfrestore
+
+	* src/actions.c (init_user_commands): new command sfrestore
+	(cmd_sfrestore): new function
+
 2006-04-19  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/events.c (property_notify): Only map the first window in the launch frame.
