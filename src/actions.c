@@ -2324,7 +2324,7 @@ command (int interactive, char *data)
 
   rest = strtok (NULL, "\0");
 
-  PRINT_DEBUG (("cmd==%s rest==%s\n", cmd, rest));
+  PRINT_DEBUG (("cmd==%s rest==%s\n", cmd, rest?rest:"NULL"));
 
   /* Look for it in the aliases, first. */
   for (i=0; i<alias_list_last; i++)

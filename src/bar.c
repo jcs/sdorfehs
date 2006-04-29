@@ -495,7 +495,7 @@ marked_message (char *msg, int mark_start, int mark_end)
   int width;
   int height;
 
-  PRINT_DEBUG (("msg = %s\n", msg));
+  PRINT_DEBUG (("msg = %s\n", msg?msg:"NULL"));
   PRINT_DEBUG (("mark_start = %d, mark_end = %d\n", mark_start, mark_end));
 
   /* Schedule the bar to be hidden after some amount of time. */

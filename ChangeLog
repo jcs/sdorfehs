@@ -1,7 +1,10 @@
 2006-04-29  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/bar.c (marked_message): print NULL if msg is null in debug output
+
 	* src/actions.c (cmd_getenv): return an empty string for
 	nonexistant env vars.
+	(command): print NULL if rest is null in debug output
 
 2006-04-21  Shawn Betts  <sabetts@vcn.bc.ca>
 
