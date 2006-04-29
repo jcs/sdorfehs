@@ -3743,7 +3743,10 @@ cmd_getenv (int interactive, struct cmdarg **args)
   char *value;
 
   value = getenv (ARG_STRING(0));
-  return cmdret_new (RET_SUCCESS, "%s", value);
+  if (value)
+    return cmdret_new (RET_SUCCESS, "%s", value);
+  else
+    return cmdret_new (RET_SUCCESS, "");
 }
 
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original

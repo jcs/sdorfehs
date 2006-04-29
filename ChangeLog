@@ -1,3 +1,8 @@
+2006-04-29  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (cmd_getenv): return an empty string for
+	nonexistant env vars.
+
 2006-04-21  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/main.c (print_version): print build date
