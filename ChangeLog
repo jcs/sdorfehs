@@ -1,3 +1,7 @@
+2006-05-08  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* contrib/rpws (ws_init): loop from 1 not 0
+
 2006-04-29  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/bar.c (marked_message): print NULL if msg is null in debug output
