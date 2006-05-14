@@ -1,3 +1,7 @@
+2006-05-14  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/input.c (update_modifier_map): use XGetKeyboardMapping.
+
 2006-05-08  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* contrib/rpws (ws_init): loop from 1 not 0
