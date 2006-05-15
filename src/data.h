@@ -249,6 +249,9 @@ struct rp_defaults
 
   /* How many frame sets to remember when undoing. */
   int maxundos;
+
+  /* The name of the top level keymap */
+  char *top_kmap;
 };
 
 /* Information about a child process. */

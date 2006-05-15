@@ -63,6 +63,7 @@ static cmdret * set_winliststyle (struct cmdarg **args);
 static cmdret * set_framesels (struct cmdarg **args);
 static cmdret * set_maxundos (struct cmdarg **args);
 static cmdret * set_infofmt (struct cmdarg **args);
+static cmdret * set_topkmap (struct cmdarg **args);
 
 LIST_HEAD(set_vars);
 
@@ -115,6 +116,7 @@ init_set_vars()
   add_set_var ("winliststyle", set_winliststyle, 1, "", arg_STRING);
   add_set_var ("framesels", set_framesels, 1, "", arg_STRING);
   add_set_var ("infofmt", set_infofmt, 1, "", arg_REST);
+  add_set_var ("topkmap", set_topkmap, 1, "", arg_STRING);
 }
 
 /* rp_keymaps is ratpoison's list of keymaps. */
@@ -646,7 +648,7 @@ initialize_default_keybindings (void)
   map = keymap_new (ROOT_KEYMAP);
   list_add (&map->node, &rp_keymaps);
 
-  top = keymap_new (TOP_KEYMAP);
+  top = keymap_new (defaults.top_kmap);
   list_add (&top->node, &rp_keymaps);
 
   /* Initialive the alias list. */
@@ -974,7 +976,7 @@ cmd_undefinekey (int interactive, struct cmdarg **args)
 
   /* If we're updating the top level map, we'll need to update the
      keys grabbed. */
-  if (map == find_keymap (TOP_KEYMAP))
+  if (map == find_keymap (defaults.top_kmap))
     ungrab_keys_all_wins ();
 
   /* If no comand is specified, then unbind the key. */
@@ -982,7 +984,7 @@ cmd_undefinekey (int interactive, struct cmdarg **args)
     ret = cmdret_new (RET_FAILURE, "undefinekey: key '%s' is not bound", ARG_STRING(1));
 
   /* Update the grabbed keys. */
-  if (map == find_keymap (TOP_KEYMAP))
+  if (map == find_keymap (defaults.top_kmap))
     grab_keys_all_wins ();
   XSync (dpy, False);
 
@@ -1007,7 +1009,7 @@ cmd_definekey (int interactive, struct cmdarg **args)
 
   /* If we're updating the top level map, we'll need to update the
      keys grabbed. */
-  if (map == find_keymap (TOP_KEYMAP))
+  if (map == find_keymap (defaults.top_kmap))
     ungrab_keys_all_wins ();
 
   if ((key_action = find_keybinding (key->sym, key->state, map)))
@@ -1016,7 +1018,7 @@ cmd_definekey (int interactive, struct cmdarg **args)
     add_keybinding (key->sym, key->state, ARG_STRING(2), map);
 
   /* Update the grabbed keys. */
-  if (map == find_keymap (TOP_KEYMAP))
+  if (map == find_keymap (defaults.top_kmap))
     grab_keys_all_wins ();
   XSync (dpy, False);
 
@@ -2655,7 +2657,7 @@ cmd_escape (int interactive, struct cmdarg **args)
   rp_action *action;
   rp_keymap *map, *top;
 
-  top = find_keymap (TOP_KEYMAP);
+  top = find_keymap (defaults.top_kmap);
   map = find_keymap (ROOT_KEYMAP);
   key = ARG(0,key);
 
@@ -3603,6 +3605,26 @@ set_infofmt (struct cmdarg **args)
 
   free (defaults.info_fmt);
   defaults.info_fmt = xstrdup (ARG_STRING(0));
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_topkmap (struct cmdarg **args)
+{
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%s", defaults.top_kmap);
+
+  if (!find_keymap (ARG_STRING(0)))
+    return cmdret_new(RET_FAILURE, "Unknown keymap %s", ARG_STRING(0));
+
+  ungrab_keys_all_wins();
+
+  free (defaults.top_kmap);
+  defaults.top_kmap = xstrdup (ARG_STRING(0));
+
+  grab_keys_all_wins();
+  XSync(dpy, False);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4785,7 +4807,7 @@ cmd_delkmap (int interactive, struct cmdarg **args)
 {
    rp_keymap *map, *top, *root;
 
-  top = find_keymap (TOP_KEYMAP);
+  top = find_keymap (defaults.top_kmap);
   root = find_keymap (ROOT_KEYMAP);
 
   map = ARG(0,keymap);

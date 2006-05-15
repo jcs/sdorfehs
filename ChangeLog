@@ -1,3 +1,22 @@
+2006-05-15  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/manage.c (grab_top_level_keys): use defaults.top_kmap for the top kmap
+
+	* src/main.c (init_defaults): init defaults.top_kmap
+
+	* src/events.c (handle_key): use defaults.top_kmap for the top kmap
+
+	* src/data.h (struct rp_defaults): new field, top_kmap
+
+	* src/actions.c (set_topkmap): new prototype
+	(init_set_vars): topkmap new set variable
+	(initialize_default_keybindings): use defaults.top_kmap for the top kmap
+	(cmd_undefinekey): likewise
+	(cmd_definekey): likewise
+	(cmd_escape): likewise
+	(cmd_delkmap): likewise
+	(set_topkmap): new function
+
 2006-05-14  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/input.c (update_modifier_map): use XGetKeyboardMapping.

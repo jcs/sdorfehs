@@ -110,12 +110,12 @@ grab_top_level_keys (Window w)
   XGrabKey(dpy, AnyKey, AnyModifier, w, True,
            GrabModeAsync, GrabModeAsync);
 #else
-  rp_keymap *map = find_keymap (TOP_KEYMAP);
+  rp_keymap *map = find_keymap (defaults.top_kmap);
   int i;
 
   if (map == NULL)
     {
-      PRINT_ERROR (("Unable to find " TOP_KEYMAP " keymap\n"));
+      PRINT_ERROR (("Unable to find %s level keymap\n", defaults.top_kmap));
       return;
     }
 

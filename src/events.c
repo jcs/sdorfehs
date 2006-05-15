@@ -383,11 +383,11 @@ static void
 handle_key (KeySym ks, unsigned int mod, rp_screen *s)
 {
   rp_action *key_action;
-  rp_keymap *map = find_keymap (TOP_KEYMAP);
+  rp_keymap *map = find_keymap (defaults.top_kmap);
 
   if (map == NULL)
     {
-      PRINT_ERROR (("Unable to find " TOP_KEYMAP " keymap\n"));
+      PRINT_ERROR (("Unable to find %s keymap\n", defaults.top_kmap));
       return;
     }
 

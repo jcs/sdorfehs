@@ -7,6 +7,9 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0
+** new command set topkmap
+See info manual.
+
 ** build date in ratpoison -v
 
 ** new command sfrestore

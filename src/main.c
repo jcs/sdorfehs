@@ -465,6 +465,8 @@ show_welcome_message ()
 static void
 init_defaults ()
 {
+  defaults.top_kmap = xstrdup(TOP_KEYMAP);
+
   defaults.win_gravity     = NorthWestGravity;
   defaults.trans_gravity   = CenterGravity;
   defaults.maxsize_gravity = CenterGravity;

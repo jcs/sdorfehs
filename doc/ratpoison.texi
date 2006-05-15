@@ -1024,6 +1024,11 @@ key. When the user does, the command will display the command bound to
 this key.
 @end deffn
 
+@deffn Command {set topkmap} @var{kmap}
+Set the top level keymap to @var{kmap}. You might use this to swap
+between several common keymappings or to implement modes.
+@end deffn
+
 @node Default Key Bindings,  , Key Maps, Keystrokes
 @section Default Key Bindings
 
