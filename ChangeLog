@@ -1,3 +1,10 @@
+2006-05-21  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/conf.h (DEFAULT_FONT): changed
+
+	* src/actions.c (command): return a cmdret structure if cmd is
+	NULL
+
 2006-05-15  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/manage.c (grab_top_level_keys): use defaults.top_kmap for the top kmap

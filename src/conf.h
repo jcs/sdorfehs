@@ -120,6 +120,6 @@
 #define TOP_KEYMAP "top"
 
 /* The default font */
-#define DEFAULT_FONT "9x15bold"
+#define DEFAULT_FONT "-*-fixed-bold-r-normal-*-15-*-*-*-c-*-*-*"
 
 #endif /* !_ _RATPOISON_CONF_H */

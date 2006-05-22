@@ -2322,7 +2322,10 @@ command (int interactive, char *data)
   cmd = strtok (input, " ");
 
   if (cmd == NULL)
-    goto done;
+    {
+      result = cmdret_new (RET_FAILURE, NULL);
+      goto done;
+    }
 
   rest = strtok (NULL, "\0");
 
