@@ -1,3 +1,93 @@
+2006-05-23  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/xinerama.c (free_xinerama): take void arguments. prototype updated.
+	(init_xinerama): likewise
+
+	* src/window.c (init_window_stuff): take void arguments. prototype updated.
+	(free_window_stuff): likewise
+
+	* src/split.c (remove_all_splits): take void arguments. prototype updated.
+	(current_frame): likewise
+	(init_frame_lists): likewise
+	(find_last_frame): likewise
+	(current_window): likewise
+	(remove_all_splits): likewise
+	(hide_frame_indicator): likewise
+	(show_frame_indicator): likewise
+
+	* src/main.c (check_child_procs): take void arguments. prototype updated.
+	(clean_up): likewise
+
+	* src/number.c (numset_new): take void arguments. prototype updated.
+
+	* src/manage.c (clear_unmanaged_list): take void arguments. prototype updated.
+	(list_unmanaged_windows): likewise
+	(ungrab_keys_all_wins): likewise
+	(grab_keys_all_wins): likewise
+	(current_screen): likewise
+	(unhide_all_windows): likewise
+
+	* src/main.c (sighandler): static function
+	(hup_handler): likewise
+	(alrm_handler): likewise
+	(handler): likewise
+	(print_version): likewise
+	(print_help): likewise
+	(show_welcome_message): take void arguments
+	(init_defaults): likewise
+
+	* src/input.c (ring_bell): take void arguments. prototype updated
+	(update_modifier_map): likewise
+
+	* src/history.c (get_history_filename): take void arguments
+	(history_load): take void arguments. prototype updated
+	(history_save): likewise
+	(history_reset): likewise
+	(history_previous): likewise
+	(history_next): likewise
+	(history_list_items): likewise
+
+	* src/group.c (group_in_list): static function
+	(init_groups): take void arguments. prototype updated
+	(free_groups): likewise
+	(group_next_group): likewise
+	(group_prev_group): likewise
+
+	* src/globals.c (x_export_selection): take void arguments
+	(get_cut_buffer): likewise
+	(get_primary_selection): likewise
+	(get_selection): take void arguments. protype updated.
+	(init_globals): likewise
+
+	* src/events.c (selection_clear): take void arguments
+	(handle_signals): likewise
+	(listen_for_events): take void argumens. prototype updated
+
+	* src/bar.c (reset_alarm): take void arguments
+	(show_last_message): take void arguments. prototype updated.
+	(free_bar): likewise
+
+	* src/actions.c (init_set_vars): static function. take void arguments
+	(clear_frame_redos): take void arguments
+	(pop_frame_undo): likewise
+	(pop_frame_redo): likewise
+	(keymap_new): static function
+	(parse_keydesc): likewise
+	(trivial_completions): likewise
+	(keymap_completions): likewise
+	(window_completions): likewise
+	(group_completions): likewise
+	(colon_completions): likewise
+	(exec_completions): likewise
+	(hook_completions): likewise
+	(var_completions): likewise
+	(update_all_gcs): take void arguments
+	(grab_rat): likewise
+	(ungrab_rat): likewise
+	(init_user_commands): take void arguments. prototype updated.
+	(free_keymaps): likewise
+	(free_aliases): likewise
+
 2006-05-21  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/conf.h (DEFAULT_FONT): changed

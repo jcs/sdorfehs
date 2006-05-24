@@ -125,7 +125,7 @@ numset_release (struct numset *ns, int n)
 
 /* Create a new numset and return a pointer to it. */
 struct numset *
-numset_new ()
+numset_new (void)
 {
   struct numset *ns;
 

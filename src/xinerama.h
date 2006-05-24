@@ -21,8 +21,8 @@
 #ifndef XINERAMA_H
 #define XINERAMA_H
 
-void init_xinerama();
-void free_xinerama();
+void init_xinerama(void);
+void free_xinerama(void);
 void xinerama_get_screen_info(int sc, int *x, int *y, int *w, int *h);
 
 #endif

@@ -117,7 +117,7 @@ rp_mask_to_x11_mask (unsigned int mask)
 
 /* Figure out what keysyms are attached to what modifiers */
 void
-update_modifier_map ()
+update_modifier_map (void)
 {
   unsigned int modmasks[] =
     { Mod1Mask, Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask };
@@ -430,7 +430,7 @@ update_input_window (rp_screen *s, rp_input_line *line)
 }
 
 void
-ring_bell ()
+ring_bell (void)
 {
 #ifdef VISUAL_BELL
   GC lgc;

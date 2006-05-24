@@ -171,8 +171,8 @@ extern struct list_head rp_frame_redos;
 extern rp_xselection selection;
 void set_selection (char *txt);
 void set_nselection (char *txt, int len);
-char *get_selection ();
+char *get_selection (void);
 
-void init_globals ();
+void init_globals (void);
 
 #endif

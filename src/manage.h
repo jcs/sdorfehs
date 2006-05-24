@@ -24,16 +24,16 @@
 
 #include "data.h"
 
-void clear_unmanaged_list ();
-char *list_unmanaged_windows ();
+void clear_unmanaged_list (void);
+char *list_unmanaged_windows (void);
 void add_unmanaged_window (char *name);
 int unmanaged_window (Window w);
-rp_screen* current_screen ();
+rp_screen* current_screen (void);
 void scanwins(rp_screen *s);
 void unmanage (rp_window *w);
 int update_window_name (rp_window *win);
 void update_normal_hints (rp_window *win);
-void rename_current_window ();
+void rename_current_window (void);
 void send_configure (Window w, int x, int y, int width, int height, int border);
 void set_state (rp_window *win, int state);
 long get_state (rp_window *win);
@@ -47,12 +47,12 @@ void force_maximize (rp_window *win);
 
 void grab_top_level_keys (Window w);
 void ungrab_top_level_keys (Window w);
-void ungrab_keys_all_wins ();
-void grab_keys_all_wins ();
+void ungrab_keys_all_wins (void);
+void grab_keys_all_wins (void);
 
 void hide_window (rp_window *win);
 void unhide_window (rp_window *win);
-void unhide_all_windows ();
+void unhide_all_windows (void);
 void unhide_window_below (rp_window *win);
 void withdraw_window (rp_window *win);
 void hide_others (rp_window *win);

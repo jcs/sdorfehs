@@ -26,10 +26,10 @@
 
 void free_window (rp_window *w);
 rp_window *add_to_window_list (rp_screen *s, Window w);
-void last_window ();
+void last_window (void);
 rp_window *find_window_in_list (Window w, struct list_head *list);
 rp_window *find_window (Window w);
-void maximize_current_window ();
+void maximize_current_window (void);
 void give_window_focus (rp_window *win, rp_window *last_win);
 void set_active_window (rp_window *win);
 void goto_window (rp_window *win);
@@ -53,15 +53,15 @@ rp_window *find_window_prev_with_frame (rp_window *w);
 rp_window *find_window_next (rp_window *w);
 rp_window *find_window_next_with_frame (rp_window *w);
 rp_window *find_window_number (int n);
-void sort_window_list_by_number ();
+void sort_window_list_by_number (void);
 
 void insert_into_list (rp_window *win, struct list_head *list);
 
 void print_window_information (rp_group *group, rp_window *win);
 void get_window_list (char *fmt, char *delim, struct sbuf *buffer,
                       int *mark_start, int *mark_end);
-void init_window_stuff ();
-void free_window_stuff ();
+void init_window_stuff (void);
+void free_window_stuff (void);
 
 rp_frame *win_get_frame (rp_window *win);
 

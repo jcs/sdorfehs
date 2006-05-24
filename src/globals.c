@@ -84,7 +84,7 @@ struct numset *rp_frame_numset;
 rp_xselection selection;
 
 static void
-x_export_selection ()
+x_export_selection (void)
 {
   /* Hang the selections off screen 0's key window. */
   XSetSelectionOwner(dpy, XA_PRIMARY, screens[0].key_window, CurrentTime);
@@ -126,7 +126,7 @@ set_selection (char *txt)
 }
 
 static char *
-get_cut_buffer ()
+get_cut_buffer (void)
 {
   int nbytes;
   char *data;
@@ -148,7 +148,7 @@ get_cut_buffer ()
 
 /* Lifted the code from rxvt. */
 static char *
-get_primary_selection()
+get_primary_selection(void)
 {
   long            nread;
   unsigned long   bytes_after;
@@ -175,7 +175,7 @@ get_primary_selection()
 }
 
 char *
-get_selection ()
+get_selection (void)
 {
   Atom property;
   XEvent ev;
@@ -257,7 +257,7 @@ LIST_HEAD (rp_frame_undos);
 LIST_HEAD (rp_frame_redos);
 
 void
-init_globals ()
+init_globals (void)
 {
   selection.text = NULL;
   selection.len = 0;

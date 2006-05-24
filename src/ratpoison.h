@@ -90,7 +90,7 @@ extern XGCValues gv;
 #include "xinerama.h"
 #include "format.h"
 
-void clean_up ();
+void clean_up (void);
 rp_screen *find_screen (Window w);
 
 void set_close_on_exec (FILE *fd);
@@ -104,7 +104,7 @@ char *xsprintf (char *fmt, ...);
 char *xvsprintf (char *fmt, va_list ap);
 int str_comp (char *s1, char *s2, int len);
 /* Needed in cmd_tmpwm */
-void check_child_procs ();
+void check_child_procs (void);
 void chld_handler (int signum);
 void set_sig_handler (int sig, void (*action)(int));
 /* Font functions. */

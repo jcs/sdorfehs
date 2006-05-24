@@ -92,8 +92,8 @@ add_set_var (char *name, cmdret * (*fn)(struct cmdarg **), int nargs, ...)
   list_add (&var->node, &set_vars);
 }
 
-void
-init_set_vars()
+static void
+init_set_vars(void)
 {
   add_set_var ("resizeunit", set_resizeunit, 1, "", arg_NUMBER);
   add_set_var ("maxundos", set_maxundos, 1, "", arg_NUMBER);
@@ -153,7 +153,7 @@ add_command (char *name, cmdret * (*fn)(int, struct cmdarg **), int nargs, int i
 }
 
 void
-init_user_commands()
+init_user_commands(void)
 {
   /*@begin (tag required for genrpbindings) */
   add_command ("abort",         cmd_abort,      0, 0, 0);
@@ -365,7 +365,7 @@ static char* fdump (rp_screen *screen);
 
 /* Delete all entries in the redo list. */
 static void
-clear_frame_redos ()
+clear_frame_redos (void)
 {
   rp_frame_undo *cur;
   struct list_head *tmp, *iter;
@@ -428,14 +428,14 @@ pop_frame_list (struct list_head *undo_list, struct list_head *redo_list)
 
 /* Pop the head of the frame undo list off and put it in the redo list. */
 static rp_frame_undo *
-pop_frame_undo ()
+pop_frame_undo (void)
 {
   return pop_frame_list (&rp_frame_undos, &rp_frame_redos);
 }
 
 /* Pop the head of the frame redo list off and put it in the undo list. */
 static rp_frame_undo *
-pop_frame_redo ()
+pop_frame_redo (void)
 {
   return pop_frame_list (&rp_frame_redos, &rp_frame_undos);
 }
@@ -566,7 +566,7 @@ remove_keybinding (KeySym keysym, unsigned int state, rp_keymap *map)
   return 0;
 }
 
-rp_keymap *
+static rp_keymap *
 keymap_new (char *name)
 {
   rp_keymap *map;
@@ -789,7 +789,7 @@ keymap_free (rp_keymap *map)
 }
 
 void
-free_keymaps ()
+free_keymaps (void)
 {
   rp_keymap *cur;
   struct list_head *tmp, *iter;
@@ -802,7 +802,7 @@ free_keymaps ()
 }
 
 void
-free_aliases ()
+free_aliases (void)
 {
   int i;
 
@@ -833,7 +833,7 @@ static int string_to_keysym (char *str)
 }
 
 /* Parse a key description. 's' is, naturally, the key description. */
-cmdret *
+static cmdret *
 parse_keydesc (char *s, struct rp_key *key)
 {
   char *token, *next_token, *keydesc;
@@ -1183,7 +1183,7 @@ string_to_window_number (char *str)
   return *s ? -1 : i;
 }
 
-struct list_head *
+static struct list_head *
 trivial_completions (char* str)
 {
   struct list_head *list;
@@ -1195,7 +1195,7 @@ trivial_completions (char* str)
   return list;
 }
 
-struct list_head *
+static struct list_head *
 keymap_completions (char* str)
 {
   rp_keymap *cur;
@@ -1217,7 +1217,7 @@ keymap_completions (char* str)
   return list;
 }
 
-struct list_head *
+static struct list_head *
 window_completions (char* str)
 {
   rp_window_elem *cur;
@@ -1467,7 +1467,7 @@ read_keydesc (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
-struct list_head *
+static struct list_head *
 group_completions (char *str)
 {
   struct list_head *list;
@@ -1500,7 +1500,7 @@ group_completions (char *str)
   return list;
 }
 
-struct list_head *
+static struct list_head *
 colon_completions (char* str)
 {
   int i;
@@ -1543,7 +1543,7 @@ read_command (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
   return read_string (spec, s, colon_completions, arg);
 }
 
-struct list_head *
+static struct list_head *
 exec_completions (char *str)
 {
   size_t n = 256;
@@ -1885,7 +1885,7 @@ read_group (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
-struct list_head *
+static struct list_head *
 hook_completions (char* str)
 {
   struct list_head *list;
@@ -1953,7 +1953,7 @@ find_variable (char *str)
   return NULL;
 }
 
-struct list_head *
+static struct list_head *
 var_completions (char *str)
 {
   struct list_head *list;
@@ -3434,7 +3434,7 @@ update_gc (rp_screen *s)
 }
 
 static void
-update_all_gcs ()
+update_all_gcs (void)
 {
   int i;
 
@@ -4734,7 +4734,7 @@ cmd_gdelete (int interactive, struct cmdarg **args)
 }
 
 static void
-grab_rat ()
+grab_rat (void)
 {
   XGrabPointer (dpy, current_screen()->root, True, 0,
                 GrabModeAsync, GrabModeAsync,
@@ -4742,7 +4742,7 @@ grab_rat ()
 }
 
 static void
-ungrab_rat ()
+ungrab_rat (void)
 {
   XUngrabPointer (dpy, CurrentTime);
 }

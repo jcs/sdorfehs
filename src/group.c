@@ -25,7 +25,7 @@
 static struct numset *group_numset;
 
 void
-init_groups()
+init_groups(void)
 {
   rp_group *g;
 
@@ -40,7 +40,7 @@ init_groups()
 }
 
 void
-free_groups()
+free_groups(void)
 {
   rp_group *cur;
   struct list_head *iter, *tmp;
@@ -92,13 +92,13 @@ group_add_new_group (char *name)
 }
 
 rp_group *
-group_next_group ()
+group_next_group (void)
 {
   return list_next_entry (rp_current_group, &rp_groups, node);
 }
 
 rp_group *
-group_prev_group ()
+group_prev_group (void)
 {
   return list_prev_entry (rp_current_group, &rp_groups, node);
 }
@@ -216,7 +216,7 @@ group_insert_window (struct list_head *h, rp_window_elem *w)
   list_add_tail(&w->node, h);
 }
 
-int
+static int
 group_in_list (struct list_head *h, rp_window_elem *w)
 {
   rp_window_elem *cur;

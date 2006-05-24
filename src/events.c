@@ -780,7 +780,7 @@ selection_request (XSelectionRequestEvent *rq)
 }
 
 static void
-selection_clear ()
+selection_clear (void)
 {
   if (selection.text)
     free (selection.text);
@@ -884,7 +884,7 @@ delegate_event (XEvent *ev)
 }
 
 static void
-handle_signals ()
+handle_signals (void)
 {
   /* An alarm means we need to hide the popup windows. */
   if (alarm_signalled > 0)
@@ -968,7 +968,7 @@ handle_signals ()
 
 /* The main loop. */
 void
-listen_for_events ()
+listen_for_events (void)
 {
   int x_fd;
   fd_set fds;

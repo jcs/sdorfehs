@@ -36,7 +36,7 @@ struct numset
   int max_taken;
 };
 
-struct numset *numset_new ();
+struct numset *numset_new (void);
 void numset_free (struct numset *ns);
 void numset_release (struct numset *ns, int n);
 int numset_request (struct numset *ns);

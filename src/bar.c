@@ -46,7 +46,7 @@ static int last_mark_end = 0;
 
 /* Reset the alarm to auto-hide the bar in BAR_TIMEOUT seconds. */
 static void
-reset_alarm ()
+reset_alarm (void)
 {
   alarm (defaults.bar_timeout);
   alarm_signalled = 0;
@@ -519,7 +519,7 @@ marked_message (char *msg, int mark_start, int mark_end)
 }
 
 void
-show_last_message ()
+show_last_message (void)
 {
   char *msg;
 
@@ -536,7 +536,7 @@ show_last_message ()
 
 /* Free any memory associated with the bar. */
 void
-free_bar ()
+free_bar (void)
 {
   if (last_msg)
     free (last_msg);

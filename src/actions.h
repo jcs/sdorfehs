@@ -210,12 +210,12 @@ RP_CMD (getsel);
 void del_frame_undo (rp_frame_undo *u);
 
 rp_keymap *find_keymap (char *name);
-void init_user_commands();
+void init_user_commands(void);
 void initialize_default_keybindings (void);
 void cmdret_free (cmdret *ret);
 void keymap_free (rp_keymap *map);
-void free_aliases ();
-void free_keymaps ();
+void free_aliases (void);
+void free_keymaps (void);
 char *wingravity_to_string (int g);
 rp_action* find_keybinding (KeySym keysym, unsigned int state, rp_keymap *map);
 rp_action* find_keybinding_by_action (char *action, rp_keymap *map);

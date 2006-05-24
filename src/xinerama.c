@@ -34,7 +34,7 @@ static XineramaScreenInfo *xine_screens = NULL;
 #endif
 
 void
-init_xinerama()
+init_xinerama(void)
 {
         int evbase, errbase, major, minor;
 
@@ -82,7 +82,7 @@ void xinerama_get_screen_info(int sc, int *x, int *y, int *w, int *h)
 }
 
 void
-free_xinerama()
+free_xinerama(void)
 {
 #ifdef XINERAMA
         if (xine_screens) {

@@ -21,8 +21,8 @@
 #ifndef GROUP_H
 #define GROUP_H
 
-void init_groups ();
-void free_groups();
+void init_groups (void);
+void free_groups (void);
 
 void group_add_window (rp_group *g, rp_window *w);
 void group_resort_window (rp_group *g, rp_window_elem *w);
@@ -48,8 +48,8 @@ rp_group *groups_find_group_by_group (rp_group *g);
 
 rp_window *group_last_window (rp_group *g, rp_screen *screen);
 
-rp_group *group_prev_group ();
-rp_group *group_next_group ();
+rp_group *group_prev_group (void);
+rp_group *group_next_group (void);
 
 rp_group *group_add_new_group (char *name);
 

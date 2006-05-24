@@ -29,7 +29,7 @@
 #include "readline/history.h"
 
 static char *
-get_history_filename ()
+get_history_filename (void)
 {
   char *homedir = getenv ("HOME");
   char *filename;
@@ -48,7 +48,7 @@ get_history_filename ()
 }
 
 void
-history_load ()
+history_load (void)
 {
   char *filename = get_history_filename ();
 
@@ -59,7 +59,7 @@ history_load ()
 }
 
 void
-history_save ()
+history_save (void)
 {
   char *filename = get_history_filename ();
 
@@ -76,7 +76,7 @@ history_resize (int size)
 }
 
 void
-history_reset ()
+history_reset (void)
 {
   using_history();
 }
@@ -94,7 +94,7 @@ history_add (char *item)
 }
 
 char *
-history_previous ()
+history_previous (void)
 {
   HIST_ENTRY *h = NULL;
 
@@ -104,7 +104,7 @@ history_previous ()
 }
 
 char *
-history_next ()
+history_next (void)
 {
   HIST_ENTRY *h = NULL;
 
@@ -114,7 +114,7 @@ history_next ()
 }
 
 char *
-history_list_items ()
+history_list_items (void)
 {
   HIST_ENTRY **hlist;
   struct sbuf *list;

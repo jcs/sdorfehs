@@ -37,7 +37,7 @@ static char **unmanaged_window_list = NULL;
 static int num_unmanaged_windows = 0;
 
 void
-clear_unmanaged_list ()
+clear_unmanaged_list (void)
 {
   if (unmanaged_window_list)
     {
@@ -54,7 +54,7 @@ clear_unmanaged_list ()
 }
 
 char *
-list_unmanaged_windows ()
+list_unmanaged_windows (void)
 {
   char *tmp = NULL;
   if (unmanaged_window_list)
@@ -135,7 +135,7 @@ ungrab_top_level_keys (Window w)
 }
 
 void
-ungrab_keys_all_wins ()
+ungrab_keys_all_wins (void)
 {
   rp_window *cur;
 
@@ -147,7 +147,7 @@ ungrab_keys_all_wins ()
 }
 
 void
-grab_keys_all_wins ()
+grab_keys_all_wins (void)
 {
   rp_window *cur;
 
@@ -159,7 +159,7 @@ grab_keys_all_wins ()
 }
 
 rp_screen*
-current_screen ()
+current_screen (void)
 {
   int i;
 
@@ -868,7 +868,7 @@ unhide_window (rp_window *win)
 }
 
 void
-unhide_all_windows ()
+unhide_all_windows (void)
 {
   struct list_head *tmp, *iter;
   rp_window *win;

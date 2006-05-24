@@ -163,19 +163,19 @@ str_comp (char *s1, char *s2, int len)
   return 1;
 }
 
-void
+static void
 sighandler (int signum)
 {
   kill_signalled++;
 }
 
-void
+static void
 hup_handler (int signum)
 {
   hup_signalled++;
 }
 
-void
+static void
 alrm_handler (int signum)
 {
   alarm_signalled++;
@@ -184,7 +184,7 @@ alrm_handler (int signum)
 /* Check for child processes that have quit but haven't been
    acknowledged yet. Update their structure. */
 void
-check_child_procs ()
+check_child_procs (void)
 {
   rp_child_info *cur;
   int pid, status;
@@ -221,7 +221,7 @@ chld_handler (int signum)
   errno = serrno;
 }
 
-int
+static int
 handler (Display *d, XErrorEvent *e)
 {
   char error_msg[100];
@@ -280,8 +280,8 @@ set_sig_handler (int sig, void (*action)(int))
     }
 }
 
-void
-print_version ()
+static void
+print_version (void)
 {
   printf ("%s %s (built %s %s)\n", PACKAGE, VERSION, __DATE__, __TIME__);
   printf ("Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006 Shawn Betts\n\n");
@@ -289,8 +289,8 @@ print_version ()
   exit (EXIT_SUCCESS);
 }
 
-void
-print_help ()
+static void
+print_help (void)
 {
   printf ("Help for %s %s\n\n", PACKAGE, VERSION);
   printf ("-h, --help            Display this help screen\n");
@@ -425,7 +425,7 @@ read_startup_files (char *alt_rcfile)
 /* Odd that we spend so much code on making sure the silly welcome
    message is correct. Oh well... */
 static void
-show_welcome_message ()
+show_welcome_message (void)
 {
   rp_action *help_action;
   char *prefix, *help;
@@ -463,7 +463,7 @@ show_welcome_message ()
 }
 
 static void
-init_defaults ()
+init_defaults (void)
 {
   defaults.top_kmap = xstrdup(TOP_KEYMAP);
 
@@ -722,7 +722,7 @@ free_screen (rp_screen *s)
 }
 
 void
-clean_up ()
+clean_up (void)
 {
   int i;
 

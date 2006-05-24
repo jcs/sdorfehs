@@ -763,13 +763,13 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
 }
 
 void
-init_window_stuff ()
+init_window_stuff (void)
 {
   rp_window_numset = numset_new ();
 }
 
 void
-free_window_stuff ()
+free_window_stuff (void)
 {
   numset_free (rp_window_numset);
 }

@@ -41,7 +41,7 @@ update_last_access (rp_frame *frame)
 }
 
 rp_frame *
-current_frame ()
+current_frame (void)
 {
   rp_screen *s = current_screen();
   return screen_get_frame (s, s->current_frame);
@@ -172,7 +172,7 @@ create_initial_frame (rp_screen *screen)
 }
 
 void
-init_frame_lists ()
+init_frame_lists (void)
 {
   int i;
 
@@ -189,7 +189,7 @@ init_frame_list (rp_screen *screen)
 }
 
 rp_frame *
-find_last_frame ()
+find_last_frame (void)
 {
   rp_frame *cur, *last = NULL;
   int last_access = -1;
@@ -245,7 +245,7 @@ find_frame_prev (rp_frame *frame)
 }
 
 rp_window *
-current_window ()
+current_window (void)
 {
   return find_window_number (current_frame()->win_number);
 }
@@ -382,7 +382,7 @@ h_split_frame (rp_frame *frame, int pixels)
 }
 
 void
-remove_all_splits ()
+remove_all_splits (void)
 {
   struct list_head *tmp, *iter;
   rp_screen *s = current_screen();
@@ -894,7 +894,7 @@ blank_frame (rp_frame *frame)
 }
 
 void
-hide_frame_indicator ()
+hide_frame_indicator (void)
 {
   int i;
   for (i=0; i<num_screens; i++)
@@ -902,7 +902,7 @@ hide_frame_indicator ()
 }
 
 void
-show_frame_indicator ()
+show_frame_indicator (void)
 {
   hide_frame_indicator ();
   show_frame_message (MESSAGE_FRAME_STRING);
