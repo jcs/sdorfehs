@@ -932,7 +932,7 @@ handle_signals (void)
       putenv(current_screen()->display_string);
       unhide_all_windows();
       XSync(dpy, False);
-      execlp(rp_exec_newwm, rp_exec_newwm, 0);
+      execlp(rp_exec_newwm, rp_exec_newwm, NULL);
 
       /* Failed. Clean up. */
       PRINT_ERROR (("exec %s ", rp_exec_newwm));
