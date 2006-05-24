@@ -1,5 +1,7 @@
 2006-05-23  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (spawn): pass NULL to execcl
+
 	* src/xinerama.c (free_xinerama): take void arguments. prototype updated.
 	(init_xinerama): likewise
 
