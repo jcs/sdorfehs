@@ -2484,7 +2484,7 @@ spawn(char *cmd, int raw)
 #endif
       /* raw means don't run it through sh.  */
       if (raw)
-        execl (cmd, NULL);
+        execl (cmd, cmd, NULL);
       execl("/bin/sh", "sh", "-c", cmd, NULL);
       _exit(EXIT_FAILURE);
     }

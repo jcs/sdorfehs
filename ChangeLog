@@ -1,5 +1,7 @@
 2006-05-23  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/actions.c (spawn): pass cmd twice to execcl
+
 	* src/events.c (handle_signals): pass NULL to execlp
 
 	* src/actions.c (spawn): pass NULL to execcl
