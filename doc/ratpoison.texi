@@ -135,7 +135,7 @@ There is also a ratpoison mailing list:
 @email{ratpoison-devel@@nongnu.org}. For details on subscribing
 and for the list archives go to the ratpoison Savannah project.
 
-There is a #ratpoison irc channel on irc.openprojects.net.
+There is a #ratpoison irc channel on irc.freenode.net.
 
 @node Concepts, General Use, Contacting, Top
 @chapter Concepts
