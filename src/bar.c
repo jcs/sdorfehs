@@ -359,6 +359,8 @@ correct_mark (int msg_len, int *mark_start, int *mark_end)
 static void
 prepare_bar (rp_screen *s, int width, int height)
 {
+  width = width < s->width ? width : s->width;
+  height = height < s->height ? height : s->height;
   XMoveResizeWindow (dpy, s->bar_window,
                      bar_x (s, width), bar_y (s, height),
                      width, height);
