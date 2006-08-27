@@ -1,3 +1,9 @@
+2006-08-27  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (parse_args): gobble spaces at the beginning of
+	the string.
+	(parse_args): use isspace to test for spaces
+
 2006-08-23  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/bar.c (prepare_bar): cap the width and height to the size of

@@ -2147,7 +2147,7 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
   int len = 0;
   int str_escape = 0;
   int in_str = 0;
-  int gobble = 0;
+  int gobble = 1;
   int parsed_args = 0;
 
   if (str == NULL)
@@ -2162,7 +2162,7 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
         {
           struct sbuf *s = sbuf_new(0);
           if (!raw)
-            while (*i && *i == ' ') i++;
+            while (*i && isspace (*i)) i++;
           if (*i)
             {
               sbuf_concat(s, i);
@@ -2170,6 +2170,13 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
             }
           len = 0;
           break;
+        }
+
+      /* Should we eat the whitespace? */
+      if (gobble)
+        {
+          while (*i && isspace (*i)) i++;
+          gobble = 0;
         }
 
       /* Escaped characters always get added. */
@@ -2208,7 +2215,7 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
               break;
             }
         }
-      else if (*i == ' ' && !in_str)
+      else if (isspace (*i) && !in_str)
         {
           /* End the current arg, and start a new one. */
           struct sbuf *s = sbuf_new(0);
@@ -2223,15 +2230,6 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
           /* Add the character to the argument. */
           tmp[len] = *i;
           len++;
-        }
-
-      /* Should we eat the whitespace? */
-      if (gobble)
-        {
-          while (*i && *i == ' ') i++;
-          /* Did we go too far? */
-          if (*i && *i != ' ') i--;
-          gobble = 0;
         }
     }
   /* Add the remaining text in tmp. */
