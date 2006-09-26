@@ -300,15 +300,18 @@ get_res_class (Window w)
   return name;
 }
 
-/* Reget the WM_NAME property for the window and update its name. */
+/* Reget the WM_NAME property for the window and update its
+   name. Return 1 if the name changed. */
 int
 update_window_name (rp_window *win)
 {
   char *newstr;
+  int changed = 0;
 
   newstr = get_wmname (win->w);
   if (newstr != NULL)
     {
+      changed = changed || win->wm_name == NULL || strcmp (newstr, win->wm_name);
       free (win->wm_name);
       win->wm_name = newstr;
     }
@@ -316,6 +319,7 @@ update_window_name (rp_window *win)
   newstr = get_res_class (win->w);
   if (newstr != NULL)
     {
+      changed = changed || win->res_class == NULL || strcmp (newstr, win->res_class);
       free (win->res_class);
       win->res_class = newstr;
     }
@@ -323,11 +327,12 @@ update_window_name (rp_window *win)
   newstr = get_res_name (win->w);
   if (newstr != NULL)
     {
+      changed = changed || win->res_name == NULL || strcmp (newstr, win->res_name);
       free (win->res_name);
       win->res_name = newstr;
     }
 
-  return 1;
+  return changed;
 }
 
 /* Send an artificial configure event to the window. */

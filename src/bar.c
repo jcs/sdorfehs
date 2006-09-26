@@ -44,6 +44,8 @@ static char *last_msg = NULL;
 static int last_mark_start = 0;
 static int last_mark_end = 0;
 
+static void marked_message_internal (char *msg, int mark_start, int mark_end);
+
 /* Reset the alarm to auto-hide the bar in BAR_TIMEOUT seconds. */
 static void
 reset_alarm (void)
@@ -145,12 +147,19 @@ bar_y (rp_screen *s, int height)
 void
 update_bar (rp_screen *s)
 {
+  if (s->bar_is_raised == BAR_IS_WINDOW_LIST) {
+    update_window_names (s, defaults.window_fmt);
+    return;
+  }
+
   if (s->bar_is_raised == BAR_IS_HIDDEN)
     return;
 
-  show_last_message();
+  redraw_last_message();
 }
 
+/* Note that we use marked_message_internal to avoid resetting the
+   alarm. */
 void
 update_window_names (rp_screen *s, char *fmt)
 {
@@ -165,12 +174,12 @@ update_window_names (rp_screen *s, char *fmt)
   if(defaults.window_list_style == STYLE_ROW)
     {
       get_window_list (fmt, NULL, bar_buffer, &mark_start, &mark_end);
-      marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
+      marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
     }
   else
     {
       get_window_list (fmt, "\n", bar_buffer, &mark_start, &mark_end);
-      marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
+      marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
     }
 
 
@@ -492,6 +501,14 @@ update_last_message (char *msg, int mark_start, int mark_end)
 void
 marked_message (char *msg, int mark_start, int mark_end)
 {
+  /* Schedule the bar to be hidden after some amount of time. */
+  reset_alarm ();
+  marked_message_internal (msg, mark_start, mark_end);
+}
+
+static void
+marked_message_internal (char *msg, int mark_start, int mark_end)
+{
   rp_screen *s = current_screen ();
   int num_lines;
   int width;
@@ -499,9 +516,6 @@ marked_message (char *msg, int mark_start, int mark_end)
 
   PRINT_DEBUG (("msg = %s\n", msg?msg:"NULL"));
   PRINT_DEBUG (("mark_start = %d, mark_end = %d\n", mark_start, mark_end));
-
-  /* Schedule the bar to be hidden after some amount of time. */
-  reset_alarm ();
 
   /* Calculate the width and height of the window. */
   num_lines = count_lines (msg, strlen(msg));
@@ -520,8 +534,10 @@ marked_message (char *msg, int mark_start, int mark_end)
   update_last_message (msg, mark_start, mark_end);
 }
 
+/* Use this just to update the bar. show_last_message will draw it and
+   leave it up for a period of time. */
 void
-show_last_message (void)
+redraw_last_message (void)
 {
   char *msg;
 
@@ -532,8 +548,15 @@ show_last_message (void)
      marked_message's msg arg would have been the same as
      last_msg.  */
   msg = xstrdup (last_msg);
-  marked_message (msg, last_mark_start, last_mark_end);
+  marked_message_internal (msg, last_mark_start, last_mark_end);
   free (msg);
+}
+
+void
+show_last_message (void)
+{
+  redraw_last_message();
+  reset_alarm();
 }
 
 /* Free any memory associated with the bar. */

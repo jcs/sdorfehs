@@ -1,3 +1,25 @@
+2006-09-26  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/manage.c (update_window_name): return 1 if anything changed. 0 otherwise.
+
+	* src/events.c (property_notify): only update the window names if
+	the window name actually changed.
+
+	* src/bar.h (redraw_last_message): new prototype
+
+	* src/bar.c (update_bar): update the window list if that's what's
+	displayed. call redraw_last_message.
+	(update_window_names): call marked_message_internal.
+	(marked_message): call marked_message_internal.
+	(marked_message_internal): ripped body from old marked_message
+	minus alarm reset.
+	(redraw_last_message): new function
+	(show_last_message): call redraw_last_message
+
+	* src/actions.c: include ctype.h
+	(cmd_license): use redraw_last_message
+	(cmd_help): likewise
+
 2006-08-27  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/actions.c (parse_args): gobble spaces at the beginning of

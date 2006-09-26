@@ -19,6 +19,7 @@
  */
 
 #include <unistd.h>
+#include <ctype.h>		/* for isspace */
 #include <sys/wait.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
@@ -3128,7 +3129,7 @@ cmd_license (int interactive, struct cmdarg **args)
 
   /* The help window overlaps the bar, so redraw it. */
   if (current_screen()->bar_is_raised)
-    show_last_message();
+    redraw_last_message();
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3246,7 +3247,7 @@ cmd_help (int interactive, struct cmdarg **args)
 
       /* The help window overlaps the bar, so redraw it. */
       if (current_screen()->bar_is_raised)
-        show_last_message();
+        redraw_last_message();
 
       return cmdret_new (RET_SUCCESS, NULL);
     }

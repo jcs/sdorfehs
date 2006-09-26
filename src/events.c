@@ -621,8 +621,8 @@ property_notify (XEvent *ev)
           {
           case XA_WM_NAME:
             PRINT_DEBUG (("updating window name\n"));
-            update_window_name (win);
-            update_window_names (win->scr, defaults.window_fmt);
+            if (update_window_name (win))
+	      update_window_names (win->scr, defaults.window_fmt);
             break;
 
           case XA_WM_NORMAL_HINTS:

@@ -32,6 +32,7 @@ int bar_x (rp_screen *s, int width);
 void message (char *s);
 void marked_message (char *s, int mark_start, int mark_end);
 void marked_message_printf (int mark_start, int mark_end, char *fmt, ...);
+void redraw_last_message (void);
 void show_last_message (void);
 void free_bar (void);
 
