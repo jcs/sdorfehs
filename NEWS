@@ -7,6 +7,12 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0
+** new commands swap, exchangeleft, exchangeright, exchangeup, exchangedown
+See docs for info
+
+** new commands execa and execf
+See docs for info.
+
 ** default font change
 It is now "-*-fixed-bold-r-normal-*-15-*-*-*-c-*-*-*" which hopefully
 fixes some i18n issues.
