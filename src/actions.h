@@ -96,7 +96,7 @@ user_command
   struct list_head node;
 };
 
-int spawn(char *data, int raw);
+int spawn(char *data, int raw, rp_frame *frame);
 cmdret *command (int interactive, char *data);
 
 /* command function prototypes. */
@@ -115,12 +115,19 @@ RP_CMD (delete);
 RP_CMD (echo);
 RP_CMD (escape);
 RP_CMD (exec);
+RP_CMD (execa);
+RP_CMD (execf);
 RP_CMD (fdump);
 RP_CMD (focusdown);
 RP_CMD (focuslast);
 RP_CMD (focusleft);
 RP_CMD (focusright);
 RP_CMD (focusup);
+RP_CMD (exchangeup);
+RP_CMD (exchangedown);
+RP_CMD (exchangeleft);
+RP_CMD (exchangeright);
+RP_CMD (swap);
 RP_CMD (frestore);
 RP_CMD (fselect);
 RP_CMD (gdelete);

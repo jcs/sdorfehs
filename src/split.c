@@ -872,6 +872,61 @@ set_active_frame (rp_frame *frame)
 }
 
 void
+exchange_with_frame (rp_screen *s, rp_frame *cur, rp_frame *frame)
+{
+  rp_window *win,*last_win;
+
+  /* As a frame does not tell which screen it belongs to,
+   * we could only make sure the frames are not on different
+   * screens when xinerama is not available, if both have
+   * windows in it. As this is not enough the caller will
+   * have to check this. As I only plan to implement 
+   * exchange_{left,right,up,down}, this will be a nop...*/
+  if (frame == NULL || frame == cur) return;
+
+  /* Exchange the windows in the frames */
+  win = find_window_number (cur->win_number);
+  last_win = set_frames_window (frame, win);
+  set_frames_window (cur, last_win);
+
+  /* Make sure the windows comes up full screen */
+  if (last_win)
+    maximize (last_win);
+  if (win)
+    {
+    maximize (win);
+    /* Make sure the program bar is always on the top */
+    update_window_names (win->scr, defaults.window_fmt);
+  }
+
+  /* Make the switch */
+  update_last_access (frame);
+
+  if (s->current_frame == cur->number)
+    {
+      s->current_frame = frame->number;
+      /* mark it as active */
+      show_frame_indicator();
+    }
+
+  update_bar (s);
+
+
+  XSync (dpy, False);
+
+  hook_run (&rp_switch_frame_hook);
+
+  /* FIXME: Remaining problems:
+   *  - if one of the window is transient, the windows in the
+   *  background could cause problems.
+   *
+   *  - how to implement correct mouse-warping?
+   *  (is it needed at all?)
+   */
+}
+
+
+void
 blank_frame (rp_frame *frame)
 {
   rp_screen *s;

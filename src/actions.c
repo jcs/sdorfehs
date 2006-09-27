@@ -187,11 +187,23 @@ init_user_commands(void)
                "Key: ", arg_KEY);
   add_command ("exec",          cmd_exec,       1, 1, 1,
                "/bin/sh -c ", arg_SHELLCMD);
+  add_command ("execa",		cmd_execa,	1, 1, 1, 
+	       "/bin/sh -c ", arg_SHELLCMD);
+  add_command ("execf",		cmd_execf,	2, 2, 2, 
+	       "frame to execute in:", arg_FRAME,
+	       "/bin/sh -c ", arg_SHELLCMD);
   add_command ("fdump",         cmd_fdump,      1, 0, 0,
                "", arg_NUMBER);
   add_command ("focus",         cmd_next_frame, 0, 0, 0);
   add_command ("focusprev",     cmd_prev_frame, 0, 0, 0);
   add_command ("focusdown",     cmd_focusdown,  0, 0, 0);
+  add_command ("exchangeup",	cmd_exchangeup, 0, 0, 0);	
+  add_command ("exchangedown",	cmd_exchangedown, 0, 0, 0);
+  add_command ("exchangeleft",	cmd_exchangeleft, 0, 0, 0);
+  add_command ("exchangeright",	cmd_exchangeright, 0, 0, 0);
+  add_command ("swap",	cmd_swap, 2, 1, 1,
+	       "destination frame: ", arg_FRAME,
+	       "source frame: ", arg_FRAME);
   add_command ("focuslast",     cmd_focuslast,  0, 0, 0);
   add_command ("focusleft",     cmd_focusleft,  0, 0, 0);
   add_command ("focusright",    cmd_focusright, 0, 0, 0);
@@ -720,6 +732,10 @@ initialize_default_keybindings (void)
   add_keybinding (XK_S, RP_CONTROL_MASK, "hsplit", map);
   add_keybinding (XK_Tab, 0, "focus", map);
   add_keybinding (XK_Tab, RP_META_MASK, "focuslast", map);
+  add_keybinding (XK_Left, RP_CONTROL_MASK, "exchangeleft", map);
+  add_keybinding (XK_Right, RP_CONTROL_MASK, "exchangeright", map);
+  add_keybinding (XK_Up, RP_CONTROL_MASK, "exchangeup", map);
+  add_keybinding (XK_Down, RP_CONTROL_MASK, "exchangedown", map);
   add_keybinding (XK_Left, 0, "focusleft", map);
   add_keybinding (XK_Right, 0, "focusright", map);
   add_keybinding (XK_Up, 0, "focusup", map);
@@ -2318,15 +2334,25 @@ command (int interactive, char *data)
   /* get a writable copy for strtok() */
   input = xstrdup (data);
 
-  cmd = strtok (input, " ");
+  cmd = input;
+  /* skip beginning whitespace. */
+  while (*cmd && isspace (*cmd)) cmd++;
+  rest = cmd;
+  /* skip til we get to whitespace */
+  while (*rest && !isspace (*rest)) rest++;
+  /* mark that spot as the end of the command and make rest point to
+     the rest of the string. */
+  if (*rest)
+    {
+      *rest = 0;
+      rest++;
+    }
 
   if (cmd == NULL)
     {
-      result = cmdret_new (RET_FAILURE, NULL);
+       result = cmdret_new (RET_FAILURE, NULL);
       goto done;
     }
-
-  rest = strtok (NULL, "\0");
 
   PRINT_DEBUG (("cmd==%s rest==%s\n", cmd, rest?rest:"NULL"));
 
@@ -2457,12 +2483,26 @@ cmd_colon (int interactive, struct cmdarg **args)
 cmdret *
 cmd_exec (int interactive, struct cmdarg **args)
 {
-  spawn (ARG_STRING(0), 0);
+  spawn (ARG_STRING(0), 0, current_frame());
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_execa (int interactive, struct cmdarg **args)
+{
+  spawn (ARG_STRING(0), 0, NULL);
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_execf (int interactive, struct cmdarg **args)
+{
+  spawn (ARG_STRING(1), 0, ARG(0,frame));
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
 int
-spawn(char *cmd, int raw)
+spawn(char *cmd, int raw, rp_frame *frame)
 {
   rp_child_info *child;
   int pid;
@@ -2496,7 +2536,7 @@ spawn(char *cmd, int raw)
   child->cmd = strdup (cmd);
   child->pid = pid;
   child->terminated = 0;
-  child->frame = current_frame();
+  child->frame = frame;
   child->group = rp_current_group;
   child->screen = current_screen();
   child->window_mapped = 0;
@@ -3910,6 +3950,64 @@ cmd_focusright (int interactive, struct cmdarg **args)
 }
 
 cmdret *
+cmd_exchangeup (int interactive, struct cmdarg **args)
+{
+  rp_frame *frame;
+
+  if ((frame = find_frame_up (current_frame())))
+    exchange_with_frame (current_screen(), current_frame(), frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_exchangedown (int interactive, struct cmdarg **args)
+{
+  rp_frame *frame;
+
+  if ((frame = find_frame_down (current_frame())))
+    exchange_with_frame (current_screen(), current_frame(), frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_exchangeleft (int interactive, struct cmdarg **args)
+{
+  rp_frame *frame;
+
+  if ((frame = find_frame_left (current_frame())))
+    exchange_with_frame (current_screen(), current_frame(), frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_exchangeright (int interactive, struct cmdarg **args)
+{
+  rp_frame *frame;
+
+  if ((frame = find_frame_right (current_frame())))
+    exchange_with_frame (current_screen(), current_frame(), frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_swap (int interactive, struct cmdarg **args)
+{
+  rp_frame *dest_frame;
+  rp_frame *src_frame;
+
+  dest_frame = ARG(0, frame);
+  src_frame = args[1] ? ARG (1, frame) : current_frame();
+  
+  exchange_with_frame (current_screen(), src_frame, dest_frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
 cmd_restart (int interactive, struct cmdarg **args)
 {
   hup_signalled = 1;
@@ -4286,7 +4384,7 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
   /* Disable our SIGCHLD handler */
   set_sig_handler (SIGCHLD, SIG_IGN);
   /* Launch the new WM and wait for it to terminate. */
-  pid = spawn (ARG_STRING(0), 0);
+  pid = spawn (ARG_STRING(0), 0, NULL);
   PRINT_DEBUG (("spawn pid: %d\n", pid));
   do
     {
@@ -4504,7 +4602,7 @@ cmdret *
 cmd_verbexec (int interactive, struct cmdarg **args)
 {
   marked_message_printf(0, 0, "Running %s", ARG_STRING(0));
-  spawn (ARG_STRING(0), 0);
+  spawn (ARG_STRING(0), 0, current_frame());
   return cmdret_new (RET_SUCCESS, NULL);
 }
 

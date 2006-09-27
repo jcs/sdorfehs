@@ -151,6 +151,37 @@ xsprintf (char *fmt, ...)
   return buffer;
 }
 
+/* strtok but do it for whitespace and be locale compliant. */
+char *
+strtok_ws (char *s)
+{
+  char *nonws;
+  static char *pointer = NULL;
+
+  printf ("pointer: %p\n", pointer);
+
+  if (s)
+    pointer = s;
+  
+  /* skip to first non-whitespace char. */
+  while (*pointer && isspace (*pointer)) pointer++;
+
+  /* If we reached the end of the string here then there is no more
+     data. */
+  if (*pointer == 0)
+    return NULL;
+
+  /* Now skip to the end of the data. */
+  nonws = pointer;
+  while (*pointer && !isspace (*pointer)) pointer++;
+  if (*pointer)
+    {
+      *pointer = 0;
+      pointer++;
+    }
+  return nonws;
+}
+
 /* A case insensitive strncmp. */
 int
 str_comp (char *s1, char *s2, int len)

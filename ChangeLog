@@ -1,4 +1,33 @@
+2006-09-26  Bernhard R. Link  <brlink@debian.org>
+
+	* src/actions.c (cmd_execa,cmd_execf): new functions
+	  (spawn): new argument to set frame for client_info
+          (cmd_exec): give spawn current_frame()
+          (cmd_verbexec): give spawn current_frame()
+          (cmd_tmpwm): give spawn NULL
+	  (init_user_commands): add execa and execf commands
+
+	* src/actions.h (spawn): new argument added to prototype
+	  (cmd_execa,cmd_execf): new prototypes
+
+2006-09-26  Bernhard R. Link  <brlink@debian.org>
+
+	* src/split.c, src/split.h: new function exchange_with_frame
+
+	* src/actions.c, src/actions.h: add cmd_exchange_left,cmd_exchange_right,cmd_exchange_up,cmd_exchange_down,
+	add new keybindings C-Left,C-Right,C-Up,C-Down to those.
+
+	* doc/ratpoison.1: document the new functions and keybindings.
+
 2006-09-26  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/frame.c (read_slot): use strtok_ws
+	(frame_read): likewise
+
+	* src/actions.c (command): dont use strtok. manually pull out the
+	command and the rest.
+
+	* src/main.c (strtok_ws): new function
 
 	* src/manage.c (update_window_name): return 1 if anything changed. 0 otherwise.
 

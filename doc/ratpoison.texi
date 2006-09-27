@@ -1196,6 +1196,18 @@ Move to the frame right of the current frame.
 @item C-t Up
 Move to the frame above the current frame.
 
+@item C-t C-Down
+Exchange the window in the current frame with the window in the frame below it.
+
+@item C-t C-Left
+Exchange the window in the current frame with the window in the frame to the left of it.
+
+@item C-t C-Right
+Exchange the window in the current frame with the window in the frame to the rigth of it.
+
+@item C-t C-Up
+Exchange the window in the current frame with the window in the frame above it.
+
 @end table
 
 @node Hooks, The Status Bar, Keystrokes, Top
@@ -1435,8 +1447,35 @@ Set the prefix to @var{key}. For example @samp{escape C-b} sets the
 prefix key to @key{C-b}.
 @end deffn
 
+@deffn Command exchangedown
+Exchange the current frame with the one below it.
+@end deffn
+
+@deffn Command exchangeleft
+Exchange the current frame with the one to the left of it.
+@end deffn
+
+@deffn Command exchangeright
+Exchange the current frame with the one to the right of it.
+@end deffn
+
+@deffn Command exchangeup
+Exchange the current frame with the one above it.
+@end deffn
+
 @deffn Command exec @var{command}
 Execute a shell command. By default, @kbd{C-t !} does this.
+@end deffn
+
+@deffn Command execa @var{command}
+Execute a shell command but don't record which frame it was executed
+from. The client's windows will pop up in whatever frame is current.
+@end deffn
+
+@deffn Command execf @var{command} @var{frame}
+Execute a shell command and choose which frame the client's first
+window will open in. The client must be netwm compliant for this to
+work.
 @end deffn
 
 @deffn Command getenv @var{env}

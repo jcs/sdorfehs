@@ -190,7 +190,7 @@ frame_dump (rp_frame *frame, rp_screen *screen)
 }
 
 /* Used only by frame_read */
-#define read_slot(x) do { tmp = strtok (NULL, " "); x = strtol(tmp,NULL,10); } while(0)
+#define read_slot(x) do { tmp = strtok_ws (NULL); x = strtol(tmp,NULL,10); } while(0)
 
 rp_frame *
 frame_read (char *str, rp_screen *screen)
@@ -209,7 +209,7 @@ frame_read (char *str, rp_screen *screen)
   PRINT_DEBUG(("parsing '%s'\n", str));
 
   dup = xstrdup(str);
-  tmp = strtok (dup, " ");
+  tmp = strtok_ws (dup);
 
   /* Verify it starts with '(frame ' */
   if (strcmp(tmp, "(frame"))
@@ -220,7 +220,7 @@ frame_read (char *str, rp_screen *screen)
       return NULL;
     }
   /* NOTE: there is no check to make sure each field was filled in. */
-  tmp = strtok(NULL, " ");
+  tmp = strtok_ws(NULL);
   while (tmp)
     {
       if (!strcmp(tmp, ":number"))
@@ -256,7 +256,7 @@ frame_read (char *str, rp_screen *screen)
       else
         PRINT_ERROR(("Unknown slot %s\n", tmp));
       /* Read the next token. */
-      tmp = strtok(NULL, " ");
+      tmp = strtok_ws(NULL);
     }
   if (tmp)
     PRINT_ERROR(("Frame has trailing garbage\n"));

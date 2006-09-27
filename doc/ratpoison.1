@@ -1,4 +1,4 @@
-.TH RATPOISON 1 2005-01-28
+.TH RATPOISON 1 2006-06-07
 \# This man page is free software; you can redistribute it and/or modify
 \# it under the terms of the GNU General Public License as published by
 \# the Free Software Foundation; either version 2, or (at your option)
@@ -143,6 +143,9 @@ running as window manager for the given display/screen for
 this to work.
 Do not forget to quote the command if it contains
 spaces.
+For example:
+.br
+\fBratpoison \-c "echo hallo world"\fP
 .SH KEY BINDINGS
 To avoid conflicts with other programs, all default ratpoison
 key bindings start with an escape key, per default
@@ -199,8 +202,10 @@ is called.
 Possible events are:
 .ta 10
 .br
+\fBdeletewindow\fP	Run after a window is withdrawn.
+.br
 \fBkey\fP	Run whenever a top level key is pressed.
-(by default \fBC-t\fP)
+(by default \fBC\-t\fP)
 .br
 \fBquit\fP	Run before exiting ratpoison.
 .br
@@ -293,8 +298,25 @@ to \fIkey\fP without modifiers or \fBC\-\fP\fIkey\fP if \fIkey\fP
 has no modifiers.
 (If \fBset topkmap\fP was called with an argument other than \fBtop\fP
 that will be used instead of \fBtop\fP.)
+.cmd exchangedown ( C\-t C\-Down )
+Exchange the window in the current frame with the window in the frame below the current frame.
+.cmd exchangeleft ( C\-t C\-Left )
+Exchange the window in the current frame with the window in the frame left of the current frame.
+.cmd exchangeright ( C\-t C\-Right )
+Exchange the window in the current frame with the window in the frame right of the current frame.
+.cmd exchangeup ( C\-t C\-Up )
+Exchange the window in the current frame with the window in the frame above the current frame.
 .cmd exec shell\-command ( C\-t ! )
 Spawn a shell executing \fIshell\-command\fP.
+.cmd execa shell\-command
+Spawn a shell executing \fIshell\-command\fP, without remembering
+the current frame, so that _NET_WM_PID declaring programs will be
+placed into the frame active when they open a window instead of
+the frame active when ratpoison gets this command.
+.cmd execf frame shell\-command
+Spawn a shell executing \fIshell\-command\fP, showing _NET_WM_PID
+supporting programs in the given frame instead of the frame selected
+when this program is run.
 .cmd fdump [ screenno ]
 Output the defining data for all frames of the current screen, or
 for screen number \fIscreenno\fP if this is specified.
@@ -459,7 +481,7 @@ To show it is waiting for a key, ratpoison will change the
 rat cursor to a square if \fBwaitcursor\fP is set.
 
 This command is perhaps best described with its usage in the default
-configuration: By pressing \fBC-t\fP, which is the only key in the keymap
+configuration: By pressing \fBC\-t\fP, which is the only key in the keymap
 \fBtop\fP, the command "\fBreadkey root\fP" is executed. The next key
 then executes the command in keymap \fBroot\fP belonging to this command.
 .cmd redisplay ( C\-t l )
