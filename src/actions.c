@@ -752,6 +752,8 @@ initialize_default_keybindings (void)
   add_keybinding (XK_u, 0, "undo", map);
   add_keybinding (XK_u, RP_CONTROL_MASK, "undo", map);
   add_keybinding (XK_U, 0, "redo", map);
+  add_keybinding (XK_x, 0, "swap", map);
+  add_keybinding (XK_x, RP_CONTROL_MASK, "swap", map);
 
   add_alias ("unbind", "undefinekey " ROOT_KEYMAP);
   add_alias ("bind", "definekey " ROOT_KEYMAP);

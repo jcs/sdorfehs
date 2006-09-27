@@ -1208,6 +1208,11 @@ Exchange the window in the current frame with the window in the frame to the rig
 @item C-t C-Up
 Exchange the window in the current frame with the window in the frame above it.
 
+@item C-t x
+@item C-t C-x
+Choose a frame and exchange the window in the current frame with the
+window in the chosen frame.
+
 @end table
 
 @node Hooks, The Status Bar, Keystrokes, Top
@@ -1601,6 +1606,12 @@ Turn on or off the startup_message. This is most useful in your
 
 When called with no arguments, the current setting is
 returned.
+@end deffn
+
+@deffn Command swap @var{destination-frame} @var{source-frame}
+When called interactively prompt for a frame and swap its window with
+the window in the current frame. An optional second argument allows
+swapping of windows between arbitrary frames.
 @end deffn
 
 @deffn Command time

@@ -1,3 +1,7 @@
+2006-09-26  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/actions.c (initialize_default_keybindings): bind "swap" to C-t x and C-t C-x
+
 2006-09-26  Bernhard R. Link  <brlink@debian.org>
 
 	* src/actions.c (cmd_execa,cmd_execf): new functions
