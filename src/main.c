@@ -158,8 +158,6 @@ strtok_ws (char *s)
   char *nonws;
   static char *pointer = NULL;
 
-  printf ("pointer: %p\n", pointer);
-
   if (s)
     pointer = s;
   
