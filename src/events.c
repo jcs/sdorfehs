@@ -425,7 +425,7 @@ handle_key (KeySym ks, unsigned int mod, rp_screen *s)
     }
   else
     {
-      PRINT_ERROR(("Impossible: No matching key\n"));
+      PRINT_DEBUG(("Impossible: No matching key"));
     }
   XAllowEvents (dpy, AsyncKeyboard, CurrentTime);
 }

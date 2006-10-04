@@ -1,5 +1,7 @@
 2006-10-03  Shawn Betts  <sabetts@vcn.bc.ca>
 
+	* src/events.c (handle_key): demote the 'no matching key' error to debug output.
+
 	* src/main.c (strtok_ws): remove useless debug ouput.
 
 2006-09-26  Shawn Betts  <sabetts@vcn.bc.ca>
