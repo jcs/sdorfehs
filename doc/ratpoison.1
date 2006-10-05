@@ -581,6 +581,10 @@ Read \fIfile\fP and execute each line as ratpoison command.
 Switch to the screen \fIscreennumber\fP. (If you have multiple physical ones.)
 .cmd startup_message \fBon | \fBoff
 Select whether ratpoison will show a startup message or not.
+.cmd swap [ dest-frame [ src-frame ] ] ( C\-t x )
+Exchange the window in \fIsrc-frame\fP (or the current frame if there is no second
+argument) with the window \fIdest-frame\fP (or ask interactively which frame to
+swap with if there is no argument).
 .cmd time ( C\-t a )
 Output current data and time.
 .cmd title newname ( C\-t A )
