@@ -1,3 +1,17 @@
+2006-11-17  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/split.c (show_frame_indicator): use defaults.frame_fmt
+	(show_frame_message): format frame_fmt string with format_string
+
+	* src/messages.h (MESSAGE_FRAME_STRING): removed
+
+	* src/main.c (init_defaults): init defaults.frame_fmt
+
+	* src/data.h (struct rp_defaults): add frame_fmt
+
+	* src/actions.c (set_framefmt): new function
+	(init_set_vars): new set var "framefmt"
+
 2006-10-03  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/events.c (handle_key): demote the 'no matching key' error to debug output.

@@ -57,6 +57,7 @@ static cmdret * set_inputwidth (struct cmdarg **args);
 static cmdret * set_waitcursor (struct cmdarg **args);
 static cmdret * set_winfmt (struct cmdarg **args);
 static cmdret * set_winname (struct cmdarg **args);
+static cmdret * set_framefmt (struct cmdarg **args);
 static cmdret * set_fgcolor (struct cmdarg **args);
 static cmdret * set_bgcolor (struct cmdarg **args);
 static cmdret * set_barpadding (struct cmdarg **args);
@@ -111,6 +112,7 @@ init_set_vars(void)
   add_set_var ("waitcursor", set_waitcursor, 1, "", arg_NUMBER);
   add_set_var ("winfmt", set_winfmt, 1, "", arg_REST);
   add_set_var ("winname", set_winname, 1, "", arg_STRING);
+  add_set_var ("framefmt", set_framefmt, 1, "", arg_REST);
   add_set_var ("fgcolor", set_fgcolor, 1, "", arg_STRING);
   add_set_var ("bgcolor", set_bgcolor, 1, "", arg_STRING);
   add_set_var ("barpadding", set_barpadding, 2, "", arg_NUMBER, "", arg_NUMBER);
@@ -3716,6 +3718,18 @@ set_winname (struct cmdarg **args)
     defaults.win_name = WIN_NAME_RES_CLASS;
   else
     return cmdret_new (RET_FAILURE, "defwinname: invalid argument");
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_framefmt (struct cmdarg **args)
+{
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%s", defaults.frame_fmt);
+
+  free (defaults.frame_fmt);
+  defaults.frame_fmt = xstrdup (ARG_STRING(0));
 
   return cmdret_new (RET_SUCCESS, NULL);
 }

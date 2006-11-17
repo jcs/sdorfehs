@@ -252,6 +252,9 @@ struct rp_defaults
 
   /* The name of the top level keymap */
   char *top_kmap;
+
+  /* Frame indicator format */
+  char *frame_fmt;
 };
 
 /* Information about a child process. */

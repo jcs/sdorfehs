@@ -50,6 +50,5 @@
 #define MESSAGE_PROMPT_VAR_VALUE  "Value: "
 
 #define MESSAGE_WELCOME "Welcome to ratpoison! Hit `%s %s' for help."
-#define MESSAGE_FRAME_STRING    "Current Frame"
 
 #endif /* ! _RATPOISON_MESSAGES_H */

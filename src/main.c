@@ -532,6 +532,7 @@ init_defaults (void)
 
   defaults.window_fmt = xstrdup ("%n%s%t");
   defaults.info_fmt = xstrdup ("(%H, %W) %n(%t)");
+  defaults.frame_fmt = xstrdup ("Current Frame");
 
   defaults.win_name = WIN_NAME_TITLE;
   defaults.startup_message = 1;

@@ -960,7 +960,7 @@ void
 show_frame_indicator (void)
 {
   hide_frame_indicator ();
-  show_frame_message (MESSAGE_FRAME_STRING);
+  show_frame_message (defaults.frame_fmt);
   alarm (defaults.frame_indicator_timeout);
 }
 
@@ -970,10 +970,22 @@ show_frame_message (char *msg)
   rp_screen *s = current_screen ();
   int width, height;
   rp_frame *frame;
+  rp_window *win;
+  rp_group *g;
+  rp_window_elem *elem;
+  struct sbuf *msgbuf;
 
   frame = current_frame();
 
-  width = defaults.bar_x_padding * 2 + XmbTextEscapement (defaults.font, msg, strlen (msg));
+  win = current_window ();
+  g = groups_find_group_by_window (win);
+  elem = group_find_window (&g->mapped_windows, win);
+  msgbuf = sbuf_new (0);
+
+  format_string (msg, elem, msgbuf);
+
+  width = defaults.bar_x_padding * 2 + XmbTextEscapement (defaults.font, msgbuf->data,
+							  msgbuf->len);
   height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
 
   /* We don't want another frame indicator to be displayed on another
@@ -993,7 +1005,9 @@ show_frame_message (char *msg)
   XmbDrawString (dpy, s->frame_window, defaults.font, s->normal_gc,
 		 defaults.bar_x_padding,
 		 defaults.bar_y_padding + rp_font_ascent,
-		 msg, strlen (msg));
+		 msgbuf->data, msgbuf->len);
+
+  sbuf_free (msgbuf);
 }
 
 rp_frame *
