@@ -7,6 +7,9 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0
+** new set variable framefmt
+See docs for info.
+
 ** new commands swap, exchangeleft, exchangeright, exchangeup, exchangedown
 See docs for info
 

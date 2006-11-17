@@ -1312,6 +1312,12 @@ Set the font. @var{font} is a font string like @samp{9x15bold}.
 When called with no arguments, the current setting is returned.
 @end deffn
 
+@deffn Command {set framefmt} @var{fmt}
+Set the text that appears when the @command{curframe} command is
+called. @var{fmt} is a format string that accepts the same format
+characters as @command{set winfmt}.
+@end deffn
+
 @deffn Command {set fgcolor} @var{color}
 @c @deffnx Command deffgcolor @var{color}
 Set the foreground color for all text ratpoison displays. @var{color}
