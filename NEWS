@@ -7,6 +7,11 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.0
+** set padding affects bar location
+On OSX the bar and top of each window is hidden by the menu bar. set
+padding corrects the window problem but not the bar problem. So this
+change fixes that.
+
 ** new set variable framefmt
 See docs for info.
 

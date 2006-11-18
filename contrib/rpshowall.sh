@@ -43,9 +43,9 @@ $RATPOISON -c only
 i=2;
 while [ $i -le $framecount ]; do
         if [ $i -le `echo $framecount/2 | bc` ] ; then
-                $RATPOISON -c hsplit
-        else
                 $RATPOISON -c vsplit
+        else
+                $RATPOISON -c hsplit
         fi
         $RATPOISON -c focus
         $RATPOISON -c focus

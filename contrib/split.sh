@@ -15,36 +15,36 @@ RATPOISON=ratpoison
 #split into 4 frames
 
 $RATPOISON -c split
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 $RATPOISON -c focusdown
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 
 # split each new frame into 4
 
 $RATPOISON -c split
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 $RATPOISON -c focusdown
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 
 $RATPOISON -c focusup
 $RATPOISON -c focusup
 
 $RATPOISON -c split
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 $RATPOISON -c focusdown
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 
 $RATPOISON -c focusright
 $RATPOISON -c focusright
 
 $RATPOISON -c split
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 $RATPOISON -c focusdown
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 
 $RATPOISON -c focusdown
 
 $RATPOISON -c split
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
 $RATPOISON -c focusdown
-$RATPOISON -c vsplit
+$RATPOISON -c hsplit
