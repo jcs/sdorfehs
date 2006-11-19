@@ -971,18 +971,27 @@ show_frame_message (char *msg)
   int width, height;
   rp_frame *frame;
   rp_window *win;
-  rp_group *g;
-  rp_window_elem *elem;
+  rp_window_elem *elem = NULL;
   struct sbuf *msgbuf;
 
   frame = current_frame();
-
   win = current_window ();
-  g = groups_find_group_by_window (win);
-  elem = group_find_window (&g->mapped_windows, win);
-  msgbuf = sbuf_new (0);
+  if (win)
+    {
+      rp_group *g;
 
-  format_string (msg, elem, msgbuf);
+      g = groups_find_group_by_window (win);
+      elem = group_find_window (&g->mapped_windows, win);
+    }
+
+  /* A frame doesn't always contain a window. */
+  msgbuf = sbuf_new (0);
+  if (elem)
+    format_string (msg, elem, msgbuf);
+  else
+    {
+      sbuf_concat (msgbuf, EMPTY_FRAME_MESSAGE);
+    }
 
   width = defaults.bar_x_padding * 2 + XmbTextEscapement (defaults.font, msgbuf->data,
 							  msgbuf->len);

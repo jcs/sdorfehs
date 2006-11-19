@@ -51,4 +51,6 @@
 
 #define MESSAGE_WELCOME "Welcome to ratpoison! Hit `%s %s' for help."
 
+#define EMPTY_FRAME_MESSAGE "Current Frame"
+
 #endif /* ! _RATPOISON_MESSAGES_H */
