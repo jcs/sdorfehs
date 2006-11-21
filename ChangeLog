@@ -1,3 +1,9 @@
+2006-11-21  Bernhard R. Link  <brlink@debian.org>
+
+	* add MAINTAINERCLEANFILES variables to sub Makefile.ams
+
+	* add depcomp to top-level Makefile.am's MAINTAINERCLEANFILES
+
 2006-11-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/split.c (show_frame_message): handle the case when the frame
