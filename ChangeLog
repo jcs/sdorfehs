@@ -4,6 +4,8 @@
 
 	* add depcomp to top-level Makefile.am's MAINTAINERCLEANFILES
 
+	* add fdl.texi to doc/Makefile.am's EXTRA_DIST
+
 2006-11-18  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/split.c (show_frame_message): handle the case when the frame
