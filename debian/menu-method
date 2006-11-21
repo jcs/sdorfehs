@@ -1,0 +1,27 @@
+#!/usr/bin/install-menu
+
+!include menu.h
+
+compat="menu-1"
+
+function menufilename($s) = ifempty($s,"debian") replacewith($s," /","_.") ".menu"
+function runmenu($s) = "/etc/X11/ratpoison/ratpoisonmenu \"" esc(menufilename($s),"\"") "\""
+
+startmenu=""
+genmenu=menufilename(ifelse($command,parent($section),parent($section)))
+endmenu=""
+
+rootsection="debian"
+rootprefix="/var/lib/ratpoison/menu"
+userprefix=".ratpoison_menu"
+treewalk="(m)c"
+function q($s) = replacewith($s,":",".")
+supported
+ratpoisonspecial = "\\" q(title()) ":exec " $command "\n"
+x11 = "\\" q(title()) ":exec " $command "\n"
+text= "\\" q(title()) ":exec " term() "\n"
+wm= "\\" q(title()) ":exec /usr/bin/ratpoison -c \"newwm " esc($command,"\"")  "\"\n"
+endsupported
+
+submenutitle= "\\" q(title()) ":exec " runmenu($section) "\n"
+preoutput="#Automatically generated file. Do not edit (see /usr/share/doc/menu/html)\n#\n"

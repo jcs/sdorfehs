@@ -1,120 +1,147 @@
-#! /usr/bin/make -f
-## debian/rules for ratpoison
-## Copyright (C) 2001 Gergely Nagy <algernon@debian.org>
-##
-## Released under the GNU GPL v2
-##
-## $Id: rules,v 1.8 2001/12/08 23:26:31 algernon Exp $
+#!/usr/bin/make -f
+# -*- makefile -*-
 
-export DH_COMPAT  = 2
-DEBHELPER_OPTIONS = -p$@ -Pdebian/$(DEB_HOST_ARCH)/$@
-PWD		 := $(CURDIR)
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
 
-DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_HOST_ARCH	   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-CFLAGS		    = -O2
 
-ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-	CFLAGS		+= -g
-	CONFIG_FLAGS	+= --enable-debug
+CFLAGS = -Wall -g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+	DEPENDENCIES = 
 else
-	CONFIG_FLAGS	+= --disable-debug
+	CFLAGS += -O2
+ifneq (,$(findstring ratpoison:gendeps,$(DEB_BUILD_OPTIONS)))
+	DEPENDENCIES = 
+else
+	DEPENDENCIES = --disable-dependency-tracking
+endif
 endif
 
-# bootstrap - for building from CVS snapshots
-bootstrap: build-deb/$(DEB_HOST_ARCH)/bootstrap-stamp
-build-deb/$(DEB_HOST_ARCH)/bootstrap-stamp:
-	test -f configure || ./autogen.sh
-	install -d build-deb/$(DEB_HOST_ARCH)
-	touch $@
-
-# config - run configure
-config: bootstrap build-deb/$(DEB_HOST_ARCH)/config.status
-build-deb/$(DEB_HOST_ARCH)/config.status:
+config.status: configure
 	dh_testdir
-	cd build-deb/$(DEB_HOST_ARCH) && \
-	CFLAGS="$(CFLAGS)" ../../configure \
-			--prefix=/usr \
-			--infodir=/usr/share/info \
-			--mandir=/usr/share/man \
-			--with-xterm=x-terminal-emulator \
-			--build=$(DEB_BUILD_GNU_TYPE) \
-			--host=$(DEB_HOST_GNU_TYPE) \
-			$(CONFIG_FLAGS)
+	if grep 'install-info --version | fgrep' doc/Makefile.in ; then \
+		echo "incompatible install-info call in doc/Makefile.in!" >&2 ;\
+		exit 1 ; \
+	fi
+	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
+	    --prefix=/usr \
+	    --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info \
+	    --with-xterm=x-terminal-emulator \
+	    --with-menu="/etc/X11/ratpoison/ratpoisonmenu debian.menu" \
+	    $(DEPENDENCIES) \
+	    --x-includes="" --x-libraries="" \
+	    CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,syms"
 
-# build - build the package
-build: config build-deb/$(DEB_HOST_ARCH)/build-stamp
-build-deb/$(DEB_HOST_ARCH)/build-stamp:
+build: build-stamp
+
+build-stamp: config.status
 	dh_testdir
-	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) all
-	touch $@
 
-# clean - remove build directories
+	$(MAKE)
+	cd contrib && ./genrpbindings
+	touch build-stamp
+
 clean:
 	dh_testdir
 	dh_testroot
-	-$(MAKE) -C build-deb/$(DEB_HOST_ARCH) distclean
-	rm -Rf build-deb/$(DEB_HOST_ARCH)
-	@for m in $(shell dh_listpackages); do \
-		echo "dh_clean -p$$m -Pdebian/$(DEB_HOST_ARCH)/$$m" ;\
-		dh_clean -p$$m -Pdebian/$(DEB_HOST_ARCH)/$$m ;\
-	done
-	rm -Rf debian/$(DEB_HOST_ARCH)
+	rm -f build-stamp 
 
-# install - install the package to debian/<ARCH>/ratpoison
+	if [ -e config.status ] ; then $(MAKE) distclean ; fi
+	-rm -f contrib/Ratpoison.pm contrib/ratpoison-cmd.el contrib/ratpoison.lisp contrib/ratpoison.py contrib/ratpoison.rb
+ifneq "$(wildcard /usr/share/misc/config.sub)" ""
+	cp -f /usr/share/misc/config.sub config.sub
+endif
+ifneq "$(wildcard /usr/share/misc/config.guess)" ""
+	cp -f /usr/share/misc/config.guess config.guess
+endif
+	dh_clean 
+
 install: build
 	dh_testdir
 	dh_testroot
-	@for m in $(shell dh_listpackages); do \
-		echo "dh_clean -k -Pdebian/$(DEB_HOST_ARCH)/$$m -p$$m" ;\
-		dh_clean -k -Pdebian/$(DEB_HOST_ARCH)/$$m -p$$m ;\
-		echo "dh_installdirs -Pdebian/$(DEB_HOST_ARCH)/$$m -p$$m" ;\
-		dh_installdirs -Pdebian/$(DEB_HOST_ARCH)/$$m -p$$m ;\
-	done
-	$(MAKE) -C build-deb/$(DEB_HOST_ARCH) \
-		install DESTDIR=$(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison
-	rm -f $(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison/usr/share/doc/ratpoison/COPYING
-	rm -f $(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison/usr/share/doc/ratpoison/ChangeLog
-	rm -rf $(PWD)/debian/$(DEB_HOST_ARCH)/ratpoison/usr/share/ratpoison
+	dh_clean -k 
+	dh_installdirs
 
-# these build the various packages
-ratpoison: install
+	$(MAKE) install pkgdatadir=/usr/share/doc/ratpoison/examples DESTDIR=$(CURDIR)/debian/ratpoison
+	rm $(CURDIR)/debian/ratpoison/usr/bin/rpws
+	-rm -r $(CURDIR)/debian/ratpoison/usr/share/ratpoison
+	# Those are installed to different places already by dh_*
+	rm $(CURDIR)/debian/ratpoison/usr/share/doc/ratpoison/COPYING
+	rm $(CURDIR)/debian/ratpoison/usr/share/doc/ratpoison/ChangeLog
+	# The menu command:
+	install -m 0755 debian/callmenu.sh $(CURDIR)/debian/ratpoison/etc/X11/ratpoison/ratpoisonmenu
+	# bindings for the different languages:
+	install -m 0644 $(CURDIR)/contrib/Ratpoison.pm $(CURDIR)/debian/ratpoison/usr/share/perl5/
+	install -m 0644 $(CURDIR)/contrib/ratpoison.rb $(CURDIR)/debian/ratpoison/usr/lib/ruby/1.8/
+	install -m 0644 $(CURDIR)/contrib/ratpoison.py $(CURDIR)/debian/ratpoison/usr/share/python-support/ratpoison/
+	install -m 0644 $(CURDIR)/contrib/ratpoison-cmd.el $(CURDIR)/debian/ratpoison/usr/share/emacs/site-lisp/ratpoison/
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do
+
+# Build architecture-dependent files here.
+binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installdocs $(DEBHELPER_OPTIONS)
-	dh_installexamples $(DEBHELPER_OPTIONS)
-	dh_installmenu $(DEBHELPER_OPTIONS)
-#	dh_installlogrotate $(DEBHELPER_OPTIONS)
-#	dh_installemacsen $(DEBHELPER_OPTIONS)
-#	dh_installpam $(DEBHELPER_OPTIONS)
-#	dh_installinit $(DEBHELPER_OPTIONS)
-#	dh_installcron $(DEBHELPER_OPTIONS)
-	dh_installmanpages $(DEBHELPER_OPTIONS)
-	dh_installinfo $(DEBHELPER_OPTIONS)
-#	dh_undocumented $(DEBHELPER_OPTIONS)
-	dh_installchangelogs ChangeLog $(DEBHELPER_OPTIONS)
-	dh_installwm $(DEBHELPER_OPTIONS) /usr/bin/ratpoison
-	dh_link $(DEBHELPER_OPTIONS)
-	dh_strip $(DEBHELPER_OPTIONS)
-	dh_compress $(DEBHELPER_OPTIONS)
-	dh_fixperms $(DEBHELPER_OPTIONS)
-#	dh_makeshlibs $(DEBHELPER_OPTIONS)
-	dh_installdeb $(DEBHELPER_OPTIONS)
-#	dh_perl $(DEBHELPER_OPTIONS)
-	dh_shlibdeps $(DEBHELPER_OPTIONS)
-	dh_gencontrol $(DEBHELPER_OPTIONS)
-	dh_md5sums $(DEBHELPER_OPTIONS)
-	dh_builddeb $(DEBHELPER_OPTIONS)
+	dh_installchangelogs ChangeLog
+	dh_installdocs
+	dh_installexamples
+	dh_installemacsen
+	dh_installmenu
+	dh_installinfo doc/ratpoison.info
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
 
-# binary-arch, binary-indep, binary - targets required by DP
-binary-arch: ratpoison
-binary-indep:
+RATPOISON_VERSION=1.4.0
+RATPOISON_CVSVERSION=1.4.1~CVS$(shell date +%Y%m%d)
+RATPOISON_UVERSION=1.4.1-CVS
+
+# some helpers for me
+# just ignore those if you want to do a NMU or a security upload, change the files outside
+# of debian/patches and do an upload. The patches are only stored there for reference and
+# so I do not loose them.
+maintainer-clean:
+	quilt refresh
+	quilt push -a || true
+	rm -f .pc patches
+maintainer-unclean:
+	ln -s "../pc-ratpoison-$(RATPOISON_VERSION)" .pc
+	ln -s debian/patches patches
+	quilt push -a
+maintainer-ready:
+	test ! -d "../ratpoison-$(RATPOISON_VERSION)"
+	test ! -d "../pc-ratpoison-$(RATPOISON_VERSION)"
+	rm -rf "ratpoison-$(RATPOISON_UVERSION)"
+	tar -xzf "../ratpoison_$(RATPOISON_VERSION).orig.tar.gz"
+	mv "ratpoison-$(RATPOISON_UVERSION)" "../ratpoison-$(RATPOISON_VERSION)"
+	cp -a debian "../ratpoison-$(RATPOISON_VERSION)/"
+	rm -rf "../ratpoison-$(RATPOISON_VERSION)/debian/CVS"
+	rm -rf "../ratpoison-$(RATPOISON_VERSION)/debian/patches/CVS"
+	mkdir "../pc-ratpoison-$(RATPOISON_VERSION)"
+	ln -s "../pc-ratpoison-$(RATPOISON_VERSION)" "../ratpoison-$(RATPOISON_VERSION)/.pc"
+	ln -s debian/patches "../ratpoison-$(RATPOISON_VERSION)/patches"
+	cd "../ratpoison-$(RATPOISON_VERSION)" && quilt upgrade && quilt push -a
+maintainer-cvs:
+	make dist
+	mv "ratpoison-$(RATPOISON_UVERSION).tar.gz" "../ratpoison_$(RATPOISON_CVSVERSION).orig.tar.gz"
+	./debian/rules maintainer-ready RATPOISON_VERSION="$(RATPOISON_CVSVERSION)"
+	cd "../ratpoison-$(RATPOISON_CVSVERSION)" && ./debian/rules maintainer-clean
+	cd "../ratpoison-$(RATPOISON_CVSVERSION)" && dch -v "$(RATPOISON_CVSVERSION)-0" -D "LOCAL"
+	
+
 binary: binary-indep binary-arch
-
-# rebuild - rebuild from (almost) pristine sources
-rebuild: clean binary
-
-.PHONY: build clean binary-indep binary-arch binary install rebuild \
-	bootstrap config ratpoison
+.PHONY: build clean binary-indep binary-arch binary install get-orig-source make-orig-source-working

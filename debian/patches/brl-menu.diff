@@ -1,0 +1,144 @@
+Index: ratpoison/src/main.c
+===================================================================
+--- ratpoison.orig/src/main.c	2006-10-28 19:56:35.000000000 +0200
++++ ratpoison/src/main.c	2006-10-28 19:56:48.000000000 +0200
+@@ -458,7 +458,13 @@
+ {
+   rp_action *help_action;
+   char *prefix, *help;
++  const char *help_show;
+   rp_keymap *map;
++#ifdef MENU_PROG
++  rp_action *menu_action;
++  char *menu;
++  const char *menu_show;
++#endif
+ 
+   prefix = keysym_to_string (prefix_key.sym, prefix_key.state);
+ 
+@@ -467,27 +473,44 @@
+   /* Find the help key binding. */
+   help_action = find_keybinding_by_action ("help " ROOT_KEYMAP, map);
+   if (help_action)
+-    help = keysym_to_string (help_action->key, help_action->state);
+-  else
+-    help = NULL;
+-
+-
+-  if (help)
+     {
++      help = keysym_to_string (help_action->key, help_action->state);
+       /* A little kludge to use ? instead of `question' for the help
+          key. */
+       if (!strcmp (help, "question"))
+-        marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, "?");
++        help_show = "?";
+       else
+-        marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, help);
+-
+-      free (help);
++	help_show = help;
++    }
++  else
++    {
++      help = NULL;
++      help_show = ":help";
++    }
++#ifdef MENU_PROG
++  /* Find the menu key binding. */
++  menu_action = find_keybinding_by_action ("menu", map);
++  if (menu_action)
++    {
++      menu = keysym_to_string (menu_action->key, menu_action->state);
++      if (!strcmp (menu, "period"))
++	menu_show = ".";
++      else
++	menu_show = menu;
+     }
+   else
+     {
+-      marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, ":help");
++      menu = NULL;
++      menu_show = ":menu";
+     }
+ 
++  marked_message_printf (0, 0, MESSAGE_WELCOME_MENU, prefix, help_show,
++			 prefix, menu_show);
++  free(menu);
++#else
++  marked_message_printf (0, 0, MESSAGE_WELCOME, prefix, help_show);
++#endif
++  free(help);
+   free (prefix);
+ }
+ 
+Index: ratpoison/src/actions.c
+===================================================================
+--- ratpoison.orig/src/actions.c	2006-10-28 19:56:41.000000000 +0200
++++ ratpoison/src/actions.c	2006-10-28 19:56:48.000000000 +0200
+@@ -682,6 +682,9 @@
+   add_keybinding (prefix_key.sym, prefix_key.state, "other", map);
+   add_keybinding (prefix_key.sym, 0, "meta", map);
+   add_keybinding (XK_g, RP_CONTROL_MASK, "abort", map);
++#ifdef MENU_PROG
++  add_keybinding (XK_period, 0, "menu", map);
++#endif
+   add_keybinding (XK_0, 0, "select 0", map);
+   add_keybinding (XK_1, 0, "select 1", map);
+   add_keybinding (XK_2, 0, "select 2", map);
+@@ -766,6 +769,10 @@
+   add_alias ("unbind", "undefinekey " ROOT_KEYMAP);
+   add_alias ("bind", "definekey " ROOT_KEYMAP);
+   add_alias ("split", "vsplit");
++
++#ifdef MENU_PROG
++  add_alias ("menu", "exec " MENU_PROG );
++#endif
+ }
+ 
+ static cmdret *
+Index: ratpoison/ChangeLog
+===================================================================
+--- ratpoison.orig/ChangeLog	2006-10-28 19:56:41.000000000 +0200
++++ ratpoison/ChangeLog	2006-10-28 19:56:48.000000000 +0200
+@@ -1,1 +1,7 @@
++2005-01-15  Bernhard R. Link  <brlink@debian.org>
++
++	* configure.in: add --with-menu to specify a menu program
++	* src/action.c: add menu alias and binding if menu specified
++	* src/main.c:   tell menu command if menu specified
++
+ 2005-06-28  Bernhard R. Link <brlink@debian.org>
+Index: ratpoison/configure.in
+===================================================================
+--- ratpoison.orig/configure.in	2006-10-28 19:56:36.000000000 +0200
++++ ratpoison/configure.in	2006-10-28 19:56:48.000000000 +0200
+@@ -45,6 +45,15 @@
+ term_prog=$withval, term_prog="xterm")
+ AC_DEFINE_UNQUOTED(TERM_PROG, "$term_prog", X terminal emulator to use)
+ 
++AC_ARG_WITH(menu, [ --with-menu=PROG        set a external menu program to be advertised ],
++menu_prog="$withval", menu_prog="")
++
++if test "$menu_prog" != "no" && ! test -z "$menu_prog" ; then
++AC_DEFINE_UNQUOTED(MENU_PROG, "$menu_prog", external menu program to advertise)
++AC_MSG_CHECKING(external menu program)
++AC_MSG_RESULT($menu_prog)
++fi
++
+ dnl Checks for programs.
+ AC_CHECK_TOOL(CC, gcc)
+ AC_PROG_CC
+Index: ratpoison/src/messages.h
+===================================================================
+--- ratpoison.orig/src/messages.h	2006-10-28 19:56:35.000000000 +0200
++++ ratpoison/src/messages.h	2006-10-28 19:56:48.000000000 +0200
+@@ -50,7 +50,8 @@
+ #define MESSAGE_PROMPT_VAR_VALUE  "Value: "
+ 
+ #define MESSAGE_WELCOME "Welcome to ratpoison! Hit `%s %s' for help."
++#define MESSAGE_WELCOME_MENU 	"Welcome to ratpoison! Hit `%s %s' for help. `%s %s' for menu."
+ 
+ #define EMPTY_FRAME_MESSAGE "Current Frame"
+ 
+ #endif /* ! _RATPOISON_MESSAGES_H */
