@@ -402,6 +402,9 @@ The window's width increment hint
 the window's xinerama screen
 @end table
 
+Additionally there can be a number between the percent sign and the format
+character, denoting a maximum length this value is to truncate to, e.g. @samp{%n%s%20t}.
+
 When called with no arguments, the current setting is
 returned.
 @end deffn

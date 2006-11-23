@@ -1,4 +1,4 @@
-.TH RATPOISON 1 2006-06-07
+.TH RATPOISON 1 2006-11-23
 \# This man page is free software; you can redistribute it and/or modify
 \# it under the terms of the GNU General Public License as published by
 \# the Free Software Foundation; either version 2, or (at your option)
@@ -643,24 +643,46 @@ The messages are shown in columns or rows depending on the \fBset\fPting
 of \fBwinliststyle\fP in the format set by \fBset winfmt\fP.
 The following substitutions happen in format:
 .br
-%n by the window number,
-.br
-%s by window status (\fB*\fP is active window,
-\fB+\fP would be chosen by \fBother\fP, \fB\-\fP otherwise)
-.br
-%t by the window name (see \fBset winname\fP),
-.br
-%a by the application name,
+%a by the application name (resource name),
 .br
 %c by the resource class,
+.br
+%f by the frame number,
+.br
+%g by the gravity of the window,
+.br
+%h by the height of the window,
+.br
+%H by the unit to resize the window vertically (height_inc)
 .br
 %i by the X Window ID,
 .br
 %l by the last access number,
 .br
-%f by the frame number and
+%n by the window number,
+.br
+%s by window status (\fB*\fP is active window,
+\fB+\fP would be chosen by \fBother\fP, \fB\-\fP otherwise)
+.br
+%S by the screen number
+.br
+%t by the window name (see \fBset winname\fP),
+.br
+%T by the string \fBTransient\fP, if it is a transient window
+.br
+%w by the width of the window
+.br
+%W by the unit to resize the window horizontally (width_inc)
+.br
+.%x by the xine screen number
+and
 .br
 %% by a single %
+
+Additionally there can be a positive decimal integer number between the
+percent sign and the format string to specify the length this value
+should be truncated to if longer.
+(For example: \fB%20t\fP)
 
 In non\-interactive mode, output the list of windows in the current group
 line by line. The format string can be overwritten by the optional parameter

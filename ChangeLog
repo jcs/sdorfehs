@@ -1,3 +1,10 @@
+2006-11-23  Bernhard R. Link  <brlink@debian.org>
+
+	* doc/ratpoison.texi (set winfmt): document number between % and format.
+
+	* doc/ratpoison.1 (set winfmt): complete format char description,
+	document number between % and format.
+
 2006-11-21  Bernhard R. Link  <brlink@debian.org>
 
 	* add MAINTAINERCLEANFILES variables to sub Makefile.ams
