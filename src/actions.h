@@ -219,6 +219,7 @@ void del_frame_undo (rp_frame_undo *u);
 rp_keymap *find_keymap (char *name);
 void init_user_commands(void);
 void initialize_default_keybindings (void);
+cmdret *cmdret_new (int success, char *fmt, ...);
 void cmdret_free (cmdret *ret);
 void keymap_free (rp_keymap *map);
 void free_aliases (void);

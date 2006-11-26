@@ -476,8 +476,7 @@ execute_remote_command (Window w)
 
   if (status != Success || req == NULL)
     {
-      PRINT_DEBUG (("Couldn't get RP_COMMAND Property\n"));
-      return NULL;
+      return cmdret_new (RET_FAILURE, "Couldn't get RP_COMMAND Property");
     }
 
   /* XGetWindowProperty always allocates one extra byte even if
@@ -491,8 +490,7 @@ execute_remote_command (Window w)
 
   if (status != Success || req == NULL)
     {
-      PRINT_DEBUG (("Couldn't get RP_COMMAND Property\n"));
-      return NULL;
+      return cmdret_new (RET_FAILURE, "Couldn't get RP_COMMAND Property");
     }
 
   PRINT_DEBUG (("command: %s\n", req));

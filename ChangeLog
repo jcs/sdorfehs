@@ -1,3 +1,12 @@
+2006-11-23  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/events.c (execute_remote_command): return a cmdred instead
+	of NULL when RP_COMMAND isn't present.
+
+	* src/actions.h (cmdred_new): new prototype
+
+	* src/actions.c (cmdret_new): no longer static function
+
 2006-11-23  Bernhard R. Link  <brlink@debian.org>
 
 	* doc/ratpoison.texi (set winfmt): document number between % and format.

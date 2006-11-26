@@ -762,7 +762,7 @@ initialize_default_keybindings (void)
   add_alias ("split", "vsplit");
 }
 
-static cmdret *
+cmdret *
 cmdret_new (int success, char *fmt, ...)
 {
   cmdret *ret = xmalloc (sizeof (cmdret));
