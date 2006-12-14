@@ -1,3 +1,16 @@
+2006-12-13  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* src/bar.c (show_bar, prepare_bar): Switch to default colormap.
+	(hide_bar): Possibly restore colormap.
+
+	* src/input.c (get_more_input): Temporarily install default
+	colormap.
+
+	* src/actions.c (cmd_help, cmd_license): Likewise.
+
+	* src/events.c (colormap_notify): Postpone installing colormap
+	when bar is raised.
+
 2006-11-23  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/events.c (execute_remote_command): return a cmdred instead

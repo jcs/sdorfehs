@@ -660,7 +660,8 @@ colormap_notify (XEvent *ev)
       XGetWindowAttributes (dpy, win->w, &attr);
       win->colormap = attr.colormap;
 
-      if (win == current_window())
+      if (win == current_window()
+	  && !current_screen()->bar_is_raised)
         {
           XInstallColormap (dpy, win->colormap);
         }

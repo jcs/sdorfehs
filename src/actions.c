@@ -3135,6 +3135,11 @@ cmd_license (int interactive, struct cmdarg **args)
                            "[Press any key to end.] ",
                            NULL};
 
+  /* Switch to the default colormap. */
+  if (current_window())
+    XUninstallColormap (dpy, current_window()->colormap);
+  XInstallColormap (dpy, s->def_cmap);
+
   XMapRaised (dpy, s->help_window);
   XGrabKeyboard (dpy, s->help_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
@@ -3171,6 +3176,13 @@ cmd_license (int interactive, struct cmdarg **args)
   XUngrabKeyboard (dpy, CurrentTime);
   XUnmapWindow (dpy, s->help_window);
 
+  /* Possibly restore colormap. */
+  if (current_window())
+    {
+      XUninstallColormap (dpy, s->def_cmap);
+      XInstallColormap (dpy, current_window()->colormap);
+    }
+
   /* The help window overlaps the bar, so redraw it. */
   if (current_screen()->bar_is_raised)
     redraw_last_message();
@@ -3198,6 +3210,11 @@ cmd_help (int interactive, struct cmdarg **args)
       int max_width = 0;
       int drawing_keys = 1;             /* 1 if we are drawing keys 0 if we are drawing commands */
       char *keysym_name;
+
+      /* Switch to the default colormap. */
+      if (current_window())
+	XUninstallColormap (dpy, current_window()->colormap);
+      XInstallColormap (dpy, s->def_cmap);
 
       XMapRaised (dpy, s->help_window);
       XGrabKeyboard (dpy, s->help_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
@@ -3288,6 +3305,13 @@ cmd_help (int interactive, struct cmdarg **args)
       XMaskEvent (dpy, KeyPressMask, &ev);
       XUngrabKeyboard (dpy, CurrentTime);
       XUnmapWindow (dpy, s->help_window);
+
+      /* Possibly restore colormap. */
+      if (current_window())
+	{
+	  XUninstallColormap (dpy, s->def_cmap);
+	  XInstallColormap (dpy, current_window()->colormap);
+	}
 
       /* The help window overlaps the bar, so redraw it. */
       if (current_screen()->bar_is_raised)

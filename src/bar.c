@@ -62,6 +62,14 @@ hide_bar (rp_screen *s)
     {
       s->bar_is_raised = 0;
       XUnmapWindow (dpy, s->bar_window);
+
+      /* Possibly restore colormap. */
+      if (current_window())
+	{
+	  XUninstallColormap (dpy, s->def_cmap);
+	  XInstallColormap (dpy, current_window()->colormap);
+	}
+
       return 1;
     }
 
@@ -77,6 +85,11 @@ show_bar (rp_screen *s, char *fmt)
       s->bar_is_raised = BAR_IS_WINDOW_LIST;
       XMapRaised (dpy, s->bar_window);
       update_window_names (s, fmt);
+
+      /* Switch to the default colormap */
+      if (current_window())
+	XUninstallColormap (dpy, current_window()->colormap);
+      XInstallColormap (dpy, s->def_cmap);
 
       reset_alarm();
       return 1;
@@ -381,6 +394,11 @@ prepare_bar (rp_screen *s, int width, int height)
     {
       s->bar_is_raised = BAR_IS_MESSAGE;
       XMapRaised (dpy, s->bar_window);
+
+      /* Switch to the default colormap */
+      if (current_window())
+	XUninstallColormap (dpy, current_window()->colormap);
+      XInstallColormap (dpy, s->def_cmap);
     }
 
   XRaiseWindow (dpy, s->bar_window);

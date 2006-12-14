@@ -497,6 +497,11 @@ get_more_input (char *prompt, char *preinput,
   /* We don't want to draw overtop of the program bar. */
   hide_bar (s);
 
+  /* Switch to the default colormap. */
+  if (current_window())
+    XUninstallColormap (dpy, current_window()->colormap);
+  XInstallColormap (dpy, s->def_cmap);
+
   XMapWindow (dpy, s->input_window);
   XRaiseWindow (dpy, s->input_window);
   XClearWindow (dpy, s->input_window);
@@ -546,6 +551,13 @@ get_more_input (char *prompt, char *preinput,
   /* Revert focus. */
   XUngrabKeyboard (dpy, CurrentTime);
   XUnmapWindow (dpy, s->input_window);
+
+  /* Possibly restore colormap. */
+  if (current_window())
+    {
+      XUninstallColormap (dpy, s->def_cmap);
+      XInstallColormap (dpy, current_window()->colormap);
+    }
 
   return final_input;
 }
