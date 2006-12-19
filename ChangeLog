@@ -1,5 +1,9 @@
 2006-12-19  Shawn Betts  <sabetts@shitbender.gagrod>
 
+	* Release 1.4.1
+	
+2006-12-19  Shawn Betts  <sabetts@shitbender.gagrod>
+
 	* src/manage.c (force_maximize): remove call to usleep
 
 2006-12-13  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
