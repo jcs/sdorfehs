@@ -2,7 +2,7 @@ Source: ratpoison
 Section: x11
 Priority: extra
 Maintainer: Bernhard R. Link <brlink@debian.org>
-Build-Depends: debhelper (>= 4.0.0), libx11-dev, libxext-dev, x-dev, libxinerama-dev | xlibs-static-dev (<< 1:7.0), libxtst-dev, libreadline5-dev | libreadline4-dev
+Build-Depends: debhelper (>= 4.0.0), libx11-dev, libxext-dev, x11proto-core-dev | x-dev, libxinerama-dev | xlibs-static-dev (<< 1:7.0), libxtst-dev, libreadline5-dev | libreadline4-dev
 Standards-Version: 3.7.2
 
 Package: ratpoison

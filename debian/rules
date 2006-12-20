@@ -106,7 +106,7 @@ binary-arch: build install
 	dh_md5sums
 	dh_builddeb
 
-RATPOISON_VERSION=1.4.0
+RATPOISON_VERSION=1.4.1
 RATPOISON_CVSVERSION=1.4.1~CVS$(shell date +%Y%m%d)
 RATPOISON_UVERSION=1.4.1-CVS
 

@@ -1,14 +1,58 @@
-This package was debianized by Gergely Nagy <algernon@debian.org>
+This package was debianized by Bernhard R. Link <brlink@debian.org> on
+Sat, 20 May 2006 13:45:34 +0200.
 
-It was downloaded from
-	ftp://ratpoison.sourceforge.net/pub/ratpoison/
+It was downloaded from http://savannah.nongnu.org/download/ratpoison/
 
-Upstream Authors: Shawn Betts <sabetts@users.sourceforge.net>
-		  Ryan Yeske <rcyeske@vcn.bc.ca>
+Upstream Authors:
 
-Copyright:
+Shawn Betts (sabetts@users.sourceforge.net)
+Ryan Yeske (rcyeske@vcn.bc.ca)
 
-ratpoison is covered by the GNU GPL v2. The complete text can be found in
-/usr/share/common-licenses/GPL
+Other Contributors:
 
-Modifications for Debian are also covered by the GNU GPL.
+Ben Leslie <benno at sesgroup dot net>
+Chr. v. Stuckrad <stucki at math dot fu-berlin dot de>
+Dan Aloni <da-x at gmx dot net>
+Doug Kearns <djkea2 at mugc dot its dot monash dot edu dot au>
+Gergely Nagy <algernon at debian dot org>
+Henrik Enberg <henrik at enberg dot org>
+Jonathan Walther <krooger at debian dot org>
+Martin Samuelsson <rp-contrib at cos dot user dot lysator dot liu dot se>
+Mike Meyer <mwm at mired dot org>
+Nicklas Lindgren <nili at lysator dot liu dot se>
+Pasi Kallinen <pkalli at cs dot joensuu dot fi>
+Rupert <rupert dot debian at hotpop dot com>
+Tim Goodwin <tjg at star dot le dot ac dot uk>
+Joshua Neuheisel <jneuheisel at msn dot com>
+Thien-Thi Nguyen <ttn at surf dot glug dot org>
+Joshua Neuheisel <jneuheisel at msn dot com>
+Sylvain BEUCLER <beuc at beuc dot net>
+Cameron Patrick <cameron at patrick dot wattle dot id dot au>
+Trent Buck <fubarbaz at bigpond dot com>
+jesus c. meyendriesch <jesus at qplay dot org>
+Bernhard R. Link <brlink at debian dot org>
+Tobias C. Rittweiler <tcr at freebits dot de>
+Antti Nykänen <aon at iki dot fi>
+rubikitch <rubikitch at ruby-lang org>
+Florian E.J. Fruth <fejf at rommel stw uni-erlangen de>
+Tim Cooijmans <tim at aapopfiets nl>
+Andreas Seltenreich  <uwi7 at rz uni-karlsruhe de>
+
+License:
+ ratpoison is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2, or (at your option)
+ any later version.
+
+ ratpoison is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this software; see the file COPYING.  If not, write to
+ the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+
+On Debian systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
