@@ -248,7 +248,7 @@ frame_read (char *str, rp_screen *screen)
 	read_slot(dedicated);
         if (dedicated <= 0)
           f->dedicated = 0;
-        else if (f->dedicated >= 1)
+        else
           f->dedicated = 1;
       }
       else if (!strcmp(tmp, ")"))
