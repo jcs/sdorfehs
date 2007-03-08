@@ -362,7 +362,7 @@ split_frame (rp_frame *frame, int way, int pixels)
     }
 
   update_bar (s);
-  show_frame_indicator();
+  show_frame_indicator(0);
 }
 
 /* Splits the window vertically leaving the original with 'pixels'
@@ -823,7 +823,7 @@ remove_frame (rp_frame *frame)
 /* Switch the input focus to another frame, and therefore a different
    window. */
 void
-set_active_frame (rp_frame *frame)
+set_active_frame (rp_frame *frame, int force_indicator)
 {
   rp_screen *old_s = current_screen();
   rp_screen *s = frames_screen (frame);
@@ -856,7 +856,7 @@ set_active_frame (rp_frame *frame)
   if ((old != s->current_frame && num_frames(s) > 1)
       || s != old_s)
     {
-      show_frame_indicator();
+      show_frame_indicator(force_indicator);
 
       /* run the frame switch hook. We call it in here because this is
          when a frame switch ACTUALLY (for sure) happens. */
@@ -869,6 +869,10 @@ set_active_frame (rp_frame *frame)
     {
       set_window_focus (s->key_window);
     }
+
+  /* Call the switchscreen hook, when appropriate. */
+  if (s != old_s)
+    hook_run (&rp_switch_screen_hook);
 }
 
 void
@@ -906,7 +910,7 @@ exchange_with_frame (rp_screen *s, rp_frame *cur, rp_frame *frame)
     {
       s->current_frame = frame->number;
       /* mark it as active */
-      show_frame_indicator();
+      show_frame_indicator(0);
     }
 
   update_bar (s);
@@ -957,11 +961,14 @@ hide_frame_indicator (void)
 }
 
 void
-show_frame_indicator (void)
+show_frame_indicator (int force)
 {
-  hide_frame_indicator ();
-  show_frame_message (defaults.frame_fmt);
-  alarm (defaults.frame_indicator_timeout);
+  if (num_frames (current_screen()) > 1 || force)
+    {
+      hide_frame_indicator ();
+      show_frame_message (defaults.frame_fmt);
+      alarm (defaults.frame_indicator_timeout);
+    }
 }
 
 void

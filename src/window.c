@@ -614,7 +614,7 @@ set_active_window_body (rp_window *win, int force)
         {
           if (!cur->dedicated)
             {
-              set_active_frame (cur);
+              set_active_frame (cur, 0);
               last_frame = frame;
               frame = cur;
               done = 1;
@@ -633,7 +633,7 @@ set_active_window_body (rp_window *win, int force)
                 {
                   if (!cur->dedicated)
                     {
-                      set_active_frame (cur);
+                      set_active_frame (cur, 0);
                       last_frame = frame;
                       frame = cur;
                       done = 1; /* Break outer loop. */
@@ -667,7 +667,7 @@ set_active_window_body (rp_window *win, int force)
 
   /* If we switched frame, go back to the old one. */
   if (last_frame)
-    set_active_frame (last_frame);
+    set_active_frame (last_frame, 0);
 
   /* Call the switch window hook */
   hook_run (&rp_switch_win_hook);
@@ -687,7 +687,7 @@ goto_window (rp_window *win)
   frame = find_windows_frame (win);
   if (frame)
     {
-      set_active_frame (frame);
+      set_active_frame (frame, 0);
     }
   else
     {

@@ -507,6 +507,7 @@ init_defaults (void)
   defaults.bar_location        = NorthEastGravity;
   defaults.bar_timeout         = 5;
   defaults.bar_border_width    = 1;
+  defaults.bar_in_padding      = 0;
 
   defaults.frame_indicator_timeout = 1;
   defaults.frame_resize_unit = 10;

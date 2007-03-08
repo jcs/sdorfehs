@@ -111,17 +111,19 @@ bar_x (rp_screen *s, int width)
     case NorthWestGravity:
     case WestGravity:
     case SouthWestGravity:
-      x = s->left + defaults.padding_left;
+      x = s->left + (defaults.bar_in_padding ? 0 : defaults.padding_left);
       break;
     case NorthGravity:
     case CenterGravity:
     case SouthGravity:
-      x = s->left + (s->width - width - defaults.bar_border_width * 2) / 2 - defaults.padding_right;
+      x = s->left + (s->width - width - defaults.bar_border_width * 2) / 2
+          - (defaults.bar_in_padding ? 0 : defaults.padding_left);
       break;
     case NorthEastGravity:
     case EastGravity:
     case SouthEastGravity:
-      x = s->left + s->width - width - defaults.bar_border_width * 2 - defaults.padding_right;
+      x = s->left + s->width - width - defaults.bar_border_width * 2
+          - (defaults.bar_in_padding ? 0 : defaults.padding_right);
       break;
     }
 
@@ -138,21 +140,21 @@ bar_y (rp_screen *s, int height)
     case NorthEastGravity:
     case NorthGravity:
     case NorthWestGravity:
-      y = s->top + defaults.padding_top;
+      y = s->top + (defaults.bar_in_padding ? 0 : defaults.padding_top);
       break;
     case EastGravity:
     case CenterGravity:
     case WestGravity:
       y = s->top + (s->height - height
            - defaults.bar_border_width * 2) / 2
-	   - defaults.padding_top;
+	   - (defaults.bar_in_padding ? 0 : defaults.padding_top);
       break;
     case SouthEastGravity:
     case SouthGravity:
     case SouthWestGravity:
       y = s->top + (s->height - height
            - defaults.bar_border_width * 2)
- 	   - defaults.padding_top;
+ 	   - (defaults.bar_in_padding ? 0 : defaults.padding_top);
       break;
     }
 

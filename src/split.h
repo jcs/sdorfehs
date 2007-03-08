@@ -40,10 +40,10 @@ rp_frame *find_frame_prev (rp_frame *frame);
 rp_window *current_window (void);
 void init_frame_lists (void);
 void init_frame_list (rp_screen *screen);
-void set_active_frame (rp_frame *frame);
+void set_active_frame (rp_frame *frame, int force_indicator);
 void exchange_with_frame (rp_screen *s, rp_frame *cur, rp_frame *frame);
 void blank_frame (rp_frame *frame);
-void show_frame_indicator (void);
+void show_frame_indicator (int force);
 void hide_frame_indicator (void);
 
 void show_frame_message (char *msg);

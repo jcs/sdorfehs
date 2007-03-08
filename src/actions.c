@@ -53,6 +53,7 @@ static cmdret * set_font (struct cmdarg **args);
 static cmdret * set_padding (struct cmdarg **args);
 static cmdret * set_border (struct cmdarg **args);
 static cmdret * set_barborder (struct cmdarg **args);
+static cmdret * set_barinpadding (struct cmdarg **args);
 static cmdret * set_inputwidth (struct cmdarg **args);
 static cmdret * set_waitcursor (struct cmdarg **args);
 static cmdret * set_winfmt (struct cmdarg **args);
@@ -108,6 +109,7 @@ init_set_vars(void)
                "", arg_NUMBER, "", arg_NUMBER, "", arg_NUMBER, "", arg_NUMBER);
   add_set_var ("border", set_border, 1, "", arg_NUMBER);
   add_set_var ("barborder", set_barborder, 1, "", arg_NUMBER);
+  add_set_var ("barinpadding", set_barinpadding, 1, "", arg_NUMBER);
   add_set_var ("inputwidth", set_inputwidth, 1, "", arg_NUMBER);
   add_set_var ("waitcursor", set_waitcursor, 1, "", arg_NUMBER);
   add_set_var ("winfmt", set_winfmt, 1, "", arg_REST);
@@ -1136,7 +1138,7 @@ cmd_prev_frame (int interactive, struct cmdarg **args)
   if (!frame)
     return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_FRAME);
   else
-    set_active_frame (frame);
+    set_active_frame (frame, 0);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -1167,7 +1169,7 @@ cmd_next_frame (int interactive, struct cmdarg **args)
   if (!frame)
     return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_FRAME);
   else
-    set_active_frame (frame);
+    set_active_frame (frame, 0);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -2863,8 +2865,8 @@ cmd_remove (int interactive, struct cmdarg **args)
   if (frame)
     {
       remove_frame (current_frame());
-      set_active_frame (frame);
-      show_frame_indicator();
+      set_active_frame (frame, 0);
+      show_frame_indicator(0);
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -3091,7 +3093,7 @@ cmd_curframe (int interactive, struct cmdarg **args)
 {
   if (interactive)
     {
-      show_frame_indicator();
+      show_frame_indicator(1);
       return cmdret_new (RET_SUCCESS, NULL);
     }
   else
@@ -3644,6 +3646,23 @@ set_barborder (struct cmdarg **args)
 }
 
 static cmdret *
+set_barinpadding (struct cmdarg **args)
+{
+  int new_value;
+
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%d", defaults.bar_border_width);
+
+  new_value = ARG(0,number);
+  if (new_value < 0)
+    return cmdret_new (RET_FAILURE, "defbarborder: invalid argument");
+
+  defaults.bar_in_padding = new_value;
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
 set_inputwidth (struct cmdarg **args)
 {
   if (args[0] == NULL)
@@ -3943,9 +3962,9 @@ cmd_focusup (int interactive, struct cmdarg **args)
   rp_frame *frame;
 
   if ((frame = find_frame_up (current_frame())))
-    set_active_frame (frame);
+    set_active_frame (frame, 0);
   else
-    show_frame_indicator();
+    show_frame_indicator(0);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3956,9 +3975,9 @@ cmd_focusdown (int interactive, struct cmdarg **args)
   rp_frame *frame;
 
   if ((frame = find_frame_down (current_frame())))
-    set_active_frame (frame);
+    set_active_frame (frame, 0);
   else
-    show_frame_indicator();
+    show_frame_indicator(0);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3969,9 +3988,9 @@ cmd_focusleft (int interactive, struct cmdarg **args)
   rp_frame *frame;
 
   if ((frame = find_frame_left (current_frame())))
-    set_active_frame (frame);
+    set_active_frame (frame, 0);
   else
-    show_frame_indicator();
+    show_frame_indicator(0);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3982,9 +4001,9 @@ cmd_focusright (int interactive, struct cmdarg **args)
   rp_frame *frame;
 
   if ((frame = find_frame_right (current_frame())))
-    set_active_frame (frame);
+    set_active_frame (frame, 0);
   else
-    show_frame_indicator();
+    show_frame_indicator(0);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4076,7 +4095,7 @@ cmd_focuslast (int interactive, struct cmdarg **args)
   rp_frame *frame = find_last_frame();
 
   if (frame)
-      set_active_frame (frame);
+    set_active_frame (frame, 0);
   else
     return cmdret_new (RET_FAILURE, "focuslast: no other frame");
 
@@ -4180,7 +4199,7 @@ cmd_nextscreen (int interactive, struct cmdarg **args)
   if (new_screen >= num_screens)
     new_screen = 0;
 
-  set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
+  set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame), 1);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4198,7 +4217,7 @@ cmd_prevscreen (int interactive, struct cmdarg **args)
   if (new_screen < 0)
     new_screen = num_screens - 1;
 
-  set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
+  set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame), 1);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4213,7 +4232,7 @@ cmd_sselect(int interactive, struct cmdarg **args)
     return cmdret_new (RET_FAILURE, "sselect: out of range");
 
   if (new_screen < num_screens)
-    set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame));
+    set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame), 1);
   else
     return cmdret_new (RET_FAILURE, "sselect: out of range");
 
@@ -4282,7 +4301,7 @@ sync_wins (rp_screen *s)
                 {
                   cleanup_frame (frame);
                   if (frame->number == win->scr->current_frame)
-                    set_active_frame (frame);
+                    set_active_frame (frame, 0);
                 }
               withdraw_window (win);
             }
@@ -4476,7 +4495,7 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
 cmdret *
 cmd_fselect (int interactive, struct cmdarg **args)
 {
-  set_active_frame (ARG(0,frame));
+  set_active_frame (ARG(0,frame), 1);
   if (interactive)
     return cmdret_new (RET_SUCCESS, NULL);
   else
@@ -4623,9 +4642,9 @@ frestore (char *data, rp_screen *s)
         }
     }
 
-  set_active_frame (current_frame());
+  set_active_frame (current_frame(), 0);
   update_bar (s);
-  show_frame_indicator();
+  show_frame_indicator(0);
 
   PRINT_DEBUG (("Done.\n"));
   return cmdret_new (RET_SUCCESS, NULL);

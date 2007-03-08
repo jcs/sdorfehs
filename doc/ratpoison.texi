@@ -1362,6 +1362,17 @@ When called with no arguments, the current setting is returned.
 @end deffn
 
 
+@deffn Command {set barinpadding} @var{n}
+@c @deffnx Command defbarinpadding @var{n}
+Set whether the bar window appears at the edge of the screen when there is
+padding -- that is, within the "padding" area -- or whether it appears at the
+edge of the window area.  "1" represents the former, "0" the latter.  See the
+@command{set padding} and @command{set bargravity} commands.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
+
 @node Using Other Window Managers, Other Commands, The Status Bar, Top
 @chapter Using Other Window Managers
 

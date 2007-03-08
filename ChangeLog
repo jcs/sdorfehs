@@ -1,3 +1,24 @@
+2007-03-08  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/split.c (set_active_frame): call switch_frame hook
+	(show_frame_indicator): only show frame indicator 
+	(set_active_frame): new arg force_indicator. all callers updated.
+	(show_frame_indicator): new arg force. all callers updated.
+
+	* src/main.c (init_defaults): init bar_in_padding
+
+	* src/globals.c (rp_switch_screen_hook): new hook
+
+	* src/data.h (struct rp_defaults): new slot, bar_in_padding
+
+	* src/bar.c (bar_x): honour bar_in_padding setting
+	(bar_y): likewise
+
+	* src/actions.c (init_set_vars): add barinpadding
+	(set_barinpadding): new function
+
+	* src/globals.h: new global rp_switch_screen_hook
+
 2007-01-31  Bernhard R. Link  <brlink@debian.org>
 
 	* src/frame.c (frame_read): fix bug to never set dedicated
