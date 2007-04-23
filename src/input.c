@@ -122,6 +122,7 @@ update_modifier_map (void)
   unsigned int modmasks[] =
     { Mod1Mask, Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask };
   int row, col; /* The row and column in the modifier table.  */
+  int found_alt_or_meta;
   XModifierKeymap *mods;
   int min_code, max_code;
   int syms_per_code;
@@ -141,69 +142,85 @@ update_modifier_map (void)
   mods = XGetModifierMapping (dpy);
 
   for (row=3; row < 8; row++)
-    for (col=0; col < mods->max_keypermod; col++)
-      {
-        KeyCode code = mods->modifiermap[(row * mods->max_keypermod) + col];
+    {
+      found_alt_or_meta = 0;
+      for (col=0; col < mods->max_keypermod; col++)
+        {
+          KeyCode code = mods->modifiermap[(row * mods->max_keypermod) + col];
 
-	PRINT_DEBUG (("row: %d col: %d code: %d\n", row, col, code));
+          PRINT_DEBUG (("row: %d col: %d code: %d\n", row, col, code));
 
-        if (code == 0) continue;
+          if (code == 0) continue;
 
-	/* Are any of this keycode's keysyms a meta key?  */
-	{
-	  int code_col;
+          /* Are any of this keycode's keysyms a meta key?  */
+          {
+            int code_col;
 
-	  for (code_col = 0; code_col < syms_per_code; code_col++)
-	    {
-	      int sym = syms[((code - min_code) * syms_per_code) + code_col];
+            for (code_col = 0; code_col < syms_per_code; code_col++)
+              {
+                int sym = syms[((code - min_code) * syms_per_code) + code_col];
 
-	      switch (sym)
-		{
-		case XK_Meta_L:
-		case XK_Meta_R:
-		  rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
-		  PRINT_DEBUG (("Found Meta on %d\n",
-				rp_modifier_info.meta_mod_mask));
-		  break;
+                switch (sym)
+                  {
+                  case XK_Meta_L:
+                  case XK_Meta_R:
+                    found_alt_or_meta = 1;
+                    rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
+                    PRINT_DEBUG (("Found Meta on %d\n",
+                                  rp_modifier_info.meta_mod_mask));
+                    break;
 
-		case XK_Alt_L:
-		case XK_Alt_R:
-		  rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
-		  PRINT_DEBUG (("Found Alt on %d\n",
-				rp_modifier_info.alt_mod_mask));
-		  break;
+                  case XK_Alt_L:
+                  case XK_Alt_R:
+                    found_alt_or_meta = 1;
+                    rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
+                    PRINT_DEBUG (("Found Alt on %d\n",
+                                  rp_modifier_info.alt_mod_mask));
+                    break;
 
-		case XK_Super_L:
-		case XK_Super_R:
-		  rp_modifier_info.super_mod_mask |= modmasks[row - 3];
-		  PRINT_DEBUG (("Found Super on %d\n",
-				rp_modifier_info.super_mod_mask));
-		  break;
+                  case XK_Super_L:
+                  case XK_Super_R:
+                    if (!found_alt_or_meta)
+                      {
+                        rp_modifier_info.super_mod_mask |= modmasks[row - 3];
+                        PRINT_DEBUG (("Found Super on %d\n",
+                                      rp_modifier_info.super_mod_mask));
+                      }
+                    code_col = syms_per_code;
+                    col = mods->max_keypermod;
+                    break;
 
-		case XK_Hyper_L:
-		case XK_Hyper_R:
-		  rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
-		  PRINT_DEBUG (("Found Hyper on %d\n",
-				rp_modifier_info.hyper_mod_mask));
-		  break;
+                  case XK_Hyper_L:
+                  case XK_Hyper_R:
+                    if (!found_alt_or_meta)
+                      {
+                        rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
+                        PRINT_DEBUG (("Found Hyper on %d\n",
+                                      rp_modifier_info.hyper_mod_mask));
+                      }
+                    code_col = syms_per_code;
+                    col = mods->max_keypermod;
 
-		case XK_Num_Lock:
-		  rp_modifier_info.num_lock_mask |= modmasks[row - 3];
-		  PRINT_DEBUG (("Found NumLock on %d\n",
-				rp_modifier_info.num_lock_mask));
-		  break;
+                    break;
 
-		case XK_Scroll_Lock:
-		  rp_modifier_info.scroll_lock_mask |= modmasks[row - 3];
-		  PRINT_DEBUG (("Found ScrollLock on %d\n",
-				rp_modifier_info.scroll_lock_mask));
-		  break;
-		default:
-		  break;
-		}
-	    }
-	}
-      }
+                  case XK_Num_Lock:
+                    rp_modifier_info.num_lock_mask |= modmasks[row - 3];
+                    PRINT_DEBUG (("Found NumLock on %d\n",
+                                  rp_modifier_info.num_lock_mask));
+                    break;
+
+                  case XK_Scroll_Lock:
+                    rp_modifier_info.scroll_lock_mask |= modmasks[row - 3];
+                    PRINT_DEBUG (("Found ScrollLock on %d\n",
+                                  rp_modifier_info.scroll_lock_mask));
+                    break;
+                  default:
+                    break;
+                  }
+              }
+          }
+        }
+    }
 
   /* Stolen from Emacs 21.0.90 - xterm.c */
   /* If we couldn't find any meta keys, accept any alt keys as meta keys.  */
