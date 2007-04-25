@@ -1,3 +1,8 @@
+2007-04-23  Shawn Betts  <sabetts@vcn.bc.ca>
+
+	* src/input.c (update_modifier_map): don't map both super and
+	hyper to the same modifier slot.
+
 2007-03-08  Shawn Betts  <sabetts@vcn.bc.ca>
 
 	* src/split.c (set_active_frame): call switch_frame hook
