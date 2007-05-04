@@ -121,5 +121,6 @@
 
 /* The default font */
 #define DEFAULT_FONT "-*-fixed-bold-r-normal-*-15-*-*-*-c-*-*-*"
+#define BACKUP_FONT "*"
 
 #endif /* !_ _RATPOISON_CONF_H */
