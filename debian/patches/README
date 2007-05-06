@@ -5,7 +5,7 @@ by the .diff.gz all together.
 * If you are NMUing the Debian package:
 
   Just ignore this directory (unless it helps you to understand what I did).
-  Everything applicaple to you .orig.tar.gz should already be in the
+  Everything applicaple to your .orig.tar.gz should already be in the
   .diff.gz you have. Just modify the actual code, submit a patch with what
   you did to the BTS and let me sort it out and include the patch in this
   directory.

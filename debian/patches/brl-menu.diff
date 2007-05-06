@@ -1,7 +1,19 @@
-Index: ratpoison/src/main.c
+Index: ratpoison-1.4.1/ChangeLog
 ===================================================================
---- ratpoison.orig/src/main.c	2006-10-28 19:56:35.000000000 +0200
-+++ ratpoison/src/main.c	2006-10-28 19:56:48.000000000 +0200
+--- ratpoison-1.4.1.orig/ChangeLog	2007-04-16 18:33:33.000000000 +0200
++++ ratpoison-1.4.1/ChangeLog	2007-04-16 18:34:44.000000000 +0200
+@@ -1,1 +1,7 @@
++2005-01-15  Bernhard R. Link  <brlink@debian.org>
++
++	* configure.in: add --with-menu to specify a menu program
++	* src/action.c: add menu alias and binding if menu specified
++	* src/main.c:   tell menu command if menu specified
++
+ 2005-06-28  Bernhard R. Link <brlink@debian.org>
+Index: ratpoison-1.4.1/src/main.c
+===================================================================
+--- ratpoison-1.4.1.orig/src/main.c	2007-04-16 18:33:29.000000000 +0200
++++ ratpoison-1.4.1/src/main.c	2007-04-16 18:34:44.000000000 +0200
 @@ -458,7 +458,13 @@
  {
    rp_action *help_action;
@@ -72,11 +84,11 @@ Index: ratpoison/src/main.c
    free (prefix);
  }
  
-Index: ratpoison/src/actions.c
+Index: ratpoison-1.4.1/src/actions.c
 ===================================================================
---- ratpoison.orig/src/actions.c	2006-10-28 19:56:41.000000000 +0200
-+++ ratpoison/src/actions.c	2006-10-28 19:56:48.000000000 +0200
-@@ -682,6 +682,9 @@
+--- ratpoison-1.4.1.orig/src/actions.c	2007-04-16 18:33:33.000000000 +0200
++++ ratpoison-1.4.1/src/actions.c	2007-04-16 18:34:44.000000000 +0200
+@@ -684,6 +684,9 @@
    add_keybinding (prefix_key.sym, prefix_key.state, "other", map);
    add_keybinding (prefix_key.sym, 0, "meta", map);
    add_keybinding (XK_g, RP_CONTROL_MASK, "abort", map);
@@ -86,7 +98,7 @@ Index: ratpoison/src/actions.c
    add_keybinding (XK_0, 0, "select 0", map);
    add_keybinding (XK_1, 0, "select 1", map);
    add_keybinding (XK_2, 0, "select 2", map);
-@@ -766,6 +769,10 @@
+@@ -768,6 +771,10 @@
    add_alias ("unbind", "undefinekey " ROOT_KEYMAP);
    add_alias ("bind", "definekey " ROOT_KEYMAP);
    add_alias ("split", "vsplit");
@@ -96,23 +108,11 @@ Index: ratpoison/src/actions.c
 +#endif
  }
  
- static cmdret *
-Index: ratpoison/ChangeLog
+ cmdret *
+Index: ratpoison-1.4.1/configure.in
 ===================================================================
---- ratpoison.orig/ChangeLog	2006-10-28 19:56:41.000000000 +0200
-+++ ratpoison/ChangeLog	2006-10-28 19:56:48.000000000 +0200
-@@ -1,1 +1,7 @@
-+2005-01-15  Bernhard R. Link  <brlink@debian.org>
-+
-+	* configure.in: add --with-menu to specify a menu program
-+	* src/action.c: add menu alias and binding if menu specified
-+	* src/main.c:   tell menu command if menu specified
-+
- 2005-06-28  Bernhard R. Link <brlink@debian.org>
-Index: ratpoison/configure.in
-===================================================================
---- ratpoison.orig/configure.in	2006-10-28 19:56:36.000000000 +0200
-+++ ratpoison/configure.in	2006-10-28 19:56:48.000000000 +0200
+--- ratpoison-1.4.1.orig/configure.in	2007-04-16 18:33:29.000000000 +0200
++++ ratpoison-1.4.1/configure.in	2007-04-16 18:34:44.000000000 +0200
 @@ -45,6 +45,15 @@
  term_prog=$withval, term_prog="xterm")
  AC_DEFINE_UNQUOTED(TERM_PROG, "$term_prog", X terminal emulator to use)
@@ -129,11 +129,11 @@ Index: ratpoison/configure.in
  dnl Checks for programs.
  AC_CHECK_TOOL(CC, gcc)
  AC_PROG_CC
-Index: ratpoison/src/messages.h
+Index: ratpoison-1.4.1/src/messages.h
 ===================================================================
---- ratpoison.orig/src/messages.h	2006-10-28 19:56:35.000000000 +0200
-+++ ratpoison/src/messages.h	2006-10-28 19:56:48.000000000 +0200
-@@ -50,7 +50,8 @@
+--- ratpoison-1.4.1.orig/src/messages.h	2007-04-16 18:33:29.000000000 +0200
++++ ratpoison-1.4.1/src/messages.h	2007-04-16 18:34:44.000000000 +0200
+@@ -50,6 +50,7 @@
  #define MESSAGE_PROMPT_VAR_VALUE  "Value: "
  
  #define MESSAGE_WELCOME "Welcome to ratpoison! Hit `%s %s' for help."
@@ -141,4 +141,3 @@ Index: ratpoison/src/messages.h
  
  #define EMPTY_FRAME_MESSAGE "Current Frame"
  
- #endif /* ! _RATPOISON_MESSAGES_H */

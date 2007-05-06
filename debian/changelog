@@ -1,6 +1,23 @@
 ratpoison (1.4.2~CVS-0) UNRELEASED; urgency=low
 
- -- Bernhard R. Link <brlink@debian.org>  Tue, 20 Dec 2006 20:23:00 +0100
+ -- Bernhard R. Link <brlink@debian.org>  Wed, 18 Apr 2007 10:05:48 +0200
+
+ratpoison (1.4.1-3) unstable; urgency=low
+
+  * change doc-base file to satisfy new doc-base package (Closes: 419783)
+
+ -- Bernhard R. Link <brlink@debian.org>  Wed, 18 Apr 2007 10:05:48 +0200
+
+ratpoison (1.4.1-2) unstable; urgency=low
+
+  * first upload to unstable of new upstream version
+  - slit.sh fixed (Closes: 398048)
+  - supports window titles in different encodings (Closes: 376067)
+  * install rpws into /usr/bin instead of doc/examples/
+  * fix bug to not restore dedicateness of frames
+  * some little cleanups of the packaging
+
+ -- Bernhard R. Link <brlink@debian.org>  Tue, 17 Apr 2007 12:09:14 +0200
 
 ratpoison (1.4.1-1) experimental; urgency=low
 

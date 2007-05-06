@@ -5,4 +5,5 @@ Abstract: This manual describes the ratpoison window manager
 Section: X11/Window Managers
 
 Format: info
+Index: /usr/share/info/ratpoison.info.gz
 Files: /usr/share/info/ratpoison.info.gz

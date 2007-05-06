@@ -1,4 +1,3 @@
 # See uscan(1) for format
 version=2
-opts=dversionmangle=s/\.dfsg$// \
- http://savannah.nongnu.org/download/ratpoison/ratpoison-([0-9.]*)\.tar\.gz
+http://savannah.nongnu.org/download/ratpoison/ratpoison-([0-9.]*)\.tar\.gz
