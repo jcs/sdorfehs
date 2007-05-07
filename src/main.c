@@ -520,12 +520,14 @@ init_defaults (void)
   /* Attempt to load a font */
   defaults.font = load_query_font_set (dpy, DEFAULT_FONT);
   if (defaults.font == NULL)
-    PRINT_ERROR (("ratpoison: Cannot load font %s.\n", DEFAULT_FONT));
-  defaults.font = load_query_font_set (dpy, BACKUP_FONT);
-  if (defaults.font == NULL)
     {
-      PRINT_ERROR (("ratpoison: Cannot load backup font %s . You lose.\n", BACKUP_FONT));
-      exit (EXIT_FAILURE);
+      PRINT_ERROR (("ratpoison: Cannot load font %s.\n", DEFAULT_FONT));
+      defaults.font = load_query_font_set (dpy, BACKUP_FONT);
+      if (defaults.font == NULL)
+        {
+          PRINT_ERROR (("ratpoison: Cannot load backup font %s . You lose.\n", BACKUP_FONT));
+          exit (EXIT_FAILURE);
+        }
     }
 
   defaults.font_string = xstrdup (DEFAULT_FONT);
