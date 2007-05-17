@@ -1,3 +1,7 @@
+2007-05-17  Bernhard R. Link  <brlink@debian.org>
+
+	* src/actions.c (cmd_windows): free buffer to close memory hole
+
 2007-05-07  Shawn Betts  <sabetts@shitbender.gagrod>
 
 	* src/main.c (init_defaults): only load the backup font when the

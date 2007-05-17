@@ -2649,7 +2649,6 @@ cmdret *
 cmd_windows (int interactive, struct cmdarg **args)
 {
   struct sbuf *window_list = NULL;
-  char *tmp;
   int dummy;
   rp_screen *s;
   char *fmt;
@@ -2674,12 +2673,13 @@ cmd_windows (int interactive, struct cmdarg **args)
     }
   else
     {
+      cmdret *ret;
+
       window_list = sbuf_new (0);
       get_window_list (fmt, "\n", window_list, &dummy, &dummy);
-      tmp = sbuf_get (window_list);
-      free (window_list);
-
-      return cmdret_new (RET_SUCCESS, "%s", tmp);
+      ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (window_list));
+      sbuf_free (window_list);
+      return ret;
     }
 }
 
