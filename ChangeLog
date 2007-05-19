@@ -1,3 +1,7 @@
+2007-05-19  Bernhard R. Link  <brlink@debian.org>
+
+	* src/manage.c (get_wmname): free buffer to close memory hole
+
 2007-05-17  Bernhard R. Link  <brlink@debian.org>
 
 	* src/actions.c (cmd_windows): free buffer to close memory hole

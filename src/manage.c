@@ -209,6 +209,7 @@ get_wmname (Window w)
       name = (char *)text_prop.value;
     } else {
       XmbTextPropertyToTextList(dpy, &text_prop, &cl, &n);
+      XFree (text_prop.value);
       if (cl) {
         name = strdup(cl[0]);
         XFreeStringList(cl);
