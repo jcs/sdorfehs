@@ -770,10 +770,10 @@ clean_up (void)
 
   free_keymaps ();
   free_aliases ();
+  free_user_commands ();
   free_bar ();
-  free_groups ();
-
   free_window_stuff ();
+  free_groups ();
 
   for (i=0; i<num_screens; i++)
     {

@@ -1,3 +1,12 @@
+2007-07-04  Bernhard R. Link  <brlink@debian.org>
+
+	* src/main.c (clean_up): call free_user_commands, free_groups only
+	after free_window_stuff
+	* src/window.c (free_window_stuff): remove windows from group lists
+	* src/action.h (free_user_commands): new prototype
+	* src/action.c (set_var_free,user_command_free,free_user_commands):
+	new functions
+
 2007-05-19  Bernhard R. Link  <brlink@debian.org>
 
 	* src/manage.c (get_wmname): free buffer to close memory hole

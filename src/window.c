@@ -771,6 +771,24 @@ init_window_stuff (void)
 void
 free_window_stuff (void)
 {
+  rp_window *cur;
+  struct list_head *tmp, *iter;
+
+  list_for_each_safe_entry (cur, iter, tmp, &rp_unmapped_window, node)
+    {
+      list_del (&cur->node);
+      groups_del_window (cur);
+      free_window (cur);
+    }
+
+  list_for_each_safe_entry (cur, iter, tmp, &rp_mapped_window, node)
+    {
+      list_del (&cur->node);
+      groups_unmap_window (cur);
+      groups_del_window (cur);
+      free_window (cur);
+    }
+
   numset_free (rp_window_numset);
 }
 

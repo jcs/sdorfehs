@@ -96,6 +96,15 @@ add_set_var (char *name, cmdret * (*fn)(struct cmdarg **), int nargs, ...)
 }
 
 static void
+set_var_free (struct set_var *var)
+{
+  if (var == NULL)
+    return;
+  free(var->args);
+  free(var);
+}
+
+static void
 init_set_vars(void)
 {
   add_set_var ("resizeunit", set_resizeunit, 1, "", arg_NUMBER);
@@ -155,6 +164,16 @@ add_command (char *name, cmdret * (*fn)(int, struct cmdarg **), int nargs, int i
   va_end(va);
 
   list_add (&cmd->node, &user_commands);
+}
+
+static void
+user_command_free(struct user_command *cmd)
+{
+  if (cmd == NULL )
+    return;
+
+  free(cmd->args);
+  free(cmd);
 }
 
 void
@@ -838,6 +857,25 @@ free_aliases (void)
 
   /* Free the alias list. */
   free (alias_list);
+}
+
+void
+free_user_commands (void)
+{
+  struct user_command *cur;
+  struct set_var *var;
+  struct list_head *tmp, *iter;
+
+  list_for_each_safe_entry (cur, iter, tmp, &user_commands, node)
+    {
+      list_del (&cur->node);
+      user_command_free (cur);
+    }
+  list_for_each_safe_entry (var, iter, tmp, &set_vars, node)
+    {
+      list_del (&var->node);
+      set_var_free (var);
+    }
 }
 
 /* return a KeySym from a string that contains either a hex value or
