@@ -1,3 +1,9 @@
+2007-07-08  Bernhard R. Link  <brlink@debian.org>
+
+	* src/manage.c (get_res_name, get_res_class): remove
+	(update_window_name): call get_class_hints directly to avoid it
+	being called two times.
+
 2007-07-07  Bernhard R. Link  <brlink@debian.org>
 
 	* src/manage.c (get_wmname): always try XmbTextPropertyToTextList

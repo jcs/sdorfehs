@@ -239,56 +239,6 @@ get_class_hints (Window w)
   return class;
 }
 
-static char *
-get_res_name (Window w)
-{
-  XClassHint *class;
-  char *name;
-
-  class = get_class_hints (w);
-
-  if (class->res_name)
-    {
-      name = (char *)xmalloc (strlen (class->res_name) + 1);
-      strcpy (name, class->res_name);
-    }
-  else
-    {
-      name = NULL;
-    }
-
-  XFree (class->res_name);
-  XFree (class->res_class);
-  XFree (class);
-
-  return name;
-}
-
-static char *
-get_res_class (Window w)
-{
-  XClassHint *class;
-  char *name;
-
-  class = get_class_hints (w);
-
-  if (class->res_class)
-    {
-      name = (char *)xmalloc (strlen (class->res_class) + 1);
-      strcpy (name, class->res_class);
-    }
-  else
-    {
-      name = NULL;
-    }
-
-  XFree (class->res_name);
-  XFree (class->res_class);
-  XFree (class);
-
-  return name;
-}
-
 /* Reget the WM_NAME property for the window and update its
    name. Return 1 if the name changed. */
 int
@@ -296,6 +246,7 @@ update_window_name (rp_window *win)
 {
   char *newstr;
   int changed = 0;
+  XClassHint *class;
 
   newstr = get_wmname (win->w);
   if (newstr != NULL)
@@ -305,22 +256,27 @@ update_window_name (rp_window *win)
       win->wm_name = newstr;
     }
 
-  newstr = get_res_class (win->w);
-  if (newstr != NULL)
+  class = get_class_hints (win->w);
+
+  if (class->res_class != NULL
+      && (win->res_class == NULL || strcmp (class->res_class, win->res_class)))
     {
-      changed = changed || win->res_class == NULL || strcmp (newstr, win->res_class);
+      changed = 1;
       free (win->res_class);
-      win->res_class = newstr;
+      win->res_class = xstrdup(class->res_class);
     }
 
-  newstr = get_res_name (win->w);
-  if (newstr != NULL)
+  if (class->res_name != NULL
+      && (win->res_name == NULL || strcmp (class->res_name, win->res_name)))
     {
-      changed = changed || win->res_name == NULL || strcmp (newstr, win->res_name);
+      changed = 1;
       free (win->res_name);
-      win->res_name = newstr;
+      win->res_name = xstrdup(class->res_name);
     }
 
+  XFree (class->res_name);
+  XFree (class->res_class);
+  XFree (class);
   return changed;
 }
 
