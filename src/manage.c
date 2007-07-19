@@ -198,39 +198,27 @@ update_normal_hints (rp_window *win)
 static char *
 get_wmname (Window w)
 {
-  unsigned char *name = NULL;
-  char *ret;
+  char *name = NULL;
   XTextProperty text_prop;
-  int n;
+  int status, n;
   char** cl;
 
   if (XGetWMName(dpy, w, &text_prop) != 0) {
-    if (text_prop.encoding == XA_STRING) {
-      name = (char *)text_prop.value;
-    } else {
-      XmbTextPropertyToTextList(dpy, &text_prop, &cl, &n);
-      XFree (text_prop.value);
-      if (cl) {
-        name = strdup(cl[0]);
-        XFreeStringList(cl);
-      } else {
-        PRINT_DEBUG (("I can't get the WMName.\n"));
-        return NULL;
-      }
+    status = XmbTextPropertyToTextList(dpy, &text_prop, &cl, &n);
+    if (status == Success && cl && n > 0) {
+      name = xstrdup(cl[0]);
+      XFreeStringList(cl);
+    } else if (text_prop.encoding == XA_STRING) {
+	name = xstrdup((char*)text_prop.value);
     }
-  } else {
-    PRINT_DEBUG (("I can't get the WMName.\n"));
-    return NULL;
+    XFree (text_prop.value);
   }
-
-  PRINT_DEBUG (("WM_NAME: '%s'\n", name));
-
-  /* duplicate the string into our own buffer, and free the one given
-     to us by X. */
-  ret = xstrdup ((char *)name);
-  XFree (name);
-
-  return ret;
+  if (name == NULL) {
+    PRINT_DEBUG (("I can't get the WMName.\n"));
+  } else {
+    PRINT_DEBUG (("WM_NAME: '%s'\n", name));
+  }
+  return name;
 }
 
 static XClassHint *

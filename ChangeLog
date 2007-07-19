@@ -1,3 +1,8 @@
+2007-07-07  Bernhard R. Link  <brlink@debian.org>
+
+	* src/manage.c (get_wmname): always try XmbTextPropertyToTextList
+	first to also support UTF-8 window titles when encoded as XA_STRING
+
 2007-07-04  Bernhard R. Link  <brlink@debian.org>
 
 	* src/main.c (clean_up): call free_user_commands, free_groups only
