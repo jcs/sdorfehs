@@ -126,15 +126,24 @@ xvsprintf (char *fmt, va_list ap)
         return buffer;
       else if (nchars > -1)
         size = nchars + 1;
-      else
+      /* c99 says -1 is an error other than truncation,
+       * which thus will not go away with a larger buffer.
+       * To support older system but not making errors fatal
+       * (ratpoison will abort when trying to get too much memory otherwise),
+       * try to increase a bit but not too much: */
+      else if (size < MAX_LEGACY_SNPRINTF_SIZE)
         size *= 2;
+      else
+	{
+	  free(buffer);
+	  break;
+	}
 
       /* Resize the buffer and try again. */
       buffer = (char *)xrealloc (buffer, size);
     }
 
-  /* Never gets here. */
-  return NULL;
+  return xstrdup("<FAILURE>");
 }
 
 /* Return a new string based on fmt. */

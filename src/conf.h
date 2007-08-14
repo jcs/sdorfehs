@@ -123,4 +123,10 @@
 #define DEFAULT_FONT "-*-fixed-bold-r-normal-*-15-*-*-*-c-*-*-*"
 #define BACKUP_FONT "*"
 
+/* maximum xvsprintf result string length for systems with pre-C99 snprintf:
+ * on errors that are either permanent or cannot be distinguished from those
+ * as libc's snprintf might by returning -1 for too small buffers, at most
+ * the double of this value is tried before giving up */
+#define MAX_LEGACY_SNPRINTF_SIZE 102400
+
 #endif /* !_ _RATPOISON_CONF_H */

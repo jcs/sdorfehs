@@ -1,3 +1,10 @@
+2007-08-14  Bernhard R. Link  <brlink@debian.org>
+
+	* src/main.c (xvsprintf): limit memory allocation
+	to 200K when vsnprintf return -1. (i.e. on pre-1999
+	systems not distinguising fatal errors and too small
+	buffer).
+
 2007-07-08  Bernhard R. Link  <brlink@debian.org>
 
 	* src/manage.c (get_res_name, get_res_class): remove
