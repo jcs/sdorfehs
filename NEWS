@@ -6,6 +6,9 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
+* Changes since 1.4.1
+Just bug fixes.
+
 * Changes since 1.4.0
 ** set padding affects bar location
 On OSX the bar and top of each window is hidden by the menu bar. set
