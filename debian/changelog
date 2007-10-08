@@ -1,6 +1,32 @@
-ratpoison (1.4.2~CVS-0) UNRELEASED; urgency=low
+ratpoison (1.4.2-1) unstable; urgency=low
 
- -- Bernhard R. Link <brlink@debian.org>  Wed, 18 Apr 2007 10:05:48 +0200
+  * new upstream version
+  - obsoletes restorededication.patch, memoryhole.patch,
+    noabortonvoncerterror.diff, nodoubleclassreading.diff,
+    nodoubleclassreading.diff, utf8locale.diff
+  - mimic emacs X key naming more closely. A modifier being both
+    Hyper and Super should only be treated as one and not as both
+    (Closes: 419882)
+
+ -- Bernhard R. Link <brlink@debian.org>  Sun,  7 Oct 2007 11:29:55 +0200
+
+ratpoison (1.4.1-5) unstable; urgency=low
+
+  * backport of some patches to 1.4.1:
+  - nodoubleclassreading.diff: reduce X server communication a bit
+  - noabortonconverterror.diff: don't abort (by requesting infinite
+    amount of memory) if there is an string truncation error. (Closes: 423141)
+  - utf8locale.diff: also handle utf8 window titles correctly if ratpoison
+    itself is running in utf8 locale. (Closes: 438063)
+  * adopt to new menu layout
+
+ -- Bernhard R. Link <brlink@debian.org>  Wed, 15 Aug 2007 12:24:28 +0200
+
+ratpoison (1.4.1-4) unstable; urgency=low
+
+  * close memory hole in dealing with utf-8 window titles (Closes: 423141)
+
+ -- Bernhard R. Link <brlink@debian.org>  Fri, 01 Jun 2007 20:04:18 +0200
 
 ratpoison (1.4.1-3) unstable; urgency=low
 
