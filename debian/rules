@@ -115,9 +115,9 @@ binary-arch: build-arch install-arch
 	dh_md5sums
 	dh_builddeb
 
-RATPOISON_VERSION=1.4.1
+RATPOISON_VERSION=1.4.2
 RATPOISON_CVSVERSION=1.4.1~CVS$(shell date +%Y%m%d)
-RATPOISON_UVERSION=1.4.1-CVS
+RATPOISON_UVERSION=1.4.2-CVS
 
 # some helpers for me
 # just ignore those if you want to do a NMU or a security upload, change the files outside
