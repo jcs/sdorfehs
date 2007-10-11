@@ -60,7 +60,7 @@ open PYTHON, ">$PYTHON_FILE" or die "Can't create $PYTHON_FILE";
 # PERL preamble
 print PERL 'package Ratpoison;';
 print PERL '$RATPOISON="',$RATPOISON,'";';
-print PERL 'sub command { return `$RATPOISON -c "@_"`; }';
+print PERL 'sub command { my $a = "@_"; $a =~ s/(\')/\'\\\\\'\'/g; return `$RATPOISON -c \'$a\'`; }';
 
 # ELISP preamble
 print ELISP '(defvar ratpoison-program "',$RATPOISON,'")';
