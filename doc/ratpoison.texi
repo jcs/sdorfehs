@@ -74,7 +74,7 @@ details.
 @node Top, GNU Free Documentation License, (dir), (dir)
 
 @ifinfo
-This document explains how to use ratpoison 1.4.1.
+This document explains how to use ratpoison 1.4.3.
 @end ifinfo
 
 @menu
