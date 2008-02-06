@@ -377,6 +377,30 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
   return nbytes;
 }
 
+/* Wait for a key and discard it. */
+void
+read_any_key ()
+{
+  char buffer[513];
+  unsigned int mod;
+  KeySym c;
+
+  read_single_key (&c, &mod, buffer, sizeof (buffer));
+}
+
+/* The same as read_key, but handle focusing the key_window and reverting focus. */
+int
+read_single_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
+{
+  Window focus;
+  int revert;
+
+  XGetInputFocus (dpy, &focus, &revert);
+  set_window_focus (current_screen()->key_window);
+  read_key (keysym, modifiers, keysym_name, len);
+  set_window_focus (focus);
+}
+
 int
 read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
 {
@@ -386,10 +410,13 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
   /* Read a key from the keyboard. */
   do
     {
-      XMaskEvent (dpy, KeyPressMask, &ev);
+      /* The keyboard is frozen, so unfreeze it and allow another key to come in. */
+      XAllowEvents (dpy, SyncKeyboard, CurrentTime);
+
+      XMaskEvent (dpy, KeyPressMask|KeyRelease, &ev);
       *modifiers = ev.xkey.state;
       nbytes = cook_keycode (&ev.xkey, keysym, modifiers, keysym_name, len, 0);
-    } while (IsModifierKey (*keysym));
+    } while (IsModifierKey (*keysym) || ev.xkey.type == KeyRelease);
 
   return nbytes;
 }
@@ -503,6 +530,8 @@ get_more_input (char *prompt, char *preinput,
   rp_input_line *line;
   char *final_input;
   edit_status status;
+  Window focus;
+  int revert;
 
 #ifdef HAVE_HISTORY
   history_reset();
@@ -522,11 +551,12 @@ get_more_input (char *prompt, char *preinput,
   XMapWindow (dpy, s->input_window);
   XRaiseWindow (dpy, s->input_window);
   XClearWindow (dpy, s->input_window);
+  /* Switch focus to our input window to read the next key events. */
+  XGetInputFocus (dpy, &focus, &revert);
+  set_window_focus (s->input_window);
   XSync (dpy, False);
 
   update_input_window (s, line);
-
-  XGrabKeyboard (dpy, s->input_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
   for (;;)
     {
@@ -566,7 +596,7 @@ get_more_input (char *prompt, char *preinput,
   input_line_free (line);
 
   /* Revert focus. */
-  XUngrabKeyboard (dpy, CurrentTime);
+  set_window_focus (focus);
   XUnmapWindow (dpy, s->input_window);
 
   /* Possibly restore colormap. */

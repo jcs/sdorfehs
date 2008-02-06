@@ -1739,9 +1739,7 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
       XSync (dpy, False);
 
       /* Read a key. */
-      XGrabKeyboard (dpy, current_screen()->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
-      read_key (&c, &mod, keysym_buf, keysym_bufsize);
-      XUngrabKeyboard (dpy, CurrentTime);
+      read_single_key (&c, &mod, keysym_buf, keysym_bufsize);
 
       /* Destroy our number windows and free the array. */
       for (i=0; i<frames; i++)
@@ -2966,16 +2964,20 @@ cmd_resize (int interactive, struct cmdarg **args)
       unsigned int mod;
       KeySym c;
       struct list_head *bk;
+      Window focus;
+      int revert;
 
       /* If we haven't got at least 2 frames, there isn't anything to
          scale. */
       if (num_frames (s) < 2)
         return cmdret_new (RET_FAILURE, NULL);
 
-      XGrabKeyboard (dpy, s->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
-
       /* Save the frameset in case the user aborts. */
       bk = screen_copy_frameset (s);
+
+      /* Get ready to read keys. */
+      XGetInputFocus (dpy, &focus, &revert);
+      set_window_focus (s->key_window);
 
       while (1)
         {
@@ -3025,7 +3027,7 @@ cmd_resize (int interactive, struct cmdarg **args)
       free (bk);
 
       hide_frame_indicator ();
-      XUngrabKeyboard (dpy, CurrentTime);
+      set_window_focus (focus);
     }
   else
     {
@@ -3144,7 +3146,6 @@ cmdret *
 cmd_license (int interactive, struct cmdarg **args)
 {
   rp_screen *s = current_screen();
-  XEvent ev;
   int x = 10;
   int y = 10;
   int i;
@@ -3181,7 +3182,6 @@ cmd_license (int interactive, struct cmdarg **args)
   XInstallColormap (dpy, s->def_cmap);
 
   XMapRaised (dpy, s->help_window);
-  XGrabKeyboard (dpy, s->help_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
   /* Find the longest line. */
   for(i=0; license_text[i]; i++)
@@ -3210,10 +3210,7 @@ cmd_license (int interactive, struct cmdarg **args)
   }
 
   /* Wait for a key press. */
-  XMaskEvent (dpy, KeyPressMask, &ev);
-
-  /* Revert focus. */
-  XUngrabKeyboard (dpy, CurrentTime);
+  read_any_key ();
   XUnmapWindow (dpy, s->help_window);
 
   /* Possibly restore colormap. */
@@ -3243,7 +3240,6 @@ cmd_help (int interactive, struct cmdarg **args)
   if (interactive)
     {
       rp_screen *s = current_screen();
-      XEvent ev;
       int i, old_i;
       int x = 10;
       int y = 0;
@@ -3257,7 +3253,6 @@ cmd_help (int interactive, struct cmdarg **args)
       XInstallColormap (dpy, s->def_cmap);
 
       XMapRaised (dpy, s->help_window);
-      XGrabKeyboard (dpy, s->help_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
 
       XmbDrawString (dpy, s->help_window, defaults.font, s->normal_gc,
 		     10, y + rp_font_ascent,
@@ -3342,8 +3337,7 @@ cmd_help (int interactive, struct cmdarg **args)
             }
         }
 
-      XMaskEvent (dpy, KeyPressMask, &ev);
-      XUngrabKeyboard (dpy, CurrentTime);
+      read_any_key();
       XUnmapWindow (dpy, s->help_window);
 
       /* Possibly restore colormap. */
@@ -4953,8 +4947,6 @@ cmd_readkey (int interactive, struct cmdarg **args)
 
   map = ARG(0,keymap);
 
-  XGrabKeyboard (dpy, current_screen()->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
-
   /* Change the mouse icon to indicate to the user we are waiting for
      more keystrokes */
   if (defaults.wait_for_key_cursor)
@@ -4963,8 +4955,7 @@ cmd_readkey (int interactive, struct cmdarg **args)
       rat_grabbed = 1;
     }
 
-  read_key (&keysym, &mod, NULL, 0);
-  XUngrabKeyboard (dpy, CurrentTime);
+  read_single_key (&keysym, &mod, NULL, 0);
 
   if (rat_grabbed)
     ungrab_rat();
@@ -5506,8 +5497,6 @@ cmd_describekey (int interactive, struct cmdarg **args)
 
   map = ARG(0,keymap);
 
-  XGrabKeyboard (dpy, current_screen()->key_window, False, GrabModeSync, GrabModeAsync, CurrentTime);
-
   /* Change the mouse icon to indicate to the user we are waiting for
      more keystrokes */
   if (defaults.wait_for_key_cursor)
@@ -5516,8 +5505,7 @@ cmd_describekey (int interactive, struct cmdarg **args)
       rat_grabbed = 1;
     }
 
-  read_key (&keysym, &mod, NULL, 0);
-  XUngrabKeyboard (dpy, CurrentTime);
+  read_single_key (&keysym, &mod, NULL, 0);
 
   if (rat_grabbed)
     ungrab_rat();
