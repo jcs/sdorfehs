@@ -139,6 +139,9 @@ unmap_notify (XEvent *ev)
           if (frame->number == win->scr->current_frame
               && current_screen() == win->scr)
             set_active_frame (frame, 0);
+	  /* Since we may have switched windows, call the hook. */
+	  if (frame->win_number != EMPTY)
+	    hook_run (&rp_switch_win_hook);
         }
 
       withdraw_window (win);
@@ -234,6 +237,9 @@ destroy_window (XDestroyWindowEvent *ev)
               && current_screen() == win->scr)
             set_active_frame (frame, 0);
         }
+      /* Since we may have switched windows, call the hook. */
+      if (frame->win_number != EMPTY)
+	hook_run (&rp_switch_win_hook);
       withdraw_window (win);
     }
 
