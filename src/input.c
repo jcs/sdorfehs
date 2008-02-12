@@ -394,11 +394,14 @@ read_single_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int
 {
   Window focus;
   int revert;
+  int nbytes;
 
   XGetInputFocus (dpy, &focus, &revert);
   set_window_focus (current_screen()->key_window);
-  read_key (keysym, modifiers, keysym_name, len);
+  nbytes = read_key (keysym, modifiers, keysym_name, len);
   set_window_focus (focus);
+
+  return nbytes;
 }
 
 int
