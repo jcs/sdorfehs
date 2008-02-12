@@ -22,7 +22,6 @@
 #include <ctype.h>		/* for isspace */
 #include <sys/wait.h>
 #include <X11/keysym.h>
-#include <X11/extensions/XTest.h>
 #include <string.h>
 #include <strings.h>
 #include <time.h>
@@ -30,6 +29,10 @@
 #include <signal.h>
 
 #include "ratpoison.h"
+
+#ifdef HAVE_LIBXTST
+#  include <X11/extensions/XTest.h>
+#endif
 
 
 #define ARG_STRING(elt) args[elt]->string
@@ -3099,9 +3102,13 @@ cmd_ratclick (int interactive, struct cmdarg **args)
         return cmdret_new (RET_SUCCESS, "ratclick: invalid argument");
     }
 
+#ifdef HAVE_LIBXTST
   XTestFakeButtonEvent(dpy, button, True, CurrentTime);
   XTestFakeButtonEvent(dpy, button, False, CurrentTime);
   return cmdret_new (RET_SUCCESS, NULL);
+#else
+  return cmdret_new (RET_FAILURE, "ratclick: Please compile with the Xtst extension");
+#endif
 }
 
 cmdret *
@@ -3116,6 +3123,7 @@ cmd_rathold (int interactive, struct cmdarg **args)
         return cmdret_new (RET_SUCCESS, "ratclick: invalid argument");
     }
 
+#ifdef HAVE_LIBXTST
   if (!strcmp(ARG_STRING(0), "down"))
     XTestFakeButtonEvent(dpy, button, True, CurrentTime);
   else if(!strcmp(ARG_STRING(0),"up"))
@@ -3124,6 +3132,9 @@ cmd_rathold (int interactive, struct cmdarg **args)
     return cmdret_new (RET_FAILURE, "rathold: '%s' invalid argument", ARG_STRING(0));
 
   return cmdret_new (RET_SUCCESS, NULL);
+#else
+  return cmdret_new (RET_FAILURE, "rathold: Please compile with the Xtst extension");
+#endif
 }
 
 cmdret *

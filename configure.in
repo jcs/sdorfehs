@@ -95,8 +95,8 @@ AC_CHECK_HEADERS([X11/extensions/Xinerama.h], [], [], [
 #include <X11/Xlib.h>
 ])
 AC_CHECK_LIB(Xext, XMissingExtension, [LIBS="-lXext $LIBS"],, $CFLAGS $LDFLAGS)
-AC_CHECK_LIB(Xinerama, XineramaQueryScreens, [LIBS="-lXinerama $LIBS"],, $CFLAGS $LDFLAGS)
-AC_CHECK_LIB(Xtst, XTestFakeButtonEvent, [LIBS="-lXtst $LIBS"],, $CFLAGS $LDFLAGS)
+AC_CHECK_LIB(Xinerama, XineramaQueryScreens, [LIBS="-lXinerama $LIBS"; AC_DEFINE(HAVE_LIBXINERAMA,1,[Xinerama])],, $CFLAGS $LDFLAGS)
+AC_CHECK_LIB(Xtst, XTestFakeButtonEvent, [LIBS="-lXtst $LIBS"; AC_DEFINE(HAVE_LIBXTST,1,[Xtst])],, $CFLAGS $LDFLAGS)
 
 
 dnl Check for electric fence library
