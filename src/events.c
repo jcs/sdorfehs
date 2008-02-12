@@ -433,6 +433,8 @@ handle_key (KeySym ks, unsigned int mod, rp_screen *s)
     {
       PRINT_DEBUG(("Impossible: No matching key"));
     }
+
+  /* All keys have been read so now we let the keyboard go. */
   XAllowEvents (dpy, AsyncKeyboard, CurrentTime);
 }
 
