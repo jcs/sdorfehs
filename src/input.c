@@ -289,7 +289,7 @@ grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
   for (i=0; i<8; i++)
     {
       XGrabKey(dpy, keycode, modifiers | mod_list[i],
-               grab_window, True, GrabModeAsync, GrabModeSync);
+               grab_window, True, GrabModeAsync, GrabModeAsync);
     }
 }
 
@@ -413,9 +413,6 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
   /* Read a key from the keyboard. */
   do
     {
-      /* The keyboard is frozen, so unfreeze it and allow another key to come in. */
-      XAllowEvents (dpy, SyncKeyboard, CurrentTime);
-
       XMaskEvent (dpy, KeyPressMask|KeyRelease, &ev);
       *modifiers = ev.xkey.state;
       nbytes = cook_keycode (&ev.xkey, keysym, modifiers, keysym_name, len, 0);
