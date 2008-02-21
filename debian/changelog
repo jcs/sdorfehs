@@ -1,3 +1,20 @@
+ratpoison (1.4.3-1) unstable; urgency=low
+
+  * new upstream version
+  * fix warning in manpage parsing
+
+ -- Bernhard R. Link <brlink@debian.org>  Thu, 21 Feb 2008 14:34:20 +0100
+
+ratpoison (1.4.2-2) unstable; urgency=low
+
+  * increase standards-version to 3.7.3
+  * recode debian/copyright to utf-8
+  * add Homepage and Vcs headers
+  * clean up debian/rules a bit
+  * don't link against libXext
+
+ -- Bernhard R. Link <brlink@debian.org>  Sun, 30 Dec 2007 15:01:18 +0100
+
 ratpoison (1.4.2-1) unstable; urgency=low
 
   * new upstream version

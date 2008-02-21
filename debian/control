@@ -2,8 +2,11 @@ Source: ratpoison
 Section: x11
 Priority: extra
 Maintainer: Bernhard R. Link <brlink@debian.org>
-Build-Depends: debhelper (>= 4.0.0), libx11-dev, libxext-dev, x11proto-core-dev, libxinerama-dev, libxtst-dev, libreadline5-dev, perl
-Standards-Version: 3.7.2
+Build-Depends: debhelper (>= 5), libx11-dev, libxext-dev, x11proto-core-dev, libxinerama-dev, libxtst-dev, libreadline5-dev, perl, autotools-dev
+Standards-Version: 3.7.3
+Homepage: http://www.nongnu.org/ratpoison/
+Vcs-Browser: http://git.savannah.nongnu.org/gitweb/?p=ratpoison.git
+Vcs-Git: git://git.savannah.nongnu.org/ratpoison.git
 
 Package: ratpoison
 Architecture: any
@@ -23,5 +26,3 @@ Description: keyboard-only window manager
  All interaction with the window manager is done through
  keystrokes. ratpoison has a prefix map to minimize
  key clobbering.
- .
- Homepage: http://www.nongnu.org/ratpoison
