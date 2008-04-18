@@ -6,6 +6,12 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
+* Changes since 1.4.2
+** key event handling
+top level key bindings are grabbed "asynchronously" instead of
+"synchronously." This should eliminate the freezes some people have
+experienced in previous versions.
+
 * Changes since 1.4.1
 Just bug fixes.
 
