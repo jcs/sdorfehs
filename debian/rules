@@ -1,5 +1,4 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -8,7 +7,6 @@
 # from having to guess our platform (since we know it already)
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-
 
 CFLAGS = -Wall -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
@@ -29,6 +27,12 @@ config.status: configure
 		echo "incompatible install-info call in doc/Makefile.in!" >&2 ;\
 		exit 1 ; \
 	fi
+ifneq "$(wildcard /usr/share/misc/config.sub)" ""
+	cp /usr/share/misc/config.sub config.sub
+endif
+ifneq "$(wildcard /usr/share/misc/config.guess)" ""
+	cp /usr/share/misc/config.guess config.guess
+endif
 	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
 	    --prefix=/usr \
 	    --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info \
@@ -37,6 +41,11 @@ config.status: configure
 	    $(DEPENDENCIES) \
 	    --x-includes="" --x-libraries="" \
 	    CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,syms"
+	# libXext is not needed for dynamic linking:
+	sed -i -e '/^LIBS =/s/-lXext //' src/Makefile
+# do not delete config.status if above rule failed,
+# as that might hide other left over files that need cleaning
+.PRECIOUS: config.status
 
 build-arch: build-arch-stamp
 build-arch-stamp: config.status
@@ -60,21 +69,18 @@ clean:
 	rm -f build-arch-stamp build-indep-stamp
 
 	if [ -e config.status ] ; then $(MAKE) distclean ; fi
+	! test -f config.log
 	-rm -f contrib/Ratpoison.pm contrib/ratpoison-cmd.el contrib/ratpoison.lisp contrib/ratpoison.py contrib/ratpoison.rb
 	-rm -f rpws.1
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
+	-rm -f config.sub config.guess
 	dh_clean
 
-install: install-arch install-indep
+# Build architecture-independent files
+binary-indep: build-indep-stamp
+# We have nothing to do
 
-install-indep: build-indep
-
-install-arch: build-arch
+# Build architecture-dependent files
+binary-arch: build-arch-stamp
 	dh_testdir
 	dh_testroot
 	dh_clean -k
@@ -82,21 +88,12 @@ install-arch: build-arch
 
 	$(MAKE) install pkgdatadir=/usr/share/doc/ratpoison/examples DESTDIR=$(CURDIR)/debian/ratpoison
 	# Those are installed to different places already by dh_*
-	rm $(CURDIR)/debian/ratpoison/usr/share/doc/ratpoison/COPYING
-	rm $(CURDIR)/debian/ratpoison/usr/share/doc/ratpoison/ChangeLog
+	rm debian/ratpoison/usr/share/doc/ratpoison/COPYING
+	rm debian/ratpoison/usr/share/doc/ratpoison/ChangeLog
 	# not needed two times:
-	rm $(CURDIR)/debian/ratpoison/usr/share/doc/ratpoison/examples/rpws
+	rm debian/ratpoison/usr/share/doc/ratpoison/examples/rpws
 	# The menu command:
-	install -D -m 0755 debian/callmenu.sh $(CURDIR)/debian/ratpoison/etc/X11/ratpoison/ratpoisonmenu
-
-# Build architecture-independent files here.
-binary-indep: build-indep install-indep
-# We have nothing to do
-
-# Build architecture-dependent files here.
-binary-arch: build-arch install-arch
-	dh_testdir
-	dh_testroot
+	install -D -m 0755 debian/callmenu.sh debian/ratpoison/etc/X11/ratpoison/ratpoisonmenu
 	dh_install
 	dh_installchangelogs ChangeLog
 	dh_installdocs
@@ -115,9 +112,7 @@ binary-arch: build-arch install-arch
 	dh_md5sums
 	dh_builddeb
 
-RATPOISON_VERSION=1.4.2
-RATPOISON_CVSVERSION=1.4.1~CVS$(shell date +%Y%m%d)
-RATPOISON_UVERSION=1.4.2-CVS
+RATPOISON_VERSION=1.4.3
 
 # some helpers for me
 # just ignore those if you want to do a NMU or a security upload, change the files outside
@@ -131,26 +126,6 @@ maintainer-unclean:
 	ln -s "../pc-ratpoison-$(RATPOISON_VERSION)" .pc
 	ln -s debian/patches patches
 	quilt push -a
-maintainer-ready:
-	test ! -d "../ratpoison-$(RATPOISON_VERSION)"
-	test ! -d "../pc-ratpoison-$(RATPOISON_VERSION)"
-	rm -rf "ratpoison-$(RATPOISON_UVERSION)"
-	tar -xzf "../ratpoison_$(RATPOISON_VERSION).orig.tar.gz"
-	mv "ratpoison-$(RATPOISON_UVERSION)" "../ratpoison-$(RATPOISON_VERSION)"
-	cp -a debian "../ratpoison-$(RATPOISON_VERSION)/"
-	rm -rf "../ratpoison-$(RATPOISON_VERSION)/debian/CVS"
-	rm -rf "../ratpoison-$(RATPOISON_VERSION)/debian/patches/CVS"
-	mkdir "../pc-ratpoison-$(RATPOISON_VERSION)"
-	ln -s "../pc-ratpoison-$(RATPOISON_VERSION)" "../ratpoison-$(RATPOISON_VERSION)/.pc"
-	ln -s debian/patches "../ratpoison-$(RATPOISON_VERSION)/patches"
-	cd "../ratpoison-$(RATPOISON_VERSION)" && quilt upgrade && quilt push -a
-maintainer-cvs:
-	make dist
-	mv "ratpoison-$(RATPOISON_UVERSION).tar.gz" "../ratpoison_$(RATPOISON_CVSVERSION).orig.tar.gz"
-	./debian/rules maintainer-ready RATPOISON_VERSION="$(RATPOISON_CVSVERSION)"
-	cd "../ratpoison-$(RATPOISON_CVSVERSION)" && ./debian/rules maintainer-clean
-	cd "../ratpoison-$(RATPOISON_CVSVERSION)" && dch -v "$(RATPOISON_CVSVERSION)-0" -D "LOCAL"
-
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install get-orig-source make-orig-source-working
+.PHONY: build-arch build-indep build clean binary-indep binary-arch binary maintainer-clean maintainer-unclean

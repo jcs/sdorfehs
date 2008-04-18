@@ -37,14 +37,6 @@ EXTRA_DIST		= $(doc_DATA)
 dist-hook:
 	chmod -R go-w $(distdir)
 
-bin-dist strip-bin-dist: all
-	-rm -rf $(PACKAGE)-$(VERSION).bin.$(host_triplet)
-	$(MAKE) $(subst strip-,-strip,install$(subst bin-dist,,$@)) \
-		prefix=`pwd`/$(PACKAGE)-$(VERSION).bin.$(host_triplet)/$(prefix)
-	$(TAR) chof - $(PACKAGE)-$(VERSION).bin.$(host_triplet) \
-		 | GZIP=$(GZIP_ENV) gzip -c > $(PACKAGE)-$(VERSION).bin.$(host_triplet).tar.gz
-	-rm -rf $(PACKAGE)-$(VERSION).bin.$(host_triplet)
-
 sense:
 	@echo 42
 

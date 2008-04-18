@@ -1,8 +1,8 @@
-Index: ratpoison-1.4.2/configure
+Index: ratpoison-1.4.3/configure
 ===================================================================
---- ratpoison-1.4.2.orig/configure	2007-10-07 11:28:27.000000000 +0200
-+++ ratpoison-1.4.2/configure	2007-10-07 11:28:32.000000000 +0200
-@@ -864,6 +864,7 @@
+--- ratpoison-1.4.3.orig/configure	2008-02-20 18:14:22.000000000 +0100
++++ ratpoison-1.4.3/configure	2008-02-20 18:24:32.000000000 +0100
+@@ -1312,6 +1312,7 @@
    --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
    --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-xterm=PROG        set the x terminal emulator used by ratpoison
@@ -10,7 +10,7 @@ Index: ratpoison-1.4.2/configure
    --with-x                use the X Window System
  
  Some influential environment variables:
-@@ -1872,6 +1873,27 @@
+@@ -2379,6 +2380,27 @@
  _ACEOF
  
  
@@ -38,11 +38,11 @@ Index: ratpoison-1.4.2/configure
  if test -n "$ac_tool_prefix"; then
    # Extract the first word of "${ac_tool_prefix}gcc", so it can be a program name with args.
  set dummy ${ac_tool_prefix}gcc; ac_word=$2
-Index: ratpoison-1.4.2/src/config.h.in
+Index: ratpoison-1.4.3/src/config.h.in
 ===================================================================
---- ratpoison-1.4.2.orig/src/config.h.in	2007-10-07 11:28:27.000000000 +0200
-+++ ratpoison-1.4.2/src/config.h.in	2007-10-07 11:28:32.000000000 +0200
-@@ -72,6 +72,9 @@
+--- ratpoison-1.4.3.orig/src/config.h.in	2008-02-20 18:14:22.000000000 +0100
++++ ratpoison-1.4.3/src/config.h.in	2008-02-20 18:24:32.000000000 +0100
+@@ -78,6 +78,9 @@
  /* Define to 1 if you have the <X11/extensions/Xinerama.h> header file. */
  #undef HAVE_X11_EXTENSIONS_XINERAMA_H
  

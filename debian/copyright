@@ -32,13 +32,15 @@ Trent Buck <fubarbaz at bigpond dot com>
 jesus c. meyendriesch <jesus at qplay dot org>
 Bernhard R. Link <brlink at debian dot org>
 Tobias C. Rittweiler <tcr at freebits dot de>
-Antti Nyk‰nen <aon at iki dot fi>
+Antti Nyk√§nen <aon at iki dot fi>
 rubikitch <rubikitch at ruby-lang org>
 Florian E.J. Fruth <fejf at rommel stw uni-erlangen de>
 Tim Cooijmans <tim at aapopfiets nl>
 Andreas Seltenreich  <uwi7 at rz uni-karlsruhe de>
 
 License:
+ Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
+
  ratpoison is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2, or (at your option)
@@ -55,4 +57,4 @@ License:
  MA 02110-1301, USA.
 
 On Debian systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL'.
+Public License can be found in `/usr/share/common-licenses/GPL-2'.

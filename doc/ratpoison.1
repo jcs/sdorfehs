@@ -429,7 +429,6 @@ is considered a security hole. xterm is one such application.
 .cmd msgwait [ seconds ]
 Set the duration the message window is shown.
 If \fIseconds\fP is zero, wait infinitely.
-.# This will hopefully be changed to set msgwait some day...
 .cmd newkmap keymap
 Generate a new keymap names \fIkeymap\fP. This keymap can
 be used to add new key\-command mapping to it with \fBdefinekey\fP
@@ -543,7 +542,6 @@ Show or set what kind of windows are allowed to jostle into the foreground.
 
 Default is all allowed i.e.\& 15.
 
-.#This will hopefully change to set rudeness and names instead of numbers one day.
 .cmd sdump
 Output the list of all screens.
 The screens are separated by commas. Each screen is shown as 6 values:
@@ -674,7 +672,7 @@ The following substitutions happen in format:
 .br
 %W by the unit to resize the window horizontally (width_inc)
 .br
-.%x by the xine screen number
+%x by the xine screen number
 and
 .br
 %% by a single %
