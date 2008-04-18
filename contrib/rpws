@@ -60,7 +60,7 @@ sub ws_init
     rp_call( "only" );
 
     my $i;
-    for( my $i = 1; $i < $num; $i++ )
+    for my $i (1..$num)
     {
         ws_init_ws( $i );
     }
