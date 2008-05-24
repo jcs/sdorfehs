@@ -343,6 +343,29 @@ init_screen (rp_screen *s, int screen_num)
   XSelectInput (dpy, s->help_window, KeyPressMask);
 
   XSync (dpy, 0);
+
+#ifdef USE_XFT_FONT
+  {
+     XRenderColor rc = {0, 0, 0, 0xFFFF};
+
+     if (!XftColorAllocValue (dpy, DefaultVisual (dpy, screen_num),
+                              DefaultColormap (dpy, screen_num), &rc, &s->color))
+       {
+         PRINT_ERROR(("Failed to allocate font color\n"));
+         s->ft_font = NULL;
+       }
+     else
+       {
+         s->ft_font = XftFontOpenName (dpy, screen_num, DEFAULT_XFT_FONT);
+         if (!s->ft_font)
+           {
+             PRINT_ERROR(("Failed to open font\n"));
+             XftColorFree (dpy, DefaultVisual (dpy, screen_num),
+                           DefaultColormap (dpy, screen_num), &s->color);
+           }
+       }
+  }
+#endif
 }
 
 static int

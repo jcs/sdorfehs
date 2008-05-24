@@ -27,7 +27,19 @@
 #define RET_SUCCESS 1
 #define RET_FAILURE 0
 
+#ifdef USE_XFT_FONT
+#include <X11/Xft/Xft.h>
+
+#define FONT_HEIGHT(s) ((s)->ft_font->ascent + (s)->ft_font->descent)
+#define FONT_ASCENT(s) ((s)->ft_font->ascent)
+
+#else
+
 #define FONT_HEIGHT(f) (rp_font_ascent + rp_font_descent)
+#define FONT_ASCENT(f) (rp_font_ascent)
+
+#endif
+
 #define MAX_FONT_WIDTH(f) (rp_font_width)
 
 #define WIN_EVENTS (StructureNotifyMask | PropertyChangeMask | ColormapChangeMask | FocusChangeMask)
@@ -175,5 +187,10 @@ void set_nselection (char *txt, int len);
 char *get_selection (void);
 
 void init_globals (void);
+
+/* Wrapper font functions to support Xft */
+
+void rp_draw_string (rp_screen *s, Drawable d, GC gc, int x, int y, char *string, int length);
+int rp_text_width (rp_screen *s, XFontSet font, char *string, int count);
 
 #endif

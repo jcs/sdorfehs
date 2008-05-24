@@ -29,6 +29,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#ifdef USE_XFT_FONT
+#include <X11/Xft/Xft.h>
+#endif
+
 typedef struct rp_window rp_window;
 typedef struct rp_screen rp_screen;
 typedef struct rp_action rp_action;
@@ -168,6 +172,11 @@ struct rp_screen
   /* The number of the currently focused frame. One for each screen so
      when you switch screens the focus doesn't get frobbed. */
   int current_frame;
+
+#ifdef USE_XFT_FONT
+  XftFont *ft_font;
+  XftColor color;
+#endif
 };
 
 struct rp_action

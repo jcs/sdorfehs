@@ -25,6 +25,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#ifdef USE_XFT_FONT
+#include <X11/Xft/Xft.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -245,6 +249,7 @@ count_lines (char* msg, int len)
 static int
 max_line_length (char* msg)
 {
+  rp_screen *s = current_screen ();
   size_t i;
   size_t start;
   int ret = 0;
@@ -257,7 +262,7 @@ max_line_length (char* msg)
           int current_width;
 
           /* Check if this line is the longest so far. */
-          current_width = XmbTextEscapement (defaults.font, msg + start, i - start);
+          current_width = rp_text_width (s, defaults.font, msg + start, -1);
           if(current_width > ret)
             {
               ret = current_width;
@@ -321,7 +326,7 @@ draw_string (rp_screen *s, char *msg)
   size_t i;
   int line_no;
   int start;
-  int line_height = FONT_HEIGHT (defaults.font);
+  int line_height = FONT_HEIGHT (s);
 
   /* Walk through the string, print each line. */
   start = 0;
@@ -332,22 +337,20 @@ draw_string (rp_screen *s, char *msg)
          line, and move down one line. */
       if (msg[i] == '\n')
         {
-          XmbDrawString (dpy, s->bar_window, defaults.font, s->normal_gc,
-			 defaults.bar_x_padding,
-			 defaults.bar_y_padding + rp_font_ascent
-			 +  line_no * line_height,
-			 msg + start, i - start);
+          rp_draw_string (s, s->bar_window, s->normal_gc,
+                        defaults.bar_x_padding,
+                        defaults.bar_y_padding + FONT_ASCENT(s),
+                        msg + start, -1);
           line_no++;
           start = i + 1;
         }
     }
 
   /* Print the last line. */
-  XmbDrawString (dpy, s->bar_window, defaults.font, s->normal_gc,
-		 defaults.bar_x_padding,
-		 defaults.bar_y_padding + rp_font_ascent
-		 +  line_no * line_height,
-		 msg + start, strlen (msg) - start);
+  rp_draw_string (s, s->bar_window, s->normal_gc,
+		defaults.bar_x_padding,
+		defaults.bar_y_padding + FONT_ASCENT(s),
+		msg + start, -1);
 
   XSync (dpy, False);
 }
@@ -412,6 +415,7 @@ static void
 get_mark_box (char *msg, size_t mark_start, size_t mark_end,
               int *x, int *y, int *width, int *height)
 {
+  rp_screen *s = current_screen ();
   int start, end;
   int mark_end_is_new_line = 0;
   int start_line;
@@ -445,11 +449,11 @@ get_mark_box (char *msg, size_t mark_start, size_t mark_end,
   if (mark_start == 0 || start_pos_in_line == 0)
     start = 0;
   else
-    start = XmbTextEscapement (defaults.font,
+    start = rp_text_width (s, defaults.font,
                         &msg[start_line_beginning],
                         start_pos_in_line) + defaults.bar_x_padding;
-
-  end = XmbTextEscapement (defaults.font,
+   
+  end = rp_text_width (s, defaults.font,
                     &msg[end_line_beginning],
                     end_pos_in_line) + defaults.bar_x_padding * 2;
 
@@ -468,8 +472,8 @@ get_mark_box (char *msg, size_t mark_start, size_t mark_end,
     }
 
   *x = start;
-  *y = (start_line - 1) * FONT_HEIGHT (defaults.font) + defaults.bar_y_padding;
-  *height = (end_line - start_line + 1) * FONT_HEIGHT (defaults.font);
+  *y = (start_line - 1) * FONT_HEIGHT (s) + defaults.bar_y_padding;
+  *height = (end_line - start_line + 1) * FONT_HEIGHT (s);
 }
 
 static void
@@ -542,7 +546,7 @@ marked_message_internal (char *msg, int mark_start, int mark_end)
   /* Calculate the width and height of the window. */
   num_lines = count_lines (msg, strlen(msg));
   width = defaults.bar_x_padding * 2 + max_line_length(msg);
-  height = FONT_HEIGHT (defaults.font) * num_lines + defaults.bar_y_padding * 2;
+  height = FONT_HEIGHT (s) * num_lines + defaults.bar_y_padding * 2;
 
   /* Display the string. */
   prepare_bar (s, width, height);

@@ -1000,9 +1000,9 @@ show_frame_message (char *msg)
       sbuf_concat (msgbuf, EMPTY_FRAME_MESSAGE);
     }
 
-  width = defaults.bar_x_padding * 2 + XmbTextEscapement (defaults.font, msgbuf->data,
+  width = defaults.bar_x_padding * 2 + rp_text_width (s, defaults.font, msgbuf->data,
 							  msgbuf->len);
-  height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
+  height = (FONT_HEIGHT (s) + defaults.bar_y_padding * 2);
 
   /* We don't want another frame indicator to be displayed on another
    * screen at the same time, so we hide it before bringing it back again.
@@ -1018,10 +1018,10 @@ show_frame_message (char *msg)
   XClearWindow (dpy, s->frame_window);
   XSync (dpy, False);
 
-  XmbDrawString (dpy, s->frame_window, defaults.font, s->normal_gc,
-		 defaults.bar_x_padding,
-		 defaults.bar_y_padding + rp_font_ascent,
-		 msgbuf->data, msgbuf->len);
+  rp_draw_string (s, s->frame_window, s->normal_gc,
+               defaults.bar_x_padding,
+               defaults.bar_y_padding + FONT_ASCENT(s),
+               msgbuf->data, -1);
 
   sbuf_free (msgbuf);
 }

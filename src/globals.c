@@ -264,3 +264,49 @@ init_globals (void)
   selection.text = NULL;
   selection.len = 0;
 }
+
+/* Wrapper font functions to support Xft */
+
+void
+rp_draw_string (rp_screen *s, Drawable d, GC gc, int x, int y, char *string, int length)
+{
+  if (length < 0)
+    length = strlen (string);
+
+#ifdef USE_XFT_FONT
+  if (s->ft_font)
+    {
+      XftDraw *draw;
+      draw = XftDrawCreate (dpy, d, DefaultVisual (dpy, s->screen_num),
+                            DefaultColormap (dpy, s->screen_num));
+      if (draw)
+        {
+          XftDrawString8 (draw, &s->color, s->ft_font, x, y, (FcChar8*) string, length);
+          XftDrawDestroy (draw);
+        }
+      else
+        PRINT_ERROR(("Failed to allocate XftDraw object\n"));
+    }
+  else
+#endif
+    XmbDrawString (dpy, d, defaults.font, gc, x, y, string, length);
+}
+
+int
+rp_text_width (rp_screen *s, XFontSet font, char *string, int count)
+{
+  if (count < 0)
+    count = strlen (string);
+
+#ifdef USE_XFT_FONT
+  if (s->ft_font)
+    {
+      XGlyphInfo extents;
+      XftTextExtents8 (dpy, s->ft_font, (FcChar8*) string, count, &extents);
+      return extents.xOff;
+    }
+  else
+#endif
+    return XmbTextEscapement (font, string, count);
+}
+

@@ -424,15 +424,15 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
 static void
 update_input_window (rp_screen *s, rp_input_line *line)
 {
-  int   prompt_width = XmbTextEscapement (defaults.font, line->prompt, strlen (line->prompt));
-  int   input_width  = XmbTextEscapement (defaults.font, line->buffer, line->length);
+  int   prompt_width = rp_text_width (s, defaults.font, line->prompt, -1);
+  int   input_width  = rp_text_width (s, defaults.font, line->buffer, line->length);
   int   total_width;
   GC lgc;
   XGCValues gv;
   int height;
 
   total_width = defaults.bar_x_padding * 2 + prompt_width + input_width + MAX_FONT_WIDTH (defaults.font);
-  height = (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2);
+  height = (FONT_HEIGHT (s) + defaults.bar_y_padding * 2);
 
   if (total_width < defaults.input_window_size + prompt_width)
     {
@@ -441,22 +441,22 @@ update_input_window (rp_screen *s, rp_input_line *line)
 
   XMoveResizeWindow (dpy, s->input_window,
                      bar_x (s, total_width), bar_y (s, height), total_width,
-                     (FONT_HEIGHT (defaults.font) + defaults.bar_y_padding * 2));
+                     (FONT_HEIGHT (s) + defaults.bar_y_padding * 2));
 
   XClearWindow (dpy, s->input_window);
   XSync (dpy, False);
 
-  XmbDrawString (dpy, s->input_window, defaults.font, s->normal_gc,
-		 defaults.bar_x_padding,
-		 defaults.bar_y_padding + rp_font_ascent,
-		 line->prompt,
-		 strlen (line->prompt));
+  rp_draw_string (s, s->input_window, s->normal_gc, 
+       		defaults.bar_x_padding, 
+                defaults.bar_y_padding + FONT_ASCENT(s),
+	        line->prompt, 
+                -1);
 
-  XmbDrawString (dpy, s->input_window, defaults.font, s->normal_gc,
-		 defaults.bar_x_padding + prompt_width,
-		 defaults.bar_y_padding + rp_font_ascent,
-		 line->buffer,
-		 line->length);
+  rp_draw_string (s, s->input_window, s->normal_gc, 
+                defaults.bar_x_padding + prompt_width,
+                defaults.bar_y_padding + FONT_ASCENT(s),
+	        line->buffer, 
+                line->length);
 
   gv.function = GXxor;
   gv.foreground = s->fg_color ^ s->bg_color;
@@ -464,10 +464,10 @@ update_input_window (rp_screen *s, rp_input_line *line)
 
   /* Draw a cheap-o cursor - MkII */
   XFillRectangle (dpy, s->input_window, lgc,
-                  defaults.bar_x_padding + prompt_width + XmbTextEscapement (defaults.font, line->buffer, line->position),
+		  defaults.bar_x_padding + prompt_width + rp_text_width (s, defaults.font, line->buffer, line->position),
                   defaults.bar_y_padding,
-                  XmbTextEscapement (defaults.font, &line->buffer[line->position], 1),
-                  FONT_HEIGHT (defaults.font));
+		  rp_text_width (s, defaults.font, &line->buffer[line->position], 1),
+                  FONT_HEIGHT (s));
 
   XFlush (dpy);
   XFreeGC (dpy, lgc);

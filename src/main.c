@@ -526,6 +526,9 @@ init_defaults (void)
   defaults.padding_top    = 0;
   defaults.padding_bottom = 0;
 
+#ifdef USE_XFT_FONT
+  defaults.font_string = xstrdup (DEFAULT_XFT_FONT);
+#else
   /* Attempt to load a font */
   defaults.font = load_query_font_set (dpy, DEFAULT_FONT);
   if (defaults.font == NULL)
@@ -541,6 +544,7 @@ init_defaults (void)
 
   defaults.font_string = xstrdup (DEFAULT_FONT);
   set_extents_of_fontset (defaults.font);
+#endif
 
   defaults.fgcolor_string = xstrdup ("black");
   defaults.bgcolor_string = xstrdup ("white");
@@ -760,6 +764,15 @@ free_screen (rp_screen *s)
   XDestroyWindow (dpy, s->input_window);
   XDestroyWindow (dpy, s->frame_window);
   XDestroyWindow (dpy, s->help_window);
+
+#ifdef USE_XFT_FONT
+  if (s->ft_font)
+    {
+      XftColorFree (dpy, DefaultVisual (dpy, s->screen_num),
+                    DefaultColormap (dpy, s->screen_num), &s->color);
+      XftFontClose (dpy, s->ft_font);
+    }
+#endif
 
   XFreeCursor (dpy, s->rat);
   XFreeColormap (dpy, s->def_cmap);
