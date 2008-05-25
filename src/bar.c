@@ -262,7 +262,7 @@ max_line_length (char* msg)
           int current_width;
 
           /* Check if this line is the longest so far. */
-          current_width = rp_text_width (s, defaults.font, msg + start, -1);
+          current_width = rp_text_width (s, defaults.font, msg + start, i - start);
           if(current_width > ret)
             {
               ret = current_width;
@@ -339,8 +339,9 @@ draw_string (rp_screen *s, char *msg)
         {
           rp_draw_string (s, s->bar_window, s->normal_gc,
                         defaults.bar_x_padding,
-                        defaults.bar_y_padding + FONT_ASCENT(s),
-                        msg + start, -1);
+                        defaults.bar_y_padding + FONT_ASCENT(s)
+                        + line_no * line_height,
+                        msg + start, i - start);
           line_no++;
           start = i + 1;
         }
@@ -349,8 +350,9 @@ draw_string (rp_screen *s, char *msg)
   /* Print the last line. */
   rp_draw_string (s, s->bar_window, s->normal_gc,
 		defaults.bar_x_padding,
-		defaults.bar_y_padding + FONT_ASCENT(s),
-		msg + start, -1);
+		defaults.bar_y_padding + FONT_ASCENT(s)
+                + line_no * line_height,
+		msg + start, strlen (msg) - start);
 
   XSync (dpy, False);
 }

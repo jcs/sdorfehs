@@ -1021,7 +1021,7 @@ show_frame_message (char *msg)
   rp_draw_string (s, s->frame_window, s->normal_gc,
                defaults.bar_x_padding,
                defaults.bar_y_padding + FONT_ASCENT(s),
-               msgbuf->data, -1);
+               msgbuf->data, msgbuf->len);
 
   sbuf_free (msgbuf);
 }
