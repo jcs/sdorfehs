@@ -1731,9 +1731,9 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
 
               /* Display the frame's number inside the window. */
              rp_draw_string (s, wins[i], s->normal_gc,
-                           defaults.bar_x_padding,
-                           defaults.bar_y_padding + FONT_ASCENT(s),
-                           num, -1);
+                             defaults.bar_x_padding,
+                             defaults.bar_y_padding + FONT_ASCENT(s),
+                             num, -1);
 
               free (num);
               i++;
@@ -3214,8 +3214,8 @@ cmd_license (int interactive, struct cmdarg **args)
   for(i=0; license_text[i]; i++)
   {
     rp_draw_string (s, s->help_window, s->normal_gc,
-                   x, y + FONT_ASCENT(s),
-                   license_text[i], -1);
+                    x, y + FONT_ASCENT(s),
+                    license_text[i], -1);
 
     y += FONT_HEIGHT (s);
   }
@@ -3266,21 +3266,21 @@ cmd_help (int interactive, struct cmdarg **args)
       XMapRaised (dpy, s->help_window);
 
       rp_draw_string (s, s->help_window, s->normal_gc,
-                    10, y + FONT_ASCENT(s),
-                    "ratpoison key bindings", -1);
+                      10, y + FONT_ASCENT(s),
+                      "ratpoison key bindings", -1);
 
       y += FONT_HEIGHT (s) * 2;
 
       rp_draw_string (s, s->help_window, s->normal_gc,
-                    10, y + FONT_ASCENT(s),
-                    "Command key: ", -1);
+                      10, y + FONT_ASCENT(s),
+                      "Command key: ", -1);
 
 
       keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
       rp_draw_string (s, s->help_window, s->normal_gc,
-                    10 + rp_text_width (s, defaults.font, "Command key: ", -1),
-                    y + FONT_ASCENT(s),
-                    keysym_name, -1);
+                      10 + rp_text_width (s, defaults.font, "Command key: ", -1),
+                      y + FONT_ASCENT(s),
+                      keysym_name, -1);
       free (keysym_name);
 
       y += FONT_HEIGHT (s) * 2;
@@ -3294,8 +3294,8 @@ cmd_help (int interactive, struct cmdarg **args)
               keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
 
               rp_draw_string (s, s->help_window, s->normal_gc,
-                           x, y + FONT_ASCENT(s),
-                           keysym_name, -1);
+                              x, y + FONT_ASCENT(s),
+                              keysym_name, -1);
 
               if (rp_text_width (s, defaults.font, keysym_name, -1) > max_width)
                 max_width = rp_text_width (s, defaults.font, keysym_name, -1);
@@ -3305,8 +3305,8 @@ cmd_help (int interactive, struct cmdarg **args)
           else
             {
               rp_draw_string (s, s->help_window, s->normal_gc,
-                           x, y + FONT_ASCENT(s),
-                           map->actions[i].data, -1);
+                              x, y + FONT_ASCENT(s),
+                              map->actions[i].data, -1);
 
               if (rp_text_width (s, defaults.font, map->actions[i].data, -1) > max_width)
                 {

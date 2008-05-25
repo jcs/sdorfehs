@@ -338,10 +338,10 @@ draw_string (rp_screen *s, char *msg)
       if (msg[i] == '\n')
         {
           rp_draw_string (s, s->bar_window, s->normal_gc,
-                        defaults.bar_x_padding,
-                        defaults.bar_y_padding + FONT_ASCENT(s)
-                        + line_no * line_height,
-                        msg + start, i - start);
+                          defaults.bar_x_padding,
+                          defaults.bar_y_padding + FONT_ASCENT(s)
+                          + line_no * line_height,
+                          msg + start, i - start);
           line_no++;
           start = i + 1;
         }
@@ -349,10 +349,10 @@ draw_string (rp_screen *s, char *msg)
 
   /* Print the last line. */
   rp_draw_string (s, s->bar_window, s->normal_gc,
-		defaults.bar_x_padding,
-		defaults.bar_y_padding + FONT_ASCENT(s)
-                + line_no * line_height,
-		msg + start, strlen (msg) - start);
+                  defaults.bar_x_padding,
+                  defaults.bar_y_padding + FONT_ASCENT(s)
+                  + line_no * line_height,
+                  msg + start, strlen (msg) - start);
 
   XSync (dpy, False);
 }
@@ -452,12 +452,12 @@ get_mark_box (char *msg, size_t mark_start, size_t mark_end,
     start = 0;
   else
     start = rp_text_width (s, defaults.font,
-                        &msg[start_line_beginning],
-                        start_pos_in_line) + defaults.bar_x_padding;
+                           &msg[start_line_beginning],
+                           start_pos_in_line) + defaults.bar_x_padding;
    
   end = rp_text_width (s, defaults.font,
-                    &msg[end_line_beginning],
-                    end_pos_in_line) + defaults.bar_x_padding * 2;
+                       &msg[end_line_beginning],
+                       end_pos_in_line) + defaults.bar_x_padding * 2;
 
   if (mark_end != strlen (msg))
     end -= defaults.bar_x_padding;

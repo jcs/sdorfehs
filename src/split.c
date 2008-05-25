@@ -1019,9 +1019,9 @@ show_frame_message (char *msg)
   XSync (dpy, False);
 
   rp_draw_string (s, s->frame_window, s->normal_gc,
-               defaults.bar_x_padding,
-               defaults.bar_y_padding + FONT_ASCENT(s),
-               msgbuf->data, msgbuf->len);
+                  defaults.bar_x_padding,
+                  defaults.bar_y_padding + FONT_ASCENT(s),
+                  msgbuf->data, msgbuf->len);
 
   sbuf_free (msgbuf);
 }

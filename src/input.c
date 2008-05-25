@@ -447,16 +447,16 @@ update_input_window (rp_screen *s, rp_input_line *line)
   XSync (dpy, False);
 
   rp_draw_string (s, s->input_window, s->normal_gc,
-       		defaults.bar_x_padding,
-                defaults.bar_y_padding + FONT_ASCENT(s),
-	        line->prompt, 
-                -1);
+                  defaults.bar_x_padding,
+                  defaults.bar_y_padding + FONT_ASCENT(s),
+                  line->prompt, 
+                  -1);
 
   rp_draw_string (s, s->input_window, s->normal_gc, 
-                defaults.bar_x_padding + prompt_width,
-                defaults.bar_y_padding + FONT_ASCENT(s),
-	        line->buffer, 
-                line->length);
+                  defaults.bar_x_padding + prompt_width,
+                  defaults.bar_y_padding + FONT_ASCENT(s),
+                  line->buffer, 
+                  line->length);
 
   gv.function = GXxor;
   gv.foreground = s->fg_color ^ s->bg_color;
