@@ -1730,8 +1730,8 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
               XClearWindow (dpy, wins[i]);
 
               /* Display the frame's number inside the window. */
-             rp_draw_string (s, wins[i], s->normal_gc, 
-                           defaults.bar_x_padding, 
+             rp_draw_string (s, wins[i], s->normal_gc,
+                           defaults.bar_x_padding,
                            defaults.bar_y_padding + FONT_ASCENT(s),
                            num, -1);
 
