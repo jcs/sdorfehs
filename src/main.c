@@ -817,7 +817,9 @@ clean_up (void)
 
   free_xinerama();
 
+#ifndef USE_XFT_FONT
   XFreeFontSet (dpy, defaults.font);
+#endif
   free (defaults.window_fmt);
 
   XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
