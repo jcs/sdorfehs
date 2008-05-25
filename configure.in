@@ -42,19 +42,23 @@ AC_ARG_WITH(xterm, [ --with-xterm=PROG        set the x terminal emulator used b
 term_prog=$withval, term_prog="xterm")
 AC_DEFINE_UNQUOTED(TERM_PROG, "$term_prog", X terminal emulator to use)
 
-dnl Use the Xft library if desired.
-AC_MSG_CHECKING(whether to use Xft)
-AC_ARG_WITH(xft,
-       AC_HELP_STRING([--with-xft], [use the Xft library for fonts]),
-       [if test "x$withval" != "xno"; then
-               AC_DEFINE_UNQUOTED(USE_XFT_FONT, 1, [Define this to use Xft])
-               CFLAGS="$CFLAGS `pkg-config --cflags xft`"
-               LDFLAGS="$LDFLAGS `pkg-config --libs xft`"
-               AC_MSG_RESULT(yes)
-       else
-               AC_MSG_RESULT(no)
-       fi],
-       [AC_MSG_RESULT(no)])
+dnl Configure Xft. If it's found then use it unless explicitely disabled
+PKG_CHECK_MODULES([XFT], [xft],,[noop=noop])
+
+if test -z "$XFT_PKG_ERRORS"; then
+    AC_MSG_CHECKING(whether to use Xft)
+    AC_ARG_WITH(xft, AC_HELP_STRING([--without-xft], [Don't use the Xft library even if available]),
+                xft=$withval, xft=yes)
+
+    if test "x$xft" != "xno"; then
+       AC_DEFINE_UNQUOTED(USE_XFT_FONT, 1, [Define this to use Xft])
+       CFLAGS="$CFLAGS $XFT_CFLAGS"
+       LDFLAGS="$LDFLAGS $XFT_LIBS"
+       AC_MSG_RESULT(yes)
+    else
+       AC_MSG_RESULT(no)
+    fi
+fi
 
 dnl Checks for programs.
 AC_CHECK_TOOL(CC, gcc)
