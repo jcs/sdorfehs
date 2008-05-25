@@ -6,6 +6,10 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
+* Changes since 1.4.3
+** ratpoison can use xft
+If xft is found on your system ratpoison will use it unless explicitely told not to using --without-xft
+
 * Changes since 1.4.2
 ** key event handling
 top level key bindings are grabbed "asynchronously" instead of
