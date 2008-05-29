@@ -242,8 +242,9 @@ update_modifier_map (void)
 }
 
 /* we need a keycode + modifier to generate the proper keysym (such as
-   @). */
-static void
+   @). Return 1 if successful, 0 otherwise. This function can fail if a
+   keysym doesn't map to a keycode. */
+static int
 keysym_to_keycode_mod (KeySym keysym, KeyCode *code, unsigned int *mod)
 {
   KeySym lower, upper;
@@ -256,6 +257,8 @@ keysym_to_keycode_mod (KeySym keysym, KeyCode *code, unsigned int *mod)
      mask. */
   if (upper == keysym && lower != keysym)
     *mod = ShiftMask;
+
+  return *code != 0;
 }
 
 /* Grab the key while ignoring annoying modifier keys including
@@ -270,7 +273,8 @@ grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
 
   /* Convert to a modifier mask that X Windows will understand. */
   modifiers = rp_mask_to_x11_mask (modifiers);
-  keysym_to_keycode_mod (keysym, &keycode, &mod);
+  if (!keysym_to_keycode_mod (keysym, &keycode, &mod))
+    return;
   PRINT_DEBUG (("keycode_mod: %ld %d %d\n", keysym, keycode, mod));
   modifiers |= mod;
 

@@ -916,8 +916,7 @@ parse_keydesc (char *s, struct rp_key *key)
       /* Its got no hyphens in it, so just grab the keysym */
       key->sym = string_to_keysym (keydesc);
 
-      /* A keycode of 0 means the keysym doesn't have a keycode. */
-      if (key->sym == NoSymbol || XKeysymToKeycode (dpy, key->sym) == 0)
+      if (key->sym == NoSymbol)
         {
           cmdret *ret = cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'", keydesc);
           free (keydesc);
@@ -952,8 +951,7 @@ parse_keydesc (char *s, struct rp_key *key)
                  keysym name. */
               key->sym = string_to_keysym (token);
 
-              /* A keycode of 0 means the keysym doesn't have a keycode. */
-              if (key->sym == NoSymbol || XKeysymToKeycode (dpy, key->sym) == 0)
+              if (key->sym == NoSymbol)
                 {
                   cmdret *ret = cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'", token);
                   free (keydesc);
