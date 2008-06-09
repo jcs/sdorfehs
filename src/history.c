@@ -113,32 +113,6 @@ history_next (void)
   return h ? h->line : NULL;
 }
 
-char *
-history_list_items (void)
-{
-  HIST_ENTRY **hlist;
-  struct sbuf *list;
-  char *tmp;
-  int i;
-
-  list = sbuf_new (0);
-  hlist = history_list ();
-
-  if (!hlist) return NULL;
-
-  for (i = 0; hlist[i] != NULL; i++)
-    {
-      sbuf_concat (list, hlist[i]->line);
-      if (i < history_length - 1)
-        sbuf_concat (list, "\n");
-    }
-
-  tmp = sbuf_get (list);
-  free (list);
-
-  return tmp;
-}
-
 int history_expand_line (char *string, char **output)
 {
   return history_expand (string, output);

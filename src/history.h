@@ -28,7 +28,6 @@ void  history_reset (void);
 void  history_add (char *item);
 char *history_next (void);
 char *history_previous (void);
-char *history_list_items (void);
 int   history_expand_line (char *string, char **output);
 
 #endif /* ! _RATPOISON_HISTORY_H */
