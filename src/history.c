@@ -82,9 +82,14 @@ history_reset (void)
 }
 
 void
-history_add (char *item)
+history_add (int history_id, char *item)
 {
-  HIST_ENTRY *h = history_get (history_length);
+  HIST_ENTRY *h;
+
+  if (history_id == hist_NONE)
+    return;
+
+  h = history_get (history_length);
 
   if (item == NULL || *item == '\0' || isspace (*item) || (h != NULL && !strcmp (h->line, item)))
     return;
@@ -93,27 +98,33 @@ history_add (char *item)
   add_history (item);
 }
 
-char *
-history_previous (void)
+const char *
+history_previous (int history_id)
 {
   HIST_ENTRY *h = NULL;
+
+  if (history_id == hist_NONE)
+    return NULL;
 
   h = previous_history();
 
   return h ? h->line : NULL;
 }
 
-char *
-history_next (void)
+const char *
+history_next (int history_id)
 {
   HIST_ENTRY *h = NULL;
+
+  if (history_id == hist_NONE)
+    return NULL;
 
   h = next_history();
 
   return h ? h->line : NULL;
 }
 
-int history_expand_line (char *string, char **output)
+int history_expand_line (int history_id, char *string, char **output)
 {
   return history_expand (string, output);
 }

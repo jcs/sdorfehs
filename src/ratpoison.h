@@ -82,9 +82,7 @@ extern XGCValues gv;
 #include "screen.h"
 #include "group.h"
 #include "editor.h"
-#ifdef HAVE_HISTORY
 #include "history.h"
-#endif /* HAVE_HISTORY */
 #include "completions.h"
 #include "hook.h"
 #include "xinerama.h"

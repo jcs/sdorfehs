@@ -21,13 +21,21 @@
 #ifndef _RATPOISON_HISTORY_H
 #define _RATPOISON_HISTORY_H 1
 
+enum { hist_NONE=0, hist_COMMAND, hist_SHELLCMD,
+	hist_SELECT, hist_KEYMAP, hist_KEY,
+	hist_WINDOW, hist_GRAVITY, hist_GROUP,
+	hist_HOOK, hist_VARIABLE, hist_PROMPT,
+	hist_OTHER,
+	/* must be last, do not use, for length only: */
+	hist_COUNT};
+
 void  history_load (void);
 void  history_save (void);
 void  history_resize (int size);
 void  history_reset (void);
-void  history_add (char *item);
-char *history_next (void);
-char *history_previous (void);
-int   history_expand_line (char *string, char **output);
+void  history_add (int, char *item);
+const char *history_next (int);
+const char *history_previous (int);
+int   history_expand_line (int, char *string, char **output);
 
 #endif /* ! _RATPOISON_HISTORY_H */

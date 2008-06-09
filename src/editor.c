@@ -102,13 +102,14 @@ static edit_binding edit_bindings[] =
      { {0,              0},     0} };
 
 rp_input_line *
-input_line_new (char *prompt, char *preinput, completion_fn fn)
+input_line_new (char *prompt, char *preinput, int history_id, completion_fn fn)
 {
   rp_input_line *line;
 
   line = xmalloc (sizeof (rp_input_line));
   line->prompt = prompt;
   line->compl = completions_new (fn);
+  line->history_id = history_id;
 
   /* Allocate some memory to start with */
   line->size = strlen (preinput) + 100;
@@ -358,7 +359,7 @@ static edit_status
 editor_history_previous (rp_input_line *line)
 {
 #ifdef HAVE_HISTORY
-  char *entry = history_previous ();
+  const char *entry = history_previous (line->history_id);
 
   if (entry)
     {
@@ -395,7 +396,7 @@ static edit_status
 editor_history_next (rp_input_line *line)
 {
 #ifdef HAVE_HISTORY
-  char *entry = history_next ();
+  const char *entry = history_next (line->history_id);
 
   if (entry)
     {
@@ -473,7 +474,7 @@ editor_enter (rp_input_line *line)
 
   line->buffer[line->length] = '\0';
 #ifdef HAVE_HISTORY
-  result = history_expand_line (line->buffer, &expansion);
+  result = history_expand_line (line->history_id, line->buffer, &expansion);
 
   PRINT_DEBUG (("History Expansion - result: %d\n", result));
   PRINT_DEBUG (("History Expansion - expansion: \'%s\'\n", expansion));
@@ -486,7 +487,7 @@ editor_enter (rp_input_line *line)
     }
   else /* result == 0 || result == 1 */
     {
-      history_add (expansion);
+      history_add (line->history_id, expansion);
       free (line->buffer);
       line->buffer = expansion;
     }

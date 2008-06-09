@@ -359,6 +359,7 @@ struct rp_input_line
   int   size;
   rp_completions *compl;
   Atom  selection;
+  int   history_id;
 };
 
 /* The hook dictionary. */

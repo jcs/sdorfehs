@@ -515,13 +515,13 @@ ring_bell (void)
 }
 
 char *
-get_input (char *prompt, completion_fn fn)
+get_input (char *prompt, int history_id, completion_fn fn)
 {
-  return get_more_input (prompt, "", fn);
+  return get_more_input (prompt, "", history_id, fn);
 }
 
 char *
-get_more_input (char *prompt, char *preinput,
+get_more_input (char *prompt, char *preinput, int history_id,
                 completion_fn compl_fn)
 {
   /* Emacs 21 uses a 513 byte string to store the keysym name. */
@@ -542,7 +542,7 @@ get_more_input (char *prompt, char *preinput,
 #endif /* HAVE_READLINE_HISTORY_H */
 
   /* Create our line structure */
-  line = input_line_new (prompt, preinput, compl_fn);
+  line = input_line_new (prompt, preinput, history_id, compl_fn);
 
   /* We don't want to draw overtop of the program bar. */
   hide_bar (s);
