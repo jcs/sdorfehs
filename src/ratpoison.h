@@ -99,7 +99,7 @@ void read_rc_file (FILE *file);
 void fatal (const char *msg);
 void *xmalloc (size_t size);
 void *xrealloc (void *ptr, size_t size);
-char *xstrdup (char *s);
+char *xstrdup (const char *s);
 char *xsprintf (char *fmt, ...);
 char *xvsprintf (char *fmt, va_list ap);
 int str_comp (char *s1, char *s2, int len);

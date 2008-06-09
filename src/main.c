@@ -83,7 +83,7 @@ xrealloc (void *ptr, size_t size)
 }
 
 char *
-xstrdup (char *s)
+xstrdup (const char *s)
 {
   char *value;
   value = strdup (s);
