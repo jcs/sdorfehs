@@ -186,10 +186,10 @@ init_user_commands(void)
   add_command ("abort",         cmd_abort,      0, 0, 0);
   add_command ("addhook",       cmd_addhook,    2, 2, 2,
                "Hook: ", arg_HOOK,
-               "Command: ", arg_REST);
+               "Command: ", arg_COMMAND);
   add_command ("alias",         cmd_alias,      2, 2, 2,
                "Alias: ", arg_STRING,
-               "Command: ", arg_REST);
+               "Command: ", arg_COMMAND);
   add_command ("banish",        cmd_banish,     0, 0, 0);
   add_command ("chdir",         cmd_chdir,      1, 0, 0,
                "Dir: ", arg_REST);
@@ -200,7 +200,7 @@ init_user_commands(void)
   add_command ("definekey",     cmd_definekey,  3, 3, 3,
                "Keymap: ", arg_KEYMAP,
                "Key: ", arg_KEY,
-               "Command: ", arg_REST);
+               "Command: ", arg_COMMAND);
   add_command ("undefinekey",   cmd_undefinekey, 2, 2, 2,
                "Keymap: ", arg_KEYMAP,
                "Key: ", arg_KEY);
@@ -305,7 +305,7 @@ init_user_commands(void)
   add_command ("redisplay",     cmd_redisplay,  0, 0, 0);
   add_command ("remhook",       cmd_remhook,    2, 2, 2,
                "Hook: ", arg_HOOK,
-               "Command: ", arg_REST);
+               "Command: ", arg_COMMAND);
   add_command ("remove",        cmd_remove,     0, 0, 0);
   add_command ("resize",        cmd_resize,     2, 0, 2,
                "", arg_NUMBER,
@@ -2441,6 +2441,7 @@ command (int interactive, char *data)
           /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
           for (i=0; i<uc->num_args; i++)
             if (uc->args[i].type == arg_REST
+                || uc->args[i].type == arg_COMMAND
                 || uc->args[i].type == arg_SHELLCMD
                 || uc->args[i].type == arg_RAW)
               {
@@ -5091,6 +5092,7 @@ cmd_set (int interactive, struct cmdarg **args)
       /* We need to tell parse_args about arg_REST and arg_SHELLCMD. */
       for (i=0; i<ARG(0,variable)->nargs; i++)
         if (ARG(0,variable)->args[i].type == arg_REST
+            || ARG(0,variable)->args[i].type == arg_COMMAND
             || ARG(0,variable)->args[i].type == arg_SHELLCMD
             || ARG(0,variable)->args[i].type == arg_RAW)
           {
