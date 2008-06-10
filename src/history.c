@@ -86,7 +86,7 @@ history_add (int history_id, char *item)
 {
   HIST_ENTRY *h;
 
-  if (history_id == hist_NONE)
+  if (history_id == hist_NONE || history_id == hist_SHELLCMD)
     return;
 
   h = history_get (history_length);
@@ -98,15 +98,38 @@ history_add (int history_id, char *item)
   add_history (item);
 }
 
+static const char *
+extract_shell_part (const char *p)
+{
+  if (strncmp(p, "exec", 4) &&
+      strncmp(p, "verbexec", 8))
+    return NULL;
+  while( *p && !isspace(*p) )
+    p++;
+  while( *p && isspace(*p) )
+    p++;
+  if (*p)
+    return p;
+  return NULL;
+}
+
 const char *
 history_previous (int history_id)
 {
   HIST_ENTRY *h = NULL;
+  const char *p;
 
   if (history_id == hist_NONE)
     return NULL;
 
   h = previous_history();
+
+  if (history_id == hist_SHELLCMD) {
+    p = NULL;
+    while( h && h->line && !(p = extract_shell_part(h->line)))
+      h = previous_history();
+    return p;
+  }
 
   return h ? h->line : NULL;
 }
@@ -115,12 +138,19 @@ const char *
 history_next (int history_id)
 {
   HIST_ENTRY *h = NULL;
+  const char *p;
 
   if (history_id == hist_NONE)
     return NULL;
 
   h = next_history();
 
+  if (history_id == hist_SHELLCMD) {
+    p = NULL;
+    while( h && h->line && !(p = extract_shell_part(h->line)))
+      h = next_history();
+    return p;
+  }
   return h ? h->line : NULL;
 }
 

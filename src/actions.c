@@ -1676,9 +1676,21 @@ exec_completions (char *str)
 }
 
 static cmdret *
-read_shellcmd (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
+read_shellcmd (struct argspec *spec, struct sbuf *s, struct cmdarg **arg, const char *command_name)
 {
-  return read_string (spec, s, hist_SHELLCMD, exec_completions, arg);
+  cmdret *ret;
+
+  ret = read_string (spec, s, hist_SHELLCMD, exec_completions, arg);
+#ifdef HAVE_HISTORY
+  if (command_name && !ret) {
+    /* store for command history */
+    char *s = xmalloc (strlen(command_name) + strlen((*arg)->string) + 2);
+    sprintf (s, "%s %s", command_name, (*arg)->string);
+    history_add (hist_COMMAND, s);
+    free(s);
+  }
+#endif
+  return ret;
 }
 
 /* Return NULL on abort/failure. */
@@ -2101,7 +2113,7 @@ read_number (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
 }
 
 static cmdret *
-read_arg (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
+read_arg (struct argspec *spec, struct sbuf *s, struct cmdarg **arg, const char *command_name)
 {
   cmdret *ret = NULL;
 
@@ -2128,7 +2140,7 @@ read_arg (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
       ret = read_command (spec, s, arg);
       break;
     case arg_SHELLCMD:
-      ret = read_shellcmd (spec, s, arg);
+      ret = read_shellcmd (spec, s, arg, command_name);
       break;
     case arg_WINDOW:
       ret = read_window (spec, s, arg);
@@ -2153,7 +2165,7 @@ read_arg (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
 /* Return -1 on failure. Return the number of args on success. */
 static cmdret *
 parsed_input_to_args (int num_args, struct argspec *argspec, struct list_head *list,
-                      struct list_head *args, int *parsed_args)
+                      struct list_head *args, int *parsed_args, const char *command_name)
 {
   struct sbuf *s;
   struct cmdarg *arg;
@@ -2167,7 +2179,7 @@ parsed_input_to_args (int num_args, struct argspec *argspec, struct list_head *l
   list_for_each_entry (s, list, node)
     {
       if (*parsed_args >= num_args) break;
-      ret = read_arg (&argspec[*parsed_args], s, &arg);
+      ret = read_arg (&argspec[*parsed_args], s, &arg, command_name);
       /* If there was an error, then abort. */
       if (ret)
         return ret;
@@ -2182,20 +2194,20 @@ parsed_input_to_args (int num_args, struct argspec *argspec, struct list_head *l
 /* Prompt the user for missing arguments. Returns non-zero on
    failure. 0 on success. */
 static cmdret *
-fill_in_missing_args (struct user_command *cmd, struct list_head *list, struct list_head *args)
+fill_in_missing_args (struct user_command *cmd, struct list_head *list, struct list_head *args, const char *command_name)
 {
   cmdret *ret;
   struct cmdarg *arg;
   int i = 0;
 
-  ret = parsed_input_to_args (cmd->num_args, cmd->args, list, args, &i);
+  ret = parsed_input_to_args (cmd->num_args, cmd->args, list, args, &i, command_name);
   if (ret)
     return ret;
 
   /* Fill in the rest of the required arguments. */
   for(; i < cmd->i_required_args; i++)
     {
-      ret = read_arg (&cmd->args[i], NULL, &arg);
+      ret = read_arg (&cmd->args[i], NULL, &arg, command_name);
       if (ret)
         return ret;
       list_add_tail (&arg->node, args);
@@ -2468,11 +2480,11 @@ command (int interactive, char *data)
 
           /* Interactive commands prompt the user for missing args. */
           if (interactive)
-            result = fill_in_missing_args (uc, &head, &args);
+            result = fill_in_missing_args (uc, &head, &args, uc->name);
           else
             {
               int parsed_args;
-              result = parsed_input_to_args (uc->num_args, uc->args, &head, &args, &parsed_args);
+              result = parsed_input_to_args (uc->num_args, uc->args, &head, &args, &parsed_args, uc->name);
             }
 
           if (result == NULL)
@@ -5222,7 +5234,7 @@ cmd_set (int interactive, struct cmdarg **args)
       if (result)
         goto failed;
       result = parsed_input_to_args (ARG(0,variable)->nargs, ARG(0,variable)->args,
-                                     &head, &arglist, &parsed_args);
+                                     &head, &arglist, &parsed_args, NULL);
       if (result)
         goto failed;
       /* 0 or nargs is acceptable */
