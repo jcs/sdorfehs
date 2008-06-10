@@ -537,9 +537,7 @@ get_more_input (char *prompt, char *preinput, int history_id,
   Window focus;
   int revert;
 
-#ifdef HAVE_HISTORY
   history_reset();
-#endif /* HAVE_READLINE_HISTORY_H */
 
   /* Create our line structure */
   line = input_line_new (prompt, preinput, history_id, compl_fn);

@@ -25,8 +25,8 @@
 #include "ratpoison.h"
 
 #ifdef HAVE_HISTORY
-
 #include "readline/history.h"
+#endif
 
 static char *
 get_history_filename (void)
@@ -47,6 +47,7 @@ get_history_filename (void)
   return filename;
 }
 
+#ifdef HAVE_HISTORY
 void
 history_load (void)
 {
@@ -97,6 +98,7 @@ history_add (int history_id, char *item)
   PRINT_DEBUG (("Adding item: %s\n", item));
   add_history (item);
 }
+#endif /* HAVE_HISTORY */
 
 static const char *
 extract_shell_part (const char *p)
@@ -113,6 +115,7 @@ extract_shell_part (const char *p)
   return NULL;
 }
 
+#ifdef HAVE_HISTORY
 const char *
 history_previous (int history_id)
 {
@@ -157,6 +160,50 @@ history_next (int history_id)
 int history_expand_line (int history_id, char *string, char **output)
 {
   return history_expand (string, output);
+}
+#else /* HAVE_HISTORY */
+
+void
+history_add (int history_id, char *item)
+{
+}
+
+void
+history_load (void)
+{
+}
+
+void
+history_save (void)
+{
+}
+
+void
+history_reset (void)
+{
+}
+
+void
+history_resize (int size)
+{
+}
+
+const char *
+history_previous (int history_id)
+{
+  return NULL;
+}
+
+const char *
+history_next (int history_id)
+{
+  return NULL;
+}
+
+int history_expand_line (int history_id, char *string, char **output)
+{
+  *output = xstrdup(string);
+  return 0;
 }
 
 #endif /* HAVE_HISTORY */

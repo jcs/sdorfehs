@@ -56,9 +56,7 @@ static edit_status editor_complete_next (rp_input_line *line);
 static edit_status editor_insert (rp_input_line *line, char *keysym_buf);
 
 
-#ifdef HAVE_HISTORY
 static char *saved_command = NULL;
-#endif
 
 typedef struct edit_binding edit_binding;
 
@@ -358,7 +356,6 @@ editor_backward_kill_line (rp_input_line *line)
 static edit_status
 editor_history_previous (rp_input_line *line)
 {
-#ifdef HAVE_HISTORY
   const char *entry = history_previous (line->history_id);
 
   if (entry)
@@ -384,18 +381,11 @@ editor_history_previous (rp_input_line *line)
     }
 
   return EDIT_INSERT;
-
-#else  /* HAVE_HISTORY */
-
-  return EDIT_NO_OP;
-
-#endif /* HAVE_HISTORY */
 }
 
 static edit_status
 editor_history_next (rp_input_line *line)
 {
-#ifdef HAVE_HISTORY
   const char *entry = history_next (line->history_id);
 
   if (entry)
@@ -422,10 +412,6 @@ editor_history_next (rp_input_line *line)
   line->position = line->length;
 
   return EDIT_INSERT;
-
-#else  /* HAVE_HISTORY */
-  return EDIT_NO_OP;
-#endif /* HAVE_HISTORY */
 }
 
 static edit_status
@@ -467,13 +453,10 @@ editor_insert (rp_input_line *line, char *keysym_buf)
 static edit_status
 editor_enter (rp_input_line *line)
 {
-#ifdef HAVE_HISTORY
   int result;
   char *expansion;
-#endif
 
   line->buffer[line->length] = '\0';
-#ifdef HAVE_HISTORY
   result = history_expand_line (line->history_id, line->buffer, &expansion);
 
   PRINT_DEBUG (("History Expansion - result: %d\n", result));
@@ -491,7 +474,6 @@ editor_enter (rp_input_line *line)
       free (line->buffer);
       line->buffer = expansion;
     }
-#endif /* HAVE_HISTORY */
 
   return EDIT_DONE;
 }

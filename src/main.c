@@ -713,9 +713,7 @@ main (int argc, char *argv[])
   update_modifier_map ();
   init_user_commands();
   initialize_default_keybindings ();
-#ifdef HAVE_HISTORY
   history_load ();
-#endif /* HAVE_HISTORY */
 
   /* Scan for windows */
   if (screen_arg)
@@ -790,9 +788,7 @@ clean_up (void)
 {
   int i;
 
-#ifdef HAVE_HISTORY
   history_save ();
-#endif /* HAVE_HISTORY */
 
   free_keymaps ();
   free_aliases ();

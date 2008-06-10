@@ -1681,7 +1681,6 @@ read_shellcmd (struct argspec *spec, struct sbuf *s, struct cmdarg **arg, const 
   cmdret *ret;
 
   ret = read_string (spec, s, hist_SHELLCMD, exec_completions, arg);
-#ifdef HAVE_HISTORY
   if (command_name && !ret) {
     /* store for command history */
     char *s = xmalloc (strlen(command_name) + strlen((*arg)->string) + 2);
@@ -1689,7 +1688,6 @@ read_shellcmd (struct argspec *spec, struct sbuf *s, struct cmdarg **arg, const 
     history_add (hist_COMMAND, s);
     free(s);
   }
-#endif
   return ret;
 }
 
