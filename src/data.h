@@ -259,6 +259,8 @@ struct rp_defaults
   int warp;
 
   int history_size;
+  /* remove older history when adding the same again */
+  int history_compaction;
 
   char *frame_selectors;
 

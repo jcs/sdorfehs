@@ -228,6 +228,18 @@ history_add_upto (int history_id, const char *item, size_t max)
       history_add_upto (hist_SHELLCMD, p, max);
   }
 
+  if (defaults.history_compaction && max != INT_MAX) {
+    struct list_head *l;
+
+    for (l = h->head.prev ; l != &h->head ; l = l->prev) {
+      if (!strcmp (list_entry(l, struct history_item, node)->line, item)) {
+	list_del (l);
+	list_add_tail (l, &h->head);
+	return;
+      }
+    }
+  }
+
   while (h->count >= max) {
 	  list_first (i, &h->head, node);
 	  if (!i) {

@@ -72,6 +72,8 @@ static cmdret * set_framesels (struct cmdarg **args);
 static cmdret * set_maxundos (struct cmdarg **args);
 static cmdret * set_infofmt (struct cmdarg **args);
 static cmdret * set_topkmap (struct cmdarg **args);
+static cmdret * set_historysize (struct cmdarg **args);
+static cmdret * set_historycompaction (struct cmdarg **args);
 
 LIST_HEAD(set_vars);
 
@@ -138,6 +140,8 @@ init_set_vars(void)
   add_set_var ("framesels", set_framesels, 1, "", arg_STRING);
   add_set_var ("infofmt", set_infofmt, 1, "", arg_REST);
   add_set_var ("topkmap", set_topkmap, 1, "", arg_STRING);
+  add_set_var ("historysize", set_historysize, 1, "", arg_NUMBER);
+  add_set_var ("historycompaction", set_historycompaction, 1, "", arg_NUMBER);
 }
 
 /* rp_keymaps is ratpoison's list of keymaps. */
@@ -3579,6 +3583,26 @@ update_all_gcs (void)
     }
 }
 #endif
+
+static cmdret *
+set_historysize (struct cmdarg **args)
+{
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%d", defaults.history_size);
+
+  defaults.history_size = ARG(0, number);
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_historycompaction (struct cmdarg **args)
+{
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%d", defaults.history_compaction);
+
+  defaults.history_compaction = ARG(0, number);
+  return cmdret_new (RET_SUCCESS, NULL);
+}
 
 static cmdret *
 set_font (struct cmdarg **args)
