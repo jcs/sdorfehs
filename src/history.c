@@ -163,41 +163,224 @@ int history_expand_line (int history_id, char *string, char **output)
 }
 #else /* HAVE_HISTORY */
 
+struct history_item {
+	struct list_head node;
+	char line[];
+};
+
+static struct history {
+	struct list_head head, *current;
+	size_t count;
+} histories[hist_COUNT];
+
+#ifndef HAVE_GETLINE
+static ssize_t
+getline(char **lineptr, size_t *n, FILE *f)
+{
+  size_t ofs;
+
+  if (!*lineptr) {
+    *lineptr = xmalloc (4096);
+    *n = 4096;
+  }
+  ofs = 0;
+  do {
+    (*lineptr)[ofs] = '\0';
+    if (!fgets (*lineptr, (*n) - ofs, f)) {
+      /* do not tread unterminated last lines as errors,
+       * (it's still a malformed text file and noone should
+       *  have created it) */
+      return ofs?(ssize_t)ofs:-1;
+    }
+    ofs += strlen ((*lineptr) + ofs);
+    if (ofs >= *n)
+      /* should never happen... */
+      return -1;
+    if (ofs > 0 && (*lineptr)[ofs-1] == '\n')
+      return ofs;
+    if (ofs + 1 == *n) {
+      if (*n >= INT_MAX - 4096)
+	return -1;
+      *n += 4096;
+      *lineptr = xrealloc(*lineptr, *n);
+    }
+  } while(1);
+}
+#endif
+
+static void
+history_add_upto (int history_id, const char *item, size_t max)
+{
+  struct history *h = histories + history_id;
+  struct history_item *i;
+  size_t item_len;
+
+  if (item == NULL || *item == '\0' || isspace(*item))
+    return;
+
+  list_last (i, &histories[history_id].head, node);
+  if (i && !strcmp (i->line, item))
+    return;
+
+  if (history_id == hist_COMMAND) {
+    const char *p = extract_shell_part (item);
+    if (p)
+      history_add_upto (hist_SHELLCMD, p, max);
+  }
+
+  while (h->count >= max) {
+	  list_first (i, &h->head, node);
+	  if (!i) {
+		  h->count = 0;
+		  break;
+	  }
+	  list_del (&i->node);
+	  free (i);
+	  h->count--;
+  }
+
+  item_len = strlen(item);
+  i = xmalloc (sizeof(struct history_item) + item_len + 1);
+
+  memcpy (i->line, item, item_len + 1);
+  list_add_tail (&i->node, &h->head);
+  h->count++;
+}
+
 void
 history_add (int history_id, char *item)
 {
+  history_add_upto (history_id, item, defaults.history_size);
 }
 
 void
 history_load (void)
 {
+  char *filename = get_history_filename ();
+  FILE *f;
+  char *line = NULL;
+  size_t s = 0;
+  ssize_t linelen;
+  int id;
+
+  for (id = hist_NONE ; id < hist_COUNT ; id++ ) {
+    INIT_LIST_HEAD (&histories[id].head);
+    histories[id].current = &histories[id].head;
+    histories[id].count = 0;
+  }
+
+  if (!filename)
+    return;
+  f = fopen (filename, "r");
+  if (!f) {
+    PRINT_DEBUG (("ratpoison: could not read %s - %s\n", filename, strerror (errno)));
+    free (filename);
+    return;
+  }
+
+  while ((linelen = getline (&line, &s, f)) >= 0) {
+    while (linelen > 0 && (line[linelen-1] == '\n' || line[linelen-1] == '\r')) {
+      line[--linelen] = '\0';
+    }
+    if (linelen == 0)
+      continue;
+    /* defaults.history_size might be only set later */
+    history_add_upto (hist_COMMAND, line, INT_MAX);
+  }
+  if (ferror (f)) {
+    PRINT_DEBUG (("ratpoison: error reading %s - %s\n", filename, strerror (errno)));
+    fclose(f);
+    free (filename);
+    return;
+  }
+  if (!fclose(f))
+    PRINT_DEBUG (("ratpoison: error reading %s - %s\n", filename, strerror (errno)));
+  free (filename);
 }
 
 void
 history_save (void)
 {
+  char *filename = get_history_filename ();
+  FILE *f;
+  struct history_item *item;
+
+  if (!filename)
+    return;
+  f = fopen (filename, "w");
+  if (!f) {
+    PRINT_DEBUG (("ratpoison: could not write %s - %s\n", filename, strerror (errno)));
+    free (filename);
+    return;
+  }
+
+  list_for_each_entry(item, &histories[hist_COMMAND].head, node) {
+    fputs(item->line, f);
+    putc('\n', f);
+  }
+
+  if (ferror (f)) {
+    PRINT_DEBUG (("ratpoison: error writing %s - %s\n", filename, strerror (errno)));
+    fclose(f);
+    free (filename);
+    return;
+  }
+  if (!fclose(f))
+    PRINT_DEBUG (("ratpoison: error writing %s - %s\n", filename, strerror (errno)));
+  free (filename);
 }
 
 void
 history_reset (void)
 {
+  int id;
+
+  for (id = hist_NONE ; id < hist_COUNT ; id++ )
+    	histories[id].current = &histories[id].head;
 }
 
 void
 history_resize (int size)
 {
+  struct history_item *i;
+  struct history *h;
+  int id;
+
+  for (id = hist_NONE ; id < hist_COUNT ; id++ ) {
+	  h = histories + id;
+	  while (h->count >= (size_t)size) {
+		  list_first (i, &h->head, node);
+		  list_del (&i->node);
+		  free (i);
+		  h->count--;
+	  }
+  }
 }
 
 const char *
 history_previous (int history_id)
 {
-  return NULL;
+  if (history_id == hist_NONE)
+    return NULL;
+  /* return NULL, if list empty or already at first */
+  if (histories[history_id].current == histories[history_id].head.next)
+    return NULL;
+  histories[history_id].current = histories[history_id].current->prev;
+  return list_entry(histories[history_id].current, struct history_item, node)->line;
 }
 
 const char *
 history_next (int history_id)
 {
-  return NULL;
+  if (history_id == hist_NONE)
+    return NULL;
+  /* return NULL, if list empty or already behind last */
+  if (histories[history_id].current == &histories[history_id].head)
+    return NULL;
+  histories[history_id].current = histories[history_id].current->next;
+  if (histories[history_id].current == &histories[history_id].head)
+    return NULL;
+  return list_entry(histories[history_id].current, struct history_item, node)->line;
 }
 
 int history_expand_line (int history_id, char *string, char **output)
