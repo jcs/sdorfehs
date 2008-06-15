@@ -47,59 +47,6 @@ get_history_filename (void)
   return filename;
 }
 
-#ifdef HAVE_HISTORY
-void
-history_load (void)
-{
-  char *filename = get_history_filename ();
-
-  if (filename && read_history (filename) != 0)
-    PRINT_DEBUG (("ratpoison: could not read %s - %s\n", filename, strerror (errno)));
-
-  free (filename);
-}
-
-void
-history_save (void)
-{
-  char *filename = get_history_filename ();
-
-  if (filename && write_history (filename) != 0)
-    PRINT_ERROR (("ratpoison: could not write %s - %s\n", filename, strerror (errno)));
-
-  free (filename);
-}
-
-void
-history_resize (int size)
-{
-  stifle_history (size);
-}
-
-void
-history_reset (void)
-{
-  using_history();
-}
-
-void
-history_add (int history_id, char *item)
-{
-  HIST_ENTRY *h;
-
-  if (history_id == hist_NONE || history_id == hist_SHELLCMD)
-    return;
-
-  h = history_get (history_length);
-
-  if (item == NULL || *item == '\0' || isspace (*item) || (h != NULL && !strcmp (h->line, item)))
-    return;
-
-  PRINT_DEBUG (("Adding item: %s\n", item));
-  add_history (item);
-}
-#endif /* HAVE_HISTORY */
-
 static const char *
 extract_shell_part (const char *p)
 {
@@ -114,54 +61,6 @@ extract_shell_part (const char *p)
     return p;
   return NULL;
 }
-
-#ifdef HAVE_HISTORY
-const char *
-history_previous (int history_id)
-{
-  HIST_ENTRY *h = NULL;
-  const char *p;
-
-  if (history_id == hist_NONE)
-    return NULL;
-
-  h = previous_history();
-
-  if (history_id == hist_SHELLCMD) {
-    p = NULL;
-    while( h && h->line && !(p = extract_shell_part(h->line)))
-      h = previous_history();
-    return p;
-  }
-
-  return h ? h->line : NULL;
-}
-
-const char *
-history_next (int history_id)
-{
-  HIST_ENTRY *h = NULL;
-  const char *p;
-
-  if (history_id == hist_NONE)
-    return NULL;
-
-  h = next_history();
-
-  if (history_id == hist_SHELLCMD) {
-    p = NULL;
-    while( h && h->line && !(p = extract_shell_part(h->line)))
-      h = next_history();
-    return p;
-  }
-  return h ? h->line : NULL;
-}
-
-int history_expand_line (int history_id, char *string, char **output)
-{
-  return history_expand (string, output);
-}
-#else /* HAVE_HISTORY */
 
 struct history_item {
 	struct list_head node;
@@ -397,8 +296,18 @@ history_next (int history_id)
 
 int history_expand_line (int history_id, char *string, char **output)
 {
+#ifdef HAVE_HISTORY
+  struct history_item *item;
+
+  if (strchr (string, '!')) {
+    clear_history ();
+    using_history ();
+    list_for_each_entry(item, &histories[history_id].head, node) {
+      add_history (item->line);
+    }
+    return history_expand (string, output);
+  }
+#endif
   *output = xstrdup(string);
   return 0;
 }
-
-#endif /* HAVE_HISTORY */
