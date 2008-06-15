@@ -457,6 +457,12 @@ editor_enter (rp_input_line *line)
   char *expansion;
 
   line->buffer[line->length] = '\0';
+
+  if (!defaults.history_expansion) {
+      history_add (line->history_id, line->buffer);
+      return EDIT_DONE;
+  }
+
   result = history_expand_line (line->history_id, line->buffer, &expansion);
 
   PRINT_DEBUG (("History Expansion - result: %d\n", result));

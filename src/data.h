@@ -261,6 +261,8 @@ struct rp_defaults
   int history_size;
   /* remove older history when adding the same again */
   int history_compaction;
+  /* expand ! when compiled with libhistory */
+  int history_expansion;
 
   char *frame_selectors;
 

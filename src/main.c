@@ -564,6 +564,7 @@ init_defaults (void)
 
   defaults.history_size = 20;
   defaults.history_compaction = True;
+  defaults.history_expansion = False;
   defaults.frame_selectors = xstrdup ("");
   defaults.maxundos = 20;
 }
