@@ -1,4 +1,4 @@
-.TH RATPOISON 1 2006-11-23
+.TH RATPOISON 1 2008-06-15
 \# This man page is free software; you can redistribute it and/or modify
 \# it under the terms of the GNU General Public License as published by
 \# the Free Software Foundation; either version 2, or (at your option)
@@ -807,6 +807,20 @@ the second character is the selector for the second frame and so on.
 Using this variable, one can directly access more than 10 frames.
 
 Default is an empty string, which is equivalent to "0123456789".
+.var historysize number
+Specify maximum number of values kept in input history.
+
+Default is 20.
+.var historycompaction \fB0 | \fB1
+Decide if new input lines added to history delete
+older equal lines from history.
+
+Default is 1 (on).
+.var historyexpansion \fB0 | \fB1
+Decide if history expansion using ! is available.
+(Can only be activated when compiled with readline's libhistory.)
+
+Default is 0 (off).
 .SH AUTHOR
 Upstream Author is Shawn Betts <sabetts@vcn.bc.ca>.
 .br

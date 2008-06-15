@@ -1493,6 +1493,25 @@ change the cursor.
 When called with no arguments, the current setting is returned.
 @end deffn
 
+@deffn Command {set historysize} @var{n}
+Set how many lines of history should be recorded.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
+@deffn Command {set historcompaction} @var{bool}
+Set whether to remove multiple equal lines from history,
+even if not adjacent.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
+@deffn Command {set historexpansion} @var{bool}
+Set whether to expand ! using readline's libhistory in input.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
 @deffn Command escape @var{key}
 Set the prefix to @var{key}. For example @samp{escape C-b} sets the
 prefix key to @key{C-b}.
@@ -1634,6 +1653,9 @@ Here is a list of variables that can be set:
 @item wingravity
 @item maxundos
 @item resizeunit
+@item historysize
+@item historycompaction
+@item historyexpansion
 @end itemize
 
 @end deffn
