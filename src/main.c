@@ -322,7 +322,7 @@ static void
 print_version (void)
 {
   printf ("%s %s (built %s %s)\n", PACKAGE, VERSION, __DATE__, __TIME__);
-  printf ("Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006 Shawn Betts\n\n");
+  printf ("Copyright (C) 2000-2008 Shawn Betts\n\n");
 
   exit (EXIT_SUCCESS);
 }
