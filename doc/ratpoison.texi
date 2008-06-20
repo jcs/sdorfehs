@@ -394,6 +394,8 @@ The window's screen
 Window Name
 @item %T
 Whether the window is a transient or not.
+@item %M
+Whether the window is a maxsize window or not.
 @item %w
 The window's width
 @item %W

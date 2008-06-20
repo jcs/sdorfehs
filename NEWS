@@ -7,6 +7,9 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.3
+** new format character %M
+This expands to Maxsize if the window is a maxsize window, nothing if not.
+
 ** ratpoison can use xft
 If xft is found on your system ratpoison will use it unless explicitely told not to using --without-xft
 

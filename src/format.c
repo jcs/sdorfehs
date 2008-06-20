@@ -43,6 +43,7 @@ RP_FMT(gravity);
 RP_FMT(screen);
 RP_FMT(xinescreen);
 RP_FMT(transient);
+RP_FMT(maxsize);
 
 struct fmt_item {
   /* The format character */
@@ -66,6 +67,7 @@ struct fmt_item fmt_items[] = {
   { 'S', fmt_screen },
   { 't', fmt_name },
   { 'T', fmt_transient },
+  { 'M', fmt_maxsize },  
   { 'w', fmt_width },
   { 'W', fmt_incwidth },
   { 'x', fmt_xinescreen },
@@ -288,4 +290,11 @@ fmt_transient (rp_window_elem *elem, struct sbuf *buf)
 {
   if (elem->win->transient)
     sbuf_concat (buf, "Transient");
+}
+
+static void
+fmt_maxsize (rp_window_elem *elem, struct sbuf *buf)
+{
+  if (elem->win->hints->flags & PMaxSize)
+    sbuf_concat (buf, "Maxsize");
 }
