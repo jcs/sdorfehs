@@ -7,6 +7,11 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.3
+** netwm dialog type windows supported
+These windows are treated as transients. Some Firefox popup windows
+are tagged as dialog windows and should now work with ratpoison as
+expected.
+
 ** new format character %M
 This expands to Maxsize if the window is a maxsize window, nothing if not.
 

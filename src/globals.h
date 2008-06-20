@@ -114,8 +114,10 @@ extern Atom wm_take_focus;
 extern Atom wm_colormaps;
 
 /* netwm atoms. */
-Atom _net_wm_pid;
-Atom _net_supported;
+extern Atom _net_wm_pid;
+extern Atom _net_supported;
+extern Atom _net_wm_window_type;
+extern Atom _net_wm_window_type_dialog;
 
 /* mouse properties */
 extern int rat_x;

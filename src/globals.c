@@ -50,6 +50,8 @@ Atom rp_selection;
 /* netwm atoms */
 Atom _net_wm_pid;
 Atom _net_supported;
+Atom _net_wm_window_type;
+Atom _net_wm_window_type_dialog;
 
 int rp_current_screen;
 rp_screen *screens;

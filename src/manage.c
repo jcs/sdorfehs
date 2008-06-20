@@ -317,6 +317,32 @@ window_is_transient (rp_window *win)
     ;
 }
 
+static Atom
+get_net_wm_window_type (rp_window *win)
+{
+  Atom type, window_type = None;
+  int format;
+  unsigned long nitems;
+  unsigned long bytes_left;
+  unsigned char *data;
+
+  if (win == NULL)
+    return None;
+
+  if (XGetWindowProperty (dpy, win->w, _net_wm_window_type, 0, 1L,
+                          False, XA_ATOM, &type, &format,
+                          &nitems, &bytes_left,
+                          &data) == Success && nitems > 0)
+    {
+      window_type = *(Atom *)data;
+      PRINT_DEBUG(("hey ya %ld %ld\n", window_type, _net_wm_window_type_dialog));
+    }
+  XFree (data);
+
+  return window_type;
+}
+
+
 void
 update_window_information (rp_window *win)
 {
@@ -338,6 +364,9 @@ update_window_information (rp_window *win)
 
   /* Transient status */
   win->transient = XGetTransientForHint (dpy, win->w, &win->transient_for);
+
+  if (get_net_wm_window_type(win) == _net_wm_window_type_dialog)
+    win->transient = 1;
 
   update_window_gravity (win);
 }
