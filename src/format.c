@@ -44,6 +44,7 @@ RP_FMT(screen);
 RP_FMT(xinescreen);
 RP_FMT(transient);
 RP_FMT(maxsize);
+RP_FMT(pid);
 
 struct fmt_item {
   /* The format character */
@@ -63,6 +64,7 @@ struct fmt_item fmt_items[] = {
   { 'i', fmt_windowid },
   { 'l', fmt_lastaccess },
   { 'n', fmt_number },
+  { 'p', fmt_pid },
   { 's', fmt_status },
   { 'S', fmt_screen },
   { 't', fmt_name },
@@ -297,4 +299,16 @@ fmt_maxsize (rp_window_elem *elem, struct sbuf *buf)
 {
   if (elem->win->hints->flags & PMaxSize)
     sbuf_concat (buf, "Maxsize");
+}
+
+static void
+fmt_pid (rp_window_elem *elem, struct sbuf *buf)
+{
+  struct rp_child_info *info;
+
+  info = get_child_info (elem->win->w);
+  if (info)
+    sbuf_printf_concat (buf, "%d", info->pid);
+  else
+    sbuf_concat (buf, "?");
 }

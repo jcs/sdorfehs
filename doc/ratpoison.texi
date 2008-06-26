@@ -386,6 +386,8 @@ A unique number based on when the window was last accessed. The higher
 the number, the more recently it was accessed.
 @item %n
 The window number
+@item %p
+Process ID ('?' if _NET_WM_PID isn't set)
 @item %s
 Window status (current window, last window, etc)
 @item %S
