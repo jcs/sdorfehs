@@ -806,9 +806,10 @@ remove_frame (rp_frame *frame)
              the new frame size. */
           if (cur->win_number != EMPTY)
             {
-              win = find_window_number (cur->win_number);
+              rp_window *new = find_window_number (cur->win_number);
               maximize_all_windows_in_frame (cur);
-              XRaiseWindow (dpy, win->w);
+              give_window_focus (new, win);
+              XRaiseWindow (dpy, new->w);
             }
         }
       else

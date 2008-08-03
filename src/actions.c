@@ -64,6 +64,8 @@ static cmdret * set_winname (struct cmdarg **args);
 static cmdret * set_framefmt (struct cmdarg **args);
 static cmdret * set_fgcolor (struct cmdarg **args);
 static cmdret * set_bgcolor (struct cmdarg **args);
+static cmdret * set_fwcolor (struct cmdarg **args);
+static cmdret * set_bwcolor (struct cmdarg **args);
 static cmdret * set_barpadding (struct cmdarg **args);
 static cmdret * set_winliststyle (struct cmdarg **args);
 static cmdret * set_framesels (struct cmdarg **args);
@@ -129,6 +131,8 @@ init_set_vars(void)
   add_set_var ("framefmt", set_framefmt, 1, "", arg_REST);
   add_set_var ("fgcolor", set_fgcolor, 1, "", arg_STRING);
   add_set_var ("bgcolor", set_bgcolor, 1, "", arg_STRING);
+  add_set_var ("fwcolor", set_fwcolor, 1, "", arg_STRING);
+  add_set_var ("bwcolor", set_bwcolor, 1, "", arg_STRING);
   add_set_var ("barpadding", set_barpadding, 2, "", arg_NUMBER, "", arg_NUMBER);
   add_set_var ("winliststyle", set_winliststyle, 1, "", arg_STRING);
   add_set_var ("framesels", set_framesels, 1, "", arg_STRING);
@@ -3890,6 +3894,68 @@ set_bgcolor (struct cmdarg **args)
       free (defaults.bgcolor_string);
       defaults.bgcolor_string = xstrdup (ARG_STRING(0));
     }
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_fwcolor (struct cmdarg **args)
+{
+  int i;
+  XColor color, junk;
+  rp_window *win = current_window();
+
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%s", defaults.fwcolor_string);
+
+  for (i=0; i<num_screens; i++)
+    {
+      if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
+        return cmdret_new (RET_FAILURE, "deffwcolor: unknown color");
+
+      screens[i].fw_color = color.pixel;
+      update_gc (&screens[i]);
+
+      free (defaults.fwcolor_string);
+      defaults.fwcolor_string = xstrdup (ARG_STRING(0));
+    }
+
+  /* Update current window. */
+  if (win != NULL)
+    XSetWindowBorder (dpy, win->w, win->scr->fw_color);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_bwcolor (struct cmdarg **args)
+{
+  int i;
+  XColor color, junk;
+  rp_window *win, *cur = current_window();
+
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%s", defaults.bwcolor_string);
+
+  for (i=0; i<num_screens; i++)
+    {
+      if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
+        return cmdret_new (RET_FAILURE, "defbwcolor: unknown color");
+
+      screens[i].bw_color = color.pixel;
+      update_gc (&screens[i]);
+
+      free (defaults.bwcolor_string);
+      defaults.bwcolor_string = xstrdup (ARG_STRING(0));
+    }
+
+  /* Update all the visible windows. */
+  list_for_each_entry (win,&rp_mapped_window,node)
+    {
+       if (win != cur)
+         XSetWindowBorder (dpy, win->w, win->scr->bw_color);
+    }
+
 
   return cmdret_new (RET_SUCCESS, NULL);
 }

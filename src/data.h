@@ -155,7 +155,7 @@ struct rp_screen
   int xine_screen_num;          /* Our screen number for the Xinerama extension */
   Colormap def_cmap;
   Cursor rat;
-  unsigned long fg_color, bg_color; /* The pixel color. */
+  unsigned long fg_color, bg_color, fw_color, bw_color; /* The pixel color. */
 
   /* Here to abstract over the Xinerama vs X screens difference */
   int left, top, width, height;
@@ -235,6 +235,8 @@ struct rp_defaults
 
   char *fgcolor_string;
   char *bgcolor_string;
+  char *fwcolor_string;
+  char *bwcolor_string;
 
   int wait_for_key_cursor;
 

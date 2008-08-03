@@ -548,6 +548,8 @@ init_defaults (void)
 
   defaults.fgcolor_string = xstrdup ("black");
   defaults.bgcolor_string = xstrdup ("white");
+  defaults.fwcolor_string = xstrdup ("black");
+  defaults.bwcolor_string = xstrdup ("black");
 
   defaults.wait_for_key_cursor = 1;
 

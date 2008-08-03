@@ -301,6 +301,8 @@ init_screen (rp_screen *s, int screen_num)
 
   s->fg_color = BlackPixel (dpy, s->screen_num);
   s->bg_color = WhitePixel (dpy, s->screen_num);
+  s->fw_color = BlackPixel (dpy, s->screen_num);
+  s->bw_color = BlackPixel (dpy, s->screen_num);
 
   /* Setup the GC for drawing the font. */
   gv.foreground = s->fg_color;

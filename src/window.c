@@ -411,7 +411,10 @@ give_window_focus (rp_window *win, rp_window *last_win)
   /* Warp the cursor to the window's saved position if last_win and
      win are different windows. */
   if (last_win != NULL && win != last_win)
-    save_mouse_position (last_win);
+    {
+      save_mouse_position (last_win);
+      XSetWindowBorder (dpy, last_win->w, last_win->scr->bw_color);
+    }
 
   if (win == NULL) return;
 
@@ -429,6 +432,8 @@ give_window_focus (rp_window *win, rp_window *last_win)
   /* Swap colormaps */
   if (last_win != NULL) XUninstallColormap (dpy, last_win->colormap);
   XInstallColormap (dpy, win->colormap);
+
+  XSetWindowBorder (dpy, win->w, win->scr->fw_color);
 
   /* Finally, give the window focus */
   rp_current_screen = win->scr->xine_screen_num;

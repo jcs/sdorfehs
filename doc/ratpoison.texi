@@ -1339,6 +1339,20 @@ is any valid X11 color.
 When called with no arguments, the current setting is returned.
 @end deffn
 
+@deffn Command {set fwcolor} @var{color}
+Set the border color for the focused window.
+is any valid X11 color.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
+@deffn Command {set bwcolor} @var{color}
+Set the border color for unfocused windows.
+is any valid X11 color.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
 @deffn Command {set barpadding} @var{x} @var{y}
 @c @deffnx Command defbarpadding @var{x} @var{y}
 Set the horizontal and vertical padding inside the bar.
