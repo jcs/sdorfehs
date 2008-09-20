@@ -24,6 +24,15 @@
 
 static struct numset *group_numset;
 
+static void
+set_current_group_1 (rp_group *g)
+{
+  static int counter = 1;
+  rp_current_group = g;
+  if (g)
+    g->last_access = counter++;
+}
+
 void
 init_groups(void)
 {
@@ -35,7 +44,7 @@ init_groups(void)
   /* Create the first group in the list (We always need at least
      one). */
   g = group_new (numset_request (group_numset), DEFAULT_GROUP_NAME);
-  rp_current_group = g;
+  set_current_group_1 (g);
   list_add_tail (&g->node, &rp_groups);
 }
 
@@ -62,6 +71,7 @@ group_new (int number, char *name)
     g->name = xstrdup (name);
   else
     g->name = NULL;
+  g->last_access = 0;
   g->number = number;
   g->numset = numset_new();
   INIT_LIST_HEAD (&g->unmapped_windows);
@@ -101,6 +111,23 @@ rp_group *
 group_prev_group (void)
 {
   return list_prev_entry (rp_current_group, &rp_groups, node);
+}
+
+rp_group *
+group_last_group (void)
+{
+  int last_access = 0;
+  rp_group *most_recent = NULL;
+  rp_group *cur;
+
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      if (cur != rp_current_group && cur->last_access > last_access) {
+        most_recent = cur;
+	last_access = cur->last_access;
+      }
+    }
+  return most_recent;
 }
 
 rp_group *
@@ -504,7 +531,7 @@ set_current_group (rp_group *g)
   if (rp_current_group == g || g == NULL)
     return;
 
-  rp_current_group = g;
+  set_current_group_1 (g);
 
   /* Call the switch group hook. */
   hook_run (&rp_switch_group_hook);
@@ -519,7 +546,7 @@ group_delete_group (rp_group *g)
       /* we can safely delete the group */
       if (g == rp_current_group)
         {
-          rp_current_group = group_next_group ();
+          set_current_group_1 (group_next_group ());
         }
 
       list_del (&(g->node));
@@ -530,7 +557,7 @@ group_delete_group (rp_group *g)
           /* Create the first group in the list (We always need at least
              one). */
           g = group_new (numset_request (group_numset), DEFAULT_GROUP_NAME);
-          rp_current_group = g;
+          set_current_group_1 (g);
           list_add_tail (&g->node, &rp_groups);
         }
       return GROUP_DELETE_GROUP_OK;

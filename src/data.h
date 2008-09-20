@@ -135,6 +135,9 @@ struct rp_group
   char *name;
   int number;
 
+  /* For determining the last group. */
+  int last_access;
+
   /* The list of windows participating in this group. */
   struct list_head mapped_windows, unmapped_windows;
 

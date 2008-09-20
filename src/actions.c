@@ -256,6 +256,7 @@ init_user_commands(void)
                "Name: ", arg_STRING);
   add_command ("gnext",         cmd_gnext,      0, 0, 0);
   add_command ("gprev",         cmd_gprev,      0, 0, 0);
+  add_command ("gother",        cmd_gother,     0, 0, 0);
   add_command ("gravity",       cmd_gravity,    1, 0, 0,
                "Gravity: ", arg_GRAVITY);
   add_command ("groups",        cmd_groups,     0, 0, 0);
@@ -4821,6 +4822,13 @@ cmdret *
 cmd_gprev (int interactive, struct cmdarg **args)
 {
   set_current_group (group_prev_group ());
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_gother (int interactive, struct cmdarg **args)
+{
+  set_current_group (group_last_group ());
   return cmdret_new (RET_SUCCESS, NULL);
 }
 

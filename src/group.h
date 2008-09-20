@@ -50,6 +50,7 @@ rp_window *group_last_window (rp_group *g, rp_screen *screen);
 
 rp_group *group_prev_group (void);
 rp_group *group_next_group (void);
+rp_group *group_last_group (void);
 
 rp_group *group_add_new_group (char *name);
 
