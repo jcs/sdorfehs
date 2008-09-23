@@ -4884,6 +4884,7 @@ cmd_groups (int interactive, struct cmdarg **args)
 
       fmt = xsprintf ("%d%c%s", cur->number, separator, cur->name);
       sbuf_concat (buffer, fmt);
+      free (fmt);
 
       /* Pad end of group name with a space for row style. */
       if (defaults.window_list_style == STYLE_ROW && interactive)
