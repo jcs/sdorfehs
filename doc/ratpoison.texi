@@ -599,6 +599,10 @@ Move the current window to @var{group}.
 Go to the next group in the list.
 @end deffn
 
+@deffn Command gother
+Go to the last accessed group.
+@end deffn
+
 @deffn Command gprev
 Go to the previous group in the list.
 @end deffn
