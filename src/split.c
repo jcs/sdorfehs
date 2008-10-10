@@ -808,7 +808,6 @@ remove_frame (rp_frame *frame)
             {
               rp_window *new = find_window_number (cur->win_number);
               maximize_all_windows_in_frame (cur);
-              give_window_focus (new, win);
               XRaiseWindow (dpy, new->w);
             }
         }

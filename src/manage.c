@@ -829,6 +829,9 @@ hide_window (rp_window *win)
   XSelectInput(dpy, win->w, WIN_EVENTS&~(StructureNotifyMask));
   XUnmapWindow (dpy, win->w);
   XSelectInput (dpy, win->w, WIN_EVENTS);
+  /* Ensure that the window doesn't have the focused border
+     color. This is needed by remove_frame and possibly others. */
+  XSetWindowBorder (dpy, win->w, win->scr->bw_color);
   set_state (win, IconicState);
 }
 
