@@ -335,9 +335,9 @@ get_net_wm_window_type (rp_window *win)
                           &data) == Success && nitems > 0)
     {
       window_type = *(Atom *)data;
+      XFree (data);
       PRINT_DEBUG(("hey ya %ld %ld\n", window_type, _net_wm_window_type_dialog));
     }
-  XFree (data);
 
   return window_type;
 }
