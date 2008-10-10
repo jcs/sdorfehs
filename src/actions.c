@@ -4868,7 +4868,9 @@ cmd_groups (int interactive, struct cmdarg **args)
   rp_group *cur;
   int mark_start = 0, mark_end = 0;
   struct sbuf *buffer;
+  rp_group *last;
 
+  last = group_last_group ();
   buffer = sbuf_new (0);
 
   /* Generate the string. */
@@ -4887,6 +4889,8 @@ cmd_groups (int interactive, struct cmdarg **args)
 
       if(cur == rp_current_group)
         separator = '*';
+      else if(cur == last)
+        separator = '+';
       else
         separator = '-';
 
