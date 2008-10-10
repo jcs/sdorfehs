@@ -784,6 +784,8 @@ initialize_default_keybindings (void)
   add_keybinding (XK_U, 0, "redo", map);
   add_keybinding (XK_x, 0, "swap", map);
   add_keybinding (XK_x, RP_CONTROL_MASK, "swap", map);
+  add_keybinding (XK_N, 0, "nextscreen", map);
+  add_keybinding (XK_P, 0, "prevscreen", map);
 
   add_alias ("unbind", "undefinekey " ROOT_KEYMAP);
   add_alias ("bind", "definekey " ROOT_KEYMAP);
