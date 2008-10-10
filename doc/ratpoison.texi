@@ -1499,7 +1499,7 @@ Execute a shell command but don't record which frame it was executed
 from. The client's windows will pop up in whatever frame is current.
 @end deffn
 
-@deffn Command execf @var{command} @var{frame}
+@deffn Command execf @var{frame} @var{command}
 Execute a shell command and choose which frame the client's first
 window will open in. The client must be netwm compliant for this to
 work.
