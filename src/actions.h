@@ -140,6 +140,7 @@ RP_CMD (gnext);
 RP_CMD (gprev);
 RP_CMD (gother);
 RP_CMD (gravity);
+RP_CMD (grename);
 RP_CMD (groups);
 RP_CMD (gselect);
 RP_CMD (h_split);

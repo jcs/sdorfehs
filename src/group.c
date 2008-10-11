@@ -101,6 +101,14 @@ group_add_new_group (char *name)
   return g;
 }
 
+void
+group_rename (rp_group *g, char *name)
+{
+  if (g->name)
+    free (g->name);
+  g->name = xstrdup (name);
+}
+
 rp_group *
 group_next_group (void)
 {

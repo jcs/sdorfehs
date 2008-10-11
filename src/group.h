@@ -53,6 +53,7 @@ rp_group *group_next_group (void);
 rp_group *group_last_group (void);
 
 rp_group *group_add_new_group (char *name);
+void group_rename (rp_group *g, char *name);
 
 rp_window_elem *group_find_window (struct list_head *list, rp_window *win);
 rp_window_elem *group_find_window_by_number (rp_group *g, int num);

@@ -607,6 +607,10 @@ Go to the last accessed group.
 Go to the previous group in the list.
 @end deffn
 
+@deffn Command grename
+Rename current group.
+@end deffn
+
 @deffn Command gselect @var{group}
 Select a particular group by name or number. If @var{group} is not
 provided, ratpoison will interactively prompt for the group.

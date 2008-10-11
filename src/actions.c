@@ -254,6 +254,8 @@ init_user_commands(void)
                "Name: ", arg_STRING);
   add_command ("gnewbg",        cmd_gnewbg,     1, 1, 1,
                "Name: ", arg_STRING);
+  add_command ("grename",       cmd_grename,    1, 1, 1,
+               "Change group name to: ", arg_STRING);
   add_command ("gnext",         cmd_gnext,      0, 0, 0);
   add_command ("gprev",         cmd_gprev,      0, 0, 0);
   add_command ("gother",        cmd_gother,     0, 0, 0);
@@ -4851,6 +4853,13 @@ cmdret *
 cmd_gnewbg (int interactive, struct cmdarg **args)
 {
   group_add_new_group (ARG_STRING(0));
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_grename (int interactive, struct cmdarg **args)
+{
+  group_rename (rp_current_group, ARG_STRING(0));
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
