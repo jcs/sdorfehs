@@ -559,7 +559,7 @@ group_delete_group (rp_group *g)
       if (g == rp_current_group)
         {
           rp_group *next = group_last_group ();
-          set_current_group_1 (next ? next : group_next_group ());
+          set_current_group (next ? next : group_next_group ());
         }
 
       list_del (&(g->node));
