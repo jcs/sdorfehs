@@ -554,7 +554,8 @@ group_delete_group (rp_group *g)
       /* we can safely delete the group */
       if (g == rp_current_group)
         {
-          set_current_group_1 (group_next_group ());
+          rp_group *next = group_last_group ();
+          set_current_group_1 (next ? next : group_next_group ());
         }
 
       list_del (&(g->node));
