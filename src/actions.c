@@ -5041,6 +5041,9 @@ cmd_gdelete (int interactive, struct cmdarg **args)
     case GROUP_DELETE_GROUP_NONEMPTY:
       return cmdret_new (RET_FAILURE, "gdelete: non-empty group");
       break;
+    case GROUP_DELETE_LAST_GROUP:
+      return cmdret_new (RET_FAILURE, "gdelete: cannot delete the last group");
+      break;
     default:
       return cmdret_new (RET_FAILURE, "gdelete: unknown return code (this shouldn't happen)");
     }

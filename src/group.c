@@ -551,6 +551,10 @@ group_delete_group (rp_group *g)
   if (list_empty (&(g->mapped_windows))
       && list_empty (&(g->unmapped_windows)))
     {
+      /* don't delete the last group */
+      if (list_size (&rp_groups) == 1)
+        return GROUP_DELETE_LAST_GROUP;
+
       /* we can safely delete the group */
       if (g == rp_current_group)
         {
@@ -560,15 +564,6 @@ group_delete_group (rp_group *g)
 
       list_del (&(g->node));
       group_free (g);
-
-      if (list_empty (&rp_groups))
-        {
-          /* Create the first group in the list (We always need at least
-             one). */
-          g = group_new (numset_request (group_numset), DEFAULT_GROUP_NAME);
-          set_current_group_1 (g);
-          list_add_tail (&g->node, &rp_groups);
-        }
       return GROUP_DELETE_GROUP_OK;
     }
   else

@@ -64,6 +64,7 @@
 /* Error codes for group_delete_group() */
 #define GROUP_DELETE_GROUP_OK         0
 #define GROUP_DELETE_GROUP_NONEMPTY   1
+#define GROUP_DELETE_LAST_GROUP       2
 
 /* The list of groups. */
 extern struct list_head rp_groups;
