@@ -42,4 +42,6 @@ rp_frame *frame_copy (rp_frame *frame);
 char *frame_dump (rp_frame *frame, rp_screen *screen);
 rp_frame *frame_read (char *str, rp_screen *screen);
 
+rp_screen *frames_screen (rp_frame *);
+
 #endif

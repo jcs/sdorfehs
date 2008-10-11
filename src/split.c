@@ -29,8 +29,6 @@
 #define VERTICALLY 0
 #define HORIZONTALLY 1
 
-static rp_screen *frames_screen(rp_frame *);
-
 static void
 update_last_access (rp_frame *frame)
 {
@@ -110,7 +108,7 @@ set_frames_window (rp_frame *frame, rp_window *win)
   return find_window_number (last_win);
 }
 
-static rp_screen *
+rp_screen *
 frames_screen (rp_frame *frame)
 {
   int i;

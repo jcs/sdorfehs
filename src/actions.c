@@ -4185,12 +4185,20 @@ cmd_exchangeright (int interactive, struct cmdarg **args)
 cmdret *
 cmd_swap (int interactive, struct cmdarg **args)
 {
+  rp_screen *s;
   rp_frame *dest_frame;
   rp_frame *src_frame;
 
   dest_frame = ARG(0, frame);
   src_frame = args[1] ? ARG (1, frame) : current_frame();
-  
+
+  if (!rp_have_xinerama)
+    {
+      s = frames_screen(src_frame);
+      if (screen_find_frame_by_frame(s, dest_frame) == NULL)
+    	return cmdret_new (RET_FAILURE, "swap: frames on different screens");
+    }
+
   exchange_with_frame (current_screen(), src_frame, dest_frame);
 
   return cmdret_new (RET_SUCCESS, NULL);
