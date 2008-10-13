@@ -255,7 +255,7 @@ init_user_commands(void)
   add_command ("gnewbg",        cmd_gnewbg,     1, 1, 1,
                "Name: ", arg_STRING);
   add_command ("grename",       cmd_grename,    1, 1, 1,
-               "Change group name to: ", arg_STRING);
+               "Change group name to: ", arg_REST);
   add_command ("gnext",         cmd_gnext,      0, 0, 0);
   add_command ("gprev",         cmd_gprev,      0, 0, 0);
   add_command ("gother",        cmd_gother,     0, 0, 0);
