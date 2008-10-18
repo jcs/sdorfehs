@@ -1916,7 +1916,7 @@ find_group (char *str)
         return group;
     }
 
-  group = groups_find_group_by_name (str);
+  group = groups_find_group_by_name (str, 0);
   return group;
 }
 
@@ -4845,6 +4845,8 @@ cmd_gother (int interactive, struct cmdarg **args)
 cmdret *
 cmd_gnew (int interactive, struct cmdarg **args)
 {
+  if (groups_find_group_by_name (ARG_STRING (0), 1))
+    return cmdret_new (RET_FAILURE, "gnew: group already exists");
   set_current_group (group_add_new_group (ARG_STRING(0)));
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4852,6 +4854,8 @@ cmd_gnew (int interactive, struct cmdarg **args)
 cmdret *
 cmd_gnewbg (int interactive, struct cmdarg **args)
 {
+  if (groups_find_group_by_name (ARG_STRING (0), 1))
+    return cmdret_new (RET_FAILURE, "gnewbg: group already exists");
   group_add_new_group (ARG_STRING(0));
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4859,6 +4863,8 @@ cmd_gnewbg (int interactive, struct cmdarg **args)
 cmdret *
 cmd_grename (int interactive, struct cmdarg **args)
 {
+  if (groups_find_group_by_name (ARG_STRING (0), 1))
+    return cmdret_new (RET_FAILURE, "grename: duplicate group name");
   group_rename (rp_current_group, ARG_STRING(0));
   return cmdret_new (RET_SUCCESS, NULL);
 }

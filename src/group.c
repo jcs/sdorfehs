@@ -139,7 +139,7 @@ group_last_group (void)
 }
 
 rp_group *
-groups_find_group_by_name (char *s)
+groups_find_group_by_name (char *s, int exact_match)
 {
   rp_group *cur;
 
@@ -147,7 +147,8 @@ groups_find_group_by_name (char *s)
     {
       if (cur->name)
         {
-          if (str_comp (s, cur->name, strlen (s)))
+          if ((!exact_match && str_comp (s, cur->name, strlen (s))) ||
+              (exact_match && !strcmp (cur->name, s)))
             return cur;
         }
     }
