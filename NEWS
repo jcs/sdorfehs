@@ -7,6 +7,17 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.3
+** new window formatters %p, %M
+prints the pid of the window and whether its a maxsize window.
+
+** new commands grename, gother
+
+** new bindings C-t N and C-t P
+bound to nextscreen/prevscreen
+
+** new settings, bwcolor and fwcolor
+For setting the border color of focused and unfocused windows.
+
 ** netwm dialog type windows supported
 These windows are treated as transients. Some Firefox popup windows
 are tagged as dialog windows and should now work with ratpoison as
