@@ -3721,7 +3721,7 @@ set_barinpadding (struct cmdarg **args)
   int new_value;
 
   if (args[0] == NULL)
-    return cmdret_new (RET_SUCCESS, "%d", defaults.bar_border_width);
+    return cmdret_new (RET_SUCCESS, "%d", defaults.bar_in_padding);
 
   new_value = ARG(0,number);
   if (new_value < 0)
