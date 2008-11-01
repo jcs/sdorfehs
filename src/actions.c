@@ -27,6 +27,7 @@
 #include <time.h>
 #include <errno.h>
 #include <signal.h>
+#include <X11/Xproto.h>
 
 #include "ratpoison.h"
 
@@ -4594,6 +4595,19 @@ sync_wins (rp_screen *s)
 
 }
 
+static int tmpwm_error_raised = 0;
+
+static int
+tmpwm_error_handler (Display *d, XErrorEvent *e)
+{
+  if (e->request_code == X_ChangeWindowAttributes && e->error_code == BadAccess)
+    {
+      PRINT_DEBUG (("failed to grab root properties\n"));
+      tmpwm_error_raised++;
+    }
+  return 0;
+}
+
 /* Temporarily give control over to another window manager, reclaiming */
 /*    control when that WM terminates. */
 cmdret *
@@ -4605,6 +4619,7 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
   int status;
   int pid;
   int i;
+  int (*old_handler)(Display *, XErrorEvent *);
 
   push_frame_undo (current_screen()); /* fdump to stack */
 
@@ -4648,28 +4663,37 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
      disabled, so check for them. */
   check_child_procs();
 
-  /* This xsync seems to be needed. Otherwise, the following code dies
-     because X thinks another WM is running. */
-  XSync (dpy, False);
+  /* Enable the event selection on the root window. We need to loop
+     until we don't get an X error. This is due to a race between the
+     X server cleaning up after the temporary wm and ratpoison
+     grabbing events. */
+  old_handler = XSetErrorHandler (tmpwm_error_handler);
+  do {
+    tmpwm_error_raised = 0;
+    for (i=0; i<num_screens; i++)
+      {
+        XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num),
+                     PropertyChangeMask | ColormapChangeMask
+                     | SubstructureRedirectMask | SubstructureNotifyMask
+                     | StructureNotifyMask);
+        XSync (dpy, False);
+      }
+  } while (tmpwm_error_raised);
+  XSetErrorHandler (old_handler);
 
-  /* Enable the event selection on the root window. */
+  /* Map the key windows. */
   for (i=0; i<num_screens; i++)
-    {
-      XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num),
-                   PropertyChangeMask | ColormapChangeMask
-		   | SubstructureRedirectMask | SubstructureNotifyMask
-		   | StructureNotifyMask);
-      /* Map its key window */
-      XMapWindow (dpy, screens[i].key_window);
-    }
-  XSync (dpy, False);
+    XMapWindow (dpy, screens[i].key_window);
 
   /* Sort through all the windows in each group and pick out the ones
      that are unmapped or destroyed. */
   for (i=0; i<num_screens; i++)
-    {
-      sync_wins (&screens[i]);
-    }
+    sync_wins (&screens[i]);
+
+  /* At this point, new windows have the top level keys grabbed but
+     existing windows don't. So grab them on all windows just to be
+     sure. */
+  grab_keys_all_wins();
 
   /* If no window has focus, give the key_window focus. */
   if (current_window())
