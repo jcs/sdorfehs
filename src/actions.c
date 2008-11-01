@@ -4678,6 +4678,8 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
                      | StructureNotifyMask);
         XSync (dpy, False);
       }
+    if (tmpwm_error_raised)
+      sleep(1);
   } while (tmpwm_error_raised);
   XSetErrorHandler (old_handler);
 
