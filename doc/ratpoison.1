@@ -225,6 +225,10 @@ Add \fIalias\fP as new way to call \fIcommand\fP.
 alias for "\fBdefinekey root\fP \fIkey\fP \fIcommand\fP"
 .cmd banish ( C\-t b )
 Banish the rat cursor to the lower right corner of the screen.
+.cmd banishrel
+Banish the rat cursor to the lower right corner of the curren window.
+If there isn't a window in the current frame, it banishes the rat cursor
+to the lower right corner of the screen.
 .cmd chdir [ directory ]
 If the optional argument is given, change the current directory
 of ratpoison to \fIdirectory\fP.
@@ -469,6 +473,10 @@ Replace the X selection with the text \fIx\-selection\fP. It can be
 inserted into the current window with \fBgetsel\fP.
 .cmd quit
 Quit ratpoison.
+.cmd ratinfo
+Display the x y coordinates of the rat cursor relative to the screen.
+.cmd ratrelinfo
+Display the x y coordinates of the rat cursor relative to the window.
 .cmd ratwarp x y
 Move the rat cursor to the position (\fIx\fP,\fIy\fP).
 .cmd ratrelwarp deltax deltay

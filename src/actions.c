@@ -303,6 +303,9 @@ init_user_commands(void)
   add_command ("prev",          cmd_prev,       0, 0, 0);
   add_command ("prevscreen",    cmd_prevscreen, 0, 0, 0);
   add_command ("quit",          cmd_quit,       0, 0, 0);
+  add_command ("ratinfo",       cmd_ratinfo,    0, 0, 0);
+  add_command ("ratrelinfo",    cmd_ratrelinfo, 0, 0, 0);
+  add_command ("banishrel",     cmd_banishrel,  0, 0, 0);
   add_command ("ratwarp",       cmd_ratwarp,    2, 2, 2,
                "X: ", arg_NUMBER,
                "Y: ", arg_NUMBER);
@@ -3097,6 +3100,57 @@ cmd_banish (int interactive, struct cmdarg **args)
   s = current_screen ();
 
   XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2, s->top + s->height - 2);
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_banishrel (int interactive, struct cmdarg **args)
+{
+  rp_screen *s;
+  rp_window *w;
+
+  s = current_screen();
+  w = current_window();
+  if (!w)
+    cmd_banish (interactive, args);
+
+  XWarpPointer (dpy, None, w->w, 0, 0, 0, 0, w->x + w->width - 2, w->y + w->height - 2);
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_ratinfo (int interactive, struct cmdarg **args)
+{
+  rp_screen *s;
+  Window root_win, child_win;
+  int mouse_x, mouse_y, root_x, root_y;
+  unsigned int mask;
+
+  s = current_screen();
+  XQueryPointer (dpy, s->root, &root_win, &child_win, &mouse_x, &mouse_y, &root_x, &root_y, &mask);
+  marked_message_printf (0, 0, "%d %d", mouse_x, mouse_y );
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_ratrelinfo (int interactive, struct cmdarg **args)
+{
+  rp_screen *s;
+  rp_window *rpw;
+  Window root_win, child_win;
+  int mouse_x, mouse_y, root_x, root_y;
+  unsigned int mask;
+
+  s = current_screen();
+  rpw = current_window();
+
+  if (!rpw)
+    return cmd_ratinfo (interactive, args);
+
+  XQueryPointer (dpy, rpw->w, &root_win, &child_win, &mouse_x, &mouse_y, &root_x, &root_y, &mask);
+  marked_message_printf (0, 0, "%d %d", root_x, root_y );
+
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
