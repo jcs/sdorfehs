@@ -270,11 +270,6 @@ init_screen (rp_screen *s, int screen_num)
 	       | StructureNotifyMask);
   XSync (dpy, False);
 
-  /* Add netwm support. FIXME: I think this is busted. */
-  XChangeProperty (dpy, RootWindow (dpy, screen_num),
-		   _net_supported, XA_ATOM, 32, PropModeReplace, 
-		   (unsigned char*)&_net_wm_pid, 1);
-
   /* Set the numset for the frames to our global numset. */
   s->frames_numset = rp_frame_numset;
 
@@ -327,7 +322,6 @@ init_screen (rp_screen *s, int screen_num)
                                        WhitePixel (dpy, s->screen_num),
                                        BlackPixel (dpy, s->screen_num));
   XSelectInput (dpy, s->key_window, KeyPressMask | KeyReleaseMask);
-  XMapWindow (dpy, s->key_window);
 
   /* Create the input window. */
   s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1,
@@ -343,6 +337,8 @@ init_screen (rp_screen *s, int screen_num)
   s->help_window = XCreateSimpleWindow (dpy, s->root, s->left, s->top, s->width,
                                         s->height, 0, s->fg_color, s->bg_color);
   XSelectInput (dpy, s->help_window, KeyPressMask);
+
+  activate_screen(s);
 
   XSync (dpy, 0);
 
@@ -368,6 +364,28 @@ init_screen (rp_screen *s, int screen_num)
        }
   }
 #endif
+}
+
+void
+activate_screen (rp_screen *s)
+{
+  /* Add netwm support. FIXME: I think this is busted. */
+  XChangeProperty (dpy, RootWindow (dpy, s->screen_num),
+		   _net_supported, XA_ATOM, 32, PropModeReplace, 
+		   (unsigned char*)&_net_wm_pid, 1);
+
+  XMapWindow (dpy, s->key_window);
+}
+
+void
+deactivate_screen (rp_screen *s)
+{
+  /* Unmap its key window */
+  XUnmapWindow (dpy, s->key_window);
+
+  /* delete everything so noone sees them while we are not there */
+  XDeleteProperty (dpy, RootWindow (dpy, s->screen_num),
+		   _net_supported);
 }
 
 static int

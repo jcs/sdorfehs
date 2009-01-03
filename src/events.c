@@ -931,11 +931,17 @@ handle_signals (void)
 
   if (rp_exec_newwm)
     {
+      int i;
+
       PRINT_DEBUG (("Switching to %s\n", rp_exec_newwm));
 
       putenv(current_screen()->display_string);
       unhide_all_windows();
       XSync(dpy, False);
+      for (i=0; i<num_screens; i++)
+      {
+	      deactivate_screen(&screens[i]);
+      }
       execlp(rp_exec_newwm, rp_exec_newwm, NULL);
 
       /* Failed. Clean up. */
@@ -943,6 +949,10 @@ handle_signals (void)
       perror(" failed");
       free (rp_exec_newwm);
       rp_exec_newwm = NULL;
+      for (i=0; i<num_screens; i++)
+      {
+	      activate_screen(&screens[i]);
+      }
     }
 
   if (hup_signalled > 0)

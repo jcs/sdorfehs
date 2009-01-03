@@ -4628,8 +4628,7 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
   for (i=0; i<num_screens; i++)
     {
       XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num), 0);
-      /* Unmap its key window */
-      XUnmapWindow (dpy, screens[i].key_window);
+      deactivate_screen(&screens[i]);
     }
 
   /* Ungrab all our keys. */
@@ -4683,9 +4682,8 @@ cmd_tmpwm (int interactive, struct cmdarg **args)
   } while (tmpwm_error_raised);
   XSetErrorHandler (old_handler);
 
-  /* Map the key windows. */
   for (i=0; i<num_screens; i++)
-    XMapWindow (dpy, screens[i].key_window);
+    activate_screen (&screens[i]);
 
   /* Sort through all the windows in each group and pick out the ones
      that are unmapped or destroyed. */

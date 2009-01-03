@@ -763,6 +763,8 @@ free_screen (rp_screen *s)
       frame_free (s, frame);
     }
 
+  deactivate_screen(s);
+
   XDestroyWindow (dpy, s->bar_window);
   XDestroyWindow (dpy, s->key_window);
   XDestroyWindow (dpy, s->input_window);
