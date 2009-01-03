@@ -374,6 +374,10 @@ activate_screen (rp_screen *s)
 		   _net_supported, XA_ATOM, 32, PropModeReplace, 
 		   (unsigned char*)&_net_wm_pid, 1);
 
+  /* set window manager name */
+  XChangeProperty (dpy, RootWindow (dpy, s->screen_num),
+		   _net_wm_name, utf8_string, 8, PropModeReplace,
+		   (unsigned char*)"ratpoison", 9);
   XMapWindow (dpy, s->key_window);
 }
 
@@ -386,6 +390,8 @@ deactivate_screen (rp_screen *s)
   /* delete everything so noone sees them while we are not there */
   XDeleteProperty (dpy, RootWindow (dpy, s->screen_num),
 		   _net_supported);
+  XDeleteProperty (dpy, RootWindow (dpy, s->screen_num),
+		   _net_wm_name);
 }
 
 static int

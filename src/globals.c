@@ -52,6 +52,8 @@ Atom _net_wm_pid;
 Atom _net_supported;
 Atom _net_wm_window_type;
 Atom _net_wm_window_type_dialog;
+Atom _net_wm_name;
+Atom utf8_string;
 
 int rp_current_screen;
 rp_screen *screens;

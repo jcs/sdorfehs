@@ -691,6 +691,8 @@ main (int argc, char *argv[])
   PRINT_DEBUG (("_NET_SUPPORTED = %ld\n", _net_supported));
   _net_wm_window_type = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
   _net_wm_window_type_dialog = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+  _net_wm_name = XInternAtom(dpy, "_NET_WM_NAME", False);
+  utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
 
   /* Setup signal handlers. */
   XSetErrorHandler(handler);
