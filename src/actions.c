@@ -1022,6 +1022,20 @@ parse_keydesc (char *s, struct rp_key *key)
   return NULL;
 }
 
+static void
+grab_rat (void)
+{
+  XGrabPointer (dpy, current_screen()->root, True, 0,
+                GrabModeAsync, GrabModeAsync,
+                None, current_screen()->rat, CurrentTime);
+}
+
+static void
+ungrab_rat (void)
+{
+  XUngrabPointer (dpy, CurrentTime);
+}
+
 /* Unmanage window */
 cmdret *
 cmd_unmanage (int interactive, struct cmdarg **args)
@@ -2998,8 +3012,6 @@ cmd_resize (int interactive, struct cmdarg **args)
       unsigned int mod;
       KeySym c;
       struct list_head *bk;
-      Window focus;
-      int revert;
 
       /* If we haven't got at least 2 frames, there isn't anything to
          scale. */
@@ -3010,8 +3022,8 @@ cmd_resize (int interactive, struct cmdarg **args)
       bk = screen_copy_frameset (s);
 
       /* Get ready to read keys. */
-      XGetInputFocus (dpy, &focus, &revert);
-      set_window_focus (s->key_window);
+      grab_rat();
+      XGrabKeyboard (dpy, s->key_window, False, GrabModeAsync, GrabModeAsync, CurrentTime);
 
       while (1)
         {
@@ -3061,7 +3073,8 @@ cmd_resize (int interactive, struct cmdarg **args)
       free (bk);
 
       hide_frame_indicator ();
-      set_window_focus (focus);
+      ungrab_rat();
+      XUngrabKeyboard (dpy, CurrentTime);
     }
   else
     {
@@ -5190,20 +5203,6 @@ cmd_gdelete (int interactive, struct cmdarg **args)
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
-}
-
-static void
-grab_rat (void)
-{
-  XGrabPointer (dpy, current_screen()->root, True, 0,
-                GrabModeAsync, GrabModeAsync,
-                None, current_screen()->rat, CurrentTime);
-}
-
-static void
-ungrab_rat (void)
-{
-  XUngrabPointer (dpy, CurrentTime);
 }
 
 cmdret *
