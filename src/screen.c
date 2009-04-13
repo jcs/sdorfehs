@@ -465,6 +465,8 @@ screen_update (rp_screen *s, int width, int height)
   oldwidth = s->width; oldheight = s->height;
   s->width = width; s->height = height;
 
+  XResizeWindow (dpy, s->help_window, width, height);
+
   list_for_each_entry (f, &s->frames, node)
     {
       f->x = (f->x*width)/oldwidth;
