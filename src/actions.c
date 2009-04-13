@@ -3106,15 +3106,15 @@ cmd_banish (int interactive, struct cmdarg **args)
 cmdret *
 cmd_banishrel (int interactive, struct cmdarg **args)
 {
-  rp_screen *s;
-  rp_window *w;
+  rp_screen *s = current_screen();
+  rp_window *w = current_window();
+  rp_frame *f = current_frame();
 
-  s = current_screen();
-  w = current_window();
-  if (!w)
-    cmd_banish (interactive, args);
+  if (w)
+    XWarpPointer (dpy, None, w->w, 0, 0, 0, 0, w->x + w->width - 2, w->y + w->height - 2);
+  else
+    XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, f->x + f->width, f->y + f->height);
 
-  XWarpPointer (dpy, None, w->w, 0, 0, 0, 0, w->x + w->width - 2, w->y + w->height - 2);
   return cmdret_new (RET_SUCCESS, NULL);
 }
 

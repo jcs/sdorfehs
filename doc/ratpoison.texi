@@ -1467,7 +1467,7 @@ Banish the mouse to the lower right corner of the screen.
 @deffn banishrel
 Banish the rat cursor to the lower right corner of the curren window.
 If there isn't a window in the current frame, it banishes the rat cursor
-to the lower right corner of the screen.
+to the lower right corner of the frame.
 @end deffn
 
 @deffn Command chdir
