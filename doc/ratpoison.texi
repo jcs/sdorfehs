@@ -1464,6 +1464,12 @@ non-interactively with @command{ratpoison -c}.
 Banish the mouse to the lower right corner of the screen.
 @end deffn
 
+@deffn banishrel
+Banish the rat cursor to the lower right corner of the curren window.
+If there isn't a window in the current frame, it banishes the rat cursor
+to the lower right corner of the screen.
+@end deffn
+
 @deffn Command chdir
 Change the current directory for ratpoison.
 @end deffn
@@ -1592,6 +1598,14 @@ Make text the X11 selection.
 
 @deffn Command quit
 Quit ratpoison.
+@end deffn
+
+@deffn ratinfo
+Display the x y coordinates of the rat cursor relative to the screen.
+@end deffn
+
+@deffn ratrelinfo
+Display the x y coordinates of the rat cursor relative to the window.
 @end deffn
 
 @deffn Command ratrelwarp @var{x} @var{y}
