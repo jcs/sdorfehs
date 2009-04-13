@@ -3128,9 +3128,8 @@ cmd_ratinfo (int interactive, struct cmdarg **args)
 
   s = current_screen();
   XQueryPointer (dpy, s->root, &root_win, &child_win, &mouse_x, &mouse_y, &root_x, &root_y, &mask);
-  marked_message_printf (0, 0, "%d %d", mouse_x, mouse_y );
 
-  return cmdret_new (RET_SUCCESS, NULL);
+  return cmdret_new (RET_SUCCESS, "%d %d", mouse_x, mouse_y);
 }
 
 cmdret *
@@ -3138,20 +3137,25 @@ cmd_ratrelinfo (int interactive, struct cmdarg **args)
 {
   rp_screen *s;
   rp_window *rpw;
+  rp_frame *f;
   Window root_win, child_win;
   int mouse_x, mouse_y, root_x, root_y;
   unsigned int mask;
 
   s = current_screen();
   rpw = current_window();
+  f = current_frame();
 
-  if (!rpw)
-    return cmd_ratinfo (interactive, args);
+  if (rpw)
+    XQueryPointer (dpy, rpw->w, &root_win, &child_win, &mouse_x, &mouse_y, &root_x, &root_y, &mask);
+  else
+    {
+      XQueryPointer (dpy, s->root, &root_win, &child_win, &mouse_x, &mouse_y, &root_x, &root_y, &mask);
+      root_x -= f->x;
+      root_y -= f->y;
+    }
 
-  XQueryPointer (dpy, rpw->w, &root_win, &child_win, &mouse_x, &mouse_y, &root_x, &root_y, &mask);
-  marked_message_printf (0, 0, "%d %d", root_x, root_y );
-
-  return cmdret_new (RET_SUCCESS, NULL);
+  return cmdret_new (RET_SUCCESS, "%d %d", root_x, root_y);
 }
 
 cmdret *

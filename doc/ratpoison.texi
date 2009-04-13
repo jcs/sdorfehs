@@ -1605,7 +1605,7 @@ Display the x y coordinates of the rat cursor relative to the screen.
 @end deffn
 
 @deffn ratrelinfo
-Display the x y coordinates of the rat cursor relative to the window.
+Display the x y coordinates of the rat cursor relative to the current window or current frame if no window is focused.
 @end deffn
 
 @deffn Command ratrelwarp @var{x} @var{y}
