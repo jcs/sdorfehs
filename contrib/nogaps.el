@@ -4,7 +4,10 @@
 ;;; are permitted in any medium without royalty provided the copyright
 ;;; notice and this notice are preserved.
 
-(require 'cl)
+(eval-when-compile
+  (require 'cl))
+
+(require 'ratpoison-cmd)
 
 (defun ratpoison-nogaps ()
   (let ((wins (mapcar 'string-to-number (split-string (ratpoison-windows "%n")))))
