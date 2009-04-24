@@ -186,12 +186,12 @@
     (line-end-position))))
 
 ;; Documentation
-(defun ratpoison-info ()
+(defun ratpoison-manual ()
   "Call up the ratpoison info page."
   (interactive)
   (info "ratpoison"))
 
-(defun ratpoison-command-info ()
+(defun ratpoison-manual-commands ()
   "Call up the info page listing the ratpoison commands."
   (interactive)
   (info "(ratpoison) Commands"))
