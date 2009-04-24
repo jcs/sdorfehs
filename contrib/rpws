@@ -59,6 +59,8 @@ sub ws_init
 {
     my $num = shift;
 
+    $num >= 2 || die "You must create at least 2 workspaces.";
+
     # Backup the frames
     my $fd = fdump();
 
@@ -66,7 +68,7 @@ sub ws_init
     rp_call( "only" );
 
     my $i;
-    for my $i (1..$num)
+    for my $i (2..$num)
     {
         ws_init_ws( $i );
     }
