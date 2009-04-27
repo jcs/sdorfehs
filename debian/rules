@@ -9,16 +9,30 @@ DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 CFLAGS = -Wall -g
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
-	DEPENDENCIES =
+	CONFIG_OPTIONS =
 else
 	CFLAGS += -O2
-ifneq (,$(findstring ratpoison:gendeps,$(DEB_BUILD_OPTIONS)))
-	DEPENDENCIES =
+ifneq (,$(filter ratpoison:gendeps,$(DEB_BUILD_OPTIONS)))
+	CONFIG_OPTIONS =
 else
-	DEPENDENCIES = --disable-dependency-tracking
+	CONFIG_OPTIONS = --disable-dependency-tracking
 endif
+endif
+ifneq (,$(filter ratpoison:noxft,$(DEB_BUILD_OPTIONS)))
+	CONFIG_OPTIONS += --without-xft
+else
+	CONFIG_OPTIONS += --with-xft
+endif
+ifneq (,$(filter ratpoison:readline,$(DEB_BUILD_OPTIONS)))
+	CONFIG_OPTIONS += --enable-history
+else
+	CONFIG_OPTIONS += --disable-history
+endif
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	MAKEFLAGS += -j$(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 endif
 
 config.status: configure
@@ -27,22 +41,16 @@ config.status: configure
 		echo "incompatible install-info call in doc/Makefile.in!" >&2 ;\
 		exit 1 ; \
 	fi
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp /usr/share/misc/config.guess config.guess
-endif
 	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
 	    --prefix=/usr \
 	    --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info \
 	    --with-xterm=x-terminal-emulator \
 	    --with-menu="/etc/X11/ratpoison/ratpoisonmenu debian.menu" \
-	    $(DEPENDENCIES) \
+	    $(CONFIG_OPTIONS) \
 	    --x-includes="" --x-libraries="" \
-	    CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,syms"
+	    CFLAGS="$(CFLAGS)" CPPFLAGS="" LDFLAGS="-Wl,-z,syms"
 	# libXext is not needed for dynamic linking:
-	sed -i -e '/^LIBS =/s/-lXext //' src/Makefile
+	sed -i -e '/^X_LIBS =/s/-lXext //' src/Makefile
 # do not delete config.status if above rule failed,
 # as that might hide other left over files that need cleaning
 .PRECIOUS: config.status

@@ -1,8 +1,11 @@
-Index: ratpoison-1.4.1/ChangeLog
+This patch adds an --with-menu that allows to specify a menu command
+that will be available with :menu and with "C-t ."
+
+Index: ratpoison-1.4.4/ChangeLog
 ===================================================================
---- ratpoison-1.4.1.orig/ChangeLog	2007-04-16 18:33:33.000000000 +0200
-+++ ratpoison-1.4.1/ChangeLog	2007-04-16 18:34:44.000000000 +0200
-@@ -1,1 +1,7 @@
+--- ratpoison-1.4.4.orig/ChangeLog	2009-04-27 14:43:28.000000000 +0200
++++ ratpoison-1.4.4/ChangeLog	2009-04-27 14:47:28.000000000 +0200
+@@ -1,3 +1,9 @@
 +2005-01-15  Bernhard R. Link  <brlink@debian.org>
 +
 +	* configure.in: add --with-menu to specify a menu program
@@ -10,11 +13,13 @@ Index: ratpoison-1.4.1/ChangeLog
 +	* src/main.c:   tell menu command if menu specified
 +
  2005-06-28  Bernhard R. Link <brlink@debian.org>
-Index: ratpoison-1.4.1/src/main.c
+ 
+ 	* src/split.c: new functions enlarge_frame_{left,up,right,down}
+Index: ratpoison-1.4.4/src/main.c
 ===================================================================
---- ratpoison-1.4.1.orig/src/main.c	2007-04-16 18:33:29.000000000 +0200
-+++ ratpoison-1.4.1/src/main.c	2007-04-16 18:34:44.000000000 +0200
-@@ -458,7 +458,13 @@
+--- ratpoison-1.4.4.orig/src/main.c	2009-04-13 11:15:46.000000000 +0200
++++ ratpoison-1.4.4/src/main.c	2009-04-27 14:47:28.000000000 +0200
+@@ -467,7 +467,13 @@
  {
    rp_action *help_action;
    char *prefix, *help;
@@ -28,7 +33,7 @@ Index: ratpoison-1.4.1/src/main.c
  
    prefix = keysym_to_string (prefix_key.sym, prefix_key.state);
  
-@@ -467,27 +473,44 @@
+@@ -476,27 +482,44 @@
    /* Find the help key binding. */
    help_action = find_keybinding_by_action ("help " ROOT_KEYMAP, map);
    if (help_action)
@@ -84,11 +89,11 @@ Index: ratpoison-1.4.1/src/main.c
    free (prefix);
  }
  
-Index: ratpoison-1.4.1/src/actions.c
+Index: ratpoison-1.4.4/src/actions.c
 ===================================================================
---- ratpoison-1.4.1.orig/src/actions.c	2007-04-16 18:33:33.000000000 +0200
-+++ ratpoison-1.4.1/src/actions.c	2007-04-16 18:34:44.000000000 +0200
-@@ -684,6 +684,9 @@
+--- ratpoison-1.4.4.orig/src/actions.c	2009-04-27 14:43:28.000000000 +0200
++++ ratpoison-1.4.4/src/actions.c	2009-04-27 14:47:28.000000000 +0200
+@@ -725,6 +725,9 @@
    add_keybinding (prefix_key.sym, prefix_key.state, "other", map);
    add_keybinding (prefix_key.sym, 0, "meta", map);
    add_keybinding (XK_g, RP_CONTROL_MASK, "abort", map);
@@ -98,7 +103,7 @@ Index: ratpoison-1.4.1/src/actions.c
    add_keybinding (XK_0, 0, "select 0", map);
    add_keybinding (XK_1, 0, "select 1", map);
    add_keybinding (XK_2, 0, "select 2", map);
-@@ -768,6 +771,10 @@
+@@ -811,6 +814,10 @@
    add_alias ("unbind", "undefinekey " ROOT_KEYMAP);
    add_alias ("bind", "definekey " ROOT_KEYMAP);
    add_alias ("split", "vsplit");
@@ -109,13 +114,13 @@ Index: ratpoison-1.4.1/src/actions.c
  }
  
  cmdret *
-Index: ratpoison-1.4.1/configure.in
+Index: ratpoison-1.4.4/configure.in
 ===================================================================
---- ratpoison-1.4.1.orig/configure.in	2007-04-16 18:33:29.000000000 +0200
-+++ ratpoison-1.4.1/configure.in	2007-04-16 18:34:44.000000000 +0200
-@@ -45,6 +45,15 @@
- term_prog=$withval, term_prog="xterm")
- AC_DEFINE_UNQUOTED(TERM_PROG, "$term_prog", X terminal emulator to use)
+--- ratpoison-1.4.4.orig/configure.in	2009-04-27 03:55:10.000000000 +0200
++++ ratpoison-1.4.4/configure.in	2009-04-27 14:47:28.000000000 +0200
+@@ -72,6 +72,15 @@
+ AC_SUBST(XFT_CFLAGS)
+ AC_SUBST(XFT_LIBS)
  
 +AC_ARG_WITH(menu, [ --with-menu=PROG        set a external menu program to be advertised ],
 +menu_prog="$withval", menu_prog="")
@@ -129,10 +134,10 @@ Index: ratpoison-1.4.1/configure.in
  dnl Checks for programs.
  AC_CHECK_TOOL(CC, gcc)
  AC_PROG_CC
-Index: ratpoison-1.4.1/src/messages.h
+Index: ratpoison-1.4.4/src/messages.h
 ===================================================================
---- ratpoison-1.4.1.orig/src/messages.h	2007-04-16 18:33:29.000000000 +0200
-+++ ratpoison-1.4.1/src/messages.h	2007-04-16 18:34:44.000000000 +0200
+--- ratpoison-1.4.4.orig/src/messages.h	2009-04-13 03:52:16.000000000 +0200
++++ ratpoison-1.4.4/src/messages.h	2009-04-27 14:47:28.000000000 +0200
 @@ -50,6 +50,7 @@
  #define MESSAGE_PROMPT_VAR_VALUE  "Value: "
  

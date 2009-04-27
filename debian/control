@@ -2,15 +2,15 @@ Source: ratpoison
 Section: x11
 Priority: extra
 Maintainer: Bernhard R. Link <brlink@debian.org>
-Build-Depends: debhelper (>= 5), libx11-dev, libxext-dev, x11proto-core-dev, libxinerama-dev, libxtst-dev, libreadline5-dev, perl, autotools-dev
-Standards-Version: 3.7.3
+Build-Depends: debhelper (>= 5), libx11-dev, libxext-dev, x11proto-core-dev, libxinerama-dev, libxtst-dev, libxft-dev, perl
+Standards-Version: 3.8.1
 Homepage: http://www.nongnu.org/ratpoison/
 Vcs-Browser: http://git.savannah.nongnu.org/gitweb/?p=ratpoison.git
 Vcs-Git: git://git.savannah.nongnu.org/ratpoison.git
 
 Package: ratpoison
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: 9menu (>= 1.6), menu, rxvt | x-terminal-emulator
 Suggests: xbindkeys, xclip
 Provides: x-window-manager

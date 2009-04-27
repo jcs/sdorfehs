@@ -17,6 +17,6 @@ by the .diff.gz all together.
 
 * If you are preparing a new version
 
-  Start with the clean source from CVS. Choose which of the patches you
-  want to apply and apply them. Copy the debian directory (without the
-  CVS directories) and build.
+  Start with the clean source from git or the tarball. Choose which of the patches
+  from this directy you want to apply and apply them. Copy the debian directory
+  and build.
