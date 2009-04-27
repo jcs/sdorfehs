@@ -7,6 +7,12 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.3
+** add commands ratinfo, ratrelinfo, banishrel
+
+** add history to input bar when libhistory is not used
+
+** add settings historysize and historycompaction
+
 ** new window formatters %p, %M
 prints the pid of the window and whether its a maxsize window.
 

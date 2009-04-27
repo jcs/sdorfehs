@@ -1,3 +1,588 @@
+commit 18ee1ed3b3839d44e08e5aefd0e926d29d252654
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Fri Apr 24 15:28:27 2009 -0700
+
+    rename ratpoison-info and ratpoison-commands-info to remove name clash with ratpoison-cmd.el
+
+commit d605c07b966d541820805a4938b59242e315735f
+Author: Philip Hudson <phil.hudson@iname.com>
+Date:   Sun Apr 19 21:58:23 2009 +0100
+
+    in contrib/nogaps.el, placate the emacs Lisp byte-compiler and standardise the (require 'cl) line
+
+commit b890eb8b955edfa46acda6d7b4ff0ab7f15dcfab
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Fri Apr 24 10:16:39 2009 -0700
+
+    in contrib/rpws don't create wspl1, since it already exist as the Default group.
+    
+    Also add a check to ensure the workspaces creates are at least 2.
+
+commit a4de27cea6f5bf937f9b282f0195c0e4763a185f
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Apr 13 05:50:35 2009 -0700
+
+    grab the keyboard and pointer in cmd_resize
+    
+    * fixes a bug that hangs rp: in resize mode, click firefox and rp hangs
+
+commit c7b3817c222952196b11825076c902d6dd1da455
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Apr 13 05:33:47 2009 -0700
+
+    make ratinfo and ratrelinfo work with ratpoison -c and return coordinates relative to current frame when there's no window
+    
+    * update docs
+
+commit bd7aa51699f49cf7a67c403ba7f2ba3738fcf644
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Apr 13 05:19:46 2009 -0700
+
+    fix segfault in banishrel and make it banish to the corner of the frame when there's no window
+    
+    * update documentation
+
+commit 300c05edf890fbe2de11070b9839359bef9916e1
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Apr 13 05:04:18 2009 -0700
+
+    add texinfo documentation for ratinfo, ratrelinfo, banishrel commands
+
+commit 855d25f482c43a66a73026e62ff0da539acc67e8
+Author: Rob Paisley <paisley@www.rpaisley.com>
+Date:   Fri Nov 28 13:14:07 2008 -0500
+
+    Add ratinfo, ratrelinfo, and banishrel commands
+
+commit e2282bd77f041430c510203365b18436a60d0586
+Author: Hatem Nassrat <hnassrat@gmail.com>
+Date:   Mon Feb 23 09:57:18 2009 -0400
+
+    Allowing for next and prev workspace switching.
+
+commit 82be5b35eda82f8dd4b6e19940d6a7bee1b582ea
+Author: Shawn <sabetts@juicebox>
+Date:   Mon Apr 13 01:23:38 2009 -0700
+
+    resize the help window when a screen is resized
+
+commit 281aaf7b489d9ba89fdf5e39637cde287e83f9fa
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sat Jan 3 16:22:29 2009 +0100
+
+    set _net_wm_name for the root window to ratpoison
+
+commit ffae4bf9413bec7efd5d4821e030b63a700fab69
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sat Jan 3 16:21:34 2009 +0100
+
+    Move screen activation code to new (de)activate_screen functions,
+    
+    making sure _NET atoms are reset after tmpwm and deleted when exiting.
+
+commit 9888fccffbc7d9f5680512b03ace6dd5fc325094
+Author: Shawn <sabetts@juicebox>
+Date:   Tue Nov 18 15:46:48 2008 -0800
+
+    fix AUTO_CLOSE code in unmanage()
+
+commit 612b99640af64d28823d3a02cdcecf202b74940c
+Author: Shawn <sabetts@juicebox>
+Date:   Sat Nov 1 11:22:22 2008 -0700
+
+    in cmd_tmpwm wait for a second if it failed to re-select the root events.
+
+commit 75207d2e878250c2717174a22cc828c0aba5ba76
+Author: Shawn <sabetts@juicebox>
+Date:   Sat Nov 1 10:29:44 2008 -0700
+
+    fix (i hope) the tmpwm race condition and the bug that sometimes keys don't work after tmpwm
+    
+    the race condition is fixed by spinning in a loop with a special error
+    handler until it is confirmed that the root event selections were
+    successfully.
+    
+    Existing windows don't get their top level keys grabbed, so after the
+    windows are synced up, grab the top level keys on all windows.
+
+commit c0bee97912e5caf256441dbdc531f38fbe06d780
+Author: Shawn <sabetts@juicebox>
+Date:   Wed Oct 22 14:28:45 2008 -0700
+
+    include limits.h for INT_MAX
+
+commit 970d09c36249834e63d529cfdfce0672dff25d99
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sun Jun 15 17:56:10 2008 +0200
+
+    update documentation
+
+commit 086cf745280ff944a479508f806fa118839e166f
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sun Jun 15 15:40:37 2008 +0200
+
+    ignore non-existing libhistory unless --enable-history
+
+commit 1e4c576b14025d4e16e09110c31b1dec5dac85b9
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sun Jun 15 15:02:03 2008 +0200
+
+    make history expansion an option (switched off by default)
+
+commit 4ca186ff04eb611db6b11aa0c06adda7f428d4f3
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sun Jun 15 13:40:54 2008 +0200
+
+    remove libhistory history handling, only feed it on demand when doing ! expansion
+
+commit 7214b8c52e230fdb52a99ce1ed20092c6944dcd3
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Thu Jun 12 18:10:37 2008 +0200
+
+    add 'set historysize' and 'set historycompaction' (defaulting to true) to compact history
+
+commit 4a15061f631b5b85c0cff068407c51bfb315a497
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Thu Jun 12 12:20:06 2008 +0200
+
+    alternate history implementation when no libhistory is available
+
+commit 3737db1e6072c557748ba0ffcdca1e810b15009f
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Tue Jun 10 15:40:50 2008 +0200
+
+    move all HAVE_HISTORY into history.c
+
+commit d11f0735321bc725441fbc1dec04e363d07c987a
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Tue Jun 10 14:24:05 2008 +0200
+
+    SHELLCMD history only shows execute arguments, things to execute are stored as in history as execute commands
+
+commit d801644502adf42570e9a5b75fcaa013f613fc5a
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Mon Jun 9 23:50:27 2008 +0200
+
+    define different history types and use them
+    
+    (implementation does not separate them yet, though)
+
+commit 22cea909c3d1b695424ef85153917b00bfb1261c
+Author: Antti Nykänen <aon@iki.fi>
+Date:   Wed Oct 22 18:42:24 2008 +0300
+
+    return the correct value when set_barinpadding is called without arguments
+    
+    Currently, when you execute C-t : set barinpadding, you actually get the
+    bar's border width. This patch fixes that.
+
+commit 96f9429650200ee4b9897a778a28954de772d151
+Author: Shawn <sabetts@juicebox>
+Date:   Sun Oct 19 13:20:28 2008 -0700
+
+    update the NEWS file to reflect recent changes
+
+commit 443bd7387dce55812eabe970b4a267d9e626e9a0
+Author: J.R. Mauro <jrm8005@gmail.com>
+Date:   Sun Oct 19 08:13:41 2008 -0400
+
+    add contrib/expose.pl
+
+commit 03f8bba45a8d1b0236731b4aece52795c0bc1326
+Author: Ali Gholami Rudi <aliqrudi@gmail.com>
+Date:   Sat Oct 18 08:05:15 2008 +0330
+
+    disallow duplicate group names
+
+commit 9ec3e80ad828e3eb35ce800b78fa73176d0d7c02
+Author: Antti Nykänen <aon@iki.fi>
+Date:   Thu Jun 26 16:57:16 2008 +0300
+
+    PID support for format_string
+
+commit 656481bd1b052137826d041347bd0a93592b96a0
+Author: Ali Gholami Rudi <aliqrudi@gmail.com>
+Date:   Sat Oct 11 09:40:12 2008 +0330
+
+    run switch group hooks after gdelete
+    
+    When current group is deleted, a new group is selected but switch
+    group hooks are not run.  This patch calls set_current_group() which
+    runs those hooks.
+
+commit 4a180cb969833289eb2dd46548d594f6f37c8a87
+Author: Ali Gholami Rudi <aliqrudi@gmail.com>
+Date:   Sat Oct 11 09:39:18 2008 +0330
+
+    don't delete the last group
+    
+    Currently gdelete deletes the last group and creates a new empty
+    group.  This patch changes gdelete to show a message, instead.
+
+commit 098fc67c1a277286fc513ccb646e4054889063ab
+Author: Ali Gholami Rudi <aliqrudi@gmail.com>
+Date:   Sat Oct 11 09:38:26 2008 +0330
+
+    select the last visited group after gdelete
+
+commit da60eaebff265bafae3c7be1dee5a585ff3e2198
+Author: Shawn <sabetts@juicebox>
+Date:   Sun Oct 12 17:03:31 2008 -0700
+
+    change grename arg type to arg_REST
+
+commit 2557e59fc5ce7690d05856b04e0ea5aaff6f9f60
+Author: Ali Gholami Rudi <aliqrudi@gmail.com>
+Date:   Sat Oct 11 08:33:32 2008 +0330
+
+    add grename command
+
+commit 96f8765e306e2a5ed27546d2fec9b08613d369c2
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sat Oct 11 13:30:58 2008 +0200
+
+    cmd_swap checks that both frames are on the same screen
+
+commit cdf47ffa11181bee433fd52f01fbc9d29f6d5323
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Oct 10 14:27:40 2008 -0700
+
+    document gother
+
+commit 1d291ecaf30bfa551086aabe02d065f07f00eff3
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Oct 10 14:23:17 2008 -0700
+
+    mark the last group in cmd_groups
+
+commit b57b21ee318287d035269cb526444a756a93cae9
+Author: Ali Gholami Rudi <aliqrudi@gmail.com>
+Date:   Sat Sep 20 22:18:43 2008 +0430
+
+    add gother command
+
+commit ddf7f1104af0663ba730b5b82607843fe988109e
+Author: Ali Gholami Rudi <aliqrudi@gmail.com>
+Date:   Tue Sep 23 17:19:54 2008 +0330
+
+    src/actions.c: fix memory leak in cmd_groups()
+
+commit 2c2989660cb285509775acdf0950aab2ae6715db
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Oct 10 13:45:43 2008 -0700
+
+    in get_net_wm_window_type, only call XFree on success
+    
+    This fixes a crash bug that was reproduced by running dolphin (the kde
+    file manager).
+
+commit 8370ffefe77a74b17dd14b5d8e6544f677782bc3
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Oct 10 13:35:45 2008 -0700
+
+    bind nextscreen/prevscreen to C-t N and C-t P
+
+commit cc668c2218aad54cd27d1a8611de864372156cb0
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Oct 10 13:04:12 2008 -0700
+
+    choose a better approach to setting the border color in remove_frame
+    
+    * remove call to give_window_focus in remove_frame
+    * set the border color in hide_window
+    
+    calling give_window_focus in remove_frame was plain incorrect. setting
+    it in hide_window might be considered overkill but I believe it will
+    catch this case and any others that might be lurking.
+
+commit 497fb323835bbb3cceb39874e7555b565863c7e8
+Author: Kipling Inscore <k@bijna.net>
+Date:   Sun Aug 3 11:40:42 2008 -0700
+
+    allow window border color to be set seperately for focused and unfocused windows
+
+commit b47008536843fe9dfa5790581228f42d5c83ee80
+Author: J.R. Mauro <jrm8005@gmail.com>
+Date:   Tue Jul 29 21:40:02 2008 -0400
+
+    clean up set_active_window_body() with 2 new helper functions
+
+commit dd86c8350d1ba3dd024240ae0b91c147aa42473d
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Fri Oct 10 10:08:04 2008 +0200
+
+    doc/ratpoison.texi: fix argument order of execf
+
+commit 8a8b8d5618eaddd2be1fd6e3e716320e007406cd
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sun Jun 22 17:00:36 2008 +0200
+
+    document new %M in manpage
+
+commit dd36053ca5b842759aa2c5cc5f653a84a98cbd47
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Mon Jun 9 22:23:58 2008 +0200
+
+    make xstrdup argument const char*
+
+commit 845b825f3f16ae02c8083f046ef13d5c922efa40
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Mon Jun 9 11:22:27 2008 +0200
+
+    Mark command arguments as arg_COMMAND
+
+commit f75953fcce418773e3c552cefcee33034ab6dbdb
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Mon Jun 9 10:59:25 2008 +0200
+
+    remove unused history_list_items function
+
+commit 4e08030acf10a54af36e92b14624257fbf0835a4
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Jun 20 14:01:39 2008 -0700
+
+    support the netwm dialog window type
+
+commit ea17008472c85c2c931336774335261b8394a691
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Jun 20 13:57:18 2008 -0700
+
+    add a maxsize formatter character to format_string
+
+commit 5df9409554d64c73736fb044d8baead78c9c938e
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Jun 16 19:15:20 2008 -0700
+
+    update copyright notice
+
+commit 040d4dbf7332d295b1c3078ded7c418ec396e8fa
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Thu May 29 15:01:07 2008 -0700
+
+    don't grab the key if the keysym doesn't map to a keycode
+    
+    Also, remove the restriction that a keysym must have a keycode in order to be bound.
+
+commit d1f633382214f50e07cea482249ff9733fa7ded3
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed May 28 19:11:02 2008 +0200
+
+    Use AC_HELP_STRING for all help texts.
+
+commit 229ba0708073b0d02ab253290f224a91844f1b17
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed May 28 18:59:57 2008 +0200
+
+    Only check for xft.pc if xft is not disabled.
+    If xft is explicitly requested, not finding it causes an error.
+    The CPP and LD flags for the different libraries are put in
+    specific variables and only added in the Makefile.
+
+commit bb3e3db9c29a478939394c612ab93f9d9cdc3bc8
+Author: Shawn <sabetts@juicebox>
+Date:   Sun May 25 01:00:23 2008 -0700
+
+    update news and authors wrt xft
+
+commit 76c0bd55bd31b70bc0cbfd198613c09be4acd9b5
+Author: Shawn <sabetts@juicebox>
+Date:   Sun May 25 01:00:11 2008 -0700
+
+    use PKG_CHECK_MODULES to detect xft
+
+commit bf8dc854fbb0c258c67735153c18903aeb467c60
+Author: Shawn <sabetts@juicebox>
+Date:   Sun May 25 00:27:03 2008 -0700
+
+    don't free defaults.font when xft is enabled
+
+commit 8ff12976802745ddfd06b4016089b12a3182a86b
+Author: Shawn <sabetts@juicebox>
+Date:   Sun May 25 00:20:00 2008 -0700
+
+    properly indent calls to rp_text_width and rp_draw_string
+
+commit 98503f1fa2abd896c91a186c1f1670932a14ed63
+Author: Shawn <sabetts@juicebox>
+Date:   Sun May 25 00:18:17 2008 -0700
+
+    change -1 to the proper string length in some calls to rp_text_width and rp_draw_string
+
+commit 4be06410d03bcbcde5707e317c321a482cb32214
+Author: Shawn <sabetts@juicebox>
+Date:   Sat May 24 23:43:12 2008 -0700
+
+    fix whitespace errors in xft patch
+
+commit d37c7484ab881b0283fd4573235b24fe7d1e7af9
+Author: Midare Kiyura <puce@gmx.com>
+Date:   Sat May 24 16:04:33 2008 -0500
+
+    Add xft support
+
+commit c7ec59674cfe315f2a0ea54fc7444b4a6a6a8a67
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Fri May 2 10:10:43 2008 +0200
+
+    make read_any_key a proper prototype
+
+commit ede3fb4202ee1e8d397d2ec041bbfa927cf51d02
+Merge: 9b98a44... 9120e78...
+Author: Shawn <sabetts@juicebox.(none)>
+Date:   Fri Apr 18 16:42:37 2008 -0700
+
+    Merge branch 'master' of ssh://sabetts@git.sv.gnu.org/srv/git/ratpoison
+
+commit 9b98a448c43088603601e287794925039fd60429
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Apr 18 16:42:17 2008 -0700
+
+    fix off by one bug in rpws
+
+commit c2c4f2850606bb982350f0d7bae6b100a4d4a5de
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Apr 18 16:42:00 2008 -0700
+
+    bump version to 1.4.4-GIT
+
+commit 59f03dada1682b5025cf7def0ec2dde5abdab83a
+Author: Shawn <sabetts@juicebox>
+Date:   Fri Apr 18 16:41:49 2008 -0700
+
+    add 1.4.3 news
+
+commit 9120e78541e6e58f0a859de8dfe0c1b00eb0f264
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Fri Feb 22 11:06:17 2008 +0100
+
+    remove AC_CANONICAL_HOST and bin-dist target as only user of it
+
+commit 0f793c3f0ba508afa251cab5cfd45fe79123584f
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Thu Feb 21 15:20:41 2008 +0100
+
+    update debian/ directory
+
+commit 7f74fffef79e5e77f9b880a7cad8fc308e901709
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Thu Feb 21 14:26:18 2008 +0100
+
+    fix syntax errors in the manpage
+
+commit cc35f0778f427e43f00d735576e7044514950605
+Author: Shawn <sabetts@juicebox>
+Date:   Tue Feb 19 16:53:23 2008 -0800
+
+    grab top level key bindings asynchronously
+
+commit fa2fa9692587a431399ce3786f3b1e970b5e244e
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Feb 11 23:16:07 2008 -0800
+
+    return a value in read_single_key
+
+commit 6ef6c4ddce5eec679d81c48c0f5b72ab04a388f2
+Merge: a45a3c2... 4245904...
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Feb 11 23:13:39 2008 -0800
+
+    Merge branch 'master' of sabetts@git.sv.gnu.org:/srv/git/ratpoison
+
+commit a45a3c2cba130c6164088884d51af7545b7c671a
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Feb 11 23:12:09 2008 -0800
+
+    ifdef out Xtst library calls
+
+commit 42459044340ce1cb016a9a7d85e8c784f7e36979
+Merge: bd51b17... 3793365...
+Author: Shawn <sabetts@juicebox.(none)>
+Date:   Wed Feb 6 16:50:28 2008 -0800
+
+    Merge branch 'master' of ssh://sabetts@git.sv.gnu.org/srv/git/ratpoison
+
+commit bd51b1705292845686f8f682d15f6b7b90ddc787
+Author: Shawn <sabetts@juicebox>
+Date:   Wed Feb 6 14:16:37 2008 -0800
+
+    Change the way input is read
+    
+    Before rp used xgrabkeyboard to read a key. Instead, the keyboard is
+    frozen when a top level key is read. Then when rp reads a key it first
+    sets the input focus to a suitable location such as key_window or
+    input_window, then thaws the keyboard and waits for a keypress. When a
+    key is pressed the keyboard is frozen again and the process repeats
+    until ratpoison is done reading input. At that point the keyboard is
+    thawed in a way that future keystrokes do not refreeze the keyboard.
+
+commit cbcc8f2882ac8985a027b5c8423b5e764c51c158
+Author: Shawn <sabetts@juicebox>
+Date:   Wed Feb 6 14:13:45 2008 -0800
+
+    add TAGS to .gitignore
+
+commit 37933658a66f1d7f5cc00cbf83882b84cf8c8337
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Fri Dec 7 12:12:07 2007 -0800
+
+    call switchwin hook when a window in unmapped or destroyed
+
+commit c322af661de758faab2a8035d1dbfd64b36a5082
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Oct 22 02:24:25 2007 -0700
+
+    bump the version number in the docs to 1.4.3
+
+commit e0f6041ffe1bfa9cc0c347db7a60ba420f945134
+Merge: c72f081... d384649...
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Thu Oct 11 13:58:41 2007 -0700
+
+    Merge branch 'master' of sabetts@git.sv.gnu.org:/srv/git/ratpoison
+
+commit c72f0811c3c6f35183e7ced8b686411f329c8671
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Thu Oct 11 13:57:37 2007 -0700
+
+    Properly shell-escape ratpoison commands for perl bindings.
+
+commit d3846498579cbc5bbdf7cbf012e07a049488ed6a
+Merge: f30be19... f229711...
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Oct 8 17:26:54 2007 -0700
+
+    Merge branch 'master' of ssh://sabetts@git.sv.gnu.org/srv/git/ratpoison
+
+commit f30be1924830a6afee9935b1a6ef094dd9471dfe
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Mon Oct 8 17:26:17 2007 -0700
+
+    add more ignored files
+
+commit f229711cc2633a95d88c1b59c5a3e48c5800d2b4
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Mon Oct 8 13:02:58 2007 +0200
+
+    Update debian/ directory
+
+commit e3f4eb16ef7fce25da1e77b16b87525a724b9526
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sat Oct 6 21:13:52 2007 -0700
+
+    bump version to 1.4.3-GIT
+
+commit 2dc366b17f298ec697e453e648213e29d9dea815
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sat Oct 6 21:13:21 2007 -0700
+
+    add NEWS for 1.4.2
+
+commit d4b97b5a7ff4b9a9cb73ba0d1dbaf3b91e75f8f8
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sat Oct 6 21:12:58 2007 -0700
+
+    Remove .cvsignore files. add .gitignore files
+
 2007-08-14  Bernhard R. Link  <brlink@debian.org>
 
 	* src/main.c (xvsprintf): limit memory allocation
@@ -496,7 +1081,7 @@
 	(cmd_info): handle optional argument
 	(cmd_windows): when called interactively use the argument as the format string.
 
-2006-03-14  Antti Nyk�nen <aon@iki.fi>
+2006-03-14  Antti Nykдnen <aon@iki.fi>
 
 	* src/format.c: new file
 
