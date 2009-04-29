@@ -151,6 +151,9 @@ history_add_upto (int history_id, const char *item, size_t max)
 	  h->count--;
   }
 
+  if( max == 0 )
+	  return;
+
   item_len = strlen(item);
   i = xmalloc (sizeof(struct history_item) + item_len + 1);
 
@@ -216,6 +219,9 @@ history_save (void)
   char *filename = get_history_filename ();
   FILE *f;
   struct history_item *item;
+
+  if (!defaults.history_size)
+    return;
 
   if (!filename)
     return;
