@@ -30,8 +30,8 @@
 #ifdef USE_XFT_FONT
 #include <X11/Xft/Xft.h>
 
-#define FONT_HEIGHT(s) ((s)->ft_font->ascent + (s)->ft_font->descent)
-#define FONT_ASCENT(s) ((s)->ft_font->ascent)
+#define FONT_HEIGHT(s) ((s)->xft_font->ascent + (s)->xft_font->descent)
+#define FONT_ASCENT(s) ((s)->xft_font->ascent)
 
 #else
 

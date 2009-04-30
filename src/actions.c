@@ -3707,8 +3707,8 @@ set_font (struct cmdarg **args)
   if (font == NULL)
     return cmdret_new (RET_FAILURE, "deffont: unknown font");
 
-  XftFontClose (dpy, s->ft_font);
-  s->ft_font = font;
+  XftFontClose (dpy, s->xft_font);
+  s->xft_font = font;
 #else
   XFontSet font;
 
@@ -3992,6 +3992,13 @@ set_fgcolor (struct cmdarg **args)
       XSetWindowBorder (dpy, screens[i].input_window, color.pixel);
       XSetWindowBorder (dpy, screens[i].frame_window, color.pixel);
       XSetWindowBorder (dpy, screens[i].help_window, color.pixel);
+
+#ifdef USE_XFT_FONT
+      if (!XftColorAllocName (dpy, DefaultVisual (dpy, screens[i].screen_num),
+                              DefaultColormap (dpy, screens[i].screen_num),
+                              ARG_STRING(0), &screens[i].xft_color))
+        return cmdret_new (RET_FAILURE, "deffgcolor: unknown color");
+#endif
 
       free (defaults.fgcolor_string);
       defaults.fgcolor_string = xstrdup (ARG_STRING(0));

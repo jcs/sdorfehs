@@ -774,11 +774,11 @@ free_screen (rp_screen *s)
   XDestroyWindow (dpy, s->help_window);
 
 #ifdef USE_XFT_FONT
-  if (s->ft_font)
+  if (s->xft_font)
     {
       XftColorFree (dpy, DefaultVisual (dpy, s->screen_num),
-                    DefaultColormap (dpy, s->screen_num), &s->color);
-      XftFontClose (dpy, s->ft_font);
+                    DefaultColormap (dpy, s->screen_num), &s->xft_color);
+      XftFontClose (dpy, s->xft_font);
     }
 #endif
 
