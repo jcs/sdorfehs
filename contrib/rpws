@@ -6,6 +6,8 @@
 # ChangeLog:
 #
 #   Added C-M-Right and C-M-Left for next and prev workspace
+#   Added move window to next prev workspace
+#   Added dump/restore workspaces
 #
 # Copyright (c) 2005 Mike O'Connor
 # All rights reserved.
@@ -47,7 +49,7 @@ sub ws_init_ws
 
     rp_call( "gnew wspl$num" );
     my $fd = fdump();
-    rp_call( "setenv fspl$num $fd" )
+    rp_call( "setenv fspl$num $fd" );
 }
 
 sub fdump
@@ -102,8 +104,16 @@ sub ws_save
 sub ws_restore
 {
     my $which = shift;
+    my $which_name;
+    my $move;
 
-    ws_save();
+    # Step1: determine which workspace to move to
+
+    if ( $which =~ /^move/ )
+    {
+        $move = 1;
+        $which = substr($which, 4);
+    }
 
     if ( $which =~ /^(?:next|prev)$/ )
     {
@@ -121,39 +131,125 @@ sub ws_restore
         $which = ( ( $ws - 1 ) % $wspc ) + 1;
     }
 
-    if( $which == 1 )
+    if ( $which == 1 )
     {
-        rp_call( "gselect default" );
+        $which_name = "default";
     }
     else
     {
-        rp_call( "gselect wspl$which");
+        $which_name = "wspl$which";
     }
 
-    rp_call( "echo Workspace $which" );
+    # Step 2a: Moving Window if necessary
+    if ( $move )
+    {
+        rp_call( "gmove $which_name" );
+        rp_call( "select -" );
+        rp_call( "prev" );
+    }
+
+    # Step2: Process the workspace switch
+    ws_save();
+    rp_call( "gselect $which_name");
     my $last = rp_call( "getenv fspl$which" );
     rp_call( "frestore $last" );
     rp_call( "setenv wspl $which" );
+
+    # Step 2x: Display the moved Window
+    if ( $move )
+    {
+        rp_call( "next" );
+    }
+
+    rp_call( "echo Workspace $which" );
+
+}
+
+sub ws_dump
+{
+    my $ws_dumpf = shift;
+    my $wspc = rp_call( "getenv wspc" );
+
+    open WSDUMP, ">$ws_dumpf" or die $!;
+
+    ws_save();
+
+    for my $i (1..$wspc)
+    {
+        print WSDUMP rp_call( "getenv fspl$i" )."\n";
+    }
+
+    close WSDUMP;
+
+    rp_call( "echo Workspaces dumped to $ws_dumpf" );
+}
+
+sub ws_dumprestore
+{
+    my $ws_dumpf = shift;
+    my $ws = rp_call( "getenv wspl" );
+    my $wspc = rp_call( "getenv wspc" );
+
+    # Get dumped frame info
+    open WSDUMP, "$ws_dumpf" or die $!;
+    my @wsdata=<WSDUMP>;
+    close WSDUMP;
+
+    my $wspc_dump = scalar @wsdata;
+
+    if ($wspc < $wspc_dump)
+    {
+        # Number of workspaces to restore more than available
+        die "Cannot restore all workspaces (dump_count = " . $wspc_dump . ", rp_count = " . $wspc . ")";
+    }
+
+    # Restoring all workspaces
+    for my $i (1..$wspc_dump)
+    {
+        # calculating previous workspace number
+        my $j = ( $wspc + $i - 2 ) % $wspc + 1;
+        # moving to workspace $i -1
+        ws_restore( $j );
+        # restoring workspace $i
+        rp_call( "setenv fspl$i $wsdata[$i-1]" );
+    }
+
+     # goto the originally visible workspace
+     ws_restore( $ws );
+
+    rp_call( "echo Workspaces loaded from $ws_dumpf" );
 }
 
 sub add_aliases
 {
     my $n = shift;
     foreach my $i (1..$n) {
+        # Switch Workspace
         rp_call ( "alias rpws$i exec $0 $i" );
+        # Move Window to wrokspace
+        rp_call ( "alias rpwsm$i exec $0 move$i" );
     }
     rp_call ( "alias rpwsn exec $0 next" );
     rp_call ( "alias rpwsp exec $0 prev" );
+    rp_call ( "alias rpwsmn exec $0 movenext" );
+    rp_call ( "alias rpwsmp exec $0 moveprev" );
+
+
 }
 
 sub add_keys
 {
     my $n = shift;
     foreach my $i (1..$n) {
+        # Switch Workspace
         rp_call ( "definekey top M-F$i rpws$i" );
+        # Move Window to wrokspace
+        rp_call ( "definekey top C-M-S-F$i rpwsm$i" );
     }
     rp_call ( "definekey top C-M-Right rpwsn" );
     rp_call ( "definekey top C-M-Left rpwsp" );
+    rp_call ( "definekey top C-M-greater rpwsmn" );
+    rp_call ( "definekey top C-M-less rpwsmp" );
 }
 
 my $arg = shift @ARGV || 'help';
@@ -167,6 +263,12 @@ if( $arg eq "help" ) {
     getopts('ka', \%opts);
     add_aliases( $num ) if $opts{'a'} || $opts{'k'};
     add_keys ( $num ) if $opts{'k'};
+} elsif( $arg eq "dump" ) {
+    my $filename = shift @ARGV;
+    ws_dump($filename);
+} elsif( $arg eq "restore" ) {
+    my $filename = shift @ARGV;
+    ws_dumprestore($filename);
 } else {
    open LOCK, ">>$lockfile" or die "Cannot open lockfile: $lockfile";
    flock(LOCK, LOCK_EX);
@@ -184,6 +286,8 @@ rpws - Implements multiple workspaces in ratpoison
  rpws init n [-k] [-a]  - setup rpws with n workspaces.
                             -a sets up command aliases;
                             -k sets up key bindings and aliases.
+ rpws dump <fname>      - dumps the current layout to <fname>
+ rpws restore <fname>   - restores rpws workspaces from <fname>
  rpws help              - this documentation
  rpws n                 - switch to this workspace
 
@@ -202,7 +306,15 @@ Add the following line in ~/.ratpoisonrc
 
 This creates 6 aliases rpws1, rpws2, etc. It also binds the keys M-F1,
 M-F2, etc to each rpwsN alias. Moreover, rpwsn (Next) and rpwsp (Prev) are
-created, and C-M-{Right,Left} are bound to rpws{n,p}.
+created, and C-M-{Right,Left} are bound to rpws{n,p}. Full list of keybindings
+created are:
+
+    M-F$i           Goto workspace $i
+    C-M-Right       Goto Next workspace
+    C-M-Left        Goto Prev workspace
+    C-M-S-F$i       Move window to workspace $i
+    C-M-greater     Move current window to next workspace
+    C-M-less        Move current window to prev workspace
 
 =head1 FILES
 
