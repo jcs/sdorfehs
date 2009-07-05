@@ -450,13 +450,13 @@ update_input_window (rp_screen *s, rp_input_line *line)
   XClearWindow (dpy, s->input_window);
   XSync (dpy, False);
 
-  rp_draw_string (s, s->input_window, s->normal_gc,
+  rp_draw_string (s, s->input_window, STYLE_NORMAL,
                   defaults.bar_x_padding,
                   defaults.bar_y_padding + FONT_ASCENT(s),
                   line->prompt, 
                   -1);
 
-  rp_draw_string (s, s->input_window, s->normal_gc, 
+  rp_draw_string (s, s->input_window, STYLE_NORMAL, 
                   defaults.bar_x_padding + prompt_width,
                   defaults.bar_y_padding + FONT_ASCENT(s),
                   line->buffer, 

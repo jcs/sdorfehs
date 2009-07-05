@@ -272,7 +272,7 @@ init_globals (void)
 /* Wrapper font functions to support Xft */
 
 void
-rp_draw_string (rp_screen *s, Drawable d, GC gc, int x, int y, char *string, int length)
+rp_draw_string (rp_screen *s, Drawable d, int style, int x, int y, char *string, int length)
 {
   if (length < 0)
     length = strlen (string);
@@ -285,7 +285,7 @@ rp_draw_string (rp_screen *s, Drawable d, GC gc, int x, int y, char *string, int
                             DefaultColormap (dpy, s->screen_num));
       if (draw)
         {
-          XftDrawString8 (draw, &s->xft_color, s->xft_font, x, y, (FcChar8*) string, length);
+          XftDrawString8 (draw, style == STYLE_NORMAL ? &s->xft_fg_color:&s->xft_bg_color, s->xft_font, x, y, (FcChar8*) string, length);
           XftDrawDestroy (draw);
         }
       else
@@ -293,7 +293,7 @@ rp_draw_string (rp_screen *s, Drawable d, GC gc, int x, int y, char *string, int
     }
   else
 #endif
-    XmbDrawString (dpy, d, defaults.font, gc, x, y, string, length);
+    XmbDrawString (dpy, d, defaults.font, style == STYLE_NORMAL ? s->normal_gc:s->inverse_gc, x, y, string, length);
 }
 
 int

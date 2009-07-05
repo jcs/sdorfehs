@@ -1016,7 +1016,7 @@ show_frame_message (char *msg)
   XClearWindow (dpy, s->frame_window);
   XSync (dpy, False);
 
-  rp_draw_string (s, s->frame_window, s->normal_gc,
+  rp_draw_string (s, s->frame_window, STYLE_NORMAL,
                   defaults.bar_x_padding,
                   defaults.bar_y_padding + FONT_ASCENT(s),
                   msgbuf->data, msgbuf->len);

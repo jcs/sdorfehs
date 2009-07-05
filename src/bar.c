@@ -321,39 +321,68 @@ line_beginning (char* msg, int pos)
 }
 
 static void
-draw_string (rp_screen *s, char *msg)
+draw_partial_string (rp_screen *s, char *msg, int line_no, int start, int end, int style)
 {
+  int line_height = FONT_HEIGHT (s);
+
+  rp_draw_string (s, s->bar_window, style,
+                  defaults.bar_x_padding,
+                  defaults.bar_y_padding + FONT_ASCENT(s)
+                  + line_no * line_height,
+                  msg + start, end - start + 1);
+}
+
+static void
+draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
+{
+  XGCValues lgv;
+  GC lgc;
+  unsigned long mask;
   size_t i;
   int line_no;
   int start;
-  int line_height = FONT_HEIGHT (s);
+  int style = STYLE_NORMAL, update = 0;
+
+  lgv.foreground = s->fg_color;
+  mask = GCForeground;
+  lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
   /* Walk through the string, print each line. */
   start = 0;
   line_no = 0;
+/*   if (mark_start == 0 && mark_end == 0) */
+/*     mark_start = mark_end = -1; */
+
   for(i=0; i < strlen(msg); ++i)
     {
-      /* When we encounter a new line, print the text up to the new
-         line, and move down one line. */
-      if (msg[i] == '\n')
+      if (i == mark_start)
         {
-          rp_draw_string (s, s->bar_window, s->normal_gc,
-                          defaults.bar_x_padding,
-                          defaults.bar_y_padding + FONT_ASCENT(s)
-                          + line_no * line_height,
-                          msg + start, i - start);
-          line_no++;
-          start = i + 1;
+          style = STYLE_INVERSE;
+          update = 1;
+        }
+      if (i == mark_end)
+        {
+          style = STYLE_NORMAL;
+          update = 1;
+        }
+      if (msg[i] == '\n')
+        update = 2;
+
+      if (update)
+        {
+          draw_partial_string (s, msg, line_no, start, update == 2 ? i-1:i, style);
+          start = i;
+          if (update == 2)
+            {
+              line_no++;
+              start++;
+            }
+          update = 0;
         }
     }
 
   /* Print the last line. */
-  rp_draw_string (s, s->bar_window, s->normal_gc,
-                  defaults.bar_x_padding,
-                  defaults.bar_y_padding + FONT_ASCENT(s)
-                  + line_no * line_height,
-                  msg + start, strlen (msg) - start);
-
+  draw_partial_string (s, msg, line_no, start, strlen (msg)-1, style);
   XSync (dpy, False);
 }
 
@@ -479,22 +508,14 @@ get_mark_box (char *msg, size_t mark_start, size_t mark_end,
 }
 
 static void
-draw_inverse_box (rp_screen *s, int x, int y, int width, int height)
+draw_box (rp_screen *s, int x, int y, int width, int height)
 {
   XGCValues lgv;
   GC lgc;
   unsigned long mask;
 
   lgv.foreground = s->fg_color;
-  lgv.function = GXxor;
-  mask = GCForeground | GCFunction;
-  lgc = XCreateGC(dpy, s->root, mask, &lgv);
-
-  XFillRectangle (dpy, s->bar_window, lgc,
-                  x, y, width, height);
-  XFreeGC (dpy, lgc);
-
-  lgv.foreground = s->bg_color;
+  mask = GCForeground;
   lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
   XFillRectangle (dpy, s->bar_window, lgc,
@@ -513,7 +534,7 @@ draw_mark (rp_screen *s, char *msg, int mark_start, int mark_end)
 
   get_mark_box (msg, mark_start, mark_end,
                 &x, &y, &width, &height);
-  draw_inverse_box (s, x, y, width, height);
+  draw_box (s, x, y, width, height);
 }
 
 static void
@@ -550,13 +571,13 @@ marked_message_internal (char *msg, int mark_start, int mark_end)
   width = defaults.bar_x_padding * 2 + max_line_length(msg);
   height = FONT_HEIGHT (s) * num_lines + defaults.bar_y_padding * 2;
 
-  /* Display the string. */
   prepare_bar (s, width, height);
-  draw_string (s, msg);
 
   /* Draw the mark over the designated part of the string. */
   correct_mark (strlen (msg), &mark_start, &mark_end);
   draw_mark (s, msg, mark_start, mark_end);
+
+  draw_string (s, msg, mark_start, mark_end);
 
   /* Keep a record of the message. */
   update_last_message (msg, mark_start, mark_end);

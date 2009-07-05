@@ -309,6 +309,12 @@ init_screen (rp_screen *s, int screen_num)
                            GCForeground | GCBackground | GCFunction
                            | GCLineWidth | GCSubwindowMode,
                            &gv);
+  gv.foreground = s->bg_color;
+  gv.background = s->fg_color;
+  s->inverse_gc = XCreateGC(dpy, s->root,
+                            GCForeground | GCBackground | GCFunction
+                            | GCLineWidth | GCSubwindowMode,
+                            &gv);
 
   /* Create the program bar window. */
   s->bar_is_raised = 0;
@@ -344,23 +350,30 @@ init_screen (rp_screen *s, int screen_num)
 
 #ifdef USE_XFT_FONT
   {
-     if (!XftColorAllocName (dpy, DefaultVisual (dpy, screen_num),
-                             DefaultColormap (dpy, screen_num),
-                             defaults.fgcolor_string, &s->xft_color))
-       {
-         PRINT_ERROR(("Failed to allocate font color\n"));
-         s->xft_font = NULL;
-       }
-     else
-       {
-         s->xft_font = XftFontOpenName (dpy, screen_num, DEFAULT_XFT_FONT);
-         if (!s->xft_font)
-           {
-             PRINT_ERROR(("Failed to open font\n"));
-             XftColorFree (dpy, DefaultVisual (dpy, screen_num),
-                           DefaultColormap (dpy, screen_num), &s->xft_color);
-           }
-       }
+    s->xft_font = XftFontOpenName (dpy, screen_num, DEFAULT_XFT_FONT);
+    if (!s->xft_font)
+      {
+        PRINT_ERROR(("Failed to open font\n"));
+      }
+    else
+      {
+        if (!XftColorAllocName (dpy, DefaultVisual (dpy, screen_num),
+                                DefaultColormap (dpy, screen_num),
+                                defaults.fgcolor_string, &s->xft_fg_color))
+          {
+            PRINT_ERROR(("Failed to allocate font fg color\n"));
+            XftFontClose (dpy, s->xft_font);
+            s->xft_font = NULL;
+          }
+        if (!XftColorAllocName (dpy, DefaultVisual (dpy, screen_num),
+                                DefaultColormap (dpy, screen_num),
+                                defaults.bgcolor_string, &s->xft_bg_color))
+          {
+            PRINT_ERROR(("Failed to allocate font fg color\n"));
+            XftFontClose (dpy, s->xft_font);
+            s->xft_font = NULL;
+          }
+      }
   }
 #endif
 }

@@ -66,6 +66,10 @@
 #define GROUP_DELETE_GROUP_NONEMPTY   1
 #define GROUP_DELETE_LAST_GROUP       2
 
+/* Font styles */
+#define STYLE_NORMAL  0
+#define STYLE_INVERSE 1
+
 /* The list of groups. */
 extern struct list_head rp_groups;
 
@@ -195,7 +199,7 @@ void init_globals (void);
 
 /* Wrapper font functions to support Xft */
 
-void rp_draw_string (rp_screen *s, Drawable d, GC gc, int x, int y, char *string, int length);
+void rp_draw_string (rp_screen *s, Drawable d, int style, int x, int y, char *string, int length);
 int rp_text_width (rp_screen *s, XFontSet font, char *string, int count);
 
 #endif

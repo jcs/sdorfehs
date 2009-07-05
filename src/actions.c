@@ -1772,7 +1772,7 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
               XClearWindow (dpy, wins[i]);
 
               /* Display the frame's number inside the window. */
-             rp_draw_string (s, wins[i], s->normal_gc,
+             rp_draw_string (s, wins[i], STYLE_NORMAL,
                              defaults.bar_x_padding,
                              defaults.bar_y_padding + FONT_ASCENT(s),
                              num, -1);
@@ -3312,7 +3312,7 @@ cmd_license (int interactive, struct cmdarg **args)
   /* Print the text. */
   for(i=0; license_text[i]; i++)
   {
-    rp_draw_string (s, s->help_window, s->normal_gc,
+    rp_draw_string (s, s->help_window, STYLE_NORMAL,
                     x, y + FONT_ASCENT(s),
                     license_text[i], -1);
 
@@ -3364,19 +3364,19 @@ cmd_help (int interactive, struct cmdarg **args)
 
       XMapRaised (dpy, s->help_window);
 
-      rp_draw_string (s, s->help_window, s->normal_gc,
+      rp_draw_string (s, s->help_window, STYLE_NORMAL,
                       10, y + FONT_ASCENT(s),
                       "ratpoison key bindings", -1);
 
       y += FONT_HEIGHT (s) * 2;
 
-      rp_draw_string (s, s->help_window, s->normal_gc,
+      rp_draw_string (s, s->help_window, STYLE_NORMAL,
                       10, y + FONT_ASCENT(s),
                       "Command key: ", -1);
 
 
       keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
-      rp_draw_string (s, s->help_window, s->normal_gc,
+      rp_draw_string (s, s->help_window, STYLE_NORMAL,
                       10 + rp_text_width (s, defaults.font, "Command key: ", -1),
                       y + FONT_ASCENT(s),
                       keysym_name, -1);
@@ -3392,7 +3392,7 @@ cmd_help (int interactive, struct cmdarg **args)
             {
               keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
 
-              rp_draw_string (s, s->help_window, s->normal_gc,
+              rp_draw_string (s, s->help_window, STYLE_NORMAL,
                               x, y + FONT_ASCENT(s),
                               keysym_name, -1);
 
@@ -3403,7 +3403,7 @@ cmd_help (int interactive, struct cmdarg **args)
             }
           else
             {
-              rp_draw_string (s, s->help_window, s->normal_gc,
+              rp_draw_string (s, s->help_window, STYLE_NORMAL,
                               x, y + FONT_ASCENT(s),
                               map->actions[i].data, -1);
 
@@ -3643,6 +3643,13 @@ update_gc (rp_screen *s)
                            GCForeground | GCBackground
                            | GCFunction | GCLineWidth
                            | GCSubwindowMode, &gv);
+  gv.foreground = s->bg_color;
+  gv.background = s->fg_color;
+  XFreeGC (dpy, s->inverse_gc);
+  s->inverse_gc = XCreateGC(dpy, s->root,
+                            GCForeground | GCBackground
+                            | GCFunction | GCLineWidth
+                            | GCSubwindowMode, &gv);
 }
 
 #ifndef USE_XFT_FONT
@@ -3996,7 +4003,7 @@ set_fgcolor (struct cmdarg **args)
 #ifdef USE_XFT_FONT
       if (!XftColorAllocName (dpy, DefaultVisual (dpy, screens[i].screen_num),
                               DefaultColormap (dpy, screens[i].screen_num),
-                              ARG_STRING(0), &screens[i].xft_color))
+                              ARG_STRING(0), &screens[i].xft_fg_color))
         return cmdret_new (RET_FAILURE, "deffgcolor: unknown color");
 #endif
 
@@ -4027,6 +4034,13 @@ set_bgcolor (struct cmdarg **args)
       XSetWindowBackground (dpy, screens[i].input_window, color.pixel);
       XSetWindowBackground (dpy, screens[i].frame_window, color.pixel);
       XSetWindowBackground (dpy, screens[i].help_window, color.pixel);
+
+#ifdef USE_XFT_FONT
+      if (!XftColorAllocName (dpy, DefaultVisual (dpy, screens[i].screen_num),
+                              DefaultColormap (dpy, screens[i].screen_num),
+                              ARG_STRING(0), &screens[i].xft_bg_color))
+        return cmdret_new (RET_FAILURE, "deffgcolor: unknown color");
+#endif
 
       free (defaults.bgcolor_string);
       defaults.bgcolor_string = xstrdup (ARG_STRING(0));

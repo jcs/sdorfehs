@@ -777,7 +777,9 @@ free_screen (rp_screen *s)
   if (s->xft_font)
     {
       XftColorFree (dpy, DefaultVisual (dpy, s->screen_num),
-                    DefaultColormap (dpy, s->screen_num), &s->xft_color);
+                    DefaultColormap (dpy, s->screen_num), &s->xft_fg_color);
+      XftColorFree (dpy, DefaultVisual (dpy, s->screen_num),
+                    DefaultColormap (dpy, s->screen_num), &s->xft_bg_color);
       XftFontClose (dpy, s->xft_font);
     }
 #endif
@@ -785,6 +787,7 @@ free_screen (rp_screen *s)
   XFreeCursor (dpy, s->rat);
   XFreeColormap (dpy, s->def_cmap);
   XFreeGC (dpy, s->normal_gc);
+  XFreeGC (dpy, s->inverse_gc);
 
   free (s->display_string);
 }
