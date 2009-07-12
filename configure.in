@@ -20,7 +20,7 @@ dnl
 dnl $Id: configure.in,v 1.54 2006/12/19 22:13:07 sabetts Exp $
 
 AC_INIT(src/main.c)
-AM_INIT_AUTOMAKE(ratpoison, 1.4.5-GIT)
+AM_INIT_AUTOMAKE(ratpoison, 1.4.6-GIT)
 
 AM_MAINTAINER_MODE
 
