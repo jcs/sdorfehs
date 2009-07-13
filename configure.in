@@ -146,7 +146,7 @@ AC_CHECK_HEADERS(unistd.h stdarg.h)
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(getopt getopt_long setsid setpgid setpgrp putenv vsnprintf usleep)
+AC_CHECK_FUNCS(getopt getopt_long setsid setpgid setpgrp putenv vsnprintf usleep getline)
 
 AC_TYPE_SIGNAL
 
