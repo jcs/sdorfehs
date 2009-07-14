@@ -37,10 +37,6 @@ endif
 
 config.status: configure
 	dh_testdir
-	if grep 'install-info --version | fgrep' doc/Makefile.in ; then \
-		echo "incompatible install-info call in doc/Makefile.in!" >&2 ;\
-		exit 1 ; \
-	fi
 	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
 	    --prefix=/usr \
 	    --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info \
@@ -95,6 +91,8 @@ binary-arch: build-arch-stamp
 	dh_installdirs
 
 	$(MAKE) install pkgdatadir=/usr/share/doc/ratpoison/examples DESTDIR=$(CURDIR)/debian/ratpoison
+	# since Debian uses gnu install-info, this seems to need manual removing...
+	find debian/ratpoison -name "dir" -print -delete
 	# Those are installed to different places already by dh_*
 	rm debian/ratpoison/usr/share/doc/ratpoison/COPYING
 	rm debian/ratpoison/usr/share/doc/ratpoison/ChangeLog
@@ -113,6 +111,7 @@ binary-arch: build-arch-stamp
 	dh_link
 	dh_strip
 	dh_compress
+	find debian/ratpoison -name "dir.gz" -print -delete
 	dh_fixperms
 	dh_installdeb
 	dh_shlibdeps
@@ -120,7 +119,7 @@ binary-arch: build-arch-stamp
 	dh_md5sums
 	dh_builddeb
 
-RATPOISON_VERSION=1.4.3
+RATPOISON_VERSION=1.4.5
 
 # some helpers for me
 # just ignore those if you want to do a NMU or a security upload, change the files outside
@@ -130,7 +129,10 @@ maintainer-clean:
 	quilt refresh
 	quilt push -a || true
 	rm -f .pc patches
+	mv debian/patches/series debian/patches/_series
+
 maintainer-unclean:
+	mv debian/patches/_series debian/patches/series
 	ln -s "../pc-ratpoison-$(RATPOISON_VERSION)" .pc
 	ln -s debian/patches patches
 	quilt push -a

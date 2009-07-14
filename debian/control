@@ -3,7 +3,7 @@ Section: x11
 Priority: extra
 Maintainer: Bernhard R. Link <brlink@debian.org>
 Build-Depends: debhelper (>= 5), libx11-dev, libxext-dev, x11proto-core-dev, libxinerama-dev, libxtst-dev, libxft-dev, perl
-Standards-Version: 3.8.1
+Standards-Version: 3.8.2
 Homepage: http://www.nongnu.org/ratpoison/
 Vcs-Browser: http://git.savannah.nongnu.org/gitweb/?p=ratpoison.git
 Vcs-Git: git://git.savannah.nongnu.org/ratpoison.git

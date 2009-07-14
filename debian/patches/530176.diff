@@ -1,0 +1,10 @@
+Index: ratpoison-1.4.5/contrib/rpshowall.sh
+===================================================================
+--- ratpoison-1.4.5.orig/contrib/rpshowall.sh	2009-07-14 15:10:18.000000000 +0200
++++ ratpoison-1.4.5/contrib/rpshowall.sh	2009-07-14 15:10:25.000000000 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ # rpshowall
+ # ratpoison script to show all open windows

@@ -1,0 +1,21 @@
+This Debian package uses the tar files upstream releases
+and applies some patches on top. Those patches are already
+applied in the Debian source package, so if you unpackaged
+the Debian source package, you can just modify what you want
+and build and ignore everything less.
+
+If you want to package a new upstream release:
+----------------------------------------------
+
+Just decide which patches from debian/patches you want to
+apply and build the package.
+
+
+If you want to build a package from git:
+----------------------------------------
+
+If you want to build from git, you might also want to apply
+some of the patches. Additionally you either need to increase the
+build dependencies (or ignore that your package has not enough)
+or generate an .orig.tar file with all the needed files processes.
+(This usually happens by calling make dist).
