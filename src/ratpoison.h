@@ -59,7 +59,7 @@ do {                                            \
   fflush (stdout);                              \
 } while (0)
 #else
-#define PRINT_DEBUG(fmt)
+#define PRINT_DEBUG(fmt) do {} while (0)
 #endif /* DEBUG */
 
 extern XGCValues gv;
