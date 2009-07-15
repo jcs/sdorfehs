@@ -24,9 +24,11 @@
 
 #include "linkedlist.h"
 
+#if __GNUC__ <= 3
 void
 prefetch(const void *x)
 {;}
+#endif
 
 /*
  * Insert a new entry between two known consecutive entries.

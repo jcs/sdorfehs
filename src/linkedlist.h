@@ -76,7 +76,11 @@ void list_add(struct list_head *new, struct list_head *head);
 void __list_add(struct list_head *new,
                 struct list_head *prev,
                 struct list_head *next);
+#if __GNUC__ > 3
+#define prefetch __builtin_prefetch
+#else
 void prefetch(const void *x);
+#endif
 
 /* Return the last element in the list. */
 #define list_last(last, head, member)                           \
