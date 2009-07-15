@@ -432,7 +432,7 @@ update_input_window (rp_screen *s, rp_input_line *line)
   int   input_width  = rp_text_width (s, defaults.font, line->buffer, line->length);
   int   total_width;
   GC lgc;
-  XGCValues gv;
+  XGCValues gcv;
   int height;
 
   total_width = defaults.bar_x_padding * 2 + prompt_width + input_width + MAX_FONT_WIDTH (defaults.font);
@@ -462,9 +462,9 @@ update_input_window (rp_screen *s, rp_input_line *line)
                   line->buffer, 
                   line->length);
 
-  gv.function = GXxor;
-  gv.foreground = s->fg_color ^ s->bg_color;
-  lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gv);
+  gcv.function = GXxor;
+  gcv.foreground = s->fg_color ^ s->bg_color;
+  lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gcv);
 
   /* Draw a cheap-o cursor - MkII */
   XFillRectangle (dpy, s->input_window, lgc,
@@ -482,15 +482,15 @@ ring_bell (void)
 {
 #ifdef VISUAL_BELL
   GC lgc;
-  XGCValues gv;
+  XGCValues gcv;
   XWindowAttributes attr;
   rp_screen *s = current_screen ();
 
   XGetWindowAttributes (dpy, s->input_window, &attr);
 
-  gv.function = GXxor;
-  gv.foreground = s->fg_color ^ s->bg_color;
-  lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gv);
+  gcv.function = GXxor;
+  gcv.foreground = s->fg_color ^ s->bg_color;
+  lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gcv);
 
   XFillRectangle (dpy, s->input_window, lgc, 0, 0, attr.width, attr.height);
   XFlush (dpy);

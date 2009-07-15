@@ -198,9 +198,9 @@ frame_read (char *str, rp_screen *screen)
   Window w = 0L;
   rp_window *win;
   rp_frame *f;
-  char *tmp, *dup;
-  int screen_width = -1;
-  int screen_height = -1;
+  char *tmp, *d;
+  int s_width = -1;
+  int s_height = -1;
 
   /* Create a blank frame. */
   f = xmalloc (sizeof (rp_frame));
@@ -208,14 +208,14 @@ frame_read (char *str, rp_screen *screen)
 
   PRINT_DEBUG(("parsing '%s'\n", str));
 
-  dup = xstrdup(str);
-  tmp = strtok_ws (dup);
+  d = xstrdup(str);
+  tmp = strtok_ws (d);
 
   /* Verify it starts with '(frame ' */
   if (strcmp(tmp, "(frame"))
     {
       PRINT_DEBUG(("Doesn't start with '(frame '\n"));
-      free (dup);
+      free (d);
       free (f);
       return NULL;
     }
@@ -234,9 +234,9 @@ frame_read (char *str, rp_screen *screen)
       else if (!strcmp(tmp, ":height"))
         read_slot(f->height);
       else if (!strcmp(tmp, ":screenw"))
-	read_slot(screen_width);
+	read_slot(s_width);
       else if (!strcmp(tmp, ":screenh"))
-	read_slot(screen_height);
+	read_slot(s_height);
       else if (!strcmp(tmp, ":window"))
         read_slot(w);
       else if (!strcmp(tmp, ":last-access"))
@@ -260,18 +260,18 @@ frame_read (char *str, rp_screen *screen)
     }
   if (tmp)
     PRINT_ERROR(("Frame has trailing garbage\n"));
-  free (dup);
+  free (d);
 
   /* adjust x, y, width and height to a possible screen size change */
-  if (screen_width > 0)
+  if (s_width > 0)
     {
-      f->x = (f->x*screen->width)/screen_width;
-      f->width = (f->width*screen->width)/screen_width;
+      f->x = (f->x*screen->width)/s_width;
+      f->width = (f->width*screen->width)/s_width;
     }
-  if (screen_height > 0)
+  if (s_height > 0)
     {
-      f->y = (f->y*screen->height)/screen_height;
-      f->height = (f->height*screen->height)/screen_height;
+      f->y = (f->y*screen->height)/s_height;
+      f->height = (f->height*screen->height)/s_height;
     }
 
   /* Perform some integrity checks on what we got and fix any

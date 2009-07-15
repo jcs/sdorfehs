@@ -237,7 +237,7 @@ init_rat_cursor (rp_screen *s)
 static void
 init_screen (rp_screen *s, int screen_num)
 {
-  XGCValues gv;
+  XGCValues gcv;
   int xine_screen_num;
 
   /* We use screen_num below to refer to the real X screen number, but
@@ -300,21 +300,21 @@ init_screen (rp_screen *s, int screen_num)
   s->bw_color = BlackPixel (dpy, s->screen_num);
 
   /* Setup the GC for drawing the font. */
-  gv.foreground = s->fg_color;
-  gv.background = s->bg_color;
-  gv.function = GXcopy;
-  gv.line_width = 1;
-  gv.subwindow_mode = IncludeInferiors;
+  gcv.foreground = s->fg_color;
+  gcv.background = s->bg_color;
+  gcv.function = GXcopy;
+  gcv.line_width = 1;
+  gcv.subwindow_mode = IncludeInferiors;
   s->normal_gc = XCreateGC(dpy, s->root,
                            GCForeground | GCBackground | GCFunction
                            | GCLineWidth | GCSubwindowMode,
-                           &gv);
-  gv.foreground = s->bg_color;
-  gv.background = s->fg_color;
+                           &gcv);
+  gcv.foreground = s->bg_color;
+  gcv.background = s->fg_color;
   s->inverse_gc = XCreateGC(dpy, s->root,
                             GCForeground | GCBackground | GCFunction
                             | GCLineWidth | GCSubwindowMode,
-                            &gv);
+                            &gcv);
 
   /* Create the program bar window. */
   s->bar_is_raised = 0;

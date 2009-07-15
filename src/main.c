@@ -574,7 +574,7 @@ main (int argc, char *argv[])
 {
   int i;
   int c;
-  char **command = NULL;
+  char **cmd = NULL;
   int cmd_count = 0;
   int screen_arg = 0;
   int screen_num = 0;
@@ -602,17 +602,17 @@ main (int argc, char *argv[])
           print_version ();
           break;
         case 'c':
-          if (!command)
+          if (!cmd)
             {
-              command = xmalloc (sizeof(char *));
+              cmd = xmalloc (sizeof(char *));
               cmd_count = 0;
             }
           else
             {
-              command = xrealloc (command, sizeof (char *) * (cmd_count + 1));
+              cmd = xrealloc (cmd, sizeof (char *) * (cmd_count + 1));
             }
 
-          command[cmd_count] = xstrdup (optarg);
+          cmd[cmd_count] = xstrdup (optarg);
           cmd_count++;
           break;
         case 'd':
@@ -658,19 +658,19 @@ main (int argc, char *argv[])
 
   if (cmd_count > 0)
     {
-      int i;
+      int j;
 
-      for (i=0; i<cmd_count; i++)
+      for (j=0; j<cmd_count; j++)
         {
           if (screen_arg)
-            send_command (interactive, (unsigned char *)command[i], screen_num);
+            send_command (interactive, (unsigned char *)cmd[j], screen_num);
           else
-            send_command (interactive, (unsigned char *)command[i], -1);
+            send_command (interactive, (unsigned char *)cmd[j], -1);
 
-          free (command[i]);
+          free (cmd[j]);
         }
 
-      free (command);
+      free (cmd);
       XCloseDisplay (dpy);
       return EXIT_SUCCESS;
     }

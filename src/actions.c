@@ -549,19 +549,19 @@ find_command_by_keydesc (char *desc, rp_keymap *map)
 static char *
 resolve_command_from_keydesc (char *desc, int depth, rp_keymap *map)
 {
-  char *cmd, *command;
+  char *cmd, *c;
 
-  command = find_command_by_keydesc (desc, map);
-  if (!command)
+  c = find_command_by_keydesc (desc, map);
+  if (!c)
     return NULL;
 
   /* is it a link? */
-  if (strncmp (command, "link", 4) || depth > MAX_LINK_DEPTH)
+  if (strncmp (c, "link", 4) || depth > MAX_LINK_DEPTH)
     /* it is not */
-    return command;
+    return c;
 
-  cmd = resolve_command_from_keydesc (&command[5], depth + 1, map);
-  return (cmd != NULL) ? cmd : command;
+  cmd = resolve_command_from_keydesc (&c[5], depth + 1, map);
+  return (cmd != NULL) ? cmd : c;
 }
 
 
@@ -673,14 +673,14 @@ find_alias_index (char *name)
 static void
 add_alias (char *name, char *alias)
 {
-  int index;
+  int i;
 
   /* Are we updating an existing alias, or creating a new one? */
-  index = find_alias_index (name);
-  if (index >= 0)
+  i = find_alias_index (name);
+  if (i >= 0)
     {
-      free (alias_list[index].alias);
-      alias_list[index].alias = xstrdup (alias);
+      free (alias_list[i].alias);
+      alias_list[i].alias = xstrdup (alias);
     }
   else
     {
@@ -1707,10 +1707,10 @@ read_shellcmd (struct argspec *spec, struct sbuf *s, struct cmdarg **arg, const 
   ret = read_string (spec, s, hist_SHELLCMD, exec_completions, arg);
   if (command_name && !s && !ret) {
     /* store for command history */
-    char *s = xmalloc (strlen(command_name) + strlen((*arg)->string) + 2);
-    sprintf (s, "%s %s", command_name, (*arg)->string);
-    history_add (hist_COMMAND, s);
-    free(s);
+    char *str = xmalloc (strlen(command_name) + strlen((*arg)->string) + 2);
+    sprintf (str, "%s %s", command_name, (*arg)->string);
+    history_add (hist_COMMAND, str);
+    free(str);
   }
   return ret;
 }
@@ -1744,14 +1744,14 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
       for (j=0; j<num_screens; j++)
         {
           XSetWindowAttributes attr;
-          rp_screen *s = &screens[j];
+          rp_screen *screen = &screens[j];
 
           /* Set up the window attributes to be used in the loop. */
-          attr.border_pixel = s->fg_color;
-          attr.background_pixel = s->bg_color;
+          attr.border_pixel = screen->fg_color;
+          attr.background_pixel = screen->bg_color;
           attr.override_redirect = True;
 
-          list_for_each_entry (cur, &s->frames, node)
+          list_for_each_entry (cur, &screen->frames, node)
             {
               int width, height;
               char *num;
@@ -1760,11 +1760,11 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
                  determine the height and width of the window. */
               /*              num = xsprintf (" %d ", cur->number); */
               num = frame_selector (cur->number);
-              width = defaults.bar_x_padding * 2 + rp_text_width (s, defaults.font, num, -1);
-              height = (FONT_HEIGHT (s) + defaults.bar_y_padding * 2);
+              width = defaults.bar_x_padding * 2 + rp_text_width (screen, defaults.font, num, -1);
+              height = (FONT_HEIGHT (screen) + defaults.bar_y_padding * 2);
 
               /* Create and map the window. */
-              wins[i] = XCreateWindow (dpy, s->root, s->left + cur->x, s->top + cur->y, width, height, 1,
+              wins[i] = XCreateWindow (dpy, screen->root, screen->left + cur->x, screen->top + cur->y, width, height, 1,
                                        CopyFromParent, CopyFromParent, CopyFromParent,
                                        CWOverrideRedirect | CWBorderPixel | CWBackPixel,
                                        &attr);
@@ -1772,9 +1772,9 @@ read_frame (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
               XClearWindow (dpy, wins[i]);
 
               /* Display the frame's number inside the window. */
-             rp_draw_string (s, wins[i], STYLE_NORMAL,
+             rp_draw_string (screen, wins[i], STYLE_NORMAL,
                              defaults.bar_x_padding,
-                             defaults.bar_y_padding + FONT_ASCENT(s),
+                             defaults.bar_y_padding + FONT_ASCENT(screen),
                              num, -1);
 
               free (num);
@@ -2478,7 +2478,7 @@ command (int interactive, char *data)
           struct cmdarg *acur;
           struct list_head *iter, *tmp;
           struct list_head head, args;
-          int i, nargs = 0, raw = 0;
+          int nargs = 0, raw = 0;
 
           INIT_LIST_HEAD (&args);
           INIT_LIST_HEAD (&head);
@@ -3631,25 +3631,25 @@ set_bargravity (struct cmdarg **args)
 static void
 update_gc (rp_screen *s)
 {
-  XGCValues gv;
+  XGCValues gcv;
 
-  gv.foreground = s->fg_color;
-  gv.background = s->bg_color;
-  gv.function = GXcopy;
-  gv.line_width = 1;
-  gv.subwindow_mode = IncludeInferiors;
+  gcv.foreground = s->fg_color;
+  gcv.background = s->bg_color;
+  gcv.function = GXcopy;
+  gcv.line_width = 1;
+  gcv.subwindow_mode = IncludeInferiors;
   XFreeGC (dpy, s->normal_gc);
   s->normal_gc = XCreateGC(dpy, s->root,
                            GCForeground | GCBackground
                            | GCFunction | GCLineWidth
-                           | GCSubwindowMode, &gv);
-  gv.foreground = s->bg_color;
-  gv.background = s->fg_color;
+                           | GCSubwindowMode, &gcv);
+  gcv.foreground = s->bg_color;
+  gcv.background = s->fg_color;
   XFreeGC (dpy, s->inverse_gc);
   s->inverse_gc = XCreateGC(dpy, s->root,
                             GCForeground | GCBackground
                             | GCFunction | GCLineWidth
-                            | GCSubwindowMode, &gv);
+                            | GCSubwindowMode, &gcv);
 }
 
 #ifndef USE_XFT_FONT
@@ -4441,11 +4441,11 @@ cmd_alias (int interactive, struct cmdarg **args)
 cmdret *
 cmd_unalias (int interactive, struct cmdarg **args)
 {
-  int index;
+  int i;
 
   /* Are we updating an existing alias, or creating a new one? */
-  index = find_alias_index (ARG_STRING(0));
-  if (index >= 0)
+  i = find_alias_index (ARG_STRING(0));
+  if (i >= 0)
     {
       char *tmp;
 
@@ -4454,15 +4454,15 @@ cmd_unalias (int interactive, struct cmdarg **args)
       /* Free the alias and put the last alias in the the space to
          keep alias_list from becoming sparse. This code must jump
          through some hoops to correctly handle the case when
-         alias_list_last == index. */
-      tmp = alias_list[index].alias;
-      alias_list[index].alias = xstrdup (alias_list[alias_list_last].alias);
+         alias_list_last == i. */
+      tmp = alias_list[i].alias;
+      alias_list[i].alias = xstrdup (alias_list[alias_list_last].alias);
       free (tmp);
       free (alias_list[alias_list_last].alias);
 
       /* Do the same for the name element. */
-      tmp = alias_list[index].name;
-      alias_list[index].name = xstrdup (alias_list[alias_list_last].name);
+      tmp = alias_list[i].name;
+      alias_list[i].name = xstrdup (alias_list[alias_list_last].name);
       free (tmp);
       free (alias_list[alias_list_last].name);
     }
@@ -4823,12 +4823,12 @@ fdump (rp_screen *screen)
   /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
   list_for_each_entry (cur, &(screen->frames), node)
     {
-      char *tmp;
+      char *t;
 
-      tmp = frame_dump (cur, screen);
-      sbuf_concat (s, tmp);
+      t = frame_dump (cur, screen);
+      sbuf_concat (s, t);
       sbuf_concat (s, ",");
-      free (tmp);
+      free (t);
     }
 
   tmp = sbuf_get (s);
@@ -4867,7 +4867,7 @@ static cmdret *
 frestore (char *data, rp_screen *s)
 {
   char *token;
-  char *dup;
+  char *d;
   rp_frame *new, *cur;
   rp_window *win;
   struct list_head fset;
@@ -4876,11 +4876,11 @@ frestore (char *data, rp_screen *s)
 
   INIT_LIST_HEAD (&fset);
 
-  dup = xstrdup (data);
-  token = strtok_r (dup, ",", &nexttok);
+  d = xstrdup (data);
+  token = strtok_r (d, ",", &nexttok);
   if (token == NULL)
     {
-      free (dup);
+      free (d);
       return cmdret_new (RET_FAILURE, "frestore: invalid frame format");
     }
 
@@ -4890,14 +4890,14 @@ frestore (char *data, rp_screen *s)
       new = frame_read (token, s);
       if (new == NULL)
         {
-          free (dup);
+          free (d);
           return cmdret_new (RET_SUCCESS, "frestore: invalid frame format");;
         }
       list_add_tail (&new->node, &fset);
       token = strtok_r (NULL, ",", &nexttok);
     }
 
-  free (dup);
+  free (d);
 
   /* Clear all the frames. */
   list_for_each_entry (cur, &s->frames, node)
@@ -4916,8 +4916,6 @@ frestore (char *data, rp_screen *s)
   /* Process the frames a bit to make sure everything lines up. */
   list_for_each_entry (cur, &s->frames, node)
     {
-      rp_window *win;
-
       PRINT_DEBUG (("restore %d %d\n", cur->number, cur->win_number));
 
       /* Grab the frame's number, but if it already exists request a
@@ -4936,8 +4934,7 @@ frestore (char *data, rp_screen *s)
       /* Update the window the frame points to. */
       if (cur->win_number != EMPTY)
         {
-          win = find_window_number (cur->win_number);
-          set_frames_window (cur, win);
+          set_frames_window (cur, find_window_number (cur->win_number));
         }
     }
 
@@ -5322,13 +5319,13 @@ cmd_set (int interactive, struct cmdarg **args)
       list_last (last, &set_vars, node);
       list_for_each_entry (cur, &set_vars, node)
         {
-          cmdret *ret;
-          ret = cur->set_fn (args);
-          sbuf_printf_concat (s, "%s: %s", cur->var, ret->output);
+          cmdret *r;
+          r = cur->set_fn (args);
+          sbuf_printf_concat (s, "%s: %s", cur->var, r->output);
           /* Skip a newline on the last line. */
           if (cur != last)
             sbuf_concat (s, "\n");
-          cmdret_free (ret);
+          cmdret_free (r);
         }
 
       /* Return the accumulated string. */
@@ -5446,7 +5443,7 @@ cmd_sfrestore (int interactively, struct cmdarg **args)
   int number_of_frames = 0;
   int j;
   long x;
-  char *dup;
+  char *d;
   char *token;
   char *ptr;
   struct sbuf *buffer[num_screens];
@@ -5457,11 +5454,11 @@ cmd_sfrestore (int interactively, struct cmdarg **args)
   }
 
   /* now split the whole input to the corresponding screens */
-  dup = xstrdup (ARG_STRING(0));
+  d = xstrdup (ARG_STRING(0));
 
-  token = strtok (dup, ",");
+  token = strtok (d, ",");
   if (token == NULL) {
-    free (dup);
+    free (d);
     return cmdret_new (RET_FAILURE, "sfrestore: invalid frame format");
   }
 
@@ -5492,7 +5489,7 @@ cmd_sfrestore (int interactively, struct cmdarg **args)
     token = strtok (NULL, ",");
   } 
 
-  free (dup);
+  free (d);
 
   /* now restore the frames for each screen */
   for (j=0; j<num_screens; j++) {
