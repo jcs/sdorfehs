@@ -4872,7 +4872,7 @@ frestore (char *data, rp_screen *s)
   rp_window *win;
   struct list_head fset;
   int max = -1;
-  char *nexttok;
+  char *nexttok = NULL;
 
   INIT_LIST_HEAD (&fset);
 
