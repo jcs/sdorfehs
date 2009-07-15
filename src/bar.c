@@ -355,12 +355,12 @@ draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 
   for(i=0; i < strlen(msg); ++i)
     {
-      if (i == mark_start)
+      if (i == (size_t)mark_start)
         {
           style = STYLE_INVERSE;
           update = 1;
         }
-      if (i == mark_end)
+      if (i == (size_t)mark_end)
         {
           style = STYLE_NORMAL;
           update = 1;

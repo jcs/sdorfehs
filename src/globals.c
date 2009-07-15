@@ -95,7 +95,7 @@ x_export_selection (void)
   if (XGetSelectionOwner(dpy, XA_PRIMARY) != screens[0].key_window)
     PRINT_ERROR(("can't get primary selection"));
   XChangeProperty(dpy, screens[0].root, XA_CUT_BUFFER0, XA_STRING, 8,
-                  PropModeReplace, selection.text, selection.len);
+                  PropModeReplace, (unsigned char*)selection.text, selection.len);
 }
 
 void
@@ -172,7 +172,7 @@ get_primary_selection(void)
       continue;
     /* Accumulate the data. FIXME: ct.value may not be NULL
        terminated. */
-    sbuf_nconcat (s, ct.value, ct.nitems);
+    sbuf_nconcat (s, (const char*)ct.value, ct.nitems);
     XFree(ct.value);
   }
   return sbuf_free_struct (s);
