@@ -36,11 +36,11 @@ static XineramaScreenInfo *xine_screens = NULL;
 void
 init_xinerama(void)
 {
+#ifdef XINERAMA
         int evbase, errbase, major, minor;
 
         rp_have_xinerama = 0;
 
-#ifdef XINERAMA
         if (xine_screens) XFree(xine_screens);
 
         if (!XineramaQueryExtension(dpy, &evbase, &errbase)) {
@@ -66,20 +66,26 @@ init_xinerama(void)
         }
 
         rp_have_xinerama = 1;
+#else
+        rp_have_xinerama = 0;
 #endif
 }
 
+#ifdef XINERAMA
 void xinerama_get_screen_info(int sc, int *x, int *y, int *w, int *h)
 {
-#ifdef XINERAMA
         if ((sc < xine_screen_count) && (sc >= 0)) {
                 *x = xine_screens[sc].x_org;
                 *y = xine_screens[sc].y_org;
                 *w = xine_screens[sc].width;
                 *h = xine_screens[sc].height;
         }
-#endif
 }
+#else
+void xinerama_get_screen_info(int sc UNUSED, int *x UNUSED, int *y UNUSED, int *w UNUSED, int *h UNUSED)
+{
+}
+#endif
 
 void
 free_xinerama(void)

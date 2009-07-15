@@ -70,6 +70,12 @@
 #define STYLE_NORMAL  0
 #define STYLE_INVERSE 1
 
+#ifdef __GNUC__
+#define UNUSED __attribute__ ((unused))
+#else
+#define UNUSED
+#endif
+
 /* The list of groups. */
 extern struct list_head rp_groups;
 

@@ -297,7 +297,11 @@ rp_draw_string (rp_screen *s, Drawable d, int style, int x, int y, char *string,
 }
 
 int
+#ifdef USE_XFT_FONT
 rp_text_width (rp_screen *s, XFontSet font, char *string, int count)
+#else
+rp_text_width (rp_screen *s UNUSED, XFontSet font, char *string, int count)
+#endif
 {
   if (count < 0)
     count = strlen (string);

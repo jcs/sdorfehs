@@ -202,19 +202,19 @@ str_comp (char *s1, char *s2, int len)
 }
 
 static void
-sighandler (int signum)
+sighandler (int signum UNUSED)
 {
   kill_signalled++;
 }
 
 static void
-hup_handler (int signum)
+hup_handler (int signum UNUSED)
 {
   hup_signalled++;
 }
 
 static void
-alrm_handler (int signum)
+alrm_handler (int signum UNUSED)
 {
   alarm_signalled++;
 }
@@ -250,7 +250,7 @@ check_child_procs (void)
 }
 
 void
-chld_handler (int signum)
+chld_handler (int signum UNUSED)
 {
   int serrno;
 

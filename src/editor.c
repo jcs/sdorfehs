@@ -415,13 +415,13 @@ editor_history_next (rp_input_line *line)
 }
 
 static edit_status
-editor_abort (rp_input_line *line)
+editor_abort (rp_input_line *line UNUSED)
 {
   return EDIT_ABORT;
 }
 
 static edit_status
-editor_no_action (rp_input_line *line)
+editor_no_action (rp_input_line *line UNUSED)
 {
   return EDIT_NO_OP;
 }

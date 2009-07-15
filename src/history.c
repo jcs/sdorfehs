@@ -301,7 +301,7 @@ history_next (int history_id)
   return list_entry(histories[history_id].current, struct history_item, node)->line;
 }
 
-int history_expand_line (int history_id, char *string, char **output)
+int history_expand_line (int history_id UNUSED, char *string, char **output)
 {
 #ifdef HAVE_HISTORY
   struct history_item *item;
