@@ -1,3 +1,6 @@
+Author: Bernhard R. Link <brlink@debian.org>
+Subject: add --with-menu
+
 This patch adds an --with-menu that allows to specify a menu command
 that will be available with :menu and with "C-t ."
 

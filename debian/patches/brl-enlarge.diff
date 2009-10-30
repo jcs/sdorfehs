@@ -1,3 +1,6 @@
+Author: Bernhard R. Link <brlink@debian.org>
+Subject: add removeleft/up/right/down commands
+
 This patch adds new removeleft/up/right/down commands to extend the current
 frame in the given direction, removing all frames in the way.
 Default key-bindings are C-t M-arrow-keys.
@@ -80,7 +83,7 @@ Index: ratpoison-1.4.4/src/actions.c
  }
  
  cmdret *
-+cmd_removeup (int interactive, struct cmdarg **args)
++cmd_removeup (int interactive UNUSED, struct cmdarg **args UNUSED)
 +{
 +  push_frame_undo (current_screen()); /* fdump to stack */
 +  enlarge_frame_up (current_frame(), 1);
@@ -88,7 +91,7 @@ Index: ratpoison-1.4.4/src/actions.c
 +}
 +
 +cmdret *
-+cmd_removedown (int interactive, struct cmdarg **args)
++cmd_removedown (int interactive UNUSED, struct cmdarg **args UNUSED)
 +{
 +  push_frame_undo (current_screen()); /* fdump to stack */
 +  enlarge_frame_down (current_frame(), 1);
@@ -96,7 +99,7 @@ Index: ratpoison-1.4.4/src/actions.c
 +}
 +
 +cmdret *
-+cmd_removeleft (int interactive, struct cmdarg **args)
++cmd_removeleft (int interactive UNUSED, struct cmdarg **args UNUSED)
 +{
 +  push_frame_undo (current_screen()); /* fdump to stack */
 +  enlarge_frame_left (current_frame(), 1);
@@ -104,7 +107,7 @@ Index: ratpoison-1.4.4/src/actions.c
 +}
 +
 +cmdret *
-+cmd_removeright (int interactive, struct cmdarg **args)
++cmd_removeright (int interactive UNUSED, struct cmdarg **args UNUSED)
 +{
 +  push_frame_undo (current_screen()); /* fdump to stack */
 +  enlarge_frame_right (current_frame(), 1);
@@ -112,7 +115,7 @@ Index: ratpoison-1.4.4/src/actions.c
 +}
 +
 +cmdret *
- cmd_shrink (int interactive, struct cmdarg **args)
+ cmd_shrink (int interactive UNUSED, struct cmdarg **args UNUSED)
  {
    push_frame_undo (current_screen()); /* fdump to stack */
 Index: ratpoison-1.4.4/src/actions.h

@@ -1,3 +1,19 @@
+ratpoison (1.4.6~git-0) UNRELEASED; urgency=low
+
+  * new upstream version
+  * remove patches already in the upstream version
+
+ -- Bernhard R. Link <brlink@debian.org>  Fri, 30 Oct 2009 18:39:12 +0100
+
+ratpoison (1.4.5-2) unstable; urgency=low
+
+  * switch to source format 3.0 (quilt)
+  * add DEP3 headers to patches
+  * cherry-pick fix to avoid getline problems with newer glibc
+    (Closes: 552894)
+
+ -- Bernhard R. Link <brlink@debian.org>  Thu, 29 Oct 2009 16:38:10 +0100
+
 ratpoison (1.4.5-1) unstable; urgency=low
 
   * new upstream version
