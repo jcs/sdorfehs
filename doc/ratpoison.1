@@ -145,7 +145,7 @@ Do not forget to quote the command if it contains
 spaces.
 For example:
 .br
-\fBratpoison \-c "echo hallo world"\fP
+\fBratpoison \-c "echo hello world"\fP
 .SH KEY BINDINGS
 To avoid conflicts with other programs, all default ratpoison
 key bindings start with an escape key, per default
@@ -226,7 +226,7 @@ alias for "\fBdefinekey root\fP \fIkey\fP \fIcommand\fP"
 .cmd banish ( C\-t b )
 Banish the rat cursor to the lower right corner of the screen.
 .cmd banishrel
-Banish the rat cursor to the lower right corner of the curren window.
+Banish the rat cursor to the lower right corner of the current window.
 If there isn't a window in the current frame, it banishes the rat cursor
 to the lower right corner of the frame.
 .cmd chdir [ directory ]
@@ -254,7 +254,7 @@ Add aliases for the new \fBset\fP commands starting with \fBdef\fP to support ol
 scripts.
 .cmd cother
 Like \fBother\fP but switch to the window of the current group that was last
-accessed and has an other resource class but is not currently visible.
+accessed and has another resource class but is not currently visible.
 .cmd curframe ( C\-t F )
 Show a bar marking the current frame.
 .cmd definekey keymap key command
@@ -453,7 +453,7 @@ Give the number \fInew\fP to the window with the number \fIold\fP or
 the current window.
 .cmd only ( C\-t Q )
 Remove all frames on the current screen except the current frame and
-maximise this one to the size of the whole screen.
+maximize this one to the size of the whole screen.
 .cmd other ( C\-t C\-t )
 Switch to the window of the current group that was last
 accessed but is not currently visible.
@@ -721,7 +721,7 @@ the gravity of an existing window: cardinal points or numbers 1 to 9.
 .br
 Default is \fBnorthwest\fP.
 .var maxsizegravity \fBnw | \fBw | \fBsw | \fBn | \fBc | \fBs | \fBne | \fBe | \fBse
-Set the default gravity new self\-maximised windows will get.
+Set the default gravity new self\-maximized windows will get.
 Possible values are the same as in the \fBgravity\fP command, which changes
 the gravity of an existing window: cardinal points or numbers 1 to 9.
 .br
@@ -760,7 +760,7 @@ screen (\fB1\fP) or at the edge of the window area (\fB0\fP).
 .br
 Default is 0.
 .var topkmap kmap
-Make \fIkmap\fP the top keymap ratpoison graps directly.
+Make \fIkmap\fP the top keymap ratpoison grabs directly.
 The default value is \fBtop\fP.
 .var waitcursor \fB0 | \fB1
 Determine whether to change the rat cursor when waiting for a key
