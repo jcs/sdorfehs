@@ -5214,7 +5214,7 @@ cmd_gdelete (int interactive UNUSED, struct cmdarg **args)
       return cmdret_new (RET_FAILURE, "gdelete: non-empty group");
       break;
     case GROUP_DELETE_LAST_GROUP:
-      return cmdret_new (RET_FAILURE, "gdelete: cannot delete the last group");
+      return cmdret_new (RET_FAILURE, "gdelete: cannot delete the sole group");
       break;
     default:
       return cmdret_new (RET_FAILURE, "gdelete: unknown return code (this shouldn't happen)");
