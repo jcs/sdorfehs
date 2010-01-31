@@ -5678,10 +5678,11 @@ cmd_iprev (int interactive, struct cmdarg **args)
 cmdret *
 cmd_cother (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  rp_window *cur, *w;
+  rp_window *cur, *w = NULL;
 
   cur = current_window();
-  w = group_last_window_by_class (rp_current_group, cur->res_class);
+  if (cur)
+    w = group_last_window_by_class (rp_current_group, cur->res_class);
 
   if (!w)
     return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
@@ -5694,10 +5695,11 @@ cmd_cother (int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_iother (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  rp_window *cur, *w;
+  rp_window *cur, *w = NULL;
 
   cur = current_window();
-  w = group_last_window_by_class_complement (rp_current_group, cur->res_class);
+  if (cur)
+    w = group_last_window_by_class_complement (rp_current_group, cur->res_class);
 
   if (!w)
     return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
