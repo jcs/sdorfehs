@@ -1267,6 +1267,8 @@ user switches to a different screen, since a frame switch also occurs.
 Run when the user switches to a different group.
 @item deletewindow
 Run when a window is deleted.
+@item newwindow
+Run after a new window is mapped.
 @item quit
 Run when ratpoison exits.
 @item restart
