@@ -231,6 +231,7 @@ LIST_HEAD (rp_switch_screen_hook);
 LIST_HEAD (rp_quit_hook);
 LIST_HEAD (rp_restart_hook);
 LIST_HEAD (rp_delete_window_hook);
+LIST_HEAD (rp_new_window_hook);
 
 struct rp_hook_db_entry rp_hook_db[]=
   {{"key",              &rp_key_hook},
@@ -241,6 +242,7 @@ struct rp_hook_db_entry rp_hook_db[]=
    {"deletewindow",     &rp_delete_window_hook},
    {"quit",             &rp_quit_hook},
    {"restart",          &rp_restart_hook},
+   {"newwindow",	&rp_new_window_hook},
    {NULL, NULL}};
 
 void

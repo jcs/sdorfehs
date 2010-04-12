@@ -815,6 +815,8 @@ map_window (rp_window *win)
     set_active_window (win);
   else
     show_rudeness_msg (win, 0);
+
+  hook_run (&rp_new_window_hook);
 }
 
 void
