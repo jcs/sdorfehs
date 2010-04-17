@@ -239,6 +239,7 @@ init_screen (rp_screen *s, int screen_num)
 {
   XGCValues gcv;
   int xine_screen_num;
+  char *colon;
 
   /* We use screen_num below to refer to the real X screen number, but
    * if we're using Xinerama, it will only be the Xinerama logical screen
@@ -276,16 +277,17 @@ init_screen (rp_screen *s, int screen_num)
   /* Build the display string for each screen */
   s->display_string = xmalloc (strlen(DisplayString (dpy)) + 21);
   sprintf (s->display_string, "DISPLAY=%s", DisplayString (dpy));
-  if (strrchr (DisplayString (dpy), ':'))
+  colon = strrchr (DisplayString (dpy), ':');
+  if (colon)
     {
       char *dot;
 
       dot = strrchr(s->display_string, '.');
-      if (dot)
+      if (dot && strlen (dot) < strlen (colon))
         sprintf(dot, ".%i", screen_num);
     }
 
-  PRINT_DEBUG (("%s\n", s->display_string));
+  PRINT_DEBUG (("display string: %s\n", s->display_string));
 
   s->screen_num = screen_num;
   s->xine_screen_num = xine_screen_num;
