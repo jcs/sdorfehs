@@ -2465,7 +2465,7 @@ command (int interactive, char *data)
           /* Append any arguments onto the end of the alias' command. */
           s = sbuf_new (0);
           sbuf_concat (s, alias_list[i].alias);
-          if (rest != NULL)
+          if (rest != NULL && *rest)
             sbuf_printf_concat (s, " %s", rest);
 
           alias_recursive_depth++;
