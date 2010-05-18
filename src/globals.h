@@ -182,6 +182,7 @@ extern struct list_head rp_delete_window_hook;
 extern struct list_head rp_quit_hook;
 extern struct list_head rp_restart_hook;
 extern struct list_head rp_new_window_hook;
+extern struct list_head rp_title_changed_hook;
 
 extern struct rp_hook_db_entry rp_hook_db[];
 

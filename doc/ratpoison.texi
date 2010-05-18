@@ -1269,6 +1269,8 @@ Run when the user switches to a different group.
 Run when a window is deleted.
 @item newwindow
 Run after a new window is mapped.
+@item titlechanged
+Run when the current window's title changes.
 @item quit
 Run when ratpoison exits.
 @item restart

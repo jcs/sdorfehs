@@ -1407,6 +1407,7 @@ cmd_rename (int interactive UNUSED, struct cmdarg **args)
   free (current_window()->user_name);
   current_window()->user_name = xstrdup (ARG_STRING(0));
   current_window()->named = 1;
+  hook_run (&rp_title_changed_hook);
 
   /* Update the program bar. */
   update_window_names (current_screen(), defaults.window_fmt);

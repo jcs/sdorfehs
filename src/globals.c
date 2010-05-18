@@ -232,6 +232,7 @@ LIST_HEAD (rp_quit_hook);
 LIST_HEAD (rp_restart_hook);
 LIST_HEAD (rp_delete_window_hook);
 LIST_HEAD (rp_new_window_hook);
+LIST_HEAD (rp_title_changed_hook);
 
 struct rp_hook_db_entry rp_hook_db[]=
   {{"key",              &rp_key_hook},
@@ -243,6 +244,7 @@ struct rp_hook_db_entry rp_hook_db[]=
    {"quit",             &rp_quit_hook},
    {"restart",          &rp_restart_hook},
    {"newwindow",	&rp_new_window_hook},
+   {"titlechanged",	&rp_title_changed_hook},
    {NULL, NULL}};
 
 void
