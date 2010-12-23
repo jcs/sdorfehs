@@ -447,11 +447,11 @@ key_press (XEvent *ev)
   else
     s = find_screen (ev->xkey.root);
 
+  if (!s) return;
+
 #ifdef HIDE_MOUSE
   XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2, s->top + s->height - 2);
 #endif
-
-  if (!s) return;
 
   modifier = ev->xkey.state;
   cook_keycode ( &ev->xkey, &ks, &modifier, NULL, 0, 1);
