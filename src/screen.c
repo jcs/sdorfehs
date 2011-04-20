@@ -283,8 +283,13 @@ init_screen (rp_screen *s, int screen_num)
       char *dot;
 
       dot = strrchr(s->display_string, '.');
-      if (dot && strlen (dot) < strlen (colon))
-        sprintf(dot, ".%i", screen_num);
+      if (!dot || (strlen(dot) > strlen (colon)) )
+        {
+        /* no dot was found or it belongs to fqdn - append screen_num
+           to the end */
+        dot = s->display_string + strlen (s->display_string);
+        }
+      sprintf(dot, ".%i", screen_num);
     }
 
   PRINT_DEBUG (("display string: %s\n", s->display_string));
