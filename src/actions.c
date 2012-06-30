@@ -4215,7 +4215,14 @@ cmd_info (int interactive UNUSED, struct cmdarg **args)
       win_elem = group_find_window (&rp_current_group->mapped_windows, win);
       if (!win_elem)
         win_elem = group_find_window (&rp_current_group->unmapped_windows, win);
-
+      if (!win_elem)
+        {
+          rp_group *g = groups_find_group_by_window(win);
+          if (g != NULL)
+            win_elem = group_find_window (&g->mapped_windows, win);
+          if (!win_elem && g != NULL)
+            win_elem = group_find_window (&g->unmapped_windows, win);
+        }
       if (win_elem)
         {
           char *s;
