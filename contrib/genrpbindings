@@ -91,7 +91,7 @@ module Ratpoison
 
   RATPOISON="$RATPOISON"
 
-  def command (command, *args)
+  def command(command, *args)
     return `#{RATPOISON} -c "#{command} #{args.join(' ')}"`
   end
   module_function :command
@@ -170,8 +170,8 @@ while (<ACTIONS_C>) {
               print PERL "sub $name { return command (\"$name\", \@_); }";
               print ELISP "(defun-ratpoison $name)";
               print COMMONLISP "(defun-ratpoison $name)";
-              print RUBY "  def $name (*args)";
-              print RUBY "    return command (\"$name\", args)";
+              print RUBY "  def $name(*args)";
+              print RUBY "    return command(\"$name\", args)";
               print RUBY "  end";
               print RUBY "  module_function :$name\n";
               print PYTHON "def rp_$name( *args ): return rp_command ( '$name ' +  ' '.join( args ) )";
