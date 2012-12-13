@@ -4775,7 +4775,7 @@ cmd_tmpwm (int interactive UNUSED, struct cmdarg **args)
   XSync (dpy, False);
 
   /* Disable our SIGCHLD handler */
-  set_sig_handler (SIGCHLD, SIG_IGN);
+  set_sig_handler (SIGCHLD, SIG_DFL);
   /* Launch the new WM and wait for it to terminate. */
   pid = spawn (ARG_STRING(0), 0, NULL);
   PRINT_DEBUG (("spawn pid: %d\n", pid));
