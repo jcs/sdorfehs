@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Copyright (C) 2003 Rupert Levene
 # Author: Rupert Levene <r.levene@lancaster.ac.uk>
 
@@ -12,15 +12,15 @@ IFS='
 list=''
 
 # Allow external scripts to tell it where ratpoison is
-if [ -z $RATPOISON ]; then
+if [ -z "$RATPOISON" ]; then
     RATPOISON=ratpoison
 fi
 
 GROUPLIST=$($RATPOISON -c groups)
 SED_GET_NUM='s/^\([0-9]*\).*/\1/'
 
-FIRSTGROUPNUM=$(echo "$GROUPLIST"|head -1|sed -e "$SED_GET_NUM")
-LASTGROUP=$(echo "$GROUPLIST"|tail -1)
+FIRSTGROUPNUM=$(echo "$GROUPLIST"|head -n 1|sed -e "$SED_GET_NUM")
+LASTGROUP=$(echo "$GROUPLIST"|tail -n 1)
 CURRENTGROUPNUM=$(echo "$GROUPLIST"|grep '^[0-9]*\*'|sed -e "$SED_GET_NUM")
 
 $RATPOISON -c "gselect $FIRSTGROUPNUM"

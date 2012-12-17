@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright (C) 2003,2004 Shawn Betts
 #
@@ -19,10 +19,9 @@
 
 # Make sure the env vars are there
 $ENV{XBINDKEYS_BUTTONLOC} || die '$XBINDKEYS_BUTTONLOC not bound';
-$ENV{RATPOISON} || die '$RATPOISON not bound';
 
 # Parse the required environment variables
-$ratpoison_bin = $ENV{RATPOISON};
+$ratpoison_bin = $ENV{RATPOISON} || 'ratpoison';
 ($x_loc,$y_loc) = split(/,/, $ENV{XBINDKEYS_BUTTONLOC});
 
 # Rip the frameset from ratpoison

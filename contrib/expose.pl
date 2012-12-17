@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # Maintainer: Trent Buck <[EMAIL PROTECTED]>
 # License: Public Domain
 
@@ -24,7 +24,7 @@ require "assert.pl";  #used for validation.
 use strict;
 my $N_LIMIT = 2;
 my $LIMIT = 0.01; #smaller number --> slower, but more accurate
-my $RATPOISON = 'ratpoison';
+my $RATPOISON = $ENV{RATPOISON} || 'ratpoison';
 
 #-- main -----------------------------------------------------------------------
 

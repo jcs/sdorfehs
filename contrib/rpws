@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 
 #
 # Copyright (c) 2009 Hatem Nassrat <hnassrat@gmail.com>
@@ -21,6 +21,7 @@
 #
 
 use strict;
+use warnings;
 use Fcntl qw (:flock);
 use Getopt::Std;
 

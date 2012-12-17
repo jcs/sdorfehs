@@ -8,7 +8,9 @@
 # Split the current frame into 16 little frames. This is an example of
 # how to script ratpoison.
 
-RATPOISON=ratpoison
+if [ -z "$RATPOISON" ]; then
+    RATPOISON=ratpoison
+fi
 
 # $RATPOISON -c only
 

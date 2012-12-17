@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 # genrpbindings -- generate ratpoison bindings for various languages
 #
 # Copyright (C) 2003, 2004 Ryan Yeske, Doug Kearns, Shawn Betts
@@ -35,6 +35,8 @@
 # #!python
 # import ratpoison
 # ratpoison.echo( "hello world" )
+
+use warnings;
 
 $\="\n";
 

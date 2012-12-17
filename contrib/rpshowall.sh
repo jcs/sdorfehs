@@ -17,18 +17,23 @@
 # rpshowall 0
 # show all open windows, do not restore previous frame layout
 
-if [ -z $RATPOISON ]; then
+if [ -z "$RATPOISON" ]; then
     RATPOISON=ratpoison
 fi
 
 # Parse input argument
 
-if [ $*>0 ]; then
-        wait="$*"
-else
-        wait=-1
-fi
-
+case $# in
+    0)  wait=-1
+        ;;
+    1)
+        wait=$1
+        ;;
+    *)
+        printf '%s\n' "Usage: $0 [sleep_seconds]" >&2
+        exit 1
+        ;;
+esac
 
 # Save current frameset
 
@@ -40,16 +45,16 @@ curlayout=`$RATPOISON -c fdump`
 # Create split view of all open windows
 
 $RATPOISON -c only
-i=2;
-while [ $i -le $framecount ]; do
-        if [ $i -le `echo $framecount/2 | bc` ] ; then
+i=2
+while [ "$i" -le "$framecount" ]; do
+        if [ "$i" -le $(($framecount/2)) ] ; then
                 $RATPOISON -c vsplit
         else
                 $RATPOISON -c hsplit
         fi
         $RATPOISON -c focus
         $RATPOISON -c focus
-        i=$[$i+1];
+        i=$(($i+1));
 done
 
 # Depending on the argument the script was executed with,
@@ -63,11 +68,11 @@ if [ $wait -eq 0 ]; then
         $RATPOISON -c only
 else
         $RATPOISON -i -c windows
-        if [ $wait -eq -1 ]; then
-                echo -n "Hit return to restore window layout. "
+        if [ "$wait" -eq -1 ]; then
+                printf '%s' "Hit return to restore window layout. "
                 read i
         else
-                sleep $wait
+                sleep "$wait"
         fi
         $RATPOISON -c "frestore $curlayout"
 fi

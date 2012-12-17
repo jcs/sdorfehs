@@ -1,9 +1,9 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright (C) 2003 Shawn Betts
 # Execute a sequence of commands read from stdin.
 
-$ratpoison = $ENV{RATPOISON} or die "Where is ratpoison?";
+$ratpoison = $ENV{RATPOISON} || 'ratpoison';
 
 while (<>) {
     chomp;
