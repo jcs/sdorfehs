@@ -4125,28 +4125,36 @@ set_bwcolor (struct cmdarg **args)
 cmdret *
 cmd_setenv (int interactive UNUSED, struct cmdarg **args)
 {
+
+  const char *var = ARG_STRING(0), *val = ARG_STRING(1);
+  int ret;
+
+#ifdef HAVE_SETENV
+
+  PRINT_DEBUG(("setenv (\"%s\", \"%s\", 1)\n", var, val));
+  ret = setenv (var, val, 1);
+
+#else /* not HAVE_SETENV */
+
   struct sbuf *env;
 
   /* Setup the environment string. */
-  env = sbuf_new(0);
+  env = sbuf_new (strlen (var) + 1 + strlen (val) + 1);
 
-  sbuf_concat (env, ARG_STRING(0));
+  sbuf_copy (env, var);
   sbuf_concat (env, "=");
-  sbuf_concat (env, ARG_STRING(1));
+  sbuf_concat (env, val);
 
-  /* Stick it in the environment. */
-  PRINT_DEBUG(("%s\n", sbuf_get(env)));
-  putenv (sbuf_get (env));
+  /* Stick it in the environment.  We must *not* free it. */
+  PRINT_DEBUG(("putenv(\"%s\")\n", sbuf_get(env)));
+  ret = putenv (sbuf_free_struct (env));
 
-  /* According to the docs, the actual string is placed in the
-     environment, not the data the string points to. This means
-     modifying the string (or freeing it) directly changes the
-     environment. So, don't free the environment string, just the sbuf
-     data structure. */
-  env->data = NULL;
-  sbuf_free (env);
+#endif /* not HAVE_SETENV */
 
-  return cmdret_new (RET_SUCCESS, NULL);
+  if (ret == -1)
+    return cmdret_new (RET_FAILURE, "cmd_setenv failed: %s", strerror(errno));
+  else
+    return cmdret_new (RET_SUCCESS, NULL);
 }
 
 cmdret *
@@ -4158,7 +4166,7 @@ cmd_getenv (int interactive UNUSED, struct cmdarg **args)
   if (value)
     return cmdret_new (RET_SUCCESS, "%s", value);
   else
-    return cmdret_new (RET_SUCCESS, "");
+    return cmdret_new (RET_FAILURE, NULL);
 }
 
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original
@@ -4190,16 +4198,25 @@ cmd_chdir (int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_unsetenv (int interactive UNUSED, struct cmdarg **args)
 {
-  struct sbuf *s;
+  const char *var = ARG_STRING(0);
+  int ret;
 
-  /* Remove all instances of the env. var. We must add an '=' for it
-     to work on OpenBSD. */
-  s = sbuf_new(0);
-  sbuf_copy (s, ARG_STRING(0));
+  /* Use unsetenv() where possible since putenv("FOO") is not legit everywhere */
+#ifdef HAVE_UNSETENV
+  ret = unsetenv(var);
+#else
+  /* MinGW doesn't have unsetenv() and uses putenv("FOO=") */
+  struct sbuf *s = sbuf_new (strlen (var) + 1 + 1);
+  sbuf_copy (s, var);
   sbuf_concat (s, "=");
-  putenv (sbuf_get(s));
-  sbuf_free (s);
-  return cmdret_new (RET_SUCCESS, NULL);
+  /* let putenv() decide whether to call free() */
+  ret = putenv (sbuf_free_struct (s));
+#endif
+
+  if (ret == -1)
+    return cmdret_new (RET_FAILURE, "cmd_unsetenv failed: %s", strerror (errno));
+  else
+    return cmdret_new (RET_SUCCESS, NULL);
 }
 
 /* Thanks to Gergely Nagy <algernon@debian.org> for the original
