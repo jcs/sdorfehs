@@ -38,6 +38,10 @@
 
 #include "ratpoison.h"
 
+#ifdef HAVE_LANGINFO_CODESET
+# include <langinfo.h>
+#endif
+
 /* Several systems seem not to have WAIT_ANY defined, so define it if
    it isn't. */
 #ifndef WAIT_ANY
@@ -169,7 +173,7 @@ strtok_ws (char *s)
 
   if (s)
     pointer = s;
-  
+
   /* skip to first non-whitespace char. */
   while (*pointer && isspace (*pointer)) pointer++;
 
@@ -546,6 +550,12 @@ init_defaults (void)
   set_extents_of_fontset (defaults.font);
 #endif
 
+#ifdef HAVE_LANGINFO_CODESET
+  defaults.utf8_locale = !strcmp (nl_langinfo (CODESET), "UTF-8");
+#endif
+  PRINT_DEBUG (("UTF-8 locale detected: %s\n",
+	       defaults.utf8_locale ? "yes" : "no"));
+
   defaults.fgcolor_string = xstrdup ("black");
   defaults.bgcolor_string = xstrdup ("white");
   defaults.fwcolor_string = xstrdup ("black");
@@ -582,10 +592,17 @@ main (int argc, char *argv[])
   unsigned char interactive = 0;
   char *alt_rcfile = NULL;
 
-  myargv = argv;
-  setlocale(LC_CTYPE, "");
+  setlocale (LC_CTYPE, "");
+  if (XSupportsLocale ())
+    {
+      if (!XSetLocaleModifiers (""))
+	PRINT_ERROR (("Couldn't set X locale modifiers.\n"));
+    }
+  else
+    PRINT_ERROR (("X doesn't seem to support your locale.\n"));
 
   /* Parse the arguments */
+  myargv = argv;
   while (1)
     {
       int option_index = 0;
