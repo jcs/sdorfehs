@@ -19,13 +19,6 @@
 #
 # $Id: autogen.sh,v 1.8 2006/03/16 00:33:34 sabetts Exp $
 #
-# usage: ./autogen.sh [-f]
-# option "-f" means forcefully create symlinks for missing files
-#                   (by default: copies are made only if necessary)
+# This file is just a wrapper for autoreconf
 
-if [ x"$1" = x-f ]
-  then shift ; am_opt='--force'
-  else         am_opt='--copy'
-fi
-
-aclocal && autoheader && automake -a $am_opt && autoconf
+autoreconf -i "$@"

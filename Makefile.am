@@ -21,11 +21,12 @@
 
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
+ACLOCAL_AMFLAGS = -I m4 --install
 
 CLEANFILES		= *~ gmon.out
-MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 \
-			config.guess config.h.in config.sub configure \
-			install-sh missing mkinstalldirs stamp-h.in depcomp
+MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure src/config.h.in \
+			build-aux/depcomp build-aux/install-sh  \
+			build-aux/missing build-aux/texinfo.tex
 
 SUBDIRS			= src doc contrib
 

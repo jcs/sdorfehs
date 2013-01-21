@@ -19,8 +19,12 @@ dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
 dnl $Id: configure.in,v 1.54 2006/12/19 22:13:07 sabetts Exp $
 
-AC_INIT(src/main.c)
-AM_INIT_AUTOMAKE(ratpoison, 1.4.6-GIT)
+
+AC_INIT([ratpoison], [1.4.6-GIT], [ratpoison-devel@nongnu.org])
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_SRCDIR([src/main.c])
+AM_INIT_AUTOMAKE([-Wall -Werror gnu])
 
 AM_MAINTAINER_MODE
 
@@ -151,4 +155,5 @@ AC_CHECK_FUNCS(unsetenv usleep vsnprintf)
 
 AC_TYPE_SIGNAL
 
-AC_OUTPUT(Makefile doc/Makefile src/Makefile contrib/Makefile)
+AC_CONFIG_FILES([Makefile doc/Makefile src/Makefile contrib/Makefile])
+AC_OUTPUT
