@@ -19,8 +19,6 @@
 ##
 ## $Id: Makefile.am,v 1.12 2006/11/21 17:03:31 brl Exp $
 
-PACKAGE = @PACKAGE@
-VERSION = @VERSION@
 ACLOCAL_AMFLAGS = -I m4 --install
 
 CLEANFILES		= *~ gmon.out
@@ -40,4 +38,4 @@ dist-hook:
 sense:
 	@echo 42
 
-.PHONY: bin-dist strip-bin-dist dist-hook sense
+.PHONY: dist-hook sense
