@@ -1,5 +1,6 @@
 *~
 /build-aux/
+!/m4/codeset.m4
 /m4/
 configure
 Makefile

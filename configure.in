@@ -152,5 +152,7 @@ dnl Checks for library functions.
 AC_CHECK_FUNCS(getline getopt getopt_long setenv setpgid setpgrp setsid)
 AC_CHECK_FUNCS(unsetenv usleep vsnprintf)
 
+AM_LANGINFO_CODESET
+
 AC_CONFIG_FILES([Makefile doc/Makefile src/Makefile contrib/Makefile])
 AC_OUTPUT
