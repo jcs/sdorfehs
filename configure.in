@@ -77,11 +77,10 @@ AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
 
 dnl Checks for programs.
-AC_CHECK_TOOL(CC, gcc)
 AC_PROG_CC
 
 if test "x$CC" = "xgcc"; then
-	CFLAGS="$CFLAGS -Wall -O2"
+	CFLAGS="-Wall $CFLAGS"
 fi
 
 dnl check for an x terminal emulator
