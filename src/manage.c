@@ -200,24 +200,92 @@ get_wmname (Window w)
 {
   char *name = NULL;
   XTextProperty text_prop;
-  int status, n;
+  int ret = None, n;
   char** cl;
 
-  if (XGetWMName(dpy, w, &text_prop) != 0) {
-    status = XmbTextPropertyToTextList(dpy, &text_prop, &cl, &n);
-    if (status == Success && cl && n > 0) {
-      name = xstrdup(cl[0]);
-      XFreeStringList(cl);
-    } else if (text_prop.encoding == XA_STRING) {
-	name = xstrdup((char*)text_prop.value);
+  /* If current encoding is UTF-8, try to use the window's _NET_WM_NAME ewmh
+     property */
+  if (defaults.utf8_locale)
+    {
+      Atom type = None;
+      unsigned long nitems, bytes_after;
+      int format;
+      char *val = NULL;
+
+      ret = XGetWindowProperty (dpy, w, _net_wm_name, 0, 40, False,
+				xa_utf8_string, &type, &format, &nitems,
+				&bytes_after, (unsigned char **) &val);
+      /* We have a valid UTF-8 string */
+      if (ret == Success && type == xa_utf8_string
+	  && format == 8 && nitems > 0)
+	{
+	  name = xstrdup (val);
+	  XFree (val);
+          PRINT_DEBUG (("Fetching window name using _NET_WM_NAME succeeded\n"));
+	  PRINT_DEBUG (("WM_NAME: %s\n", name));
+	  return name;
+	}
+      /* Something went wrong for whatever reason */
+      if (ret == Success && val)
+	XFree (val);
+      PRINT_DEBUG (("Could not fetch window name using _NET_WM_NAME\n"));
     }
-    XFree (text_prop.value);
-  }
+
+  if (XGetWMName (dpy, w, &text_prop) == 0)
+    {
+      PRINT_ERROR (("XGetWMName failed\n"));
+      return NULL;
+    }
+
+  PRINT_DEBUG (("WM_NAME encoding: "));
+  if (text_prop.encoding == xa_string)
+    PRINT_DEBUG  (("STRING\n"));
+  else if (text_prop.encoding == xa_compound_text)
+    PRINT_DEBUG (("COMPOUND_TEXT\n"));
+  else if (text_prop.encoding == xa_utf8_string)
+    PRINT_DEBUG (("UTF8_STRING\n"));
+  else
+    PRINT_DEBUG (("unknown (%d)\n", (int) text_prop.encoding));
+
+#ifdef X_HAVE_UTF8_STRING
+  /* It seems that most applications supporting UTF8_STRING and
+     _NET_WM_NAME don't bother making their WM_NAME available as
+     UTF8_STRING (but only as either STRING or COMPOUND_TEXT).
+     Let's try anyway.  */
+  if (defaults.utf8_locale && text_prop.encoding == xa_utf8_string)
+    {
+      ret = Xutf8TextPropertyToTextList (dpy, &text_prop, &cl, &n);
+      PRINT_DEBUG (("Xutf8TextPropertyToTextList: %s\n",
+		    ret == Success ? "success" : "error"));
+    }
+  else
+#endif
+    {
+      /* XmbTextPropertyToTextList should be fine for all cases,
+	 even UTF8_STRING encoded WM_NAME */
+      ret = XmbTextPropertyToTextList (dpy, &text_prop, &cl, &n);
+      PRINT_DEBUG (("XmbTextPropertyToTextList: %s\n",
+		    ret == Success ? "success" : "error"));
+    }
+
+  if (ret == Success && cl && n > 0)
+    {
+      name = xstrdup (cl[0]);
+      XFreeStringList (cl);
+    }
+  else if (text_prop.value)
+    {
+      /* Convertion failed, try to get the raw string */
+      name = xstrdup (text_prop.value);
+      XFree (text_prop.value);
+    }
+
   if (name == NULL) {
     PRINT_DEBUG (("I can't get the WMName.\n"));
   } else {
     PRINT_DEBUG (("WM_NAME: '%s'\n", name));
   }
+
   return name;
 }
 
