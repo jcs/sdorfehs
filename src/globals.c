@@ -321,12 +321,9 @@ rp_draw_string (rp_screen *s, Drawable d, int style, int x, int y,
 }
 
 int
-#ifdef USE_XFT_FONT
-rp_text_width (rp_screen *s, XFontSet font UNUSED, char *string, int count)
-#else
-rp_text_width (rp_screen *s UNUSED, XFontSet font, char *string, int count)
-#endif
+rp_text_width (rp_screen *s, char *string, int count)
 {
+  (void) s; /* avoid "unused" warning */
   if (count < 0)
     count = strlen (string);
 
@@ -343,7 +340,7 @@ rp_text_width (rp_screen *s UNUSED, XFontSet font, char *string, int count)
   PRINT_ERROR (("No Xft font available.\n"));
   return 0;
 #else
-  return XmbTextEscapement (font, string, count);
+  return XmbTextEscapement (defaults.font, string, count);
 #endif
 }
 

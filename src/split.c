@@ -972,8 +972,8 @@ show_frame_message (char *msg)
       sbuf_concat (msgbuf, EMPTY_FRAME_MESSAGE);
     }
 
-  width = defaults.bar_x_padding * 2 + rp_text_width (s, defaults.font, msgbuf->data,
-							  msgbuf->len);
+  width = defaults.bar_x_padding * 2
+    + rp_text_width (s, msgbuf->data, msgbuf->len);
   height = (FONT_HEIGHT (s) + defaults.bar_y_padding * 2);
 
   /* We don't want another frame indicator to be displayed on another

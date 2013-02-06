@@ -428,8 +428,8 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
 static void
 update_input_window (rp_screen *s, rp_input_line *line)
 {
-  int   prompt_width = rp_text_width (s, defaults.font, line->prompt, -1);
-  int   input_width  = rp_text_width (s, defaults.font, line->buffer, line->length);
+  int prompt_width = rp_text_width (s, line->prompt, -1);
+  int input_width  = rp_text_width (s, line->buffer, line->length);
   int   total_width;
   GC lgc;
   XGCValues gcv;
@@ -468,9 +468,10 @@ update_input_window (rp_screen *s, rp_input_line *line)
 
   /* Draw a cheap-o cursor - MkII */
   XFillRectangle (dpy, s->input_window, lgc,
-		  defaults.bar_x_padding + prompt_width + rp_text_width (s, defaults.font, line->buffer, line->position),
+		  defaults.bar_x_padding + prompt_width +
+		  rp_text_width (s, line->buffer, line->position),
                   defaults.bar_y_padding,
-		  rp_text_width (s, defaults.font, &line->buffer[line->position], 1),
+		  rp_text_width (s, &line->buffer[line->position], 1),
                   FONT_HEIGHT (s));
 
   XFlush (dpy);

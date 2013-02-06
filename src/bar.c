@@ -262,7 +262,7 @@ max_line_length (char* msg)
           int current_width;
 
           /* Check if this line is the longest so far. */
-          current_width = rp_text_width (s, defaults.font, msg + start, i - start);
+          current_width = rp_text_width (s, msg + start, i - start);
           if(current_width > ret)
             {
               ret = current_width;
@@ -480,12 +480,10 @@ get_mark_box (char *msg, size_t mark_start, size_t mark_end,
   if (mark_start == 0 || start_pos_in_line == 0)
     start = 0;
   else
-    start = rp_text_width (s, defaults.font,
-                           &msg[start_line_beginning],
+    start = rp_text_width (s, &msg[start_line_beginning],
                            start_pos_in_line) + defaults.bar_x_padding;
-   
-  end = rp_text_width (s, defaults.font,
-                       &msg[end_line_beginning],
+
+  end = rp_text_width (s, &msg[end_line_beginning],
                        end_pos_in_line) + defaults.bar_x_padding * 2;
 
   if (mark_end != strlen (msg))

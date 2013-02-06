@@ -1772,7 +1772,7 @@ read_frame (struct sbuf *s,  struct cmdarg **arg)
                  determine the height and width of the window. */
               /*              num = xsprintf (" %d ", cur->number); */
               num = frame_selector (cur->number);
-              width = defaults.bar_x_padding * 2 + rp_text_width (screen, defaults.font, num, -1);
+              width = defaults.bar_x_padding * 2 + rp_text_width (screen, num, -1);
               height = (FONT_HEIGHT (screen) + defaults.bar_y_padding * 2);
 
               /* Create and map the window. */
@@ -3310,7 +3310,7 @@ cmd_license (int interactive UNUSED, struct cmdarg **args UNUSED)
     {
       int tmp;
 
-      tmp = rp_text_width (s, defaults.font, license_text[i], -1);
+      tmp = rp_text_width (s, license_text[i], -1);
       if (tmp > max_width)
         max_width = tmp;
     }
@@ -3389,7 +3389,7 @@ cmd_help (int interactive, struct cmdarg **args)
 
       keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
       rp_draw_string (s, s->help_window, STYLE_NORMAL,
-                      10 + rp_text_width (s, defaults.font, "Command key: ", -1),
+                      10 + rp_text_width (s, "Command key: ", -1),
                       y + FONT_ASCENT(s),
                       keysym_name, -1);
       free (keysym_name);
@@ -3408,8 +3408,8 @@ cmd_help (int interactive, struct cmdarg **args)
                               x, y + FONT_ASCENT(s),
                               keysym_name, -1);
 
-              if (rp_text_width (s, defaults.font, keysym_name, -1) > max_width)
-                max_width = rp_text_width (s, defaults.font, keysym_name, -1);
+              if (rp_text_width (s, keysym_name, -1) > max_width)
+                max_width = rp_text_width (s, keysym_name, -1);
 
               free (keysym_name);
             }
@@ -3419,9 +3419,9 @@ cmd_help (int interactive, struct cmdarg **args)
                               x, y + FONT_ASCENT(s),
                               map->actions[i].data, -1);
 
-              if (rp_text_width (s, defaults.font, map->actions[i].data, -1) > max_width)
+              if (rp_text_width (s, map->actions[i].data, -1) > max_width)
                 {
-                  max_width = rp_text_width (s, defaults.font, map->actions[i].data, -1);
+                  max_width = rp_text_width (s, map->actions[i].data, -1);
                 }
             }
 
