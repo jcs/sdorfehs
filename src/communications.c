@@ -43,7 +43,7 @@ receive_command_result (Window w)
 
   /* First, find out how big the property is. */
   status = XGetWindowProperty (dpy, w, rp_command_result,
-                               0, 0, False, XA_STRING,
+                               0, 0, False, xa_string,
                                &type_ret, &format_ret, &nitems, &bytes_after,
                                &result);
 
@@ -62,7 +62,7 @@ receive_command_result (Window w)
      whole message. */
   status = XGetWindowProperty (dpy, w, rp_command_result,
                                0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-                               True, XA_STRING, &type_ret, &format_ret, &nitems,
+                               True, xa_string, &type_ret, &format_ret, &nitems,
                                &bytes_after, &result);
 
   /* Failed to retrieve property. */
@@ -108,7 +108,7 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
   /* Select first to avoid race condition */
   XSelectInput (dpy, w, PropertyChangeMask);
 
-  XChangeProperty (dpy, w, rp_command, XA_STRING,
+  XChangeProperty (dpy, w, rp_command, xa_string,
                    8, PropModeReplace, (unsigned char*)sbuf_get(s), strlen ((char *)cmd) + 2);
 
   XChangeProperty (dpy, root,

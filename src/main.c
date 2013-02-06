@@ -701,6 +701,11 @@ main (int argc, char *argv[])
   wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
   wm_colormaps = XInternAtom(dpy, "WM_COLORMAP_WINDOWS", False);
 
+  /* TEXT atoms */
+  xa_string = XA_STRING;
+  xa_compound_text = XInternAtom(dpy, "COMPOUND_TEXT", False);
+  xa_utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
+
   /* netwm atoms */
   _net_wm_pid = XInternAtom(dpy, "_NET_WM_PID", False);
   PRINT_DEBUG (("_NET_WM_PID = %ld\n", _net_wm_pid));
@@ -709,7 +714,6 @@ main (int argc, char *argv[])
   _net_wm_window_type = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
   _net_wm_window_type_dialog = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
   _net_wm_name = XInternAtom(dpy, "_NET_WM_NAME", False);
-  utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
 
   /* Setup signal handlers. */
   XSetErrorHandler(handler);

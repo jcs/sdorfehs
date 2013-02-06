@@ -47,13 +47,17 @@ Atom rp_command_request;
 Atom rp_command_result;
 Atom rp_selection;
 
+/* TEXT atoms */
+Atom xa_string;
+Atom xa_compound_text;
+Atom xa_utf8_string;
+
 /* netwm atoms */
 Atom _net_wm_pid;
 Atom _net_supported;
 Atom _net_wm_window_type;
 Atom _net_wm_window_type_dialog;
 Atom _net_wm_name;
-Atom utf8_string;
 
 int rp_current_screen;
 rp_screen *screens;
@@ -94,7 +98,7 @@ x_export_selection (void)
   XSetSelectionOwner(dpy, XA_PRIMARY, screens[0].key_window, CurrentTime);
   if (XGetSelectionOwner(dpy, XA_PRIMARY) != screens[0].key_window)
     PRINT_ERROR(("can't get primary selection"));
-  XChangeProperty(dpy, screens[0].root, XA_CUT_BUFFER0, XA_STRING, 8,
+  XChangeProperty(dpy, screens[0].root, XA_CUT_BUFFER0, xa_string, 8,
                   PropModeReplace, (unsigned char*)selection.text, selection.len);
 }
 
@@ -196,7 +200,7 @@ get_selection (void)
       /* be a good icccm citizen */
       XDeleteProperty (dpy, s->input_window, rp_selection);
       /* TODO: we shouldn't use CurrentTime here, use the time of the XKeyEvent, should we fake it? */
-      XConvertSelection (dpy, XA_PRIMARY, XA_STRING, rp_selection, s->input_window, CurrentTime);
+      XConvertSelection (dpy, XA_PRIMARY, xa_string, rp_selection, s->input_window, CurrentTime);
 
       /* This seems like a hack. */
       while (!XCheckTypedWindowEvent (dpy, s->input_window, SelectionNotify, &ev))
