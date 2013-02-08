@@ -1,6 +1,6 @@
 Shawn Betts (sabetts at vcn bc ca)
 
-Shawn is the original author and current maintainer for
+Shawn is the original author and former maintainer for
 ratpoison. Sickened by the rat and the trend in window managers, he
 sat down one evening and pulled an all-nighter writing the first
 version of ratpoison.
@@ -10,6 +10,10 @@ Ryan Yeske (rcyeske at vcn bc ca)
 Ryan doesn't commit much code these days, but that's not because he
 doesn't want to, its just that he forgot his cvs ssh password.
 Meanwhile, the patches are piling up.
+
+Jeremie Courreges-Anglas (jca+ratpoison at wxcvbn dot org)
+
+Current maintainer.
 
 Other Contributors:
 
