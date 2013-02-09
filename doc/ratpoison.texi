@@ -1,8 +1,8 @@
 \input texinfo   @c -*-texinfo-*-
 @c %**start of header
 @setfilename ratpoison.info
-@settitle ratpoison manual
-@setchapternewpage odd
+@include version.texi
+@settitle Ratpoison @value{VERSION} manual
 @c %**end of header
 
 @dircategory X11
@@ -10,11 +10,10 @@
 * ratpoison: (ratpoison).       Say good-bye to the rodent
 @end direntry
 
-@ifinfo
-This is the ratpoison user manual.
-
+@copying
 Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006 Shawn Betts
 
+@quotation
 The ratpoison user manual is free documentation; permission is granted to
 copy, distribute and/or modify this document under the terms of either:
 
@@ -32,8 +31,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 General Public License or GNU Free Documentation License for more
 details.
 
-A copy of the FDL is included in the section entitled "GNU Free
-Documentation License". 
+A copy of the FDL is included in the section entitled
+@ref{GNU Free Documentation License}.
 You should have received a copy of the GNU General Public License
 along with this software; see the file COPYING. If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
@@ -43,42 +42,30 @@ If you choose to allow use of your version of this content only under the
 terms of one of the licenses, indicate your decision by deleting the notice
 of the other license. If you do not delete any of those, a recipient may use
 your version of this file unter the terms of either the GNU FDL or the GNU GPL.
-@end ifinfo
+@end quotation
+@end copying
 
 @titlepage
-@sp 10
-@titlefont{ratpoison}
+@title The ratpoison user manual
 @author Shawn Betts
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006 Shawn Betts
-
-The ratpoison user manual is free documentation; permission is granted to
-copy, distribute and/or modify this document under the terms of either:
-
-a) the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option)
-any later version, or
-
-b) the GNU Free Documentation License, version 1.2 or any later
-version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+@insertcopying
 @end titlepage
 
-The ratpoison manual is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-General Public License or GNU Free Documentation License for more
-details.
-@node Top, GNU Free Documentation License, (dir), (dir)
+@ifnottex
+@node Top
+@top Ratpoison
 
-@ifinfo
-This document explains how to use ratpoison 1.4.3.
-@end ifinfo
+This document explains how to use ratpoison @value{VERSION}.
+
+@insertcopying
+@end ifnottex
+
+@contents
 
 @menu
-* GNU Free Documentation License::
 * About::                       What Is Ratpoison?
 * Contacting::                  How Do I Contact The Ratpoison Developers?
 * Concepts::                    Window Manipulation Concepts
@@ -90,11 +77,12 @@ This document explains how to use ratpoison 1.4.3.
 * Keystrokes::                  Key Commands And Functionality
 * Hooks::                       Attaching Scripts To Ratpoison Events
 * The Status Bar::              Ratpoison's Input/Output Area
-* Using Other Window Managers::  Return To Evil
+* Using Other Window Managers:: Return To Evil
 * Other Commands::              Miscellaneous Commands
 * Input::                       Typing Text Into Ratpoison
 * Command Line Arguments::      ratpoison Command-Line Actions
 * Startup file::                They Threatened Me...With Violence!
+* GNU Free Documentation License::
 * Command Index::               Index
 
 @detailmenu
@@ -124,9 +112,7 @@ Keystrokes
 @end detailmenu
 @end menu
 
-@include fdl.texi
-
-@node About, Contacting, GNU Free Documentation License , Top
+@node About, Contacting, Top, Top
 @chapter About
 
 ratpoison is a simple Window Manager with no fat library dependencies,
@@ -140,7 +126,7 @@ that cripples EMACS and other quality pieces of software.
 
 ratpoison was written by Shawn Betts (@email{sabetts@@vcn.bc.ca}).
 
-@node Contacting, Concepts, About, Top
+@node Contacting
 @chapter Contacting
 ratpoison is hosted on @url{http://savannah.nongnu.org}. To see the latest
 developments in ratpoison go to
@@ -151,9 +137,10 @@ There is also a ratpoison mailing list:
 @email{ratpoison-devel@@nongnu.org}. For details on subscribing
 and for the list archives go to the ratpoison Savannah project.
 
-There is a #ratpoison irc channel on irc.freenode.net.
+There is a @url{irc://irc.freenode.net/#ratpoison, #ratpoison} IRC
+channel on the @url{http://freenode/, Freenode} network.
 
-@node Concepts, General Use, Contacting, Top
+@node Concepts
 @chapter Concepts
 
 ratpoison uses the concept of @dfn{panes} to place and size
@@ -194,7 +181,7 @@ creates a window it will be added to the current group. Groups are
 generally used to organize windows into different classes such as work
 and wasting-time-at-work.
 
-@node General Use, Windows, Concepts, Top
+@node General Use
 @chapter General Use
 
 When ratpoison starts you should see an empty X server. To open an x
@@ -218,7 +205,7 @@ how we didn't have to drag a single window, or click a single maximize
 button? Beautiful wasn't it? Felt fast? Cool? It's modern computing at
 its best.
 
-@node Windows, Groups, General Use, Top
+@node Windows
 @chapter Windows
 
 Windows are what ratpoison manages.
@@ -230,7 +217,7 @@ Windows are what ratpoison manages.
 * Rudeness::                    
 @end menu
 
-@node Manipulating Windows, Window Classes, Windows, Windows
+@node Manipulating Windows
 @section Manipulating Windows
 
 The following are commands used to manipulate windows.
@@ -448,7 +435,7 @@ When called with no arguments, the current setting is
 returned.
 @end deffn
 
-@node Window Classes, Unmanaged Windows, Manipulating Windows, Windows
+@node Window Classes
 @section Window Classes
 
 Window classes are a way of grouping windows together. Windows that
@@ -487,7 +474,7 @@ Go to the last accessed window that is in a different class from the
 current window.
 @end deffn
 
-@node Unmanaged Windows, Rudeness, Window Classes, Windows
+@node Unmanaged Windows
 @section Unmanaged Windows
 
 ratpoison can intentionally not manage windows. ratpoison keeps a list
@@ -510,7 +497,7 @@ windows already managed by ratpoison).
 When called with no arguments, the list is returned.
 @end deffn
 
-@node Rudeness,  , Unmanaged Windows, Windows
+@node Rudeness
 @section Rudeness
 
 Some programs will attempt to steal the focus without the users
@@ -559,7 +546,7 @@ When called with no arguments, the current setting is
 returned.
 @end deffn
 
-@node Groups, Frames, Windows, Top
+@node Groups
 @chapter Groups
 ratpoison provides functionality to group windows together. This
 coupled with saving and restoring frames configurations is what most
@@ -629,7 +616,7 @@ ratpoison will attempt to delete the current group. Only empty groups
 can be deleted. To empty a group see @command{gmerge}.
 @end deffn
 
-@node Frames, Multiple Monitors, Groups, Top
+@node Frames
 @chapter Frames
 Sometimes you may want to see two or more windows at the same
 time. ratpoison allows you to split the display into frames (see
@@ -644,7 +631,7 @@ time. ratpoison allows you to split the display into frames (see
 * Dedicated Frames::            
 @end menu
 
-@node Splitting Frames, Resizing Frames, Frames, Frames
+@node Splitting Frames
 @section Splitting Frames
 
 To split the
@@ -706,7 +693,7 @@ pixels. If @var{n} has a minus sign before it, then the new frame will
 shrink by that many pixels.
 @end deffn
 
-@node Resizing Frames, Frame Navigation Commands, Splitting Frames, Frames
+@node Resizing Frames
 @section Resizing Frames
 ratpoison provides a command, @command{resize}, that resizes the
 current frame. It is bound to the key @kbd{C-t r} by
@@ -765,7 +752,7 @@ not be able to take up the whole frame. In this case, use this command
 to suck the frame up to the to window, reclaiming any wasted space.
 @end deffn
 
-@node Frame Navigation Commands, Saving and Restoring Frame Sets, Resizing Frames, Frames
+@node Frame Navigation Commands
 @section Frame Navigation Commands
 
 Here are the commands for Navigating frames.
@@ -811,7 +798,7 @@ Move to the frame right of the current frame.
 Move to the frame above the current frame.
 @end deffn
 
-@node Saving and Restoring Frame Sets, Frame Numbering, Frame Navigation Commands, Frames
+@node Saving and Restoring Frame Sets
 @section Saving and Restoring Frame Sets
 ratpoison provides two commands, @command{fdump} and
 @command{frestore}, that allow the user to save and restore frame
@@ -856,7 +843,7 @@ steps back in frame layout history.
 redo the last change that was undone.
 @end deffn
 
-@node Frame Numbering, Dedicated Frames, Saving and Restoring Frame Sets, Frames
+@node Frame Numbering
 @section Frame Numbering
 
 Frames are normally numbered starting from 0. But this can be changed
@@ -875,7 +862,7 @@ what order.
 When called with no arguments, the current setting is returned.
 @end deffn
 
-@node Dedicated Frames,  , Frame Numbering, Frames
+@node Dedicated Frames
 @section Dedicated Frames
 
 A dedicated frame is a frame that will not allow new windows to appear
@@ -885,7 +872,7 @@ in it. Only the user may switch windows in this frame.
 Toggle whether the current frame is dedicated or not.
 @end deffn
 
-@node Multiple Monitors, Keystrokes, Frames, Top
+@node Multiple Monitors
 @chapter Multiple Monitors
 When you've finally accumulated enough computer junk, you'll find
 yourself attaching a second monitor to your computer. ratpoison has
@@ -934,7 +921,7 @@ Dump all the screen number and the frames on all screens.
 restore a frame configuration created using @command{sfdump}.
 @end deffn
 
-@node Keystrokes, Hooks, Multiple Monitors, Top
+@node Keystrokes
 @chapter Keystrokes
 
 Interactive control of ratpoison is done entirely through
@@ -982,7 +969,7 @@ the key.
 * Default Key Bindings::        
 @end menu
 
-@node Key Maps, Default Key Bindings, Keystrokes, Keystrokes
+@node Key Maps
 @section Key Maps
 
 All keystrokes exist inside a keymap. When you press the prefix key you
@@ -1063,7 +1050,7 @@ Set the top level keymap to @var{kmap}. You might use this to swap
 between several common keymappings or to implement modes.
 @end deffn
 
-@node Default Key Bindings,  , Key Maps, Keystrokes
+@node Default Key Bindings
 @section Default Key Bindings
 
 The default keystrokes are listed in this chapter. Not all commands
@@ -1230,7 +1217,7 @@ window in the chosen frame.
 
 @end table
 
-@node Hooks, The Status Bar, Keystrokes, Top
+@node Hooks
 @chapter Hooks
 
 One of the goals of ratpoison is to allow users to create exciting
@@ -1288,7 +1275,7 @@ of available hooks.
 List the commands that will be run when @var{hook} is fired.
 @end deffn
 
-@node The Status Bar, Using Other Window Managers, Hooks, Top
+@node The Status Bar
 @chapter The Status Bar
 
 ratpoison presents status and output through the status bar. By default
@@ -1403,7 +1390,7 @@ When called with no arguments, the current setting is returned.
 @end deffn
 
 
-@node Using Other Window Managers, Other Commands, The Status Bar, Top
+@node Using Other Window Managers
 @chapter Using Other Window Managers
 
 There are times when a program has been so badly written that it is
@@ -1438,7 +1425,7 @@ This is a bad-bad command. It kills ratpoison and revives that
 ugly rodent! Yuck! Avoid!
 @end deffn
 
-@node Other Commands, Input, Using Other Window Managers, Top
+@node Other Commands
 @chapter Other Commands
 
 The following is a list of commands that don't fit in any existing
@@ -1468,7 +1455,7 @@ non-interactively with @command{ratpoison -c}.
 Banish the mouse to the lower right corner of the screen.
 @end deffn
 
-@deffn banishrel
+@deffn Command banishrel
 Banish the rat cursor to the lower right corner of the curren window.
 If there isn't a window in the current frame, it banishes the rat cursor
 to the lower right corner of the frame.
@@ -1604,11 +1591,11 @@ Make text the X11 selection.
 Quit ratpoison.
 @end deffn
 
-@deffn ratinfo
+@deffn Command ratinfo
 Display the x y coordinates of the rat cursor relative to the screen.
 @end deffn
 
-@deffn ratrelinfo
+@deffn Command ratrelinfo
 Display the x y coordinates of the rat cursor relative to the current window or current frame if no window is focused.
 @end deffn
 
@@ -1728,7 +1715,7 @@ rat's position is restored. This can be counter-intuitive, so you can
 toggle it with this command. @var{state} can be @code{on} or @code{off}.
 @end deffn
 
-@node Input, Command Line Arguments, Other Commands, Top
+@node Input
 @chapter Input
 At various times ratpoison will prompt you for input. Ratpoison sports
 a fully featured line editor. The following table lists the keystrokes
@@ -1816,7 +1803,7 @@ a history length of 100 entries. This history is saved to the file
 ratpoison. This means your history sticks between sessions. This
 assumes history has not been disabled on compilation.
 
-@node Command Line Arguments, Startup file, Input, Top
+@node Command Line Arguments
 @chapter Command Line Arguments
 ratpoison supports command line arguments to request various actions
 when invoking ratpoison.
@@ -1867,7 +1854,7 @@ Specify an alternate configuration file. @xref{Startup file}.
 
 @end table
 
-@node Startup file, Command Index, Command Line Arguments, Top
+@node Startup file
 @chapter Startup file
 
 Now you've probably read the web page, and you've no doubt dug up some
@@ -1887,7 +1874,11 @@ You can also use the @option{-f} option to specify another startup
 file, allowing you to switch between different configurations
 (@pxref{Command Line Arguments}).
 
-@node Command Index,  , Startup file, Top
+@node GNU Free Documentation License
+@chapter GNU Free Documentation License
+@include fdl.texi
+
+@node Command Index
 @unnumbered Command Index
 
 @printindex fn

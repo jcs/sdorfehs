@@ -12,3 +12,5 @@ config.log
 ratpoison-*.tar.gz
 ratpoison-*.tar.gz.sig
 TAGS
+/doc/version.texi
+/doc/stamp-vti
