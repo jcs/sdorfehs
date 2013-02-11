@@ -122,9 +122,9 @@ virtual terminal market.
 
 All interaction with the window manager is done through
 keystrokes. ratpoison has a prefix map to minimize the key clobbering
-that cripples EMACS and other quality pieces of software.
+that cripples Emacs and other quality pieces of software.
 
-ratpoison was written by Shawn Betts (@email{sabetts@@vcn.bc.ca}).
+ratpoison was written by Shawn Betts (@email{sabetts@@gmail.com}).
 
 @node Contacting
 @chapter Contacting
