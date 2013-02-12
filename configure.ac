@@ -26,6 +26,8 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([-Wall -Werror gnu])
 
+AM_MAINTAINER_MODE([enable])
+
 AC_CONFIG_HEADER(src/config.h)
 
 dnl by default turn off debugging
