@@ -673,6 +673,11 @@ main (int argc, char *argv[])
   rp_command_result = XInternAtom (dpy, "RP_COMMAND_RESULT", False);
   rp_selection = XInternAtom (dpy, "RP_SELECTION", False);
 
+  /* TEXT atoms */
+  xa_string = XA_STRING;
+  xa_compound_text = XInternAtom(dpy, "COMPOUND_TEXT", False);
+  xa_utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
+
   if (cmd_count > 0)
     {
       int j;
@@ -700,11 +705,6 @@ main (int argc, char *argv[])
   wm_delete = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
   wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
   wm_colormaps = XInternAtom(dpy, "WM_COLORMAP_WINDOWS", False);
-
-  /* TEXT atoms */
-  xa_string = XA_STRING;
-  xa_compound_text = XInternAtom(dpy, "COMPOUND_TEXT", False);
-  xa_utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
 
   /* netwm atoms */
   _net_wm_pid = XInternAtom(dpy, "_NET_WM_PID", False);
