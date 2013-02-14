@@ -3365,8 +3365,10 @@ cmd_help (int interactive, struct cmdarg **args)
       int i, old_i;
       int x = 10;
       int y = 0;
-      int max_width = 0;
-      int drawing_keys = 1;             /* 1 if we are drawing keys 0 if we are drawing commands */
+      int header_offset;
+      int width, max_width = 0;
+      /* 1 if we are drawing keys, 0 if we are drawing commands */
+      int drawing_keys = 1;
       char *keysym_name;
 
       /* Switch to the default colormap. */
@@ -3382,34 +3384,40 @@ cmd_help (int interactive, struct cmdarg **args)
 
       y += FONT_HEIGHT (s) * 2;
 
-      rp_draw_string (s, s->help_window, STYLE_NORMAL,
-                      10, y + FONT_ASCENT(s),
-                      "Command key: ", -1);
+      /* Only print the "Command key" for the root keymap */
+      if (map == find_keymap (ROOT_KEYMAP))
+	{
+	  rp_draw_string (s, s->help_window, STYLE_NORMAL,
+			  10, y + FONT_ASCENT(s),
+			  "Command key: ", -1);
 
+	  keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
+	  rp_draw_string (s, s->help_window, STYLE_NORMAL,
+			  10 + rp_text_width (s, "Command key: ", -1),
+			  y + FONT_ASCENT(s),
+			  keysym_name, -1);
+	  free (keysym_name);
 
-      keysym_name = keysym_to_string (prefix_key.sym, prefix_key.state);
-      rp_draw_string (s, s->help_window, STYLE_NORMAL,
-                      10 + rp_text_width (s, "Command key: ", -1),
-                      y + FONT_ASCENT(s),
-                      keysym_name, -1);
-      free (keysym_name);
+	  y += FONT_HEIGHT (s) * 2;
+	}
 
-      y += FONT_HEIGHT (s) * 2;
+      header_offset = y;
 
-      i = 0;
-      old_i = 0;
-      while (i<map->actions_last || drawing_keys)
+      i = old_i = 0;
+      while (i < map->actions_last && old_i < map->actions_last)
         {
           if (drawing_keys)
             {
-              keysym_name = keysym_to_string (map->actions[i].key, map->actions[i].state);
+              keysym_name =
+		keysym_to_string (map->actions[i].key, map->actions[i].state);
 
               rp_draw_string (s, s->help_window, STYLE_NORMAL,
                               x, y + FONT_ASCENT(s),
                               keysym_name, -1);
 
-              if (rp_text_width (s, keysym_name, -1) > max_width)
-                max_width = rp_text_width (s, keysym_name, -1);
+              width = rp_text_width (s, keysym_name, -1);
+	      if (width > max_width)
+		max_width = width;
 
               free (keysym_name);
             }
@@ -3419,10 +3427,9 @@ cmd_help (int interactive, struct cmdarg **args)
                               x, y + FONT_ASCENT(s),
                               map->actions[i].data, -1);
 
-              if (rp_text_width (s, map->actions[i].data, -1) > max_width)
-                {
-                  max_width = rp_text_width (s, map->actions[i].data, -1);
-                }
+              width = rp_text_width (s, map->actions[i].data, -1);
+	      if (width > max_width)
+		max_width = width;
             }
 
           y += FONT_HEIGHT (s);
@@ -3444,16 +3451,16 @@ cmd_help (int interactive, struct cmdarg **args)
                 }
 
               max_width = 0;
-              y = FONT_HEIGHT (s) * 4;
+              y = header_offset;
             }
           else
             {
               i++;
-              if (i >= map->actions_last && drawing_keys)
+              if (i == map->actions_last && drawing_keys)
                 {
                   x += max_width + 10;
                   drawing_keys = 0;
-                  y = FONT_HEIGHT (s) * 4;
+                  y = header_offset;
                   i = old_i;
                   max_width = 0;
                 }
