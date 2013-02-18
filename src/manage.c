@@ -276,7 +276,7 @@ get_wmname (Window w)
   else if (text_prop.value)
     {
       /* Convertion failed, try to get the raw string */
-      name = xstrdup (text_prop.value);
+      name = xstrdup ((char *) text_prop.value);
       XFree (text_prop.value);
     }
 
