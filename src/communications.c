@@ -76,8 +76,8 @@ receive_command_result (Window w)
   /*
    * We can receive:
    * - an empty string, indicating a success but no output
-   * - a string starting with '0', indicating a success and an output
-   * - a string starting with '1', indicating a failure and an optional output
+   * - a string starting with '1', indicating a success and an output
+   * - a string starting with '0', indicating a failure and an optional output
    */
   switch (result[0])
     {
@@ -93,6 +93,7 @@ receive_command_result (Window w)
     case '1': /* Command succeeded, print the output */
       printf ("%s\n", &result[1]);
       return_status = RET_SUCCESS;
+      break;
     default: /* We probably got junk, so ignore it */
       return_status = RET_FAILURE;
     }
