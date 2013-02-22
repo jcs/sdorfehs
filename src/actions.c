@@ -1042,8 +1042,14 @@ cmd_unmanage (int interactive, struct cmdarg **args)
 {
   if (args[0] == NULL && !interactive)
     {
+      cmdret *ret;
       char *s = list_unmanaged_windows();
-      cmdret *ret = cmdret_new (RET_SUCCESS, "%s", s);
+
+      if (s)
+         ret = cmdret_new (RET_SUCCESS, "%s", s);
+      else
+        ret = cmdret_new (RET_SUCCESS, NULL);
+
       free (s);
       return ret;
     }
@@ -1366,6 +1372,7 @@ cmd_select (int interactive UNUSED, struct cmdarg **args)
       if (strlen (str) == 1 && str[0] == '-')
         {
           blank_frame (current_frame());
+          ret = cmdret_new (RET_SUCCESS, NULL);
         }
       /* try by number */
       else if ((n = string_to_window_number (str)) >= 0)
@@ -1373,10 +1380,17 @@ cmd_select (int interactive UNUSED, struct cmdarg **args)
           rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
 
           if (elem)
-            goto_window (elem->win);
+            {
+              goto_window (elem->win);
+              ret = cmdret_new (RET_SUCCESS, NULL);
+            }
           else
-            /* show the window list as feedback */
-            show_bar (current_screen (), defaults.window_fmt);
+            {
+              /* show the window list as feedback */
+              show_bar (current_screen (), defaults.window_fmt);
+              ret = cmdret_new (RET_FAILURE,
+                                "select: unknown window number '%d'", n);
+            }
         }
       else
         /* try by name */
@@ -1384,18 +1398,21 @@ cmd_select (int interactive UNUSED, struct cmdarg **args)
           rp_window *win = find_window_name (str);
 
           if (win)
-            goto_window (win);
+            {
+              goto_window (win);
+              ret = cmdret_new (RET_SUCCESS, NULL);
+            }
           else
             ret = cmdret_new (RET_FAILURE, "select: unknown window '%s'", str);
         }
     }
+  else
+    /* Silently fail, since the user didn't provide a window spec */
+    ret = cmdret_new (RET_SUCCESS, NULL);
 
   free (str);
 
-  if (ret)
-    return ret;
-  else
-    return cmdret_new (RET_SUCCESS, NULL);
+  return ret;
 }
 
 cmdret *
@@ -1444,9 +1461,13 @@ cmd_kill (int interactive UNUSED, struct cmdarg **args UNUSED)
   if (current_window() == NULL)
     return cmdret_new (RET_FAILURE, NULL);
 
-  XKillClient(dpy, current_window()->w);
-
-  return cmdret_new (RET_FAILURE, NULL);
+  if (XKillClient(dpy, current_window()->w) == BadValue)
+    {
+      return cmdret_new (RET_FAILURE,
+                         "kill failed (got BadValue, this may be a bug)");
+    }
+  else
+    return cmdret_new (RET_SUCCESS, NULL);
 }
 
 cmdret *
@@ -2446,12 +2467,6 @@ command (int interactive, char *data)
     {
       *rest = 0;
       rest++;
-    }
-
-  if (cmd == NULL)
-    {
-       result = cmdret_new (RET_FAILURE, NULL);
-      goto done;
     }
 
   PRINT_DEBUG (("cmd==%s rest==%s\n", cmd, rest?rest:"NULL"));
@@ -3570,9 +3585,9 @@ cmd_gravity (int interactive UNUSED, struct cmdarg **args)
   int gravity;
   rp_window *win;
 
-  if (current_window() == NULL)
-    return cmdret_new (RET_FAILURE, NULL);
   win = current_window();
+  if (!win)
+    return cmdret_new (RET_FAILURE, NULL);
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", wingravity_to_string (win->gravity));
