@@ -680,21 +680,20 @@ main (int argc, char *argv[])
 
   if (cmd_count > 0)
     {
-      int j;
+      int j, screen, exit_status = EXIT_SUCCESS;
 
-      for (j=0; j<cmd_count; j++)
+      screen = screen_arg ? screen_num : -1;
+
+      for (j = 0; j < cmd_count; j++)
         {
-          if (screen_arg)
-            send_command (interactive, (unsigned char *)cmd[j], screen_num);
-          else
-            send_command (interactive, (unsigned char *)cmd[j], -1);
-
+          if (!send_command (interactive, (unsigned char *)cmd[j], screen))
+	    exit_status = EXIT_FAILURE;
           free (cmd[j]);
         }
 
       free (cmd);
       XCloseDisplay (dpy);
-      return EXIT_SUCCESS;
+      return exit_status;
     }
 
   /* Set our Atoms */

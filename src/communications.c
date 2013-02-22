@@ -31,10 +31,11 @@
 
 
 /* Sending commands to ratpoison */
-static void
+static int
 receive_command_result (Window w)
 {
-  int status;
+  int query;
+  int return_status = RET_FAILURE;
   Atom type_ret;
   int format_ret;
   unsigned long nitems;
@@ -42,16 +43,16 @@ receive_command_result (Window w)
   unsigned char *result = NULL;
 
   /* First, find out how big the property is. */
-  status = XGetWindowProperty (dpy, w, rp_command_result,
-                               0, 0, False, xa_string,
-                               &type_ret, &format_ret, &nitems, &bytes_after,
-                               &result);
+  query = XGetWindowProperty (dpy, w, rp_command_result,
+			      0, 0, False, xa_string,
+			      &type_ret, &format_ret, &nitems, &bytes_after,
+			      &result);
 
   /* Failed to retrieve property. */
-  if (status != Success || result == NULL)
+  if (query != Success || result == NULL)
     {
       PRINT_DEBUG (("failed to get command result length\n"));
-      return;
+      return return_status;
     }
 
   /* XGetWindowProperty always allocates one extra byte even if
@@ -60,36 +61,53 @@ receive_command_result (Window w)
 
   /* Now that we have the length of the message, we can get the
      whole message. */
-  status = XGetWindowProperty (dpy, w, rp_command_result,
-                               0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-                               True, xa_string, &type_ret, &format_ret, &nitems,
-                               &bytes_after, &result);
+  query = XGetWindowProperty (dpy, w, rp_command_result,
+			      0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
+			      True, xa_string, &type_ret, &format_ret, &nitems,
+			      &bytes_after, &result);
 
   /* Failed to retrieve property. */
-  if (status != Success || result == NULL)
+  if (query != Success || result == NULL)
     {
       PRINT_DEBUG (("failed to get command result\n"));
-      return;
+      return return_status;
     }
 
-  /* If result is not the empty string, print it. */
-  if (strlen ((char *)result))
+  /*
+   * We can receive:
+   * - an empty string, indicating a success but no output
+   * - a string starting with '0', indicating a success and an output
+   * - a string starting with '1', indicating a failure and an optional output
+   */
+  switch (result[0])
     {
-      if (result[0] == '1')
-        printf ("%s\n", &result[1]);
-      else
-        fprintf (stderr, "%s\n", &result[1]);
+    case '\0': /* Command succeeded but no string to print */
+      return_status = RET_SUCCESS;
+      break;
+    case '0': /* Command failed, don't print an empty line if no explanation
+		 was given */
+      if (result[1] != '\0')
+	fprintf (stderr, "%s\n", &result[1]);
+      return_status = RET_FAILURE;
+      break;
+    case '1': /* Command succeeded, print the output */
+      printf ("%s\n", &result[1]);
+      return_status = RET_SUCCESS;
+    default: /* We probably got junk, so ignore it */
+      return_status = RET_FAILURE;
     }
 
   /* Free the result. */
   XFree (result);
+
+  return return_status;
 }
 
 int
 send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
 {
   Window w, root;
-  int done = 0;
+  int done = 0, return_status = RET_FAILURE;
   struct sbuf *s;
 
   s = sbuf_new(0);
@@ -125,12 +143,12 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
       if (ev.xproperty.atom == rp_command_result
           && ev.xproperty.state == PropertyNewValue)
         {
-          receive_command_result(ev.xproperty.window);
-          done = 1;
+	  return_status = receive_command_result(ev.xproperty.window);
+	  done = 1;
         }
     }
 
   XDestroyWindow (dpy, w);
 
-  return 1;
+  return return_status;
 }

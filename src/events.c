@@ -567,11 +567,14 @@ receive_command (Window root)
       cmd_ret = execute_remote_command (w);
 
       /* notify the client of any text that was returned by the
-         command. */
+         command.  see communications.c:receive_command_result() */
       if (cmd_ret->output)
         result = xsprintf ("%c%s", cmd_ret->success ? '1':'0', cmd_ret->output);
+      else if (!cmd_ret->success)
+        result = xstrdup("0");
       else
-        result = NULL;
+	result = NULL;
+
       if (result)
         XChangeProperty (dpy, w, rp_command_result, xa_string,
                          8, PropModeReplace, (unsigned char *)result, strlen (result));
