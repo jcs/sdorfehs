@@ -1,3 +1,583 @@
+commit 340833f5e0c4350ac0c7fc6589a4305014b56ba8
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Apr 1 13:44:57 2013 +0200
+
+    a .dir-locals.el file for contributors using Emacs
+
+commit 9cbe6c982d18fdd0ef12d45ba2cfe6629dd4b361
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Feb 22 19:46:59 2013 +0100
+
+    receive_command_result() fixup
+    
+    * forgot a break statement when moving things around
+    * braino in comment: '1' is RET_SUCCESS, '0' is RET_FAILURE
+
+commit 3e2c03c1fccb811e8e1e32b8f4727988379aba3b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Feb 22 19:19:47 2013 +0100
+
+    fixup return values of several commands
+    
+    * in cmd_select(), consistently set the return value for all cases we deal
+      with
+    * in cmd_unmanage(), don't attempt to use a NULL pointer if the unmanaged
+      windows list is empty; just report success
+    * in cmd_kill, only report failure if XKillClient() actually failed
+    * in command(), remove a useless test: cmd can't be NULL
+    * in cmd_gravity, don't call current_window() twice
+
+commit c58386717db86dc7f5e954d2c972c8d606044bb1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Feb 22 19:08:11 2013 +0100
+
+    make ratpoison -c provide a useful exit status
+    
+    * properly define the way the wm may give feedback to ratpoison -c;
+      see communications.c:receive_command_result()
+    * follow this protocol in events.c:receive_command()
+    * modify receive_command_result() to return an int (which is the
+      mirror of the struct cmdret "success" member used on the wm side)
+    * pass that error status back to main.c; exit with an error status if
+      any of the commands we sent failed
+
+commit f42b5f6fcb244d9b5ad159113cd921c7f69d6134
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Feb 18 12:44:52 2013 +0100
+
+    silence minor compilation warning in src/manage.c
+
+commit 1c4335fe092978b42eda6ccbb37854c95fb5f368
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 14 22:39:10 2013 +0100
+
+    more correct cmd_help()
+    
+    * only print the "Command key: ..." bits if we're dealing with
+      the root kmap
+    * don't read (and print) uninitialized data
+      (foomap->actions[foomap->actions_last] shouldn't be accessed)
+    
+    It seems like keymap actions and other things like aliases
+    use arrays because they were implemented before linkedlist.[ch]
+    were introduced.  Perhaps should we just switch them to more
+    fool-proof linked lists?
+
+commit 13812e9f61fa3141619cb0e2fdf0ed41a5e2ec1d
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Feb 13 00:11:43 2013 +0100
+
+    move xa_string initialisation before first use
+    
+    otherwise ratpoison -c no longer works
+
+commit 32419fdf409ff9aae184385a98341b964768be0c
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Tue Feb 12 21:26:35 2013 +0100
+
+    readd AM_MAINTAINER_MODE, but enable maintainer mode by default
+    
+    Using AM_MAINTAINER_MODE([enable]) means you get the maintainer-specific
+    parts enabled by default like without AM_MAINTAINER_MODE, while
+    people still can do --disable-maintainer-mode to avoid any pitfalls.
+
+commit 01dffe2d3795cf484f706f68f557692c138e45e4
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Feb 11 22:39:48 2013 +0100
+
+    get rid of AM_MAINTAINER_MODE
+    
+    * this one has bitten me too many times as an end user ; here it annoys me as
+      a maintainer - version.texi not being installed.  bye bye.
+    
+    See info "(automake) maintainer-mode".
+
+commit 1372824130846d099b507f97f20a1fc453710fa1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Feb 11 22:38:04 2013 +0100
+
+    update Shawn's email address in documentation
+    
+    * while here, s/EMACS/Emacs/ in the Info manual
+
+commit 130b4750b433521c77a31d9605a62604a8cd7805
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Feb 10 00:32:59 2013 +0100
+
+    texinfo manual update
+    
+    * fdl.texi: update to a newer version (not to a newer licence version!)
+    * ratpoison.texi: update to build printed manuals, get rid of annoying
+      @node references, and move GFDL to the last section.  use automake support
+      for version.texi, so that manuals don't ship with an outdated version
+    * .gitignore: match update
+
+commit ec8683c7dbe6168becec6a4f34dcf0a561cf0781
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Feb 8 23:41:05 2013 +0100
+
+    add myself (as current maintainer) to AUTHORS
+
+commit 2050d15a19d65a692be47956b1caa4ad21125ef3
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Feb 8 21:37:00 2013 +0100
+
+    update FAQ url
+
+commit 1b12727e810929b5978dfe164fb4b1e2b389a6f1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 7 02:23:47 2013 +0100
+
+    remove ratpoison.spec
+    
+    * this file is outdated and doesn't help rpm distros
+      packagers / users, so let's just delete it
+    
+    Discussed with Kevin Fenzi (Fedora ratpoison maintainer)
+
+commit 41707e8dd6804f803944caa42b7c79b66697b945
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Feb 6 21:26:59 2013 +0100
+
+    mv configure.in configure.ac
+    
+    * rename this file since new versions of automake complain
+      about the old name
+
+commit 2685676e118cd63380e6a12ce81ce5d4f0badc0a
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Feb 6 19:03:07 2013 +0100
+
+    rp_text_width: remove "font" argument
+    
+    * (globals.[ch]): remove rp_text_width "font" arg, since its value
+      is always the global variable defaults.font (non-Xft case).
+      remove one #ifdef while here
+    * update rp_text_width() calls to match new signature
+
+commit 20c5d11a3be2843c808ba84f971ed3fed011e144
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Feb 6 19:50:53 2013 +0100
+
+    use utf8-handling Xft functions if we are in an UTF-8 locale
+    
+    * (manage.c) in get_wmname(), try to get the (UTF-8 encoded)
+      _NET_WM_NAME property.  Fallback to GetWMName() if unavailable.
+      Add some debugging bits to see which TEXT encoding clients use
+      for WM_NAME.
+    * (globals.c) use Xft*Utf8 functions to compute text width and
+      draw strings.  No regressions with or without Xft, UTF-8 locale
+      or not.
+    * assume we can use Xft*Utf8 functions whenever we have Xft,
+      to reduce the #ifdef dance
+    
+    Original patch from Bernhard R. Link
+
+commit 3725c23fddd8e936a91296f74e3fd6342270d6bb
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Feb 6 19:28:33 2013 +0100
+
+    make TEXT atoms global variables
+    
+    * (events.c) extract xa_compound_text from selection_request(),
+      make it a global
+    * introduce xa_string (same as XA_STRING) and rename
+      utf8_string to xa_utf8_string, for consistency
+
+commit 5c0abe47a800dca3faf97b7ec608d86fddab25b6
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Jan 21 02:33:13 2013 +0100
+
+    introduce defaults.utf8_locale
+    
+    * use nl_langinfo() to detect if locale codeset is UTF-8
+
+commit 332b260f17547d822567473f6b92ff710cf738a3
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Jan 21 02:30:14 2013 +0100
+
+    autotools: introduce AM_LANGINFO_CODESET
+    
+    * (m4/codeset.m4) new file (from the gettext package)
+    * (configure.in) use AM_LANGINFO_CODESET
+    * (.gitignore) don't ignore m4/codeset.m4
+
+commit 25827ea4a0f99d5327781892d6cbea84ef78a07c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Jan 21 02:23:25 2013 +0100
+
+    configure.in: get rid of AC_TYPE_SIGNAL
+    
+    it has been unused so far, and afaik we don't support pre-ansi
+    platforms...
+
+commit 0ef7dc215071c486495bf86e85661f21733f200e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Jan 21 02:20:55 2013 +0100
+
+    configure.in: compiler handling
+    
+    * no need to explicitely check for gcc, it will be picked
+      up if available
+    * prepend to CFLAGS instead of appending
+    * no need to add -O2 if gcc, autoconf automatically does
+      that when appropriate
+
+commit 8376efac671aee91de711d54eeb33d453ca5902e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Jan 21 02:12:24 2013 +0100
+
+    configure.in: rename obsolete macros
+    
+    * s/AM_CONFIG_HEADER/AC_CONFIG_HEADER
+    * s/AC_HELP_STRING/AS_HELP_STRING
+
+commit 1d87464fc86864ae66570cfedb5ac703e93d0cfa
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Jan 21 02:10:14 2013 +0100
+
+    Makefile.am: strip unused stuff
+    
+    * PACKAGE and VERSION are already AC_SUBST'ed
+    * targets bin-dist and strip-bin-dist don't exist
+
+commit c3aa7c8bba7794d8856156ac3c361e952847648d
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Jan 21 02:08:18 2013 +0100
+
+    more up-to-date autotools practices
+    
+    * use proper AC_INIT / AM_INIT_AUTOMAKE arguments
+    * install macros in m4/
+    * install junk build files in build-aux/
+    * replace hand-rolled autogen.sh by autoreconf -i
+    * sync .gitignore
+
+commit 09a464eb213212ac6538bc4bba9d2e391562b100
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Dec 17 10:03:39 2012 +0100
+
+    basic contrib/ cleanup
+    
+    * (*.pl, rpws) don't hardcode path to Perl but rely on /usr/bin/env
+    * (allwindows.sh) don't require bash
+    * (rpshowall.sh) properly handle arguments, use portable shell arithmetic
+    * (*.sh) use more quotes
+    * (*.pl, split.sh) use 'ratpoison' if RATPOISON isn't in the environment
+      (and don't error out)
+
+commit 70ae853c054dd2b1b6cbf2fcffb678331ae3a031
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Dec 13 14:27:54 2012 +0100
+
+    tmpwm fix: SIG_IGN -> SIG_DFL
+    
+    for waitpid(SIGCHLD, SIG_IGN) behaves wildly differently across OSes. Fixes
+    tmpwm hanging after child wm exits on OpenBSD.
+
+commit a88b2a86adc03916a0859468edf742dbf5140b01
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Dec 26 05:11:10 2012 +0100
+
+    environment handling fixes
+    
+    * AC_CHECK_FUNCS: +setenv +unsetenv -putenv
+      (the check for putenv() wasn't used anyway)
+    * prefer setenv() to putenv() in cmd_setenv()
+    * prefer unsetenv() to putenv() in cmd_unsetenv()
+      - putenv("FOO") isn't legit everywhere
+      - putenv("FOO=") will only work on MinGW
+    * make the getenv command return an empty output if the variable wasn't found
+    * while here, split and sort AC_CHECK_FUNCS
+    
+    |cos| on #ratpoison reported that environment variables weren't
+    properly removed, and proposed a different fix.  thanks!
+
+commit 9d1edbd9c618b063a4baae39a82a81da236ea72f
+Author: Vincent Batts <vbatts@hashbangbash.com>
+Date:   Fri Aug 10 01:16:38 2012 -0400
+
+    contrib/genrpbindings: removing the space between method name and the parenthesis
+    
+    Ruby syntax got more restrictive, so spaces are no longer allowed there.
+
+commit 0509e1dbde7b246e1bfec177ecb451e57bde8788
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sat Jun 30 15:03:45 2012 +0200
+
+    cmd_info: also display a window not in the current group
+    
+    Without this change, cmd_info displays "No Window" if called
+    with the current window not in the current group (for example
+    directly after a gselect).
+    
+    This change makes it also look in other groups. In that case
+    it might show a number not the one to switch back to it without
+    switching the group first, but I guess that is less confusing
+    than just claiming there is no window.
+
+commit c21c28d64b5495ec6534d24f5de5200a9e9a7fed
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed May 25 10:07:41 2011 +0200
+
+    remove mention of non-existant keybinding for quit from manpage
+
+commit 16196bce07d6ee1beb1bb83db0d36e841b7b59da
+Author: anthony <anthony@fiord.com>
+Date:   Wed Apr 20 13:18:02 2011 +0400
+
+    Fix display_string construction to handle new XDisplayString() behaviour
+    
+    XDisplayString does not append ".screen number" to return value after
+    http://gitorious.org/omcfadde/libx11/commit/f92e754297ec5fdb81068b56a4435026666224fa
+    Fix by appending .screen_num to the end of s->display_string in such case
+
+commit 7d1e839e1ad28053220a2f240a5981093b76aee7
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Thu Dec 23 15:38:34 2010 +0100
+
+    don't follow a pointer that might be NULL (HIDE_MOUSE specific)
+    
+    In events.c's key_press, the screen the local pointer variable s
+    points to is accessed if HIDE_MOUSE is defined when hiding the cursor.
+    Directly after that there is a "if (!s) return;", which is obviously
+    too late.
+    
+    By default HIDE_MOUSE is not defined in src/conf.h, so this is not
+    a problem unless this feature was enabled at compile time.
+    
+    Found by cppcheck.
+
+commit f4433c0dfca70186f83bd44f3eca365c06520b34
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sat Aug 21 19:26:52 2010 +0200
+
+    document nextscreen and prevscreen default keybindings in the manpage
+
+commit c48f75e86aea05a8b09a9e52eebe202ac2e84c3c
+Author: Zed Lopez <zed.lopez@gmail.com>
+Date:   Tue May 18 09:06:26 2010 -0700
+
+    add a titlechanged hook
+
+commit 7ca1af7c055d435888f1c5e3dd02f1456334c599
+Author: Keith Amling <keith.amling@gmail.com>
+Date:   Fri May 7 04:57:12 2010 -0700
+
+    fix alias bug
+    
+    When an alias is executed without arguments, for example aliasing
+    "reload" to "source .ratpoisonrc" and then running "reload" by itself
+    results in "source: .ratpoisonrc : No such file or directory" implying
+    it was trying to load ".ratpoisonrc " (note the extra space).
+
+commit 813191c8e9be42d5b113eb35242dc74f5088bddd
+Author: Shawn Betts <Shawn Betts sabetts@andrew.cmu.edu>
+Date:   Fri Apr 16 17:36:03 2010 -0700
+
+    in init_screen, properly handle a dot in the display string
+
+commit 20dbf1d91eba92d4b1a61d56774332e00f4c2a6d
+Author: Shawn Betts <Shawn Betts sabetts@andrew.cmu.edu>
+Date:   Mon Apr 12 10:37:45 2010 -0700
+
+    document newwindow hook
+
+commit fdd42223cfc6751e4c632daef64189dbcfc2abe8
+Author: Eric A <eric225125@gmail.com>
+Date:   Mon Apr 12 10:37:03 2010 -0700
+
+    add a new_window_hook to the map_window function of manage.c.
+
+commit 526b74d89dfad6772d15004228ff617898918daf
+Author: Kipling Inscore <k@bijna.net>
+Date:   Tue Mar 30 20:47:25 2010 -0700
+
+    Cleaned up some cmdret, sbuf, char * usage; eliminating associated memory leaks
+
+commit 24c831b03816bd9821198cc9d24f0cf9e1e7e062
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Mar 17 16:18:07 2010 +0100
+
+    fix swap across multiple screens
+    
+    exchange_with_frame now always selects the second frame given,
+    simplifying the code (getting rid of segfaults when both were
+    on different screens). This changes the behaviour of cmd_swap
+    to always focus the first argument when two arguments are given.
+    
+    This patch also removes the screen argument of exchange_with_frame,
+    which is now no longer needed (and cmd_swap was giving the wrong
+    screen anyway in the case of multiple arguments given).
+
+commit f5246556adf56ae470a1e898f27ca0fead7d0f7b
+Author: Shawn Betts <Shawn Betts sabetts@andrew.cmu.edu>
+Date:   Sun Jan 31 11:30:45 2010 -0800
+
+    change error message for gdelete to reduce confusion.
+
+commit 123abf526df35cb6eed59e13516bea653a065873
+Author: Rob Paisley <paisley@rpaisley.com>
+Date:   Sun Jan 31 11:24:47 2010 -0800
+
+    cother/iother Segfault patch
+    
+    As reported by "Gentooer" in the #ratpoison IRC channel, there is a bug in
+    :cother and :iother.  If are no windows and you issue either :cother, or
+    :iother ratpoison segfaults.  This patch resolves the issue.
+
+commit fde3d5537776664284cab59f521a898ccb456893
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sun Jan 3 12:08:13 2010 +0100
+
+    correct spelling errors in the manpage
+
+commit 75ac14935960a23867aa14f736f917ae7a4f3ee5
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Nov 25 16:20:35 2009 +0100
+
+    Do not manually set docdir to default directory.
+    
+    The setting of docdir in Makefile.am is uncessary
+    as it is set to the default value.
+    It is harmful as this overwrites the value filled in by autoconf
+    causing a user suplied --docdir= to be ignored.
+    
+    Thanks to Grigorios Bouzakis for reporting this.
+
+commit 66f1644c881d8388015016d082e6c8643959fb8c
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Fri Oct 30 19:05:19 2009 +0100
+
+    update debian/
+    - to include changes for 1.4.5-2
+    - to update patches to apply to current git
+    - list explicit commands in debian/README.source how to build from git
+
+commit a9578d667935a6206622e01707cb3cd14d1b112b
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Fri Jul 17 14:21:27 2009 +0200
+
+    move libraries from LDFLAGS to LDADD to avoid problems in argument order
+
+commit 12d21a72e0103f32dfb34d5fd05934ceee78e30d
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Jul 15 19:06:41 2009 +0200
+
+    silence gcc false-positive undefined warning
+
+commit dd1ca608f1846d52448e80751749dc0e64d24f46
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Jul 15 18:50:54 2009 +0200
+
+    silence gcc warnings against empty if branches
+
+commit 9167cc9a8b98ee691b5653aeedbb71e6d857dbed
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Jul 15 18:48:03 2009 +0200
+
+    silence unused variables and unused parameters warnings
+
+commit 21da5ebbedae6e62ec9bbf8a9027ca0c4a1b26f1
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Jul 15 17:45:07 2009 +0200
+
+    use gcc's __builtin_prefetch if available to silence problems with the empty prefetch function
+
+commit 36dd8df21904c8e4dba98af0fb9137c438324f9f
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Jul 15 17:41:11 2009 +0200
+
+    silence warnings about signed/unsigned char mismatch
+
+commit ad06f3519881bd3b2d5b8a3f1880a6768a530e2a
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Jul 15 17:30:31 2009 +0200
+
+    do not shadow identifiers (silencing gcc's -Wshadow warnings)
+
+commit 7bdee1c7f38befd9b6b0b5805dd0824fe2233936
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Tue Jul 14 16:32:56 2009 +0200
+
+    update debian/ directory for 1.4.5-1
+
+commit 4ad0b38fb53506d613c4b4f7268dadfcedae9b8e
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sun Jul 12 18:23:25 2009 -0700
+
+    check for getline in configure.in
+    
+    This fixes a build error encountered on glibc 2.10 systems
+
+commit f94298f075bdd1c7df191e093d9f2f9c35b77b2c
+Author: Hatem Nassrat <hnassrat@gmail.com>
+Date:   Thu Jul 2 15:16:16 2009 -0300
+
+    Added functionality to rpws script
+    
+        - Move window to different workspace
+        - Workspaces frame state dump and restore (to/from file) commands
+
+commit bd6200b4ca52a48a0be49ee39e19e9701942e07e
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sun Jul 12 14:06:38 2009 -0700
+
+    bump version to 1.4.6-GIT
+
+commit a7d1c1e1311f41ac247734550f27dfc4d5b1d28c
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sun Jul 12 14:03:23 2009 -0700
+
+    update NEWS
+
+commit 14beabe55fa3cac03f598e138f363f1d50659564
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sat Jul 4 20:58:21 2009 -0700
+
+    fix inverted text when using xft
+    
+    Now the inverted rectangle is drawn first and the text overtop in the bg color.
+
+commit 166021512b2e39344ff4562323d15a1e2fdea153
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Sun May 31 20:47:33 2009 +0200
+
+    only add command to general history if it was entered interactively
+
+commit 3caa93e319499e77f63e25b2ef4a15c276815ca8
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Thu Apr 30 12:50:26 2009 -0700
+
+    fix 'set fgcolor' for xft. Change screen's ft_font and color slots to xft_font and xft_color.
+
+commit d5e70ba5716dd5b807f7550f9924711365116a8b
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Wed Apr 29 11:35:52 2009 +0200
+
+    Fix issues when historysize is zero.
+    
+    If historysize is 0, do not create .ratpoison_history at exit
+    and do keep no entries in history. (Previously ratpoison would
+    always at least store the last entry).
+
+commit ac37eba33a3f4acf623f403f826347dde13a6213
+Author: Bernhard R. Link <brlink@debian.org>
+Date:   Mon Apr 27 14:20:58 2009 +0200
+
+    update debian/ to 1.4.4-1
+
+commit 0930ca29e337de79df18c5f8ba4aaad440ee0c00
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sun Apr 26 19:18:03 2009 -0700
+
+    bump version to 1.4.5-GIT
+
+commit b7f45b056ca8de92e195a9661a45e01a1c875578
+Author: Shawn Betts <sabetts@gmail.com>
+Date:   Sun Apr 26 19:14:30 2009 -0700
+
+    update AUTHORS, NEWS, and ChangeLog with recent changes
 commit 18ee1ed3b3839d44e08e5aefd0e926d29d252654
 Author: Shawn Betts <sabetts@gmail.com>
 Date:   Fri Apr 24 15:28:27 2009 -0700

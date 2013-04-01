@@ -1,10 +1,32 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts
+Copyright (C) 2013 Jérémie Courrèges-Anglas
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
+
+* Changes since 1.4.5
+** *Lots* of reliability fixes in ratpoison itself
+Please check out the ChangeLog for more details.
+
+** Build process cleanup
+e.g. detection of getline() was fixed.
+
+** ratpoison -c now reports errors ($? != 0)
+
+** UTF-8 text is now printed correctly
+Both with and without Xft support.
+
+** contrib/ cleanup
+Scripts should be more portable, ruby bindings work with newer ruby versions.
+
+** New newwindow and titlechanged hooks
+
+** Functionality was added to rpws
+It can now move windows to other workspaces; workspaces can be dumped and
+restored.
 
 * Changes since 1.4.4
 ** bug fixes to history and xft
