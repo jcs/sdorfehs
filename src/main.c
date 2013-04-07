@@ -169,26 +169,26 @@ char *
 strtok_ws (char *s)
 {
   char *nonws;
-  static char *pointer = NULL;
+  static char *last = NULL;
 
   if (s)
-    pointer = s;
+    last = s;
 
   /* skip to first non-whitespace char. */
-  while (*pointer && isspace (*pointer)) pointer++;
+  while (*last && isspace (*last)) last++;
 
   /* If we reached the end of the string here then there is no more
      data. */
-  if (*pointer == 0)
+  if (*last == '\0')
     return NULL;
 
   /* Now skip to the end of the data. */
-  nonws = pointer;
-  while (*pointer && !isspace (*pointer)) pointer++;
-  if (*pointer)
+  nonws = last;
+  while (*last && !isspace (*last)) last++;
+  if (*last)
     {
-      *pointer = 0;
-      pointer++;
+      *last = '\0';
+      last++;
     }
   return nonws;
 }
