@@ -65,7 +65,7 @@ extract_shell_part (const char *p)
 
 struct history_item {
 	struct list_head node;
-	char line[];
+	char *line;
 };
 
 static struct history {
@@ -113,7 +113,6 @@ history_add_upto (int history_id, const char *item, size_t max)
 {
   struct history *h = histories + history_id;
   struct history_item *i;
-  size_t item_len;
 
   if (item == NULL || *item == '\0' || isspace(*item))
     return;
@@ -147,6 +146,7 @@ history_add_upto (int history_id, const char *item, size_t max)
 		  break;
 	  }
 	  list_del (&i->node);
+	  free (i->line);
 	  free (i);
 	  h->count--;
   }
@@ -154,10 +154,9 @@ history_add_upto (int history_id, const char *item, size_t max)
   if( max == 0 )
 	  return;
 
-  item_len = strlen(item);
-  i = xmalloc (sizeof(struct history_item) + item_len + 1);
+  i = xmalloc (sizeof (*i));
+  i->line = xstrdup (item);
 
-  memcpy (i->line, item, item_len + 1);
   list_add_tail (&i->node, &h->head);
   h->count++;
 }
@@ -269,6 +268,7 @@ history_resize (int size)
 	  while (h->count >= (size_t)size) {
 		  list_first (i, &h->head, node);
 		  list_del (&i->node);
+                  free (i->line);
 		  free (i);
 		  h->count--;
 	  }
