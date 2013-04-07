@@ -1,3 +1,25 @@
+commit 37fc06213b65b9b8ced68f08697608632be91de0
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Apr 7 03:23:50 2013 +0200
+
+    In strtok_ws() use "last", not "pointer" for the static variable
+    
+    * since X11/Xdefs.h may define it too.  Found by -Wshadow.
+    
+    Bonus: "last" carries more meaning.
+
+commit e0714ec506da0a3647e352cf86094446cb6d2b38
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Apr 7 03:07:35 2013 +0200
+
+    Don't use a flexible array member in struct history_item
+    
+    * They are a c99 feature, which makes it impossible to build ratpoison
+      on some platforms.  GCC supports zero-sized arrays, more conservative
+      approaches say to use foo[1], but as brlink says a compiler with
+      aggressive optimization turned on might play nasty tricks.
+      Just use a traditional struct.
+
 commit 340833f5e0c4350ac0c7fc6589a4305014b56ba8
 Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
 Date:   Mon Apr 1 13:44:57 2013 +0200

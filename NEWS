@@ -12,7 +12,7 @@ notice and this notice are preserved.
 Please check out the ChangeLog for more details.
 
 ** Build process cleanup
-e.g. detection of getline() was fixed.
+e.g. detection of getline() was fixed, build is ok with old gcc's (2.95)
 
 ** ratpoison -c now reports errors ($? != 0)
 
