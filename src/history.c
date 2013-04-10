@@ -162,7 +162,7 @@ history_add_upto (int history_id, const char *item, size_t max)
 }
 
 void
-history_add (int history_id, char *item)
+history_add (int history_id, const char *item)
 {
   history_add_upto (history_id, item, defaults.history_size);
 }

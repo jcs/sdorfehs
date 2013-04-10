@@ -33,7 +33,7 @@ void  history_load (void);
 void  history_save (void);
 void  history_resize (int size);
 void  history_reset (void);
-void  history_add (int, char *item);
+void  history_add (int, const char *item);
 const char *history_next (int);
 const char *history_previous (int);
 int   history_expand_line (int, char *string, char **output);
