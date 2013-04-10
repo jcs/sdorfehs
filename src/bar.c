@@ -531,8 +531,7 @@ draw_mark (rp_screen *s, char *msg, int mark_start, int mark_end)
 static void
 update_last_message (char *msg, int mark_start, int mark_end)
 {
-  if (last_msg)
-    free (last_msg);
+  free (last_msg);
   last_msg = xstrdup (msg);
   last_mark_start = mark_start;
   last_mark_end = mark_end;
@@ -603,6 +602,6 @@ show_last_message (void)
 void
 free_bar (void)
 {
-  if (last_msg)
-    free (last_msg);
+  free (last_msg);
+  last_msg = NULL;
 }
