@@ -5826,9 +5826,13 @@ cmd_prompt (int interactive UNUSED, struct cmdarg **args)
           output = get_input (ARG_STRING(0), hist_PROMPT, trivial_completions);
         }
     }
+
+  if (output == NULL)
+    return cmdret_new (RET_FAILURE, NULL); /* User aborted */
+
   ret = cmdret_new (RET_SUCCESS, "%s", output);
-  if (output)
-    free (output);
+  free (output);
+
   return ret;
 }
 
