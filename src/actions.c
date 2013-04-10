@@ -2691,11 +2691,10 @@ cmd_time (int interactive UNUSED, struct cmdarg **args UNUSED)
   time_t timep;
   cmdret *ret;
 
-  timep = time(NULL);
-  tmp = ctime(&timep);
-  msg = xmalloc (strlen (tmp));
-  strncpy(msg, tmp, strlen (tmp) - 1);  /* Remove the newline */
-  msg[strlen(tmp) - 1] = 0;
+  timep = time (NULL);
+  tmp = ctime (&timep);
+  msg = xstrdup (tmp);
+  msg[strcspn (msg, "\n")] = '\0' ;  /* Remove the newline */
 
   ret = cmdret_new (RET_SUCCESS, "%s", msg);
   free (msg);
