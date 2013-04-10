@@ -171,8 +171,13 @@ strtok_ws (char *s)
   char *nonws;
   static char *last = NULL;
 
-  if (s)
+  if (s == NULL)
     last = s;
+  else if (last == NULL)
+    {
+      PRINT_ERROR (("strtok_ws() called but not initalized, this is a *BUG*\n"));
+      abort();
+    }
 
   /* skip to first non-whitespace char. */
   while (*last && isspace (*last)) last++;
