@@ -5804,25 +5804,32 @@ cmdret *
 cmd_prompt (int interactive UNUSED, struct cmdarg **args)
 {
   cmdret *ret;
-  char *query, *output, *prefix;
+  char *output;
 
   if (args[0] == NULL)
-    output = get_input(MESSAGE_PROMPT_COMMAND, hist_PROMPT, trivial_completions);
+    output = get_input (MESSAGE_PROMPT_COMMAND, hist_PROMPT,
+                        trivial_completions);
   else
     {
-      prefix = strchr (ARG_STRING(0), ':');
+      char *arg_str, *prefix;
+
+      arg_str = ARG_STRING(0);
+      prefix = strchr (arg_str, ':');
+
       if (prefix)
         {
+	  struct sbuf *query;
+
           prefix++;             /* Don't return the colon. */
-          query = xmalloc (prefix - ARG_STRING(0) + 1);
-          strncpy (query, ARG_STRING(0), prefix - ARG_STRING(0));
-          query[prefix - ARG_STRING(0)] = 0;    /* null terminate */
-          output = get_more_input (query, prefix, hist_PROMPT, trivial_completions);
-          free (query);
+          query = sbuf_new (prefix - arg_str);
+          sbuf_nconcat (query, arg_str, prefix - arg_str);
+          output = get_more_input (sbuf_get (query), prefix, hist_PROMPT,
+                                   trivial_completions);
+          sbuf_free (query);
         }
       else
         {
-          output = get_input (ARG_STRING(0), hist_PROMPT, trivial_completions);
+          output = get_input (arg_str, hist_PROMPT, trivial_completions);
         }
     }
 
