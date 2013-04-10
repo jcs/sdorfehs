@@ -633,6 +633,7 @@ main (int argc, char *argv[])
           cmd_count++;
           break;
         case 'd':
+          free (display);
           display = xstrdup (optarg);
           break;
         case 's':
@@ -643,6 +644,7 @@ main (int argc, char *argv[])
           interactive = 1;
           break;
         case 'f':
+          free (alt_rcfile);
           alt_rcfile = xstrdup (optarg);
           break;
 
