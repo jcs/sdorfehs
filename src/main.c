@@ -671,7 +671,7 @@ main (int argc, char *argv[])
   if (!(dpy = XOpenDisplay (display)))
     {
       fprintf (stderr, "Can't open display\n");
-      return EXIT_FAILURE;
+      exit (EXIT_FAILURE);
     }
 
   /* Set ratpoison specific Atoms. */
