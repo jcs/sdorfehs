@@ -62,7 +62,6 @@ num_frames (rp_screen *s)
 void
 cleanup_frame (rp_frame *frame)
 {
-  rp_window *last_win;
   rp_window *win;
   rp_screen *screen;
   screen = frames_screen(frame);
@@ -74,7 +73,7 @@ cleanup_frame (rp_frame *frame)
       return;
     }
 
-  last_win = set_frames_window (frame, win);
+  set_frames_window (frame, win);
 
   maximize (win);
   unhide_window (win);

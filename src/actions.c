@@ -1119,9 +1119,9 @@ cmd_definekey (int interactive UNUSED, struct cmdarg **args)
     ungrab_keys_all_wins ();
 
   if ((key_action = find_keybinding (key->sym, key->state, map)))
-    replace_keybinding (key_action, ARG_STRING(2));
+    replace_keybinding (key_action, cmd);
   else
-    add_keybinding (key->sym, key->state, ARG_STRING(2), map);
+    add_keybinding (key->sym, key->state, cmd, map);
 
   /* Update the grabbed keys. */
   if (map == find_keymap (defaults.top_kmap))
@@ -1162,31 +1162,30 @@ cmd_meta (int interactive UNUSED, struct cmdarg **args)
 {
   cmdret *ret = NULL;
   struct rp_key key;
-  XEvent ev1, ev;
-  ev = rp_current_event;
+  XEvent ev;
 
   if (current_window() == NULL)
     return cmdret_new (RET_FAILURE, NULL);
 
-      ev1.xkey.type = KeyPress;
-      ev1.xkey.display = dpy;
-      ev1.xkey.window = current_window()->w;
+      ev.xkey.type = KeyPress;
+      ev.xkey.display = dpy;
+      ev.xkey.window = current_window()->w;
 
   if (args[0])
     {
       if((ret = parse_keydesc (ARG_STRING(0), &key)))
         return ret;
 
-      ev1.xkey.state = rp_mask_to_x11_mask (key.state);
-      if(!(ev1.xkey.keycode = XKeysymToKeycode (dpy, key.sym)))
+      ev.xkey.state = rp_mask_to_x11_mask (key.state);
+      if(!(ev.xkey.keycode = XKeysymToKeycode (dpy, key.sym)))
         return cmdret_new (RET_FAILURE, "meta: Couldn't convert keysym to keycode");
     }
   else
     {
-      ev1.xkey.state = rp_mask_to_x11_mask (prefix_key.state);
-      ev1.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
+      ev.xkey.state = rp_mask_to_x11_mask (prefix_key.state);
+      ev.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
     }
-  XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev1);
+  XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev);
 
   /*   XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, 't'), True, 0); */
 
@@ -3033,7 +3032,6 @@ cmd_resize (int interactive, struct cmdarg **args)
      non-interactive version. */
   if (interactive && args[0] == NULL)
     {
-      int nbytes;
       char buffer[513];
       unsigned int mod;
       KeySym c;
@@ -3056,7 +3054,7 @@ cmd_resize (int interactive, struct cmdarg **args)
           struct resize_binding *binding;
 
           show_frame_message ("Resize frame");
-          nbytes = read_key (&c, &mod, buffer, sizeof (buffer));
+          read_key (&c, &mod, buffer, sizeof (buffer));
 
           /* Convert the mask to be compatible with ratpoison. */
           mod = x11_mask_to_rp_mask (mod);
@@ -3210,9 +3208,6 @@ cmd_ratwarp (int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_ratrelwarp (int interactive UNUSED, struct cmdarg **args)
 {
-  rp_screen *s;
-
-  s = current_screen ();
   XWarpPointer (dpy, None, None, 0, 0, 0, 0, ARG(0,number), ARG(1,number));
   return cmdret_new (RET_SUCCESS, NULL);
 }

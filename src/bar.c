@@ -335,17 +335,10 @@ draw_partial_string (rp_screen *s, char *msg, int line_no, int start, int end, i
 static void
 draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 {
-  XGCValues lgv;
-  GC lgc;
-  unsigned long mask;
   size_t i;
   int line_no;
   int start;
   int style = STYLE_NORMAL, update = 0;
-
-  lgv.foreground = s->fg_color;
-  mask = GCForeground;
-  lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
   /* Walk through the string, print each line. */
   start = 0;

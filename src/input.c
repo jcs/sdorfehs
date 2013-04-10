@@ -528,7 +528,6 @@ get_more_input (char *prompt, char *preinput, int history_id,
   /* Emacs 21 uses a 513 byte string to store the keysym name. */
   char keysym_buf[513];
   int keysym_bufsize = sizeof (keysym_buf);
-  int nbytes;
   rp_screen *s = current_screen ();
   KeySym ch;
   unsigned int modifier;
@@ -563,7 +562,7 @@ get_more_input (char *prompt, char *preinput, int history_id,
 
   for (;;)
     {
-      nbytes = read_key (&ch, &modifier, keysym_buf, keysym_bufsize);
+      read_key (&ch, &modifier, keysym_buf, keysym_bufsize);
       modifier = x11_mask_to_rp_mask (modifier);
       PRINT_DEBUG (("ch = %ld, modifier = %d, keysym_buf = %s, keysym_bufsize = %d\n",
                     ch, modifier, keysym_buf, keysym_bufsize));

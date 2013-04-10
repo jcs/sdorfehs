@@ -737,12 +737,11 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
                  int *mark_start, int *mark_end)
 {
   rp_window_elem *we;
-  rp_window *other_window;
 
   if (buffer == NULL) return;
 
   sbuf_clear (buffer);
-  other_window = find_window_other (current_screen());
+  find_window_other (current_screen());
 
   /* We only loop through the current group to look for windows. */
   list_for_each_entry (we,&rp_current_group->mapped_windows,node)
