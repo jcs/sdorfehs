@@ -534,7 +534,7 @@ get_more_input (char *prompt, char *preinput, int history_id,
   char *final_input;
   edit_status status;
   Window focus;
-  int revert;
+  int revert, done = 0;
 
   history_reset();
 
@@ -559,7 +559,7 @@ get_more_input (char *prompt, char *preinput, int history_id,
 
   update_input_window (s, line);
 
-  for (;;)
+  while (!done)
     {
       read_key (&ch, &modifier, keysym_buf, sizeof (keysym_buf));
       modifier = x11_mask_to_rp_mask (modifier);
@@ -567,29 +567,33 @@ get_more_input (char *prompt, char *preinput, int history_id,
                     ch, modifier, keysym_buf));
       status = execute_edit_action (line, ch, modifier, keysym_buf);
 
-      if (status == EDIT_DELETE || status == EDIT_INSERT || status == EDIT_MOVE
-          || status == EDIT_COMPLETE)
+      switch (status)
         {
+        case EDIT_COMPLETE:
+        case EDIT_DELETE:
+        case EDIT_INSERT:
+        case EDIT_MOVE:
           /* If the text changed (and we didn't just complete
              something) then set the virgin bit. */
           if (status != EDIT_COMPLETE)
             line->compl->virgin = 1;
           /* In all cases, we need to redisplay the input string. */
           update_input_window (s, line);
-        }
-      else if (status == EDIT_NO_OP)
-        {
+          break;
+        case EDIT_NO_OP:
           ring_bell ();
-        }
-      else if (status == EDIT_ABORT)
-        {
+          break;
+        case EDIT_ABORT:
           final_input = NULL;
+          done = 1;
           break;
-        }
-      else if (status == EDIT_DONE)
-        {
+        case EDIT_DONE:
           final_input = xstrdup (line->buffer);
+          done = 1;
           break;
+        default:
+          PRINT_ERROR (("Unhandled status %d; this is a *BUG*\n", status));
+          exit (EXIT_FAILURE);
         }
     }
 
