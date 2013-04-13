@@ -29,6 +29,10 @@ enum { hist_NONE=0, hist_COMMAND, hist_SHELLCMD,
 	/* must be last, do not use, for length only: */
 	hist_COUNT};
 
+#ifndef HAVE_GETLINE
+ssize_t getline (char **lineptr, size_t *n, FILE *f);
+#endif
+
 void  history_load (void);
 void  history_save (void);
 void  history_resize (int size);

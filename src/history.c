@@ -74,7 +74,7 @@ static struct history {
 } histories[hist_COUNT];
 
 #ifndef HAVE_GETLINE
-static ssize_t
+ssize_t
 getline(char **lineptr, size_t *n, FILE *f)
 {
   size_t ofs;
