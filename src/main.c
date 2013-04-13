@@ -365,56 +365,29 @@ set_close_on_exec (FILE *fd)
 void
 read_rc_file (FILE *file)
 {
-  size_t n = 256;
-  char *partial;
   char *line;
-  size_t linesize = n;
+  size_t linesize = 256;
 
-  partial = (char*)xmalloc(n);
-  line = (char*)xmalloc(linesize);
+  line = xmalloc (linesize);
 
-  *line = '\0';
-  while (fgets (partial, n, file) != NULL)
+  while (getline (&line, &linesize, file) != -1)
     {
-      if ((strlen (line) + strlen (partial)) >= linesize)
+      line[strcspn (line, "\n")] = '\0';
+
+      PRINT_DEBUG (("rcfile line: %s\n", line));
+
+      if (*line != '\0' && *line != '#')
         {
-          linesize *= 2;
-          line = (char*) xrealloc (line, linesize);
-        }
+          cmdret *result;
+          result = command (0, line);
 
-      strcat (line, partial);
-
-      if (feof(file) || (*(line + strlen(line) - 1) == '\n'))
-        {
-          /* FIXME: this is a hack, command() should properly parse
-             the command and args (ie strip whitespace, etc)
-
-             We should not care if there is a newline (or vertical
-             tabs or linefeeds for that matter) at the end of the
-             command (or anywhere between tokens). */
-          if (*(line + strlen(line) - 1) == '\n')
-            *(line + strlen(line) - 1) = '\0';
-
-          PRINT_DEBUG (("rcfile line: %s\n", line));
-
-          /* do it */
-          if (*line != '#')
-            {
-              cmdret *result;
-              result = command (0, line);
-
-              /* Gobble the result. */
-              if (result)
-                cmdret_free (result);
-            }
-
-          *line = '\0';
+          /* Gobble the result. */
+          if (result)
+            cmdret_free (result);
         }
     }
 
-
   free (line);
-  free (partial);
 }
 
 static void
