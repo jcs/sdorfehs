@@ -428,15 +428,22 @@ read_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int len)
 static void
 update_input_window (rp_screen *s, rp_input_line *line)
 {
-  int prompt_width = rp_text_width (s, line->prompt, -1);
-  int input_width  = rp_text_width (s, line->buffer, line->length);
-  int   total_width;
+  int prompt_width, input_width, total_width;
+  int char_len = 0, height;
   GC lgc;
   XGCValues gcv;
-  int height;
 
+  prompt_width = rp_text_width (s, line->prompt, -1);
+  input_width  = rp_text_width (s, line->buffer, line->length);
   total_width = defaults.bar_x_padding * 2 + prompt_width + input_width + MAX_FONT_WIDTH (defaults.font);
   height = (FONT_HEIGHT (s) + defaults.bar_y_padding * 2);
+
+  if (RP_IS_UTF8_START (line->buffer[line->position]))
+    do
+      char_len++;
+    while (RP_IS_UTF8_CONT (line->buffer[line->position + char_len]));
+  else
+    char_len = 1;
 
   if (total_width < defaults.input_window_size + prompt_width)
     {
@@ -466,12 +473,12 @@ update_input_window (rp_screen *s, rp_input_line *line)
   gcv.foreground = s->fg_color ^ s->bg_color;
   lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gcv);
 
-  /* Draw a cheap-o cursor - MkII */
+  /* Draw a cheap-o cursor - MkIII */
   XFillRectangle (dpy, s->input_window, lgc,
 		  defaults.bar_x_padding + prompt_width +
 		  rp_text_width (s, line->buffer, line->position),
                   defaults.bar_y_padding,
-		  rp_text_width (s, &line->buffer[line->position], 1),
+		  rp_text_width (s, &line->buffer[line->position], char_len),
                   FONT_HEIGHT (s));
 
   XFlush (dpy);
