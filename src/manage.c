@@ -233,7 +233,7 @@ get_wmname (Window w)
 
   if (XGetWMName (dpy, w, &text_prop) == 0)
     {
-      PRINT_ERROR (("XGetWMName failed\n"));
+      PRINT_DEBUG (("XGetWMName failed\n"));
       return NULL;
     }
 
