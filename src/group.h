@@ -39,6 +39,8 @@ void groups_map_window (rp_window *win);
 void group_unmap_window (rp_group *g, rp_window *win);
 void groups_unmap_window (rp_window *win);
 
+struct numset *group_get_numset (void);
+
 rp_window *group_prev_window (rp_group *g, rp_window *win);
 rp_window *group_next_window (rp_group *g, rp_window *win);
 rp_group *groups_find_group_by_name (char *s, int exact_match);
@@ -51,6 +53,8 @@ rp_window *group_last_window (rp_group *g, rp_screen *screen);
 rp_group *group_prev_group (void);
 rp_group *group_next_group (void);
 rp_group *group_last_group (void);
+
+void group_resort_group (rp_group *g);
 
 rp_group *group_add_new_group (char *name);
 void group_rename (rp_group *g, char *name);

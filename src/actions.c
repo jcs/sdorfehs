@@ -261,6 +261,9 @@ init_user_commands(void)
                "Name: ", arg_STRING);
   add_command ("gnewbg",        cmd_gnewbg,     1, 1, 1,
                "Name: ", arg_STRING);
+  add_command ("gnumber",       cmd_gnumber,    2, 1, 1,
+               "Number: ", arg_NUMBER,
+               "Number: ", arg_NUMBER);
   add_command ("grename",       cmd_grename,    1, 1, 1,
                "Change group name to: ", arg_REST);
   add_command ("gnext",         cmd_gnext,      0, 0, 0);
@@ -5073,6 +5076,61 @@ cmd_gnewbg (int interactive UNUSED, struct cmdarg **args)
   if (groups_find_group_by_name (ARG_STRING (0), 1))
     return cmdret_new (RET_FAILURE, "gnewbg: group already exists");
   group_add_new_group (ARG_STRING(0));
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_gnumber (int interactive UNUSED, struct cmdarg **args)
+{
+  int old_number, new_number;
+  rp_group *other_g, *g;
+
+  struct numset *g_numset = group_get_numset();
+
+/* FIXME Implement this. */
+//  if (args[0] == NULL)
+//    {
+//      /* XXX: Fix this. */
+//      print_window_information (rp_current_group, current_window());
+//      return cmdret_new (RET_SUCCESS, NULL);
+//    }
+
+  /* Gather the args. */
+  new_number = ARG(0,number);
+  if (args[1])
+    g = groups_find_group_by_number (ARG(1,number));
+  else
+    g = rp_current_group;
+
+  /* Make the switch. */
+  if (new_number >= 0 && g)
+    {
+      /* Find other window with same number and give it old number. */
+      other_g = groups_find_group_by_number (new_number);
+      if (other_g != NULL)
+        {
+          old_number = g->number;
+          other_g->number = old_number;
+
+          /* Resort the window in the list */
+          group_resort_group (other_g);
+        }
+      else
+        {
+          numset_release (g_numset, g->number);
+        }
+
+      g->number = new_number;
+      numset_add_num (g_numset, new_number);
+
+      /* resort the the window in the list */
+      group_resort_group (g);
+
+/* FIXME Implement updating of groups bar. */
+//      /* Update the window list. */
+//      update_window_names (win->win->scr, defaults.window_fmt);
+    }
+
   return cmdret_new (RET_SUCCESS, NULL);
 }
 

@@ -60,6 +60,12 @@ free_groups(void)
     }
 }
 
+struct numset *
+group_get_numset(void)
+{
+  return group_numset;
+}
+
 rp_group *
 group_new (int number, char *name)
 {
@@ -100,7 +106,7 @@ group_add_new_group (char *name)
 
   list_for_each_entry (cur, &rp_groups, node)
     {
-      if(cur->number > g->number)
+      if (cur->number > g->number)
         {
           list_add_tail (&g->node, &cur->node);
           return g;
@@ -110,6 +116,25 @@ group_add_new_group (char *name)
   list_add_tail (&g->node, &rp_groups);
 
   return g;
+}
+
+void
+group_resort_group (rp_group *g)
+{
+  rp_group *cur;
+  struct list_head *last = &rp_groups;
+
+  list_del (&g->node);
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      if (cur->number > g->number)
+        {
+          list_add (&g->node, last);
+          return;
+        }
+      last = &cur->node;
+    }
+  list_add (&g->node, last);
 }
 
 void
