@@ -94,8 +94,19 @@ rp_group *
 group_add_new_group (char *name)
 {
   rp_group *g;
+  rp_group *cur;
 
   g = group_new (numset_request (group_numset), name);
+
+  list_for_each_entry (cur, &rp_groups, node)
+    {
+      if(cur->number > g->number)
+        {
+          list_add_tail (&g->node, &cur->node);
+          return g;
+        }
+    }
+
   list_add_tail (&g->node, &rp_groups);
 
   return g;
