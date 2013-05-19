@@ -5087,14 +5087,6 @@ cmd_gnumber (int interactive UNUSED, struct cmdarg **args)
 
   struct numset *g_numset = group_get_numset();
 
-/* FIXME Implement this. */
-//  if (args[0] == NULL)
-//    {
-//      /* XXX: Fix this. */
-//      print_window_information (rp_current_group, current_window());
-//      return cmdret_new (RET_SUCCESS, NULL);
-//    }
-
   /* Gather the args. */
   new_number = ARG(0,number);
   if (args[1])
