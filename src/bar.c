@@ -40,7 +40,8 @@
 /* Possible values for bar_is_raised status. */
 #define BAR_IS_HIDDEN  0
 #define BAR_IS_WINDOW_LIST 1
-#define BAR_IS_MESSAGE     2
+#define BAR_IS_GROUP_LIST  2
+#define BAR_IS_MESSAGE     3
 
 /* A copy of the last message displayed in the message bar. */
 static char *last_msg = NULL;
@@ -101,6 +102,31 @@ show_bar (rp_screen *s, char *fmt)
   /* If the bar is raised we still need to display the window
      names. */
   update_window_names (s, fmt);
+  return 0;
+}
+
+/* Show group listing in bar. */
+int
+show_group_bar (rp_screen *s)
+{
+  if (!s->bar_is_raised)
+    {
+      s->bar_is_raised = BAR_IS_GROUP_LIST;
+      XMapRaised (dpy, s->bar_window);
+      update_group_names (s);
+
+      /* Switch to the default colormap */
+      if (current_window())
+	XUninstallColormap (dpy, current_window()->colormap);
+      XInstallColormap (dpy, s->def_cmap);
+
+      reset_alarm();
+      return 1;
+    }
+
+  /* If the bar is raised we still need to display the window
+     names. */
+  update_group_names (s);
   return 0;
 }
 
@@ -172,6 +198,11 @@ update_bar (rp_screen *s)
     return;
   }
 
+  if (s->bar_is_raised == BAR_IS_GROUP_LIST) {
+    update_group_names (s);
+    return;
+  }
+
   if (s->bar_is_raised == BAR_IS_HIDDEN)
     return;
 
@@ -204,6 +235,33 @@ update_window_names (rp_screen *s, char *fmt)
 
 
 /*   marked_message (sbuf_get (bar_buffer), mark_start, mark_end); */
+  sbuf_free (bar_buffer);
+}
+
+/* Note that we use marked_message_internal to avoid resetting the
+   alarm. */
+void
+update_group_names (rp_screen *s)
+{
+  struct sbuf *bar_buffer;
+  int mark_start = 0;
+  int mark_end = 0;
+
+  if (s->bar_is_raised != BAR_IS_GROUP_LIST) return;
+
+  bar_buffer = sbuf_new (0);
+
+  if (defaults.window_list_style == STYLE_ROW)
+    {
+      get_group_list (NULL, bar_buffer, &mark_start, &mark_end);
+      marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
+    }
+  else    
+    {
+      get_group_list ("\n", bar_buffer, &mark_start, &mark_end);
+      marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
+    }
+
   sbuf_free (bar_buffer);
 }
 
