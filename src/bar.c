@@ -333,10 +333,10 @@ draw_partial_string (rp_screen *s, char *msg, int len,
 static void
 draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 {
-  int i;
-  int x_offset, y_offset;
-  int start;
-  int style = STYLE_NORMAL, next_style = STYLE_NORMAL, update = 0;
+  int i, start;
+  int x_offset, y_offset;          /* Base coordinates where to print. */
+  int update = 0;                  /* Do we have something to print? */
+  int style = STYLE_NORMAL, next_style = STYLE_NORMAL;
   int msg_len, part_len;
 
   start = 0;
