@@ -1,5 +1,4 @@
-/* Functionality for a bar across the bottom of the screen listing the
- * windows currently managed.
+/* Functionality for a bar listing the windows currently managed.
  *
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
