@@ -377,15 +377,21 @@ draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 
           draw_partial_string (s, msg + start, part_len,
                                x_offset, y_offset, style);
-          x_offset += rp_text_width (s, msg + start, part_len);
 
-          start = i;
+          /* Adjust coordinates. */
           if (print_reason & REASON_NEWLINE)
             {
-              start++;
               x_offset = 0;
               y_offset++;
+              /* Skip newline. */
+              start = i + 1;
             }
+          else
+            {
+              x_offset += rp_text_width (s, msg + start, part_len);
+              start = i;
+            }
+
           print_reason = REASON_NONE;
         }
       style = next_style;
