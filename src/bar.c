@@ -330,12 +330,15 @@ draw_partial_string (rp_screen *s, char *msg, int len,
                   msg, len + 1);
 }
 
+#define REASON_NONE    0x00
+#define REASON_STYLE   0x01
+#define REASON_NEWLINE 0x02
 static void
 draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 {
   int i, start;
   int x_offset, y_offset;          /* Base coordinates where to print. */
-  int update = 0;                  /* Do we have something to print? */
+  int print_reason = REASON_NONE;  /* Should we print something? */
   int style = STYLE_NORMAL, next_style = STYLE_NORMAL;
   int msg_len, part_len;
 
@@ -354,36 +357,36 @@ draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
             {
               next_style = STYLE_INVERSE;
               if (i > start)
-                update = 1;
+                print_reason |= REASON_STYLE;
             }
           else if (i == mark_end)
             {
               next_style = STYLE_NORMAL;
               if (i > start)
-                update = 1;
+                print_reason |= REASON_STYLE;
             }
         }
 
       if (msg[i] == '\n')
-          update = 2;
+          print_reason |= REASON_NEWLINE;
 
-      if (update)
+      if (print_reason != REASON_NONE)
         {
           /* Strip the trailing newline if necessary. */
-          part_len = i - start - (msg[i] == '\n');
+          part_len = i - start - ((print_reason & REASON_NEWLINE) ? 1 : 0);
 
           draw_partial_string (s, msg + start, part_len,
                                x_offset, y_offset, style);
           x_offset += rp_text_width (s, msg + start, part_len);
 
           start = i;
-          if (update == 2)
+          if (print_reason & REASON_NEWLINE)
             {
               start++;
               x_offset = 0;
               y_offset++;
             }
-          update = 0;
+          print_reason = REASON_NONE;
         }
       style = next_style;
     }
@@ -395,6 +398,9 @@ draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 
   XSync (dpy, False);
 }
+#undef REASON_NONE
+#undef REASON_STYLE
+#undef REASON_NEWLINE
 
 /* Move the marks if they are outside the string or if the start is
    after the end. */
