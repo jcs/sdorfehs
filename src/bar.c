@@ -369,8 +369,10 @@ draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 
       if (update)
         {
-          draw_partial_string (s, msg, x_offset, y_offset, start, i - (update == 2), style);
-          x_offset += rp_text_width (s, msg + start, i - (update == 2) - start);
+          draw_partial_string (s, msg, x_offset, y_offset, start,
+                               i - (update == 2), style);
+          x_offset += rp_text_width (s, msg + start,
+                                     i - (update == 2) - start);
           start = i;
           if (update == 2)
             {
