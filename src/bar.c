@@ -320,14 +320,14 @@ line_beginning (char* msg, int pos)
 }
 
 static void
-draw_partial_string (rp_screen *s, char *msg, int x_offset, int y_offset,
-                     int start, int end, int style)
+draw_partial_string (rp_screen *s, char *msg, int len,
+                     int x_offset, int y_offset, int style)
 {
   rp_draw_string (s, s->bar_window, style,
                   defaults.bar_x_padding + x_offset,
                   defaults.bar_y_padding + FONT_ASCENT(s)
                   + y_offset * FONT_HEIGHT (s),
-                  msg + start, end - start + 1);
+                  msg, len + 1);
 }
 
 static void
@@ -337,13 +337,13 @@ draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
   int x_offset, y_offset;
   int start;
   int style = STYLE_NORMAL, next_style = STYLE_NORMAL, update = 0;
-  int msg_len;
+  int msg_len, part_len;
 
-  /* Walk through the string, print each line. */
   start = 0;
   x_offset = y_offset = 0;
   msg_len = strlen (msg);
 
+  /* Walk through the string, print each part. */
   for (i = 0; i < msg_len; ++i)
     {
 
@@ -369,10 +369,13 @@ draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 
       if (update)
         {
-          draw_partial_string (s, msg, x_offset, y_offset, start,
-                               i - (update == 2), style);
-          x_offset += rp_text_width (s, msg + start,
-                                     i - (update == 2) - start);
+          /* Strip the trailing newline if necessary. */
+          part_len = i - start - (msg[i] == '\n');
+
+          draw_partial_string (s, msg + start, part_len,
+                               x_offset, y_offset, style);
+          x_offset += rp_text_width (s, msg + start, part_len);
+
           start = i;
           if (update == 2)
             {
@@ -385,8 +388,11 @@ draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
       style = next_style;
     }
 
+  part_len = i - start - 1;
+
   /* Print the last line. */
-  draw_partial_string (s, msg, x_offset, y_offset, start, msg_len - 1, style);
+  draw_partial_string (s, msg + start, part_len, x_offset, y_offset, style);
+
   XSync (dpy, False);
 }
 
