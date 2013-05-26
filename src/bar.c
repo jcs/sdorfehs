@@ -320,61 +320,71 @@ line_beginning (char* msg, int pos)
 }
 
 static void
-draw_partial_string (rp_screen *s, char *msg, int line_no, int start, int end, int style)
+draw_partial_string (rp_screen *s, char *msg, int x_offset, int y_offset,
+                     int start, int end, int style)
 {
-  int line_height = FONT_HEIGHT (s);
-
   rp_draw_string (s, s->bar_window, style,
-                  defaults.bar_x_padding,
+                  defaults.bar_x_padding + x_offset,
                   defaults.bar_y_padding + FONT_ASCENT(s)
-                  + line_no * line_height,
+                  + y_offset * FONT_HEIGHT (s),
                   msg + start, end - start + 1);
 }
 
 static void
 draw_string (rp_screen *s, char *msg, int mark_start, int mark_end)
 {
-  size_t i;
-  int line_no;
+  int i;
+  int x_offset, y_offset;
   int start;
-  int style = STYLE_NORMAL, update = 0;
+  int style = STYLE_NORMAL, next_style = STYLE_NORMAL, update = 0;
+  int msg_len;
 
   /* Walk through the string, print each line. */
   start = 0;
-  line_no = 0;
-/*   if (mark_start == 0 && mark_end == 0) */
-/*     mark_start = mark_end = -1; */
+  x_offset = y_offset = 0;
+  msg_len = strlen (msg);
 
-  for(i=0; i < strlen(msg); ++i)
+  for (i = 0; i < msg_len; ++i)
     {
-      if (i == (size_t)mark_start)
+
+      /* Should we ignore style hints? */
+      if (mark_start != mark_end)
         {
-          style = STYLE_INVERSE;
-          update = 1;
+          if (i == mark_start)
+            {
+              next_style = STYLE_INVERSE;
+              if (i > start)
+                update = 1;
+            }
+          else if (i == mark_end)
+            {
+              next_style = STYLE_NORMAL;
+              if (i > start)
+                update = 1;
+            }
         }
-      if (i == (size_t)mark_end)
-        {
-          style = STYLE_NORMAL;
-          update = 1;
-        }
+
       if (msg[i] == '\n')
-        update = 2;
+          update = 2;
 
       if (update)
         {
-          draw_partial_string (s, msg, line_no, start, update == 2 ? i-1:i, style);
+          draw_partial_string (s, msg, x_offset, y_offset, start, i - (update == 2), style);
+          x_offset += rp_text_width (s, msg + start, i - (update == 2) - start);
           start = i;
           if (update == 2)
             {
-              line_no++;
               start++;
+              x_offset = 0;
+              y_offset++;
             }
           update = 0;
         }
+      style = next_style;
     }
 
   /* Print the last line. */
-  draw_partial_string (s, msg, line_no, start, strlen (msg)-1, style);
+  draw_partial_string (s, msg, x_offset, y_offset, start, msg_len - 1, style);
   XSync (dpy, False);
 }
 
