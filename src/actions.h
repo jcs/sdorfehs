@@ -138,6 +138,7 @@ RP_CMD (gmove);
 RP_CMD (gnew);
 RP_CMD (gnewbg);
 RP_CMD (gnext);
+RP_CMD (gnumber);
 RP_CMD (gprev);
 RP_CMD (gother);
 RP_CMD (gravity);

@@ -261,6 +261,9 @@ init_user_commands(void)
                "Name: ", arg_STRING);
   add_command ("gnewbg",        cmd_gnewbg,     1, 1, 1,
                "Name: ", arg_STRING);
+  add_command ("gnumber",       cmd_gnumber,    2, 1, 1,
+               "Number: ", arg_NUMBER,
+               "Number: ", arg_NUMBER);
   add_command ("grename",       cmd_grename,    1, 1, 1,
                "Change group name to: ", arg_REST);
   add_command ("gnext",         cmd_gnext,      0, 0, 0);
@@ -5077,11 +5080,61 @@ cmd_gnewbg (int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
+cmd_gnumber (int interactive UNUSED, struct cmdarg **args)
+{
+  int old_number, new_number;
+  rp_group *other_g, *g;
+
+  struct numset *g_numset = group_get_numset();
+
+  /* Gather the args. */
+  new_number = ARG(0,number);
+  if (args[1])
+    g = groups_find_group_by_number (ARG(1,number));
+  else
+    g = rp_current_group;
+
+  /* Make the switch. */
+  if (new_number >= 0 && g)
+    {
+      /* Find other window with same number and give it old number. */
+      other_g = groups_find_group_by_number (new_number);
+      if (other_g != NULL)
+        {
+          old_number = g->number;
+          other_g->number = old_number;
+
+          /* Resort the window in the list */
+          group_resort_group (other_g);
+        }
+      else
+        {
+          numset_release (g_numset, g->number);
+        }
+
+      g->number = new_number;
+      numset_add_num (g_numset, new_number);
+
+      /* resort the the window in the list */
+      group_resort_group (g);
+
+      /* Update the group list. */
+      update_group_names (current_screen());
+    }
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
 cmd_grename (int interactive UNUSED, struct cmdarg **args)
 {
   if (groups_find_group_by_name (ARG_STRING (0), 1))
     return cmdret_new (RET_FAILURE, "grename: duplicate group name");
   group_rename (rp_current_group, ARG_STRING(0));
+
+  /* Update the group list. */
+  update_group_names (current_screen());
+
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
@@ -5104,65 +5157,31 @@ cmd_gselect (int interactive, struct cmdarg **args)
 cmdret *
 cmd_groups (int interactive, struct cmdarg **args UNUSED)
 {
-  rp_group *cur;
-  int mark_start = 0, mark_end = 0;
-  struct sbuf *buffer;
-  rp_group *last;
+  struct sbuf *group_list = NULL;
+  int dummy;
+  rp_screen *s;
 
-  last = group_last_group ();
-  buffer = sbuf_new (0);
-
-  /* Generate the string. */
-  list_for_each_entry (cur, &rp_groups, node)
-    {
-      char *fmt;
-      char separator;
-
-      if (cur == rp_current_group)
-        mark_start = strlen (sbuf_get (buffer));
-
-      /* Pad start of group name with a space for row
-         style. non-Interactive always gets a column.*/
-      if (defaults.window_list_style == STYLE_ROW && interactive)
-          sbuf_concat (buffer, " ");
-
-      if(cur == rp_current_group)
-        separator = '*';
-      else if(cur == last)
-        separator = '+';
-      else
-        separator = '-';
-
-      fmt = xsprintf ("%d%c%s", cur->number, separator, cur->name);
-      sbuf_concat (buffer, fmt);
-      free (fmt);
-
-      /* Pad end of group name with a space for row style. */
-      if (defaults.window_list_style == STYLE_ROW && interactive)
-        {
-          sbuf_concat (buffer, " ");
-        }
-      else
-        {
-          if (cur->node.next != &rp_groups)
-            sbuf_concat (buffer, "\n");
-        }
-
-      if (cur == rp_current_group)
-        mark_end = strlen (sbuf_get (buffer));
-    }
-
-  /* Display it or return it. */
   if (interactive)
     {
-      marked_message (sbuf_get (buffer), mark_start, mark_end);
-      sbuf_free (buffer);
+      s = current_screen ();
+      /* This is a yukky hack. If the bar already hidden then show the
+         bar. This handles the case when msgwait is 0 (the bar sticks)
+         and the user uses this command to toggle the bar on and
+         off. OR the timeout is >0 then show the bar. Which means,
+         always show the bar if msgwait is >0 which fixes the case
+         when a command in the prefix hook displays the bar. */
+      if (!hide_bar (s) || defaults.bar_timeout > 0) show_group_bar (s);
+
       return cmdret_new (RET_SUCCESS, NULL);
     }
   else
     {
-      cmdret *ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get(buffer));
-      sbuf_free(buffer);
+      cmdret *ret;
+
+      group_list = sbuf_new (0);
+      get_group_list ("\n", group_list, &dummy, &dummy);
+      ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (group_list));
+      sbuf_free (group_list);
       return ret;
     }
 }

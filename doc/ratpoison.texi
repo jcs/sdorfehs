@@ -600,6 +600,15 @@ Go to the previous group in the list.
 Rename current group.
 @end deffn
 
+@deffn Command gnumber @var{GROUP} @var{target}
+Set a group's number to @var{GROUP}. If another group occupies the
+requested number already, then the groups' numbers are swapped.
+
+The second argument, @var{target}, is optional. It should be the
+number of the group whose number will be changed. If @var{target} is
+omitted ratpoison defaults to the current group.
+@end deffn
+
 @deffn Command gselect @var{group}
 Select a particular group by name or number. If @var{group} is not
 provided, ratpoison will interactively prompt for the group.
