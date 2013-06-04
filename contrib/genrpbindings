@@ -65,8 +65,8 @@ print PERL '$RATPOISON=$ENV{RATPOISON} ? $ENV{RATPOISON} : "',$RATPOISON,'";';
 print PERL 'sub command { my $a = "@_"; $a =~ s/(\')/\'\\\\\'\'/g; return `$RATPOISON -c \'$a\'`; }';
 
 # ELISP preamble
-print ELISP '(defvar ratpoison-program "',$RATPOISON,'")';
 print ELISP <<PREAMBLE;
+(defvar ratpoison-program (or (getenv "RATPOISON") "$RATPOISON"))
 
 (defmacro defun-ratpoison (cmd)
   `(progn (defun ,(intern (concat "ratpoison-" (symbol-name cmd))) (&rest args)
@@ -91,7 +91,7 @@ PREAMBLE
 print RUBY  <<PREAMBLE;
 module Ratpoison
 
-  RATPOISON="$RATPOISON"
+  RATPOISON=ENV.fetch('RATPOISON', "$RATPOISON")
 
   def command(command, *args)
     return `#{RATPOISON} -c "#{command} #{args.join(' ')}"`
@@ -102,6 +102,7 @@ PREAMBLE
 # Scheme preamble
 
 print COMMONLISP <<PREAMBLE;
+(require :asdf :asdf-utils)
 (defpackage :ratpoison
   (:use :cl))
 
@@ -110,7 +111,9 @@ print COMMONLISP <<PREAMBLE;
 
 (in-package :ratpoison)
 
-(defvar ratpoison-program "$RATPOISON")
+(defvar ratpoison-program
+  (or (asdf-utils:getenv "RATPOISON")
+      "$RATPOISON"))
 
 (defmacro defun-ratpoison (cmd)
   (let ((sym (intern (concatenate 'string "RP-" (symbol-name cmd)))))
@@ -143,9 +146,9 @@ PREAMBLE
 
 print PYTHON <<PREAMBLE;
 import os
-ratpoison="ratpoison -c "
+ratpoison = os.getenv('RATPOISON') or '$RATPOISON'
 def rp_command( *args ):
-    p = os.popen( ratpoison + '"' + (' '.join(  args  ) ) + '"', 'r' )
+    p = os.popen( ratpoison + ' -c ' + '"' + (' '.join(  args  ) ) + '"', 'r' )
     r = p.readlines();
     p.close();
     return r
