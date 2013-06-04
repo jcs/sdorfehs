@@ -171,7 +171,7 @@ strtok_ws (char *s)
   char *nonws;
   static char *last = NULL;
 
-  if (s == NULL)
+  if (s != NULL)
     last = s;
   else if (last == NULL)
     {
