@@ -50,7 +50,7 @@ main (void)
   display = XOpenDisplay(NULL);
   if(!display)
     {
-      perror("could not open display");
+      fprintf (stderr, "unrat: could not open display\n");
       exit(1);
     }
 
