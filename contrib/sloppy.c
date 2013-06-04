@@ -52,7 +52,7 @@ spawn(char *cmd)
 }
 
 int
-main (int argc, char **argv)
+main (void)
 {
   Display *display;
   int i, numscreens;

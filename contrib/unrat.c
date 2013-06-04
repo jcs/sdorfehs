@@ -42,7 +42,7 @@ errorhandler(Display *display, XErrorEvent *error)
 }
 
 int
-main (int argc, char **argv)
+main (void)
 {
   Display *display;
   int i, numscreens;
