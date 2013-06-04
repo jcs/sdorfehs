@@ -99,7 +99,7 @@ module Ratpoison
   module_function :command
 PREAMBLE
 
-# Scheme preamble
+# Common Lisp preamble
 
 print COMMONLISP <<PREAMBLE;
 (require :asdf :asdf-utils)
@@ -194,6 +194,9 @@ print ELISP '(provide \'ratpoison-cmd)';
 
 # RUBY postamble
 print RUBY "end";
+
+# COMMON-LISP postamble
+# nothing
 
 # PYTHON postamble
 # nothing
