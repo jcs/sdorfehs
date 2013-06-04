@@ -31,13 +31,14 @@ gcc -g -Wall -O2  -I/usr/X11R6/include -o unrat unrat.c -L /usr/X11R6/lib -lX11
 #include <stdio.h>
 #include <stdlib.h>
 
-int (*defaulthandler)(Display *, XErrorEvent *);
+int (*defaulthandler) (Display *, XErrorEvent *);
 
 int
-errorhandler(Display *display, XErrorEvent *error)
+errorhandler (Display *display, XErrorEvent *error)
 {
-  if(error->error_code!=BadWindow)
-    (*defaulthandler)(display,error);
+  if (error->error_code != BadWindow)
+    (*defaulthandler) (display,error);
+
   return 0;
 }
 
@@ -47,25 +48,27 @@ main (void)
   Display *display;
   int i, numscreens;
 
-  display = XOpenDisplay(NULL);
-  if(!display)
+  display = XOpenDisplay (NULL);
+  if (!display)
     {
       fprintf (stderr, "unrat: could not open display\n");
-      exit(1);
+      exit (1);
     }
 
-  defaulthandler = XSetErrorHandler(errorhandler);
-  numscreens = ScreenCount(display);
+  defaulthandler = XSetErrorHandler (errorhandler);
+  numscreens = ScreenCount (display);
 
-  for (i=0; i<numscreens; i++)
+  for (i = 0; i < numscreens; i++)
     {
       unsigned int j, nwins;
       Window dw1, dw2, *wins;
 
-      XSelectInput(display,RootWindow(display, i), KeyReleaseMask | SubstructureNotifyMask);
-      XQueryTree(display, RootWindow(display, i), &dw1, &dw2, &wins, &nwins);
-      for (j=0; j<nwins; j++)
-        XSelectInput(display, wins[j], KeyReleaseMask);
+      XSelectInput (display, RootWindow (display, i),
+                    KeyReleaseMask | SubstructureNotifyMask);
+      XQueryTree (display, RootWindow (display, i),
+                  &dw1, &dw2, &wins, &nwins);
+      for (j = 0; j < nwins; j++)
+        XSelectInput (display, wins[j], KeyReleaseMask);
     }
 
   while (1)
@@ -73,25 +76,33 @@ main (void)
       XEvent event;
       do
         {
-          XNextEvent(display,&event);
+          XNextEvent (display, &event);
           if (event.type == CreateNotify)
-            XSelectInput(display, event.xcreatewindow.window, KeyReleaseMask);
-        } while(event.type != KeyRelease);
+            {
+              XSelectInput (display, event.xcreatewindow.window,
+                          KeyReleaseMask);
+            }
+        } while (event.type != KeyRelease);
 
       /* A key was pressed. warp the rat. */
-      for (i=0; i<numscreens; i++)
+      for (i = 0; i < numscreens; i++)
         {
           int x, y, wx, wy;
           unsigned int mask;
           Window root, child;
 
-          XQueryPointer (display, RootWindow(display, i),
+          XQueryPointer (display, RootWindow (display, i),
                          &root, &child,
                          &x, &y, &wx, &wy,
                          &mask);
-          if (x < DisplayWidth (display, i)-1
-              || y < DisplayHeight (display, i)-1)
-            XWarpPointer (display, None, RootWindow(display, i), 0, 0, 0, 0, DisplayWidth (display, i), DisplayHeight (display, i));
+          if (x < DisplayWidth (display, i) - 1
+              || y < DisplayHeight (display, i) - 1)
+            {
+              XWarpPointer (display, None, RootWindow (display, i),
+                            0, 0, 0, 0,
+                            DisplayWidth (display, i),
+                            DisplayHeight (display, i));
+            }
         }
     }
 
