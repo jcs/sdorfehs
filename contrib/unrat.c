@@ -31,7 +31,7 @@ gcc -g -Wall -O2  -I/usr/X11R6/include -o unrat unrat.c -L /usr/X11R6/lib -lX11
 #include <stdio.h>
 #include <stdlib.h>
 
-int (*defaulthandler)();
+int (*defaulthandler)(Display *, XErrorEvent *);
 
 int
 errorhandler(Display *display, XErrorEvent *error)

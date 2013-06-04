@@ -27,7 +27,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-int (*defaulthandler)();
+int (*defaulthandler)(Display *, XErrorEvent *);
 
 int
 errorhandler(Display *display, XErrorEvent *error)
