@@ -64,6 +64,10 @@ main (void)
       exit (1);
     }
 
+  /* Ensure child shell will have $RATPOISON set. */
+  if (!getenv ("RATPOISON"))
+    setenv ("RATPOISON", "ratpoison", 0);
+
   defaulthandler = XSetErrorHandler (errorhandler);
   numscreens = ScreenCount (display);
 
