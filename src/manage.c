@@ -210,16 +210,16 @@ get_wmname (Window w)
       Atom type = None;
       unsigned long nitems, bytes_after;
       int format;
-      char *val = NULL;
+      unsigned char *val = NULL;
 
       ret = XGetWindowProperty (dpy, w, _net_wm_name, 0, 40, False,
 				xa_utf8_string, &type, &format, &nitems,
-				&bytes_after, (unsigned char **) &val);
+				&bytes_after, &val);
       /* We have a valid UTF-8 string */
       if (ret == Success && type == xa_utf8_string
 	  && format == 8 && nitems > 0)
 	{
-	  name = xstrdup (val);
+	  name = xstrdup ((char *)val);
 	  XFree (val);
           PRINT_DEBUG (("Fetching window name using _NET_WM_NAME succeeded\n"));
 	  PRINT_DEBUG (("WM_NAME: %s\n", name));
