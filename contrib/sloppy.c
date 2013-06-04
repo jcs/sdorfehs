@@ -44,7 +44,7 @@ spawn(char *cmd)
   pid = fork();
   if (pid == 0) 
     {
-      execl("/bin/sh", "sh", "-c", cmd, 0);
+      execl("/bin/sh", "sh", "-c", cmd, (char *)NULL);
       _exit(EXIT_FAILURE);
     }
   return pid;
