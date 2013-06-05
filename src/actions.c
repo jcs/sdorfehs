@@ -1982,13 +1982,18 @@ read_gravity (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
-/* Given a string, find a matching group. First check if the string is
-   a number, then check if it's the name of a group. */
+/* Given a string, find a matching group. First check if the string exactly
+   matches a group name, then check if it is a number & lastly check if it
+   partially matches the name of a group. */
 static rp_group *
 find_group (char *str)
 {
   rp_group *group;
   int n;
+
+  /* Exact matches are special cases. */
+  if (group = groups_find_group_by_name (str, 1))
+    return group;
 
   /* Check if the user typed a group number. */
   n = string_to_window_number (str);
