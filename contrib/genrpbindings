@@ -40,8 +40,10 @@ use warnings;
 
 $\="\n";
 
-# set this to your rp binary
-$RATPOISON=$ENV{RATPOISON} || "ratpoison";
+# Feel free to hardcode this if you installed ratpoison in
+# a non-standard path, but note that you can also use the RATPOISON
+# environment variable
+$RATPOISON = 'ratpoison';
 
 # open source file
 $ACTIONS_C="../src/actions.c";
