@@ -5543,6 +5543,9 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
     /* convert to integer */
     x = strtol (ptr, NULL, 10);
 
+    /* clobber screen number here, frestore() doesn't need it */
+    *ptr = '\0';
+
     /* check that specified screen number is not bigger than current number of connected screens */
     if (x < num_screens) {
       /* append frameset to buffer[x] */
