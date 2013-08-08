@@ -5560,10 +5560,12 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
   /* now restore the frames for each screen */
   for (i = 0; i < num_screens; i++)
     {
+      cmdret * ret;
       push_frame_undo (&screens[i]); /* fdump to stack */
       /* FIXME: store RET_SUCCESS || RET_FAILURE for each screen and output
          it later */
-      frestore (sbuf_get (buffer[i]), &screens[i]);
+      ret = frestore (sbuf_get (buffer[i]), &screens[i]);
+      cmdret_free (ret);
       sbuf_free (buffer[i]);
     }
 
