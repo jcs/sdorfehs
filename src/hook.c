@@ -34,7 +34,10 @@ hook_add (struct list_head *hook, struct sbuf *s)
   list_for_each_entry (cur, hook, node)
     {
       if (!strcmp (sbuf_get (cur), sbuf_get (s)))
-        return;
+        {
+          sbuf_free (s);
+          return;
+        }
     }
 
   /* It's not in the list, so add it. */
