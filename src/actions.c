@@ -5508,26 +5508,24 @@ cmd_sfdump (int interactively UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
 {
-  int out_of_screen = 0;
-  int number_of_frames = 0;
-  int j;
-  long x;
-  char *d;
-  char *token;
-  char *ptr;
   struct sbuf *buffer[num_screens];
+  char *copy, *ptr, *token;
+  long screen;
+  int out_of_screen = 0;
+  int restored = 0;
+  int i;
 
   /* initialize frameset-buffer for each screen */
-  for (j=0; j<num_screens; j++) {
-    buffer[j] = sbuf_new(0);
+  for (i=0; i<num_screens; i++) {
+    buffer[i] = sbuf_new(0);
   }
 
   /* now split the whole input to the corresponding screens */
-  d = xstrdup (ARG_STRING(0));
+  copy = xstrdup (ARG_STRING(0));
 
-  token = strtok (d, ",");
+  token = strtok (copy, ",");
   if (token == NULL) {
-    free (d);
+    free (copy);
     return cmdret_new (RET_FAILURE, "sfrestore: invalid frame format");
   }
 
@@ -5541,17 +5539,17 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
     ptr++;
 
     /* convert to integer */
-    x = strtol (ptr, NULL, 10);
+    screen = strtol (ptr, NULL, 10);
 
     /* clobber screen number here, frestore() doesn't need it */
     *ptr = '\0';
 
     /* check that specified screen number is not bigger than current number of connected screens */
-    if (x < num_screens) {
-      /* append frameset to buffer[x] */
-      sbuf_concat(buffer[x], token);
-      sbuf_concat(buffer[x], ",");
-      number_of_frames++;
+    if (screen < num_screens) {
+      /* append frameset to buffer[screen] */
+      sbuf_concat(buffer[screen], token);
+      sbuf_concat(buffer[screen], ",");
+      restored++;
     }
     else {
       out_of_screen++;
@@ -5561,22 +5559,22 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
     token = strtok (NULL, ",");
   } 
 
-  free (d);
+  free (copy);
 
   /* now restore the frames for each screen */
-  for (j=0; j<num_screens; j++) {
-    push_frame_undo (&screens[j]); /* fdump to stack */
+  for (i=0; i<num_screens; i++) {
+    push_frame_undo (&screens[i]); /* fdump to stack */
     /* FIXME: store RET_SUCCESS || RET_FAILURE for each screen and output it later */
-    frestore (sbuf_get(buffer[j]), &screens[j]);
+    frestore (sbuf_get(buffer[i]), &screens[i]);
     /* clear buffer */
-    sbuf_free(buffer[j]);
+    sbuf_free(buffer[i]);
   }
 
   if (!out_of_screen) {
-    return cmdret_new (RET_SUCCESS, "Restored %i Frame(s)", number_of_frames);
+    return cmdret_new (RET_SUCCESS, "Restored %i Frame(s)", restored);
   }
   else {
-    return cmdret_new (RET_SUCCESS, "Restored %i Frame(s), %i Frame(s) out of Screen(s)", number_of_frames, out_of_screen);
+    return cmdret_new (RET_SUCCESS, "Restored %i Frame(s), %i Frame(s) out of Screen(s)", restored, out_of_screen);
   }
 }
 
