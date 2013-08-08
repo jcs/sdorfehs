@@ -5515,12 +5515,10 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
   int restored = 0;
   int i;
 
-  /* initialize frameset-buffer for each screen */
   for (i=0; i<num_screens; i++) {
     buffer[i] = sbuf_new(0);
   }
 
-  /* now split the whole input to the corresponding screens */
   copy = xstrdup (ARG_STRING(0));
 
   token = strtok (copy, ",");
@@ -5535,18 +5533,15 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
     while (*ptr != ')') {
       ptr++;
     }
-    /* skip space */
     ptr++;
 
-    /* convert to integer */
     screen = strtol (ptr, NULL, 10);
 
     /* clobber screen number here, frestore() doesn't need it */
     *ptr = '\0';
 
-    /* check that specified screen number is not bigger than current number of connected screens */
+    /* check that specified screen number is valid */
     if (screen < num_screens) {
-      /* append frameset to buffer[screen] */
       sbuf_concat(buffer[screen], token);
       sbuf_concat(buffer[screen], ",");
       restored++;
@@ -5566,7 +5561,6 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
     push_frame_undo (&screens[i]); /* fdump to stack */
     /* FIXME: store RET_SUCCESS || RET_FAILURE for each screen and output it later */
     frestore (sbuf_get(buffer[i]), &screens[i]);
-    /* clear buffer */
     sbuf_free(buffer[i]);
   }
 
