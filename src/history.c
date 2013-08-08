@@ -201,6 +201,7 @@ history_load (void)
     /* defaults.history_size might be only set later */
     history_add_upto (hist_COMMAND, line, INT_MAX);
   }
+  free (line);
   if (ferror (f)) {
     PRINT_DEBUG (("ratpoison: error reading %s - %s\n", filename, strerror (errno)));
     fclose(f);
