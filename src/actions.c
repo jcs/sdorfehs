@@ -5475,33 +5475,34 @@ cmd_set (int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_sfdump (int interactively UNUSED, struct cmdarg **args UNUSED)
 {
+  char screen_suffix[16];
   cmdret *ret;
-  struct sbuf *s;
-  char *tmp2;
+  struct sbuf *dump;
   rp_frame *cur;
   int i;
 
-  s = sbuf_new (0);
+  dump = sbuf_new (0);
 
-  for (i=0; i<num_screens; i++)
+  for (i = 0; i < num_screens; i++)
     {
-      tmp2 = xsprintf (" %d,", (rp_have_xinerama)?(screens[i].xine_screen_num):(screens[i].screen_num));
+      snprintf (screen_suffix, sizeof (screen_suffix), " %d,",
+                rp_have_xinerama ?
+                  screens[i].xine_screen_num :
+                  screens[i].screen_num);
 
       /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
       list_for_each_entry (cur, &(screens[i].frames), node)
         {
-          char *tmp;
+          char *frameset;
 
-	  tmp = frame_dump (cur, &screens[i]);
-          sbuf_concat (s, tmp);
-          sbuf_concat (s, tmp2);
-          free (tmp);
+	  frameset = frame_dump (cur, &screens[i]);
+          sbuf_concat (dump, frameset);
+          sbuf_concat (dump, screen_suffix);
+          free (frameset);
         }
-
-      free (tmp2);
     }
-  ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (s));
-  sbuf_free (s);
+  ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (dump));
+  sbuf_free (dump);
   return ret;
 }
 
