@@ -4868,25 +4868,23 @@ cmd_fselect (int interactive, struct cmdarg **args)
 static char *
 fdump (rp_screen *screen)
 {
-  struct sbuf *s;
-  char *tmp;
+  struct sbuf *dump;
   rp_frame *cur;
 
-  s = sbuf_new (0);
+  dump = sbuf_new (0);
 
-  /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
   list_for_each_entry (cur, &(screen->frames), node)
     {
-      char *t;
+      char *frameset;
 
-      t = frame_dump (cur, screen);
-      sbuf_concat (s, t);
-      sbuf_concat (s, ",");
-      free (t);
+      frameset = frame_dump (cur, screen);
+      sbuf_concat (dump, frameset);
+      sbuf_concat (dump, ",");
+      free (frameset);
     }
+  sbuf_chop (dump);
 
-  tmp = sbuf_free_struct (s);
-  return tmp;
+  return sbuf_free_struct (dump);
 }
 
 cmdret *
@@ -5490,7 +5488,6 @@ cmd_sfdump (int interactively UNUSED, struct cmdarg **args UNUSED)
                   screens[i].xine_screen_num :
                   screens[i].screen_num);
 
-      /* FIXME: Oooh, gross! there's a trailing comma, yuk! */
       list_for_each_entry (cur, &(screens[i].frames), node)
         {
           char *frameset;
@@ -5500,6 +5497,7 @@ cmd_sfdump (int interactively UNUSED, struct cmdarg **args UNUSED)
           sbuf_concat (dump, screen_suffix);
           free (frameset);
         }
+      sbuf_chop (dump);
     }
   ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (dump));
   sbuf_free (dump);
@@ -5586,14 +5584,14 @@ cmd_sdump (int interactive UNUSED, struct cmdarg **args UNUSED)
   int i;
 
   s = sbuf_new (0);
-  for (i=0; i<num_screens; ++i)
+  for (i = 0; i < num_screens; ++i)
   {
     tmp = screen_dump (&screens[i]);
     sbuf_concat (s, tmp);
-    if (i + 1 != num_screens)   /* No trailing comma. */
-      sbuf_concat (s, ",");
+    sbuf_concat (s, ",");
     free (tmp);
   }
+  sbuf_chop (s);
 
   ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (s));
   sbuf_free (s);
