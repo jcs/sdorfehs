@@ -19,6 +19,6 @@
 
 bin_SCRIPTS = rpws
 
-pkgdata_DATA = ratpoison.el split.sh genrpbindings rpws allwindows.sh clickframe.pl rpshowall.sh unrat.c sloppy.c ratdate.sh
-EXTRA_DIST    = ratpoison.el split.sh genrpbindings rpws allwindows.sh clickframe.pl rpshowall.sh unrat.c sloppy.c ratdate.sh
+pkgdata_DATA = ratpoison.el split.sh genrpbindings rpws allwindows.sh clickframe.pl rpshowall.sh unrat.c sloppy.c
+EXTRA_DIST    = ratpoison.el split.sh genrpbindings rpws allwindows.sh clickframe.pl rpshowall.sh unrat.c sloppy.c
 MAINTAINERCLEANFILES = Makefile.in
