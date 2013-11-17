@@ -143,3 +143,12 @@ sbuf_printf_concat (struct sbuf *b, char *fmt, ...)
 
   return b->data;
 }
+
+void
+sbuf_chop (struct sbuf *b)
+{
+  if (b->len)
+    {
+      b->data[--(b->len)] = '\0';
+    }
+}

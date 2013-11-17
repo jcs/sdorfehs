@@ -24,8 +24,7 @@
 
 #include <stdlib.h>
 
-struct
-sbuf
+struct sbuf
 {
   char *data;
   size_t len;
@@ -45,5 +44,6 @@ char *sbuf_clear (struct sbuf *b);
 char *sbuf_get (struct sbuf *b);
 char *sbuf_printf (struct sbuf *b, char *fmt, ...);
 char *sbuf_printf_concat (struct sbuf *b, char *fmt, ...);
+void  sbuf_chop (struct sbuf *b);
 
 #endif /* ! _RATPOISON_SBUF_H */
