@@ -1167,6 +1167,11 @@ cmd_meta (int interactive UNUSED, struct cmdarg **args)
   struct rp_key key;
   XEvent ev;
 
+  memset(&ev, 0, sizeof(ev));
+  /* Redundant with the line above, but points out that passing some
+     garbage time value trips up some clients */
+  ev.xkey.time = CurrentTime;
+
   if (current_window() == NULL)
     return cmdret_new (RET_FAILURE, NULL);
 
