@@ -19,5 +19,23 @@
 
 info_TEXINFOS = ratpoison.texi
 man_MANS      = ratpoison.1
-EXTRA_DIST    = $(man_MANS) sample.ratpoisonrc ipaq.ratpoisonrc fdl.texi
-MAINTAINERCLEANFILES = Makefile.in texinfo.tex
+EXTRA_DIST    = ratpoison.mdoc.1 \
+		ratpoison.man.1 \
+		sample.ratpoisonrc \
+		ipaq.ratpoisonrc \
+		fdl.texi
+
+if NO_MDOC_MANPAGE
+ratpoison.1: ratpoison.man.1
+	cp ratpoison.man.1 ratpoison.1
+else
+ratpoison.1: ratpoison.mdoc.1
+	cp ratpoison.mdoc.1 ratpoison.1
+endif
+
+ratpoison.man.1: ratpoison.mdoc.1
+	tmp=$$(mktemp) && \
+	mandoc -Tman ratpoison.mdoc.1 > "$$tmp" && \
+	mv "$$tmp" ratpoison.man.1
+
+MAINTAINERCLEANFILES = Makefile.in ratpoison.man.1 texinfo.tex

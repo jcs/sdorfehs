@@ -1163,11 +1163,9 @@ cmd_source (int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_meta (int interactive UNUSED, struct cmdarg **args)
 {
-  cmdret *ret = NULL;
-  struct rp_key key;
   XEvent ev;
 
-  memset(&ev, 0, sizeof(ev));
+  memset (&ev, 0, sizeof (ev));
   /* Redundant with the line above, but points out that passing some
      garbage time value trips up some clients */
   ev.xkey.time = CurrentTime;
@@ -1175,28 +1173,34 @@ cmd_meta (int interactive UNUSED, struct cmdarg **args)
   if (current_window() == NULL)
     return cmdret_new (RET_FAILURE, NULL);
 
-      ev.xkey.type = KeyPress;
-      ev.xkey.display = dpy;
-      ev.xkey.window = current_window()->w;
+  ev.xkey.type = KeyPress;
+  ev.xkey.display = dpy;
+  ev.xkey.window = current_window()->w;
 
   if (args[0])
     {
-      if((ret = parse_keydesc (ARG_STRING(0), &key)))
+      struct rp_key key;
+      cmdret *ret;
+
+      ret = parse_keydesc (ARG_STRING(0), &key);
+      if (ret != NULL)
         return ret;
+      else
+        cmdret_free (ret);
 
       ev.xkey.state = rp_mask_to_x11_mask (key.state);
-      if(!(ev.xkey.keycode = XKeysymToKeycode (dpy, key.sym)))
-        return cmdret_new (RET_FAILURE, "meta: Couldn't convert keysym to keycode");
+      ev.xkey.keycode = XKeysymToKeycode (dpy, key.sym);
+      if (ev.xkey.keycode == NoSymbol)
+        return cmdret_new (RET_FAILURE,
+                           "meta: Couldn't convert keysym to keycode");
     }
   else
     {
       ev.xkey.state = rp_mask_to_x11_mask (prefix_key.state);
       ev.xkey.keycode = XKeysymToKeycode (dpy, prefix_key.sym);
     }
+
   XSendEvent (dpy, current_window()->w, False, KeyPressMask, &ev);
-
-  /*   XTestFakeKeyEvent (dpy, XKeysymToKeycode (dpy, 't'), True, 0); */
-
   XSync (dpy, False);
 
   return cmdret_new (RET_SUCCESS, NULL);
