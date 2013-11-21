@@ -156,8 +156,18 @@ get_child_info (Window w)
 
   PRINT_DEBUG(("pid: %d\n", pid));
 
-  /* The pids will hopefully be in the same session. */
+  /*
+    The pids will hopefully be in the same session.
+
+     XXX what's the use of this session check?
+     On some platforms (eg. OpenBSD) you get EPERM if `pid' is not in the
+     same session as ratpoison.  This makes stuff like %p in winformat much
+     less useful...
+   */
   sid = getsid (pid);
+  if (sid == -1)
+      return NULL;
+
   list_for_each_entry (cur, &rp_children, node)
     {
       PRINT_DEBUG(("cur->pid=%d sid=%d\n", cur->pid, getsid (cur->pid)));
