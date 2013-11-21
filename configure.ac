@@ -45,12 +45,6 @@ AC_ARG_WITH(xterm,AS_HELP_STRING([--with-xterm=PROG],[set the x terminal emulato
 term_prog=$withval, term_prog="xterm")
 AC_DEFINE_UNQUOTED(TERM_PROG, "$term_prog", X terminal emulator to use)
 
-AC_ARG_ENABLE([mdoc],
-	[AS_HELP_STRING([--disable-mdoc],
-		[install manpages in the man(7) format instead of mdoc(7)])],
-	[mdoc=yes])
-AM_CONDITIONAL([NO_MDOC_MANPAGE], [test X"$mdoc" = X"no"])
-
 XFT_CFLAGS=
 XFT_LIBS=
 AC_ARG_WITH(xft,AS_HELP_STRING([--without-xft],[Don't use the Xft library even if available]),
@@ -84,7 +78,6 @@ AC_SUBST(XFT_LIBS)
 
 dnl Checks for programs.
 AC_PROG_CC
-dnl XXX check for mandoc(1)?
 
 if test "x$CC" = "xgcc"; then
 	CFLAGS="-Wall $CFLAGS"
