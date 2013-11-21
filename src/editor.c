@@ -192,11 +192,11 @@ editor_forward_word (rp_input_line *line)
     return EDIT_NO_OP;
 
   while (line->position < line->length
-	 && !isalnum (line->buffer[line->position]))
+	 && !isalnum ((unsigned char)line->buffer[line->position]))
     line->position++;
 
   while (line->position < line->length
-	 && (isalnum (line->buffer[line->position])
+	 && (isalnum ((unsigned char)line->buffer[line->position])
 	     || RP_IS_UTF8_CHAR (line->buffer[line->position])))
     line->position++;
 
@@ -209,11 +209,11 @@ editor_backward_word (rp_input_line *line)
   if (line->position == 0)
     return EDIT_NO_OP;
 
-  while (line->position > 0 && !isalnum (line->buffer[line->position]))
+  while (line->position > 0 && !isalnum ((unsigned char)line->buffer[line->position]))
     line->position--;
 
   while (line->position > 0
-	 && (isalnum (line->buffer[line->position])
+	 && (isalnum ((unsigned char)line->buffer[line->position])
 	     || RP_IS_UTF8_CHAR (line->buffer[line->position])))
     line->position--;
 
@@ -301,11 +301,11 @@ editor_kill_word (rp_input_line *line)
     return EDIT_NO_OP;
 
   while (line->position + diff < line->length &&
-         !isalnum (line->buffer[line->position + diff]))
+         !isalnum ((unsigned char)line->buffer[line->position + diff]))
     diff++;
 
   while (line->position + diff < line->length
-	 && (isalnum (line->buffer[line->position + diff])
+	 && (isalnum ((unsigned char)line->buffer[line->position + diff])
 	     || RP_IS_UTF8_CHAR (line->buffer[line->position + diff])))
     diff++;
 
@@ -330,11 +330,11 @@ editor_backward_kill_word (rp_input_line *line)
     return EDIT_NO_OP;
 
   while (line->position - diff > 0 &&
-         !isalnum (line->buffer[line->position - diff]))
+         !isalnum ((unsigned char)line->buffer[line->position - diff]))
     diff++;
 
   while (line->position - diff > 0
-	 && (isalnum (line->buffer[line->position - diff])
+	 && (isalnum ((unsigned char)line->buffer[line->position - diff])
 	     || RP_IS_UTF8_CHAR (line->buffer[line->position - diff])))
     diff++;
 

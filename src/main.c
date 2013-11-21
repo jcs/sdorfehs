@@ -180,7 +180,8 @@ strtok_ws (char *s)
     }
 
   /* skip to first non-whitespace char. */
-  while (*last && isspace (*last)) last++;
+  while (*last && isspace ((unsigned char)*last))
+    last++;
 
   /* If we reached the end of the string here then there is no more
      data. */
@@ -189,7 +190,8 @@ strtok_ws (char *s)
 
   /* Now skip to the end of the data. */
   nonws = last;
-  while (*last && !isspace (*last)) last++;
+  while (*last && !isspace ((unsigned char)*last))
+    last++;
   if (*last)
     {
       *last = '\0';
@@ -204,8 +206,9 @@ str_comp (char *s1, char *s2, int len)
 {
   int i;
 
-  for (i=0; i<len; i++)
-    if (toupper (s1[i]) != toupper (s2[i])) return 0;
+  for (i = 0; i < len; i++)
+    if (toupper ((unsigned char)s1[i]) != toupper ((unsigned char)s2[i]))
+      return 0;
 
   return 1;
 }

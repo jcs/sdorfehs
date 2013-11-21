@@ -54,9 +54,9 @@ extract_shell_part (const char *p)
   if (strncmp(p, "exec", 4) &&
       strncmp(p, "verbexec", 8))
     return NULL;
-  while( *p && !isspace(*p) )
+  while (*p && !isspace ((unsigned char)*p))
     p++;
-  while( *p && isspace(*p) )
+  while (*p &&  isspace ((unsigned char)*p))
     p++;
   if (*p)
     return p;
@@ -114,7 +114,7 @@ history_add_upto (int history_id, const char *item, size_t max)
   struct history *h = histories + history_id;
   struct history_item *i;
 
-  if (item == NULL || *item == '\0' || isspace(*item))
+  if (item == NULL || *item == '\0' || isspace((unsigned char)*item))
     return;
 
   list_last (i, &histories[history_id].head, node);

@@ -19,7 +19,7 @@
  */
 
 #include <unistd.h>
-#include <ctype.h>		/* for isspace */
+#include <ctype.h>
 #include <sys/wait.h>
 #include <X11/keysym.h>
 #include <string.h>
@@ -2311,7 +2311,10 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
         {
           struct sbuf *s = sbuf_new(0);
           if (!raw)
-            while (*i && isspace (*i)) i++;
+            {
+              while (*i && isspace ((unsigned char)*i))
+                i++;
+            }
           if (*i)
             {
               sbuf_concat(s, i);
@@ -2324,7 +2327,8 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
       /* Should we eat the whitespace? */
       if (gobble)
         {
-          while (*i && isspace (*i)) i++;
+          while (*i && isspace ((unsigned char)*i))
+            i++;
           gobble = 0;
         }
 
@@ -2364,7 +2368,7 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
               break;
             }
         }
-      else if (isspace (*i) && !in_str)
+      else if (isspace ((unsigned char)*i) && !in_str)
         {
           /* End the current arg, and start a new one. */
           struct sbuf *s = sbuf_new(0);
@@ -2468,10 +2472,12 @@ command (int interactive, char *data)
 
   cmd = input;
   /* skip beginning whitespace. */
-  while (*cmd && isspace (*cmd)) cmd++;
+  while (*cmd && isspace ((unsigned char)*cmd))
+    cmd++;
   rest = cmd;
   /* skip til we get to whitespace */
-  while (*rest && !isspace (*rest)) rest++;
+  while (*rest && !isspace ((unsigned char)*rest))
+    rest++;
   /* mark that spot as the end of the command and make rest point to
      the rest of the string. */
   if (*rest)
