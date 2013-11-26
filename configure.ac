@@ -41,6 +41,10 @@ AC_ARG_ENABLE(debug,AS_HELP_STRING([--enable-debug],[build with extra debugging 
 		AC_MSG_RESULT(no)
 	fi],[AC_MSG_RESULT(no)])
 
+AC_ARG_WITH([electric-fence],
+  [AS_HELP_STRING([--with-electric-fence],
+    [Use the Electric Fence library (memory allocation debugging).])])
+
 AC_ARG_WITH(xterm,AS_HELP_STRING([--with-xterm=PROG],[set the x terminal emulator used by ratpoison]),
 term_prog=$withval, term_prog="xterm")
 AC_DEFINE_UNQUOTED(TERM_PROG, "$term_prog", X terminal emulator to use)
@@ -138,8 +142,9 @@ AC_SUBST(X_LIBS)
 AC_SUBST(X_EXTRA_LIBS)
 AC_SUBST(X_CFLAGS)
 
-dnl Check for electric fence library
-dnl AC_CHECK_LIB(efence,malloc,,)
+AS_IF([test "$with_electric_fence" = yes],
+  [AC_CHECK_LIB([efence], [malloc], [],
+    [AC_MSG_ERROR([Couldn't find the Electric Fence library (-lefence)])])])
 
 dnl Checks for header files.
 AC_HEADER_STDC
