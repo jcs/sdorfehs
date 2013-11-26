@@ -42,9 +42,12 @@ AC_ARG_WITH([electric-fence],
   [AS_HELP_STRING([--with-electric-fence],
     [Use the Electric Fence library (memory allocation debugging).])])
 
-AC_ARG_WITH(xterm,AS_HELP_STRING([--with-xterm=PROG],[set the x terminal emulator used by ratpoison]),
-term_prog=$withval, term_prog="xterm")
-AC_DEFINE_UNQUOTED(TERM_PROG, "$term_prog", X terminal emulator to use)
+AC_ARG_WITH([xterm],
+  [AS_HELP_STRING([--with-xterm=PROG],
+    [set the x terminal emulator used by ratpoison])],
+  [term_prog=$withval],
+  [term_prog=xterm])
+AC_DEFINE_UNQUOTED([TERM_PROG], ["$term_prog"], [X terminal emulator to use])
 
 XFT_CFLAGS=
 XFT_LIBS=
