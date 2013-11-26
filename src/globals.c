@@ -20,7 +20,7 @@
 
 #include "ratpoison.h"
 
-#include <unistd.h>             /* for usleep(). */
+#include <unistd.h>
 
 int alarm_signalled = 0;
 int kill_signalled = 0;

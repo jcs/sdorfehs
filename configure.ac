@@ -150,7 +150,7 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(getline getopt_long setenv setpgid setpgrp setsid)
-AC_CHECK_FUNCS(unsetenv usleep vsnprintf)
+AC_CHECK_FUNCS(unsetenv vsnprintf)
 
 AM_LANGINFO_CODESET
 

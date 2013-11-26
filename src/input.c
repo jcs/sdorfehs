@@ -503,17 +503,8 @@ ring_bell (void)
   XFillRectangle (dpy, s->input_window, lgc, 0, 0, attr.width, attr.height);
   XFlush (dpy);
 
-#ifdef HAVE_USLEEP
   usleep (15000);
-#else
-  {
-    struct timeval tv;
 
-    tv.tv_sec = 0;
-    tv.tv_usec = 15000;
-    select (0, NULL, NULL, NULL, &tv);
-  }
-#endif
   XFillRectangle (dpy, s->input_window, lgc, 0, 0, attr.width, attr.height);
   XFlush (dpy);
   XFreeGC (dpy, lgc);
