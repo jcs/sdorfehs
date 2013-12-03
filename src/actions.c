@@ -1185,8 +1185,6 @@ cmd_meta (int interactive UNUSED, struct cmdarg **args)
       ret = parse_keydesc (ARG_STRING(0), &key);
       if (ret != NULL)
         return ret;
-      else
-        cmdret_free (ret);
 
       ev.xkey.state = rp_mask_to_x11_mask (key.state);
       ev.xkey.keycode = XKeysymToKeycode (dpy, key.sym);
