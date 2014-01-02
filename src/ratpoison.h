@@ -33,11 +33,6 @@
 #include <X11/Xlocale.h>
 #include <fcntl.h>
 
-/* Some systems don't define the close-on-exec flag in fcntl.h */
-#ifndef FD_CLOEXEC
-# define FD_CLOEXEC 1
-#endif
-
 /* Helper macro for error and debug reporting. */
 #define PRINT_LINE(type) printf (PACKAGE ":%s:%d: %s: ",__FILE__,  __LINE__, #type)
 

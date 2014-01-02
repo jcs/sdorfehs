@@ -356,6 +356,11 @@ print_help (void)
   exit (EXIT_SUCCESS);
 }
 
+/* Some systems don't define the close-on-exec flag in fcntl.h */
+#ifndef FD_CLOEXEC
+# define FD_CLOEXEC 1
+#endif
+
 void
 set_close_on_exec (FILE *fd)
 {
