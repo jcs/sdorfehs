@@ -22,9 +22,7 @@
 #ifndef _RATPOISON_H
 #define _RATPOISON_H 1
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif /* HAVE_CONFIG_H */
+#include "config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
