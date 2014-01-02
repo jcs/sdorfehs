@@ -21,10 +21,8 @@
 #ifndef _RATPOISON_EDITOR_H
 #define _RATPOISON_EDITOR_H 1
 
-typedef enum edit_status edit_status;
 
-enum
-edit_status
+typedef enum edit_status
 {
   EDIT_INSERT,
   EDIT_DELETE,
@@ -33,7 +31,7 @@ edit_status
   EDIT_ABORT,
   EDIT_DONE,
   EDIT_NO_OP
-};
+} edit_status;
 
 /* UTF-8 handling macros */
 #define RP_IS_UTF8_CHAR(c) (defaults.utf8_locale && (c) & 0xC0)
