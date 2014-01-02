@@ -22,8 +22,6 @@
 #ifndef _RATPOISON_MESSAGES_H
 #define _RATPOISON_MESSAGES_H 1
 
-#include "config.h"
-
 #define MESSAGE_NO_OTHER_WINDOW "No other window"
 #define MESSAGE_NO_OTHER_FRAME          "No other frame"
 #define MESSAGE_NO_MANAGED_WINDOWS      "No managed windows"
