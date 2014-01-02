@@ -918,7 +918,6 @@ static int string_to_keysym (char *str)
   return keysym;
 }
 
-/* Parse a key description. 's' is, naturally, the key description. */
 static cmdret *
 parse_keydesc (char *s, struct rp_key *key)
 {
@@ -2391,7 +2390,6 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
       list_add_tail (&s->node, list);
     }
 
-  /* Free our memory and return. */
   free (tmp);
   return ret;
 }

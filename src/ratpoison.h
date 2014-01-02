@@ -95,11 +95,9 @@ char *xsprintf (char *fmt, ...);
 char *xvsprintf (char *fmt, va_list ap);
 int str_comp (char *s1, char *s2, int len);
 char *strtok_ws (char *s);
-/* Needed in cmd_tmpwm */
 void check_child_procs (void);
 void chld_handler (int signum);
 void set_sig_handler (int sig, void (*action)(int));
-/* Font functions. */
 void set_extents_of_fontset (XFontSet font);
 XFontSet load_query_font_set (Display *disp, const char *fontset_name);
 
