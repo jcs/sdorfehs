@@ -383,7 +383,7 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
 
 /* Wait for a key and discard it. */
 void
-read_any_key ()
+read_any_key (void)
 {
   char buffer[513];
   unsigned int mod;
