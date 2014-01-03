@@ -355,7 +355,7 @@ print_help (void)
   printf ("-i, --interactive     Execute commands in interactive mode\n");
   printf ("-f, --file <file>     Specify an alternative configuration file\n\n");
 
-  printf ("Report bugs to ratpoison-devel@nongnu.org\n\n");
+  printf ("Report bugs to %s\n\n", PACKAGE_BUGREPORT);
 
   exit (EXIT_SUCCESS);
 }
