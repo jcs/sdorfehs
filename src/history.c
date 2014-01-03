@@ -75,12 +75,14 @@ static struct history {
 
 #ifndef HAVE_GETLINE
 ssize_t
-getline(char **lineptr, size_t *n, FILE *f)
+getline (char **lineptr, size_t *n, FILE *f)
 {
   size_t ofs;
 
-  if (!*lineptr) {
-    *lineptr = xmalloc (4096);
+  if (*lineptr == NULL) {
+    *lineptr = malloc (4096);
+    if (*lineptr == NULL)
+      return -1;
     *n = 4096;
   }
   ofs = 0;
@@ -99,10 +101,14 @@ getline(char **lineptr, size_t *n, FILE *f)
     if (ofs > 0 && (*lineptr)[ofs-1] == '\n')
       return ofs;
     if (ofs + 1 == *n) {
+      void *tmp;
       if (*n >= INT_MAX - 4096)
 	return -1;
+      tmp = realloc (*lineptr, *n + 4096);
+      if (tmp == NULL)
+        return -1;
+      *lineptr = tmp;
       *n += 4096;
-      *lineptr = xrealloc(*lineptr, *n);
     }
   } while(1);
 }
