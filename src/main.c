@@ -434,14 +434,17 @@ read_startup_files (char *alt_rcfile)
 
           if ((fileptr = fopen (filename, "r")) == NULL)
             {
-              /* we probably don't need to report this, its not an error */
-              PRINT_DEBUG (("ratpoison: could not open %s\n", filename));
+              if (errno != ENOENT)
+                PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
+                              filename, strerror (errno)));
 
-              if ((fileptr = fopen ("/etc/ratpoisonrc", "r")) == NULL)
-                {
-                  /* neither is this */
-                  PRINT_DEBUG (("ratpoison: could not open /etc/ratpoisonrc\n"));
-                }
+              free (filename);
+              filename = xsprintf ("%s/ratpoisonrc", "/etc");
+
+              if ((fileptr = fopen (filename, "r")) == NULL)
+                if (errno != ENOENT)
+                    PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
+                                  filename, strerror (errno)));
             }
           free (filename);
         }
