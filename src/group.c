@@ -377,7 +377,7 @@ group_add_window (rp_group *g, rp_window *w)
   rp_window_elem *we;
 
   /* Create our container structure for the window. */
-  we = malloc (sizeof (rp_window_elem));
+  we = xmalloc (sizeof (rp_window_elem));
   we->win = w;
   we->number = -1;
 

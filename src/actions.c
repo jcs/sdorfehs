@@ -2301,7 +2301,7 @@ parse_args (char *str, struct list_head *list, int nargs, int raw)
   if (str == NULL)
     return NULL;
 
-  tmp = malloc (strlen(str) + 1);
+  tmp = xmalloc (strlen(str) + 1);
 
   for (i=str; *i; i++)
     {
@@ -2663,7 +2663,7 @@ spawn(char *cmd, int raw, rp_frame *frame)
   PRINT_DEBUG (("spawned %s\n", cmd));
 
   /* Add this child process to our list. */
-  child = malloc (sizeof (rp_child_info));
+  child = xmalloc (sizeof (rp_child_info));
   child->cmd = strdup (cmd);
   child->pid = pid;
   child->terminated = 0;

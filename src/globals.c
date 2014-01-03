@@ -111,7 +111,7 @@ set_nselection (char *txt, int len)
   free (selection.text);
 
   /* Copy the string by hand. */
-  selection.text = malloc(len+1);
+  selection.text = xmalloc (len + 1);
   selection.len = len + 1;
   for (i=0; i<len; i++)
     selection.text[i] = txt[i];
