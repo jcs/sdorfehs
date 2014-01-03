@@ -402,7 +402,7 @@ read_rc_file (FILE *file)
   free (line);
 }
 
-static void
+static int
 read_startup_files (char *alt_rcfile)
 {
   char *homedir;
@@ -412,8 +412,9 @@ read_startup_files (char *alt_rcfile)
     {
       if ((fileptr = fopen (alt_rcfile, "r")) == NULL)
         {
-          /* we probably don't need to report this, its not an error */
-          PRINT_DEBUG (("ratpoison: could not open %s\n", alt_rcfile));
+          PRINT_ERROR (("ratpoison: could not open %s (%s)\n", alt_rcfile,
+                        strerror (errno)));
+          return -1;
         }
     }
   else
@@ -452,6 +453,7 @@ read_startup_files (char *alt_rcfile)
       read_rc_file (fileptr);
       fclose (fileptr);
     }
+  return 0;
 }
 
 /* Odd that we spend so much code on making sure the silly welcome
@@ -746,9 +748,9 @@ main (int argc, char *argv[])
         }
     }
 
-  read_startup_files (alt_rcfile);
-  if (alt_rcfile)
-    free (alt_rcfile);
+  if (read_startup_files (alt_rcfile) == -1)
+    return EXIT_FAILURE;
+  free (alt_rcfile);
 
   /* Indicate to the user that ratpoison has booted. */
   if (defaults.startup_message)
