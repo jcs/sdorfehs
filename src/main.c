@@ -71,8 +71,10 @@ fatal (const char *msg)
 void *
 xmalloc (size_t size)
 {
-  register void *value = malloc (size);
-  if (value == 0)
+  void *value;
+
+  value = malloc (size);
+  if (value == NULL)
     fatal ("Virtual memory exhausted");
   return value;
 }
@@ -80,8 +82,10 @@ xmalloc (size_t size)
 void *
 xrealloc (void *ptr, size_t size)
 {
-  register void *value = realloc (ptr, size);
-  if (value == 0)
+  void *value;
+
+  value = realloc (ptr, size);
+  if (value == NULL)
     fatal ("Virtual memory exhausted");
   return value;
 }
@@ -91,7 +95,7 @@ xstrdup (const char *s)
 {
   char *value;
   value = strdup (s);
-  if (value == 0)
+  if (value == NULL)
     fatal ("Virtual memory exhausted");
   return value;
 }
