@@ -591,7 +591,7 @@ static void
 replace_keybinding (rp_action *key_action, char *newcmd)
 {
   if (strlen (key_action->data) < strlen (newcmd))
-    key_action->data = realloc (key_action->data, strlen (newcmd) + 1);
+    key_action->data = xrealloc (key_action->data, strlen (newcmd) + 1);
 
   strcpy (key_action->data, newcmd);
 }
