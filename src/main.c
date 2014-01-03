@@ -420,7 +420,7 @@ read_startup_files (char *alt_rcfile)
   else
     {
       /* first check $HOME/.ratpoisonrc and if that does not exist then try
-         /etc/ratpoisonrc */
+         $sysconfdir/ratpoisonrc */
 
       homedir = getenv ("HOME");
       if (!homedir)
@@ -439,7 +439,7 @@ read_startup_files (char *alt_rcfile)
                               filename, strerror (errno)));
 
               free (filename);
-              filename = xsprintf ("%s/ratpoisonrc", "/etc");
+              filename = xsprintf ("%s/ratpoisonrc", SYSCONFDIR);
 
               if ((fileptr = fopen (filename, "r")) == NULL)
                 if (errno != ENOENT)
