@@ -919,15 +919,12 @@ static int string_to_keysym (char *str)
 }
 
 static cmdret *
-parse_keydesc (char *s, struct rp_key *key)
+parse_keydesc (char *keydesc, struct rp_key *key)
 {
-  char *token, *next_token, *keydesc;
+  char *token, *next_token;
 
-  if (s == NULL)
+  if (keydesc == NULL)
     return NULL;
-
-  /* Avoid mangling s. */
-  keydesc = xstrdup (s);
 
   key->state = 0;
   key->sym = 0;
@@ -938,28 +935,29 @@ parse_keydesc (char *s, struct rp_key *key)
       key->sym = string_to_keysym (keydesc);
 
       if (key->sym == NoSymbol)
-        {
-          cmdret *ret = cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'", keydesc);
-          free (keydesc);
-          return ret;
-        }
+        return cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'",
+                           keydesc);
     }
   else if (keydesc[strlen (keydesc) - 1] == '-')
     {
       /* A key description can't end in a -. */
-      free (keydesc);
-      return cmdret_new (RET_FAILURE, "parse_keydesc: Can't parse key '%s'", s);
+      return cmdret_new (RET_FAILURE, "parse_keydesc: Can't parse key '%s'",
+                         keydesc);
     }
   else
     {
       /* Its got hyphens, so parse out the modifiers and keysym */
-      token = strtok (keydesc, "-");
+      char *copy;
 
+      copy = xstrdup (keydesc);
+
+      token = strtok (copy, "-");
       if (token == NULL)
         {
           /* It was nothing but hyphens */
-          free (keydesc);
-          return cmdret_new (RET_FAILURE, "parse_keydesc: Can't parse key '%s'", s);
+          free (copy);
+          return cmdret_new (RET_FAILURE,
+                             "parse_keydesc: Can't parse key '%s'", keydesc);
         }
 
       do
@@ -974,8 +972,10 @@ parse_keydesc (char *s, struct rp_key *key)
 
               if (key->sym == NoSymbol)
                 {
-                  cmdret *ret = cmdret_new (RET_FAILURE, "parse_keydesc: Unknown key '%s'", token);
-                  free (keydesc);
+                  cmdret *ret = cmdret_new (RET_FAILURE,
+                                            "parse_keydesc: Unknown key '%s'",
+                                            token);
+                  free (copy);
                   return ret;
                 }
             }
@@ -1010,17 +1010,20 @@ parse_keydesc (char *s, struct rp_key *key)
                 }
               else
                 {
-                  free (keydesc);
-                  return cmdret_new (RET_FAILURE, "parse_keydesc: Unknown modifier '%s'", token);
+                  free (copy);
+                  return cmdret_new (RET_FAILURE,
+                                     "parse_keydesc: Unknown modifier '%s'",
+                                     token);
                 }
             }
 
           token = next_token;
         } while (next_token != NULL);
+
+      free (copy);
     }
 
   /* Successfully parsed the key. */
-  free (keydesc);
   return NULL;
 }
 
