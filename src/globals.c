@@ -268,12 +268,6 @@ set_window_focus (Window window)
 LIST_HEAD (rp_frame_undos);
 LIST_HEAD (rp_frame_redos);
 
-void
-init_globals (void)
-{
-  selection.text = NULL;
-  selection.len = 0;
-}
 
 /* Wrapper font functions to support Xft */
 

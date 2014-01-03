@@ -722,7 +722,6 @@ main (int argc, char *argv[])
   putenv (xsprintf ("RATPOISON=%s", argv[0]));
 
   /* Setup ratpoison's internal structures */
-  init_globals ();
   init_defaults ();
   init_groups ();
   init_window_stuff ();
