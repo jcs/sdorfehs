@@ -150,6 +150,7 @@ dnl Checks for header files.
 AC_HEADER_STDC
 
 dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_TYPEOF
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(getline getopt_long setenv setpgid setpgrp setsid)
