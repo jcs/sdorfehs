@@ -22,9 +22,8 @@
 bin_PROGRAMS		= ratpoison
 MAINTAINERCLEANFILES = Makefile.in config.h.in
 
-AM_LDFLAGS=${X_LDFLAGS}
-ratpoison_LDADD=${XFT_LIBS} ${X_LIBS} ${X_EXTRA_LIBS} ${HISTORY_LIBS}
 AM_CPPFLAGS=-DSYSCONFDIR='"$(sysconfdir)"' ${X_CFLAGS} ${XFT_CFLAGS}
+ratpoison_LDADD=${XFT_LIBS} ${X_LIBS} ${X_EXTRA_LIBS} ${HISTORY_LIBS}
 
 ratpoison_SOURCES	= actions.c		\
 			actions.h		\
