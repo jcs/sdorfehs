@@ -28,7 +28,7 @@ completions_new (completion_fn list_fn)
 {
   rp_completions *c;
 
-  c = (rp_completions *) xmalloc (sizeof(rp_completions));
+  c = xmalloc (sizeof(rp_completions));
 
   INIT_LIST_HEAD (&c->completion_list);
   c->complete_fn = list_fn;

@@ -90,7 +90,7 @@ rp_mask_to_x11_mask (unsigned int mask)
 /* 			      &syms_per_code); */
 
 /*   *n_returned = 0; */
-/*   codes = (KeyCode *)xmalloc (sizeof(KeyCode) * n_returned); */
+/*   codes = xmalloc (sizeof(KeyCode) * n_returned); */
 /*   for (code = min_code; code < max_code; code++) */
 /*     for (code_col = 0; code_col < syms_per_code; code_col++) */
 /*       {       */
@@ -99,7 +99,7 @@ rp_mask_to_x11_mask (unsigned int mask)
 /* 	if (sym == s) */
 /* 	  { */
 /* 	    n_returned++; */
-/* 	    codes = (KeyCode *)xrealloc (sizeof(KeyCode) * n_returned); */
+/* 	    codes = xrealloc (sizeof(KeyCode) * n_returned); */
 /* 	    codes[n_returned-1] = code; */
 /* 	  } */
 /*       }	 */

@@ -575,7 +575,7 @@ add_keybinding (KeySym keysym, int state, char *cmd, rp_keymap *map)
     {
       /* double the key table size */
       map->actions_size *= 2;
-      map->actions = (rp_action*) xrealloc (map->actions, sizeof (rp_action) * map->actions_size);
+      map->actions = xrealloc (map->actions, sizeof (rp_action) * map->actions_size);
       PRINT_DEBUG (("realloc()ed key_table %d\n", map->actions_size));
     }
 
@@ -591,7 +591,7 @@ static void
 replace_keybinding (rp_action *key_action, char *newcmd)
 {
   if (strlen (key_action->data) < strlen (newcmd))
-    key_action->data = (char*) realloc (key_action->data, strlen (newcmd) + 1);
+    key_action->data = realloc (key_action->data, strlen (newcmd) + 1);
 
   strcpy (key_action->data, newcmd);
 }
@@ -637,7 +637,7 @@ keymap_new (char *name)
   map = xmalloc (sizeof (rp_keymap));
   map->name = xstrdup (name);
   map->actions_size = 1;
-  map->actions = (rp_action*) xmalloc (sizeof (rp_action) * map->actions_size);
+  map->actions = xmalloc (sizeof (rp_action) * map->actions_size);
   map->actions_last = 0;
 
   return map;
@@ -1704,7 +1704,7 @@ exec_completions (char *str)
       return head;
     }
 
-  partial = (char*)xmalloc (n);
+  partial = xmalloc (n);
 
   /* Read data from the file, split it into lines and store it in a
      list. */
@@ -2403,7 +2403,7 @@ arg_array (struct list_head *head)
   int i = 0;
   struct cmdarg **args, *cur;
 
-  args = (struct cmdarg **)xmalloc (sizeof (struct cmdarg *) * (list_size (head) + 1));
+  args = xmalloc (sizeof (struct cmdarg *) * (list_size (head) + 1));
   list_for_each_entry (cur, head, node)
     {
       args[i] = cur;

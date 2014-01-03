@@ -27,12 +27,12 @@
 struct sbuf *
 sbuf_new (size_t initsz)
 {
-  struct sbuf *b = (struct sbuf*) xmalloc (sizeof (struct sbuf));
+  struct sbuf *b = xmalloc (sizeof (struct sbuf));
 
   if (initsz < 1)
     initsz = 1;
 
-  b->data = (char*) xmalloc (initsz);
+  b->data = xmalloc (initsz);
   b->maxsz = initsz;
 
   b->data[0] = '\0';
@@ -73,7 +73,7 @@ sbuf_nconcat (struct sbuf *b, const char *str, int len)
 
   if (b->maxsz < minsz)
     {
-      b->data = (char*) xrealloc (b->data, minsz);
+      b->data = xrealloc (b->data, minsz);
       b->maxsz = minsz;
     }
 

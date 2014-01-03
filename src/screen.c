@@ -211,7 +211,7 @@ init_screens (int screen_arg, int screen_num)
   rp_frame_numset = numset_new();
 
   /* Initialize the screens */
-  screens = (rp_screen *)xmalloc (sizeof (rp_screen) * num_screens);
+  screens = xmalloc (sizeof (rp_screen) * num_screens);
   PRINT_DEBUG (("%d screens.\n", num_screens));
 
   if (screen_arg)

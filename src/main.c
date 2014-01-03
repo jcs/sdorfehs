@@ -110,7 +110,7 @@ xvsprintf (char *fmt, va_list ap)
 
   /* A reasonable starting value. */
   size = strlen (fmt) + 1;
-  buffer = (char *)xmalloc (size);
+  buffer = xmalloc (size);
 
   while (1)
     {
@@ -148,7 +148,7 @@ xvsprintf (char *fmt, va_list ap)
 	}
 
       /* Resize the buffer and try again. */
-      buffer = (char *)xrealloc (buffer, size);
+      buffer = xrealloc (buffer, size);
     }
 
   return xstrdup("<FAILURE>");

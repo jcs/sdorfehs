@@ -111,7 +111,7 @@ input_line_new (char *prompt, char *preinput, int history_id, completion_fn fn)
 
   /* Allocate some memory to start with */
   line->size = strlen (preinput) + 100;
-  line->buffer = (char *) xmalloc (line->size);
+  line->buffer = xmalloc (line->size);
 
   /* load in the preinput */
   strcpy (line->buffer, preinput);

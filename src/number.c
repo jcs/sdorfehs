@@ -129,7 +129,7 @@ numset_new (void)
 {
   struct numset *ns;
 
-  ns = (struct numset *)xmalloc (sizeof (struct numset));
+  ns = xmalloc (sizeof (struct numset));
   numset_init (ns);
   return ns;
 }
