@@ -93,7 +93,7 @@ void *xrealloc (void *ptr, size_t size);
 char *xstrdup (const char *s);
 char *xsprintf (char *fmt, ...);
 char *xvsprintf (char *fmt, va_list ap);
-int str_comp (char *s1, char *s2, int len);
+int str_comp (char *s1, char *s2, size_t len);
 char *strtok_ws (char *s);
 void check_child_procs (void);
 void chld_handler (int signum);

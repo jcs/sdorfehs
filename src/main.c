@@ -206,9 +206,9 @@ strtok_ws (char *s)
 
 /* A case insensitive strncmp. */
 int
-str_comp (char *s1, char *s2, int len)
+str_comp (char *s1, char *s2, size_t len)
 {
-  int i;
+  size_t i;
 
   for (i = 0; i < len; i++)
     if (toupper ((unsigned char)s1[i]) != toupper ((unsigned char)s2[i]))
