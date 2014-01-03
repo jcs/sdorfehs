@@ -108,7 +108,7 @@ xvsprintf (char *fmt, va_list ap)
   char *buffer;
   va_list ap_copy;
 
-  /* A resonable starting value. */
+  /* A reasonable starting value. */
   size = strlen (fmt) + 1;
   buffer = (char *)xmalloc (size);
 
