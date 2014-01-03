@@ -788,8 +788,7 @@ selection_request (XSelectionRequestEvent *rq)
 static void
 selection_clear (void)
 {
-  if (selection.text)
-    free (selection.text);
+  free (selection.text);
   selection.text = NULL;
   selection.len = 0;
 }

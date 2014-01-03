@@ -53,8 +53,7 @@ completions_free (rp_completions *c)
     }
 
   /* Free the partial string. */
-  if (c->partial)
-    free (c->partial);
+  free (c->partial);
 
   free (c);
 }
@@ -88,8 +87,7 @@ completions_update (rp_completions *c, char *partial)
   new_list = c->complete_fn (partial);
 
   c->virgin = 0;
-  if (c->partial)
-    free (c->partial);
+  free (c->partial);
   c->partial = xstrdup (partial);
 
   completions_assign (c, new_list);

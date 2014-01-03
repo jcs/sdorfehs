@@ -108,8 +108,7 @@ set_nselection (char *txt, int len)
   int i;
 
   /* Update the selection structure */
-  if (selection.text != NULL)
-    free(selection.text);
+  free (selection.text);
 
   /* Copy the string by hand. */
   selection.text = malloc(len+1);
@@ -125,8 +124,7 @@ void
 set_selection (char *txt)
 {
   /* Update the selection structure */
-  if (selection.text != NULL)
-    free(selection.text);
+  free (selection.text);
   selection.text = xstrdup (txt);
   selection.len = strlen (txt);
 

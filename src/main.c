@@ -297,8 +297,7 @@ handler (Display *d, XErrorEvent *e)
 
   /* If there is already an error to report, replace it with this new
      one. */
-  if (rp_error_msg)
-    free (rp_error_msg);
+  free (rp_error_msg);
   rp_error_msg = xstrdup (error_msg);
 
   return 0;

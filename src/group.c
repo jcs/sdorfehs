@@ -144,8 +144,7 @@ group_new (int number, char *name)
 void
 group_free (rp_group *g)
 {
-  if (g->name)
-    free (g->name);
+  free (g->name);
   numset_free (g->numset);
   numset_release (group_numset, g->number);
   free (g);
@@ -195,8 +194,7 @@ group_resort_group (rp_group *g)
 void
 group_rename (rp_group *g, char *name)
 {
-  if (g->name)
-    free (g->name);
+  free (g->name);
   g->name = xstrdup (name);
 }
 

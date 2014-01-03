@@ -431,7 +431,7 @@ clear_frame_redos (void)
 
   list_for_each_safe_entry (cur, iter, tmp, &rp_frame_redos, node)
     {
-      if (cur->frames) free (cur->frames);
+      free (cur->frames);
       list_del (&(cur->node));
     }
 }
@@ -440,7 +440,7 @@ void
 del_frame_undo (rp_frame_undo *u)
 {
   if (!u) return;
-  if (u->frames) free (u->frames);
+  free (u->frames);
   list_del (&(u->node));
   free (u);
 }
@@ -831,8 +831,7 @@ cmdret_new (int success, char *fmt, ...)
 void
 cmdret_free (cmdret *ret)
 {
-  if (ret->output)
-    free (ret->output);
+  free (ret->output);
   free (ret);
 }
 
@@ -2422,8 +2421,7 @@ arg_free (struct cmdarg *arg)
   if (arg)
     {
       /* read_frame doesn't fill in string. */
-      if (arg->string)
-        free (arg->string);
+      free (arg->string);
       switch (arg->type)
         {
         case arg_KEY:

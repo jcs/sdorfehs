@@ -46,9 +46,7 @@ sbuf_free (struct sbuf *b)
 {
   if (b != NULL)
     {
-      if (b->data != NULL)
-        free (b->data);
-
+      free (b->data);
       free (b);
     }
 }
