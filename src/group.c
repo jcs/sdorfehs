@@ -73,12 +73,12 @@ void
 get_group_list (char *delim, struct sbuf *buffer,
                 int *mark_start, int *mark_end)
 {
-  rp_group *cur;
+  rp_group *cur, *last;
 
   if (buffer == NULL) return;
 
   sbuf_clear (buffer);
-  rp_group *last;
+
   last = group_last_group ();
 
   /* Generate the string. */
