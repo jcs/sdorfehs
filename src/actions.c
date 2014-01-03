@@ -2664,7 +2664,7 @@ spawn(char *cmd, int raw, rp_frame *frame)
 
   /* Add this child process to our list. */
   child = xmalloc (sizeof (rp_child_info));
-  child->cmd = strdup (cmd);
+  child->cmd = xstrdup (cmd);
   child->pid = pid;
   child->terminated = 0;
   child->frame = frame;
