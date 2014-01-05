@@ -452,96 +452,6 @@ give_window_focus (rp_window *win, rp_window *last_win)
   XSync (dpy, False);
 }
 
-/* Gets frame from window -- helper to set_active_window_body
- *
- * While this fct returns a value, it also modifies a param, last_frame,
- * which is ugly... but since this is trying to fix ugly code I guess it
- * can be a little ugly.
- */
-static rp_frame*
-get_frame(rp_window *win, rp_frame *last_frame)
-{
-  rp_frame* frame=NULL;
-
-  /* use the intended frame if we can. */
-  if (win->intended_frame_number >= 0)
-    {
-      /* With Xinerama, we can move a window over to the current screen; otherwise
-       * we have to switch to the screen that the window belongs to.
-       */
-      if (rp_have_xinerama)
-        frame = screen_get_frame (current_screen(), win->intended_frame_number);
-      else
-        frame = screen_get_frame (win->scr, win->intended_frame_number);
-
-      win->intended_frame_number = -1;
-      if (frame != current_frame())
-        last_frame = current_frame();
-    }
-
-  if (!frame)
-    {
-      if (rp_have_xinerama)
-        frame = screen_get_frame (current_screen(), current_screen()->current_frame);
-      else
-        frame = screen_get_frame (win->scr, win->scr->current_frame);
-    }
-
-  return frame;
-}
-
-/* Finds a non-dedicated frame -- helper to set_active_window_body */
-static void
-find_non_dedicated_frame(rp_window *win, rp_frame *frame, rp_frame *last_frame)
-{
-  /* Try to find a non-dedicated frame.  */
-  rp_frame *cur;
-  rp_screen *scr;
-  int done;
-
-  scr = (rp_have_xinerama)?&screens[rp_current_screen]:win->scr;
-  done = 0;
-
-  /* Try the only / current screen... */
-  for (cur = list_next_entry (frame, &scr->frames, node);
-       cur != frame;
-       cur = list_next_entry (cur, &scr->frames, node))
-    {
-      if (!cur->dedicated)
-        {
-          set_active_frame (cur, 0);
-          last_frame = frame;
-          frame = cur;
-          break;
-        }
-    }
-
-  /* If we have Xinerama, we can check *all* screens... */
-  /* TODO: could this be put into yet another function? */
-  if (rp_have_xinerama && !done)
-    {
-      int i;
-
-      for (i=0; i<num_screens && !done; i++)
-        {
-          if (scr == &screens[i]) continue;
-          list_for_each_entry (cur,&screens[i].frames,node)
-            {
-              if (!cur->dedicated)
-                {
-                  set_active_frame (cur, 0);
-                  last_frame = frame;
-                  frame = cur;
-
-                  /* Good case for a goto here? */
-                  done = 1; /* Break outer loop. */
-                  break;    /* Break inner loop. */
-                }
-            }
-        }
-    }
-}
-
 /* In the current frame, set the active window to win. win will have focus. */
 void set_active_window (rp_window *win)
 {
@@ -553,6 +463,8 @@ void set_active_window_force (rp_window *win)
   set_active_window_body(win, 1);
 }
 
+/* FIXME: This function is probably a mess. I can't remember a time
+   when I didn't think this. It probably needs to be fixed up. */
 void
 set_active_window_body (rp_window *win, int force)
 {
@@ -563,10 +475,84 @@ set_active_window_body (rp_window *win, int force)
 
   PRINT_DEBUG (("intended_frame_number: %d\n", win->intended_frame_number));
 
-  frame = get_frame(win, last_frame);
+  /* With Xinerama, we can move a window over to the current screen; otherwise
+   * we have to switch to the screen that the window belongs to.
+   */
+  if (rp_have_xinerama)
+    {
+      /* use the intended frame if we can. */
+      if (win->intended_frame_number >= 0)
+        {
+          frame = screen_get_frame (current_screen(), win->intended_frame_number);
+          win->intended_frame_number = -1;
+          if (frame != current_frame())
+            last_frame = current_frame();
+        }
+
+      if (!frame)
+        frame = screen_get_frame (current_screen(), current_screen()->current_frame);
+    }
+  else
+    {
+      /* use the intended frame if we can. */
+      if (win->intended_frame_number >= 0)
+        {
+          frame = screen_get_frame (win->scr, win->intended_frame_number);
+          win->intended_frame_number = -1;
+          if (frame != current_frame())
+            last_frame = current_frame();
+        }
+
+      if (!frame)
+        frame = screen_get_frame (win->scr, win->scr->current_frame);
+    }
 
   if (frame->dedicated && !force)
-	find_non_dedicated_frame(win, frame, last_frame);
+    {
+      /* Try to find a non-dedicated frame.  */
+      rp_frame *cur;
+      rp_screen *scr;
+      int done;
+
+      scr = (rp_have_xinerama)?&screens[rp_current_screen]:win->scr;
+      done = 0;
+
+      /* Try the only / current screen... */
+      for (cur = list_next_entry (frame, &scr->frames, node);
+           cur != frame && !done;
+           cur = list_next_entry (cur, &scr->frames, node))
+        {
+          if (!cur->dedicated)
+            {
+              set_active_frame (cur, 0);
+              last_frame = frame;
+              frame = cur;
+              done = 1;
+            }
+        }
+
+      /* If we have Xinerama, we can check *all* screens... */
+      if (rp_have_xinerama && !done)
+        {
+          int i;
+
+          for (i=0; i<num_screens && !done; i++)
+            {
+              if (scr == &screens[i]) continue;
+              list_for_each_entry (cur,&screens[i].frames,node)
+                {
+                  if (!cur->dedicated)
+                    {
+                      set_active_frame (cur, 0);
+                      last_frame = frame;
+                      frame = cur;
+                      done = 1; /* Break outer loop. */
+                      break;    /* Break inner loop. */
+                    }
+                }
+            }
+        }
+    }
 
   last_win = set_frames_window (frame, win);
 
