@@ -200,7 +200,7 @@ of its name. To do this hit @kbd{C-t '}.
 ratpoison allows you to cycle through the windows with @kbd{C-t n}
 and @kbd{C-t p}.
 
-And That concludes a brief introduction on how to use ratpoison. Notice
+And that concludes a brief introduction on how to use ratpoison. Notice
 how we didn't have to drag a single window, or click a single maximize
 button? Beautiful wasn't it? Felt fast? Cool? It's modern computing at
 its best.
