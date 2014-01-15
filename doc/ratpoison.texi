@@ -193,7 +193,7 @@ terminal.
 Once you have a couple X programs running, you'll want to navigate
 between windows. To see what windows are being managed hit @kbd{C-t
 w}. Each window has a number. You can jump to a window by hitting
-@kbd{C-t} followed by the window's number. This assumes the the window's
+@kbd{C-t} followed by the window's number. This assumes the window's
 number is one digit. You can also switch to a window by typing in part
 of its name. To do this hit @kbd{C-t '}.
 
