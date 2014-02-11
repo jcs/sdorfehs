@@ -270,6 +270,9 @@ if( $arg eq "help" ) {
 } elsif( $arg eq "restore" ) {
     my $filename = shift @ARGV;
     ws_dumprestore($filename);
+} elsif ( $arg eq "current" ) {
+    my $cws = rp_call( "getenv wspl" );
+    print "$cws";
 } else {
    open LOCK, ">>$lockfile" or die "Cannot open lockfile: $lockfile";
    flock(LOCK, LOCK_EX);
@@ -289,6 +292,7 @@ rpws - Implements multiple workspaces in ratpoison
                             -k sets up key bindings and aliases.
  rpws dump <fname>      - dumps the current layout to <fname>
  rpws restore <fname>   - restores rpws workspaces from <fname>
+ rpws current           - print the current workspace
  rpws help              - this documentation
  rpws n                 - switch to this workspace
 
