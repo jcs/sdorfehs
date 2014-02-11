@@ -311,8 +311,10 @@ Add the following line in ~/.ratpoisonrc
 
 This creates 6 aliases rpws1, rpws2, etc. It also binds the keys M-F1,
 M-F2, etc to each rpwsN alias. Moreover, rpwsn (Next) and rpwsp (Prev) are
-created, and C-M-{Right,Left} are bound to rpws{n,p}. Full list of keybindings
-created are:
+created, and C-M-{Right,Left} are bound to rpws{n,p}. Aliases rpwsm1, rpwsm2, etc.
+and rpwsm{n,p} are used to move the focused window to another workspace.
+
+Full list of keybindings created are:
 
     M-F$i           Goto workspace $i
     C-M-Right       Goto Next workspace
