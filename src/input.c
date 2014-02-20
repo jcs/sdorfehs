@@ -303,7 +303,6 @@ grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
 char *
 keysym_to_string (KeySym keysym, unsigned int modifier)
 {
-  static char *null_string = "NULL";
   struct sbuf *name;
   char *tmp;
 
@@ -320,7 +319,7 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
      can return NULL. In this case use the "NULL" string. */
   tmp = XKeysymToString (keysym);
   if (tmp == NULL)
-    tmp = null_string;
+    tmp = "NULL";
 
   sbuf_concat (name, tmp);
 
