@@ -26,6 +26,7 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
+#include <X11/XKBlib.h>
 
 #include "ratpoison.h"
 
@@ -251,8 +252,8 @@ keysym_to_keycode_mod (KeySym keysym, KeyCode *code, unsigned int *mod)
 
   *mod = 0;
   *code = XKeysymToKeycode (dpy, keysym);
-  lower = XKeycodeToKeysym (dpy, *code, 0);
-  upper = XKeycodeToKeysym (dpy, *code, 1);
+  lower = XkbKeycodeToKeysym (dpy, *code, 0, 0);
+  upper = XkbKeycodeToKeysym (dpy, *code, 0, 1);
   /* If you need to press shift to get the keysym, add the shift
      mask. */
   if (upper == keysym && lower != keysym)
@@ -362,8 +363,8 @@ cook_keycode (XKeyEvent *ev, KeySym *keysym, unsigned int *mod, char *keysym_nam
   /* Find out if XLookupString gobbled the shift modifier */
   if (ev->state & ShiftMask)
     {
-      lower = XKeycodeToKeysym (dpy, ev->keycode, 0);
-      upper = XKeycodeToKeysym (dpy, ev->keycode, 1);
+      lower = XkbKeycodeToKeysym (dpy, ev->keycode, 0, 0);
+      upper = XkbKeycodeToKeysym (dpy, ev->keycode, 0, 1);
       /* If the keysym isn't affected by the shift key, then keep the
          shift modifier. */
       if (lower == upper)
