@@ -173,6 +173,19 @@ dnl Checks for library functions.
 AC_CHECK_FUNCS(getline getopt_long setenv setpgid setpgrp setsid)
 AC_CHECK_FUNCS(unsetenv vsnprintf)
 
+AH_TEMPLATE([HAVE___BUILTIN_PREFETCH],
+  [Define to 1 if your compiler supports the `__builtin_prefetch' function.])
+AC_MSG_CHECKING([for __builtin_prefetch()])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([],
+  [
+    int a = 9;
+    __builtin_prefetch(&a);
+    return 0;
+  ])],
+  [AC_DEFINE([HAVE___BUILTIN_PREFETCH], 1)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)])
+
 AM_LANGINFO_CODESET
 
 AC_CONFIG_FILES([Makefile doc/Makefile src/Makefile contrib/Makefile])
