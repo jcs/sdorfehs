@@ -2646,13 +2646,17 @@ spawn(char *cmd, int raw, rp_frame *frame)
          in its own session. */
       putenv(current_screen()->display_string);
 #ifdef HAVE_SETSID
-      setsid();
+      if (setsid() == -1)
 #endif
+        {
 #if defined (HAVE_SETPGID)
-      setpgid (0, 0);
+          setpgid (0, 0);
 #elif defined (HAVE_SETPGRP)
-      setpgrp (0, 0);
+          /* Assume BSD-style setpgrp */
+          setpgrp (0, 0);
 #endif
+        }
+
       /* raw means don't run it through sh.  */
       if (raw)
         execl (cmd, cmd, NULL);
