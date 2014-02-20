@@ -35,6 +35,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <pwd.h>
 
 #include "ratpoison.h"
 
@@ -423,8 +424,15 @@ read_startup_files (char *alt_rcfile)
       homedir = getenv ("HOME");
       if (!homedir)
         {
-          PRINT_ERROR (("ratpoison: $HOME not set!?\n"));
+          struct passwd *pw;
+
+          pw = getpwuid (getuid ());
+          if (pw)
+            homedir = pw->pw_dir;
         }
+
+      if (!homedir)
+        PRINT_ERROR (("ratpoison: no home directory!?\n"));
       else
         {
           char *filename;
