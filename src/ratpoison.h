@@ -84,7 +84,7 @@ extern XGCValues gv;
 void clean_up (void);
 rp_screen *find_screen (Window w);
 
-void set_close_on_exec (FILE *fd);
+void set_close_on_exec (int fd);
 void read_rc_file (FILE *file);
 
 void fatal (const char *msg);

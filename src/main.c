@@ -365,12 +365,11 @@ print_help (void)
 #endif
 
 void
-set_close_on_exec (FILE *fd)
+set_close_on_exec (int fd)
 {
-  int fnum = fileno (fd);
-  int flags = fcntl (fnum, F_GETFD);
+  int flags = fcntl (fd, F_GETFD);
   if (flags >= 0)
-    fcntl (fnum, F_SETFD, flags | FD_CLOEXEC);
+    fcntl (fd, F_SETFD, flags | FD_CLOEXEC);
 }
 
 void
@@ -451,7 +450,7 @@ read_startup_files (char *alt_rcfile)
 
   if (fileptr)
     {
-      set_close_on_exec(fileptr);
+      set_close_on_exec (fileno (fileptr));
       read_rc_file (fileptr);
       fclose (fileptr);
     }

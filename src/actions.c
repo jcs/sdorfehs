@@ -1154,7 +1154,7 @@ cmd_source (int interactive UNUSED, struct cmdarg **args)
     return cmdret_new (RET_FAILURE, "source: %s : %s", ARG_STRING(0), strerror(errno));
   else
     {
-      set_close_on_exec (fileptr);
+      set_close_on_exec (fileno (fileptr));
       read_rc_file (fileptr);
       fclose (fileptr);
     }
