@@ -1,4 +1,4 @@
-/* Read kdb input from the user.
+/* Read keyboard input from the user.
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This file is part of ratpoison.
@@ -303,7 +303,7 @@ grab_key (KeySym keysym, unsigned int modifiers, Window grab_window)
 char *
 keysym_to_string (KeySym keysym, unsigned int modifier)
 {
-  static char *null_string = "NULL"; /* A NULL string. */
+  static char *null_string = "NULL";
   struct sbuf *name;
   char *tmp;
 
