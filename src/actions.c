@@ -34,6 +34,10 @@
 #ifdef HAVE_LIBXTST
 #  include <X11/extensions/XTest.h>
 #endif
+
+#ifdef HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
 
 
 #define ARG_STRING(elt) args[elt]->string
@@ -2649,6 +2653,17 @@ spawn(char *cmd, int raw, rp_frame *frame)
       if (setsid() == -1)
 #endif
         {
+#if defined (HAVE_SYS_IOCTL_H) && defined (TIOCNOTTY)
+          int ctty;
+
+          ctty = open ("/dev/tty", O_RDONLY);
+          if (ctty != -1)
+            {
+              ioctl (ctty, TIOCNOTTY);
+              close (ctty);
+            }
+#endif
+
 #if defined (HAVE_SETPGID)
           setpgid (0, 0);
 #elif defined (HAVE_SETPGRP)
