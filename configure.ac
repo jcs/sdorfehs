@@ -165,12 +165,13 @@ AS_IF([test "$with_electric_fence" = yes],
 
 dnl Checks for header files.
 AC_HEADER_STDC
+AC_CHECK_HEADERS([pwd.h])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_TYPEOF
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(getline getopt_long setenv setpgid setpgrp setsid)
+AC_CHECK_FUNCS(getline getopt_long getpwuid setenv setpgid setpgrp setsid)
 AC_CHECK_FUNCS(unsetenv vsnprintf)
 
 AH_TEMPLATE([HAVE___BUILTIN_PREFETCH],

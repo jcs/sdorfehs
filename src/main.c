@@ -35,12 +35,15 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <ctype.h>
-#include <pwd.h>
 
 #include "ratpoison.h"
 
 #ifdef HAVE_LANGINFO_CODESET
 # include <langinfo.h>
+#endif
+
+#if defined (HAVE_PWD_H) && defined (HAVE_GETPWUID)
+#include <pwd.h>
 #endif
 
 /* Several systems seem not to have WAIT_ANY defined, so define it if
@@ -422,6 +425,7 @@ read_startup_files (char *alt_rcfile)
          $sysconfdir/ratpoisonrc */
 
       homedir = getenv ("HOME");
+#if defined (HAVE_PWD_H) && defined (HAVE_GETPWUID)
       if (!homedir)
         {
           struct passwd *pw;
@@ -430,6 +434,7 @@ read_startup_files (char *alt_rcfile)
           if (pw)
             homedir = pw->pw_dir;
         }
+#endif
 
       if (!homedir)
         PRINT_ERROR (("ratpoison: no home directory!?\n"));
