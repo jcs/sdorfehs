@@ -662,6 +662,8 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
+  set_close_on_exec (ConnectionNumber (dpy));
+
   /* Set ratpoison specific Atoms. */
   rp_command = XInternAtom (dpy, "RP_COMMAND", False);
   rp_command_request = XInternAtom (dpy, "RP_COMMAND_REQUEST", False);
