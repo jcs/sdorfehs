@@ -359,9 +359,9 @@ struct rp_input_line
   char *buffer;
   char *prompt;
   char *saved;
-  int   position;
-  int   length;
-  int   size;
+  size_t position;
+  size_t length;
+  size_t size;
   rp_completions *compl;
   Atom  selection;
   int   history_id;
