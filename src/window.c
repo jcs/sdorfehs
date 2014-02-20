@@ -19,12 +19,6 @@
  * Boston, MA 02111-1307 USA
  */
 
-/* Citing getsid(2) here: 
-   To get the prototype under glibc, define both _XOPEN_SOURCE and
-   _XOPEN_SOURCE_EXTENDED, or use "#define _XOPEN_SOURCE n" for some
-   integer n larger than or equal to 500. */
-#define _XOPEN_SOURCE 500
-#include <unistd.h>             /* for getsid */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -124,7 +118,6 @@ get_child_info (Window w)
   unsigned long nitems;
   unsigned long bytes_after;
   unsigned char *req;
-  pid_t sid;
 
   status = XGetWindowProperty (dpy, w, _net_wm_pid,
                                0, 0, False, XA_CARDINAL,
@@ -156,24 +149,9 @@ get_child_info (Window w)
 
   PRINT_DEBUG(("pid: %d\n", pid));
 
-  /*
-    The pids will hopefully be in the same session.
-
-     XXX what's the use of this session check?
-     On some platforms (eg. OpenBSD) you get EPERM if `pid' is not in the
-     same session as ratpoison.  This makes stuff like %p in winformat much
-     less useful...
-   */
-  sid = getsid (pid);
-  if (sid == -1)
-      return NULL;
-
   list_for_each_entry (cur, &rp_children, node)
-    {
-      PRINT_DEBUG(("cur->pid=%d sid=%d\n", cur->pid, getsid (cur->pid)));
-      if (sid == getsid (cur->pid))
-        return cur;
-    }
+    if (pid == cur->pid)
+      return cur;
 
   return NULL;
 }
