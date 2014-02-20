@@ -324,11 +324,7 @@ keysym_to_string (KeySym keysym, unsigned int modifier)
 
   sbuf_concat (name, tmp);
 
-  /* Eat the nut and throw away the shells. */
-  tmp = sbuf_get (name);
-  free (name);
-
-  return tmp;
+  return sbuf_free_struct (name);
 }
 
 /* Cooks a keycode + modifier into a keysym + modifier. This should be
