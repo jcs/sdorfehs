@@ -1,0 +1,1175 @@
+.\" This man page is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2, or (at your option)
+.\" any later version.
+.\"
+.\" This man page is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this software; see the file COPYING.  If not, write to
+.\" the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+.\" Boston, MA 02111-1307 USA
+.\"
+.\"
+.\" This manpage is written using the mdoc macro language.
+.\" Examples of formatters which support mdoc are groff[1] and mandoc[2].
+.\" An mdoc language reference is available[3].
+.\"
+.\" [1] https://gnu.org/software/groff/
+.\" [2] http://mdocml.bsd.lv/
+.\" [3] http://mdocml.bsd.lv/mdoc.7.html
+.\"
+.Dd 2014-02-12
+.Dt RATPOISON 1
+.Os
+.Sh NAME
+.Nm ratpoison
+.Nd window manager without mouse dependency
+.Sh SYNOPSIS
+.Nm
+.Op Fl hv
+.Nm
+.Op Fl d Ar dpy
+.Op Fl s Ar num
+.Op Fl f Ar file
+.Nm
+.Op Fl d Ar dpy
+.Op Fl s Ar num
+.Op Fl i
+.Fl c Ar command Op Fl c Ar command ...
+.Sh DESCRIPTION
+.Nm
+is a Window Manager without fat library dependencies, fancy graphics or
+rat dependence.
+.Pp
+The screen can be split into non-overlapping frames.
+All windows are kept maximized inside their frames.
+.Pp
+All interaction with the window manager is done through
+keystrokes.
+.Nm
+has a prefix map to minimize key clobbering.
+.Pp
+The options are as follows:
+.Bl -tag -width Bs
+.It Fl c , Fl \-command
+Send ratpoison a command.
+There must be a ratpoison instance running as window manager for the
+given display/screen for this to work.
+Do not forget to quote the command if it contains spaces.
+For example:
+.Dl Nm Fl c Qq Ar "echo hello world"
+.It Fl d , Fl \-display Ar display
+Set the X display to use or send commands to.
+.It Fl f , Fl \-file Ar filename
+Specify an alternate configuration file.
+If this is not given,
+.Nm
+will try
+.Pa $HOME/.ratpoisonrc
+and if that does not exist
+.Pa /etc/ratpoisonrc
+and execute each command when starting up.
+.It Fl h , Fl \-help
+Show summary of options.
+.It Fl i , Fl \-interactive
+Execute commands given with
+.Fl c
+or
+.Fl -command
+in interactive mode.
+That means it will behave exactly as if called with
+.Ic C\-t \&:
+like prompting for missing arguments and things like that.
+.It Fl s , Fl \-screen Ar number
+Only use the specified screen.
+.It Fl v , Fl \-version
+Show version of program.
+.El
+.Sh KEY BINDINGS
+To avoid conflicts with other programs, all default ratpoison key
+bindings start with an escape key, per default
+.Ic C\-t
+(read Control\-t).
+Some important default key bindings:
+.Bl -tag -width Ds
+.It Ic C\-t \&?
+Show key bindings
+.It Ic C\-t c
+Start an X terminal
+.It Ic C\-t n
+Switch to next window
+.It Ic C\-t p
+Switch to previous window
+.It Ic C\-t 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+Switch to window number 1 | 2 | ...
+.It Ic C\-t k
+Close the current window
+.It Ic C\-t K
+XKill the current application
+.It Ic C\-t s | S
+Split the current frame into two vertical | horizontal ones
+.It Ic C\-t Tab | Left | Up | Right | Down
+Switch to the next | left | top | right | bottom frame.
+.It Ic C\-t Q
+Make the current frame the only one
+.It Ic C\-t \&:
+Execute a ratpoison command
+.El
+.Pp
+Further default key bindings can be found in parentheses after the
+commands in the next section.
+.Sh COMMANDS AND DEFAULT ALIASES
+.Bl -tag -width Ds
+.It Ic abort
+.Pq Ic C\-t C\-g
+Do nothing and that successfully.
+.Po
+Useful if you pressed
+.Ic C\-t
+in error
+.Pc .
+.It Ic addhook Ar event command
+Add a hook: run
+.Ar command
+whenever
+.Ar event
+is called.
+Possible events are:
+.Bl -tag -width Ds
+.It Ar deletewindow
+Run after a window is withdrawn.
+.It Ar newwindow
+Run after a new window is mapped.
+.It Ar key
+Run whenever a top level key is pressed (by default
+.Ic C\-t ) .
+.It Ar quit
+Run before exiting
+.Nm .
+.It Ar restart
+Run before restarting
+.Nm .
+.It Ar switchframe
+Run after a frame actually switched, but before the window in it is
+focused.
+.It Ar switchgroup
+Run after selecting a new group.
+.It Ar switchwin
+Run after a new window is selected.
+(With dedication, it may already be inactive again, if it was put into
+another frame)
+.El
+.It Ic alias Ar alias command
+Add
+.Ar alias
+as new way to call
+.Ar command .
+.It Ic bind Ar key command
+alias for
+.Qq Ic definekey Li root Ar key command
+.It Ic banish
+.Pq Ic C\-t b
+Banish the rat cursor to the lower right corner of the screen.
+.It Ic banishrel
+Banish the rat cursor to the lower right corner of the current window.
+If there isn't a window in the current frame, it banishes the rat cursor
+to the lower right corner of the frame.
+.It Ic chdir Op Ar directory
+If the optional argument is given, change the current directory
+of
+.Nm
+to
+.Ar directory .
+If nothing is given, change it to the value of the environment variable
+.Qq Ev HOME .
+.It Ic clrunmanaged
+Clears the unmanaged window list.
+.It Ic cnext
+Like
+.Ic next
+but switch to the next window with another resource class than the
+current one.
+(That means the next window belonging to another type of application
+than the current one.)
+.It Ic cprev
+Like
+.Ic prev
+but switch to the previous window with another resource class than the
+current one.
+(That means the previous window belonging to another type of application
+than the current one.)
+.It Ic colon Ar ratpoison\-command Pq Ic C\-t \&:
+Execute
+.Ar ratpoison\-command
+interactively.
+(i.e. ask for possible missing arguments.)
+.It Ic compat
+Add aliases for the new
+.Ic set
+commands starting with "def" to support older scripts.
+.It Ic cother
+Like
+.Ic other
+but switch to the window of the current group that was last accessed and
+has another resource class but is not currently visible.
+.It Ic curframe Pq Ic C\-t F
+Show a bar marking the current frame.
+.It Ic definekey Ar keymap key command
+Add a new key binding in
+.Ar keymap
+for
+.Ar key
+to execute
+.Ar command .
+Default keymaps are
+.Li top
+normally only containing
+.Ic C\-t ,
+which reads a key from
+.Li root ,
+containing all the normal commands.
+.Pp
+Note that you have to describe ":" by "colon", "!" by "exclam" and so on.
+If you cannot guess a name of a key, try either
+.Ic C\-t Ar key
+and look at the error message, or try
+.Ic :describekey Li root
+and pressing the key.
+.It Ic def...
+When
+.Ic compat
+was called there are some aliases starting with "def", which alias the
+new form with
+.Ic set .
+I.e. instead of
+.Ic defresizeunit
+better use the new
+.Ic set Cm resizeunit
+and so on...
+.It Ic dedicate Op Li 0 | 1
+Consider the current frame dedicated/chaste
+.Pq Ql 1
+or promiscuous
+.Pq Ql 0 .
+.Pp
+A dedicated frame will not accept new windows.
+When new windows are to be focused, they will be opened in a non-dedicated
+frame instead.
+.Pp
+If no argument is given, toggle the current dedicateness. By default no
+windows are dedicated.
+.It Ic delete Pq Ic C\-t k
+Close the current window.
+.It Ic delkmap Ar keymap
+Deletes the keymap named
+.Ar keymap ,
+that was generated with
+.Ic newkmap .
+The keymaps
+.Li top
+(or whatever was specified by
+.Ic set Ar topkmap )
+and
+.Li root
+cannot be deleted.
+.It Ic describekey Ar keymap
+Grab the next key. Similar to
+.Ic readkey ,
+.Ic describekey
+shows only the command in
+.Ar keymap ,
+that would be executed by
+.Ic readkey .
+.It Ic echo Ar text
+Show
+.Ar text
+as
+.Nm
+message.
+.It Ic escape Ar key
+Update the default escape key to
+.Ar key .
+.Pp
+Strictly speaking it updates the
+.Ic readkey Li root
+command in the keymap
+.Li top
+to
+.Ar key ,
+the
+.Ic other
+binding
+in
+.Li root
+to
+.Ar key ,
+and
+.Ic meta
+binding in
+.Li root
+to
+.Ar key
+without modifiers or
+.Ic "C\-" Ns Ar key
+if
+.Ar key
+has no modifiers.
+(If
+.Ic set Ar topkmap
+was called with an argument other than
+.Ar top
+that will be used instead of
+.Ar top . )
+.It Ic exchangedown Pq Ic C\-t C\-Down
+Exchange the window in the current frame with the window in the frame
+below the current frame.
+.It Ic exchangeleft Pq Ic C\-t C\-Left
+Exchange the window in the current frame with the window in the frame
+left of the current frame.
+.It Ic exchangeright Pq Ic C\-t C\-Right
+Exchange the window in the current frame with the window in the frame
+right of the current frame.
+.It Ic exchangeup Pq Ic C\-t C\-Up
+Exchange the window in the current frame with the window in the frame
+above the current frame.
+.It Ic exec Ar shell\-command Pq Ic C\-t \&!
+Spawn a shell executing
+.Ar shell\-command .
+.It Ic execa Ar shell\-command
+Spawn a shell executing
+.Ar shell\-command ,
+without remembering the current frame, so that _NET_WM_PID declaring
+programs will be placed into the frame active when they open a window
+instead of the frame active when
+.Nm
+gets this command.
+.It Ic execf Ar frame shell\-command
+Spawn a shell executing
+.Ar shell\-command ,
+showing _NET_WM_PID supporting programs in the given frame instead of
+the frame selected when this program is run.
+.It Ic fdump Op Ar screenno
+Output the defining data for all frames of the current screen, or
+for screen number
+.Ar screenno
+if this is specified.
+.It Ic focus Pq Ic C\-t Tab
+Focus the next frame.
+.It Ic focuslast
+Switch to the last selected focus.
+.It Ic focusleft Pq Ic C\-t Left
+Switch to the frame to the left of the current one.
+.It Ic focusdown Pq Ic C\-t Down
+Switch to the frame beneath the current one.
+.It Ic focusright Pq Ic C\-t Right
+Switch to the frame to the right of the current one.
+.It Ic focusprev
+Focus the previous frame.
+.It Ic focusup Pq Ic C\-t Up
+Switch to the frame above the current one.
+.It Ic frestore Ar frames
+Replace the current frames with the ones specified in
+.Ar frames
+in the format as generated by
+.Ic fdump .
+.It Ic fselect Oo Ar frameno Oc Pq Ic C\-t f
+If an argument is supplied, switch to a frame given by number
+.Ar frameno .
+.Pp
+If no argument is given, show a frame selector in each frame and wait for
+a key to be pressed.
+If the key matches an existing frame selector, this frame gets focused.
+.Pp
+Frame selectors are by default the numbers starting with zero, but they
+can be changed by
+.Ic set Ns
+ting
+.Ar framesels .
+.It Ic gdelete Op Ar group
+If the optional argument
+.Ar group
+is supplied, delete
+.Ar group .
+Otherwise delete the current group. If the last group is deleted, a new
+group with name
+.Li default
+is created.
+The group has to be empty, otherwise it cannot be deleted.
+.It Ic getenv Ar variable
+Output the value of the environment variable
+.Ar variable .
+.It Ic getsel
+Paste the current X Selection into the current window.
+.It Ic gmerge Ar group
+Move all windows from group
+.Ar group
+into the current group.
+.It Ic gmove Ar group
+Move the current window into group
+.Ar group .
+.It Ic gnew Ar group
+Create a new group with name
+.Ar group
+and select it.
+Most window commands only see (and thus select, consider next,
+previous or last) windows within the group active when they are
+issued.
+.It Ic gnewbg Ar group
+Create a new group named
+.Ar group ,
+but do not select it.
+.It Ic gnext
+Select the next group.
+Most window commands only see windows in the effective group.
+.It Ic gnumber Op Ar old new
+Give the number
+.Ar new
+to the group with the number
+.Ar old
+or the current group.
+.It Ic gother
+Select the last accessed group.
+Most window commands only see windows in the effective group.
+.It Ic gprev
+Select the prior group.
+Most window commands only see windows in the effective group.
+.It Ic gravity Op Li nw | w | sw | n | c | s | ne | e | se
+Change how in its frame the current window is aligned.
+.It Ic grename
+Rename current group.
+.It Ic groups
+Output a list of all groups with their number.
+.It Ic gselect Ar group
+Select the group named
+.Ar group .
+.It Ic help Op Ar keymap
+If the optional parameter
+.Ar keymap
+is given, list all keybindings in this keymap, otherwise list all key
+bindings in keymap
+.Li root .
+.It Ic hsplit Oo Ar l Ns Li / Ns Ar p | Oo Li \- Oc Ns Ar pixels Oc Pq Ic C\-t S
+Split the current frame into left frame and a right frame.
+If no parameter is given, split in halves.
+If two numbers separated by a slash
+.Pq Ql "/"
+are given, the left one is
+.Ar l
+times the
+.Ar p Ns
+th
+part and the right one
+.Pq Ar p Li \- Ar l
+times the
+.Ar p Ns
+th
+part of the prior width.
+Otherwise the right half is
+.Ar pixels
+wide or the left one is
+.Ar pixels
+wide, depending whether there is
+.Ql \-
+in front of the number or not.
+.It Ic inext
+Like
+.Ic next
+but switch to the next window with the same resource class as the
+current one.
+(That means the next window belonging to the same application
+as the current one.)
+.It Ic info Pq Ic C\-t i
+Output the current the width, height, window number and window name of
+the current window.
+.Po
+What name means is chosen by
+.Dq Ic set Ar winname .
+.Pc
+.It Ic iprev
+Like
+.Ic prev
+but switch to the previous window with the same resource class as the
+current one.
+(That means the previous window belonging to the same application as the
+current one.)
+.It Ic iother
+Like
+.Ic other
+but switch to the window of the current group that was last accessed and
+has the same resource class but is not currently visible.
+.It Ic kill Pq Ic C\-t K
+Close the X-connection of the X-client responsible for the current window.
+.It Ic lastmsg Pq Ic C\-t m
+Reshow the last message.
+.It Ic license Pq Ic C\-t V
+Show
+.Nm Ap
+s license.
+.It Ic link Ar key Op Ar keymap
+Do what
+.Ar key
+is bound to in the keymap
+.Ar keymap
+if supplied.
+Otherwise what
+.Ar key
+is bound to in keymap
+.Li root .
+.It Ic listhook Ar event
+List all commands specified with
+.Ic addhook
+to be executed when even
+.Ar event
+occurs.
+.It Ic meta Oo Ar key Oc Pq Ic C\-t t
+Send the escape key (that which normally is
+.Ic C\-t )
+to the current window.
+If a
+.Ar key
+is specified, this is sent instead.
+Note that some applications by default ignore the synthetic key that is
+sent using this command as it is considered a security hole.
+xterm is one such application.
+.It Ic msgwait Op Ar seconds
+Set the duration the message window is shown.
+If
+.Ar seconds
+is zero, wait infinitely.
+.It Ic newkmap Ar keymap
+Generate a new keymap named
+.Ar keymap .
+This keymap can be used to add new key-command mappings to it with
+.Ic definekey
+and can be called with
+.Ic readkey .
+.It Ic newwm Ar new window manager
+Quit
+.Nm
+and execute
+.Ar new window manager
+instead.
+.It Ic next Pq Ic C\-t Return | C\-t n | C\-t space
+Switch to the next window in the current group.
+.It Ic nextscreen Pq Ic C\-t N
+Switch to the next screen. (If you have multiple physical ones.)
+.It Ic number Ar new Op Ar old
+Give the number
+.Ar new
+to the window with the number
+.Ar old
+or the current window.
+.It Ic only Pq Ic C\-t Q
+Remove all frames on the current screen except the current frame and
+maximize this one to the size of the whole screen.
+.It Ic other Pq Ic C\-t C\-t
+Switch to the window of the current group that was last
+accessed but is not currently visible.
+.It Ic prev Pq Ic C\-t p
+Switch to the previous window in the current group.
+.It Ic prevscreen Pq Ic C\-t P
+Switch to the previous screen. (If you have multiple physical ones.)
+.It Ic prompt Op Ar prompt
+.Nm
+will ask the user for input, showing
+.Ar prompt
+(or a single colon, if no argument is given) and output the input the
+user has made.
+Note that this command probably does not make much sense in interactive
+mode.
+.It Ic putsel Ar x\-selection
+Replace the X selection with the text
+.Ar x\-selection .
+It can be inserted into the current window with
+.Ic getsel .
+.It Ic quit
+Quit
+.Nm .
+.It Ic ratinfo
+Display the x y coordinates of the rat cursor relative to the screen.
+.It Ic ratrelinfo
+Display the x y coordinates of the rat cursor relative to the current
+window or current frame if no window is focused
+.It Ic ratwarp Ar x y
+Move the rat cursor to the position
+.Ar ( x , y ) .
+.It Ic ratrelwarp Ar deltax deltay
+Move the rat cursor to
+.Ar ( deltax , deltay ) ,
+relative to the current position.
+.It Ic ratclick Op Ar button
+Simulate a rat click with
+.Ar button
+(button 1=left button if none given).
+.It Ic rathold Li ( up | down ) Op Ar button
+Simulate pressing|releasing rat button
+.Ar button
+(1=left button if none given).
+.It Ic readkey Ar keymap
+Grab the next key pressed, and execute the command associated to this key
+in
+.Ar keymap .
+To show it is waiting for a key,
+.Nm
+will change the rat cursor to a square if
+.Va waitcursor
+is set.
+This command is perhaps best described with its usage in the default
+configuration: by pressing
+.Ic C\-t ,
+which is the only key in the keymap
+top ,
+the command
+.Qq Ic readkey Ar root
+is executed.
+The next key then executes the command in keymap
+.Li root
+belonging to
+this command.
+.It Ic redisplay Pq Ic C\-t l
+Extend the current window to the whole size of its current frame and
+redisplay it.
+(Useful to redisplay normal windows or bring transient windows to the
+full size of the frame as only normal windows are maximized by
+.Nm )
+.It Ic redo Pq Ic C\-t U
+Revert the last
+.Ic undo
+of frame changes.
+.It Ic remhook Ar event command
+Remove command
+.Ar command
+from the list of commands to be called when event
+.Ar event
+is hit.
+(The command has to specified, as an event can have multiple commands
+attached to it.)
+Use
+.Qq Ic listhook Ar hook
+to get a list of all attached commands.
+.It Ic remove Pq Ic C\-t R
+Remove the current frame and extend some frames around to fill the
+remaining gap.
+.It Ic resize Oo Ar deltax deltay Oc Pq Ic C\-t r
+If
+.Ar deltax
+and
+.Ar deltay
+are supplied, resize the current frame by that (i.e. move the bottom
+right corner by the given offsets and then move this frame and resize
+adjacent frames to make the frames fill the whole screen again.)
+.Pp
+If in interactive mode no arguments are supplied, resize the current
+frame interactively:
+.Pp
+.Bl -tag -offset 2n -width "C-f, Right, l" -compact
+.It Ic Return
+finish resizing
+.It Ic C\-g , Escape
+abort resizing
+.It Ic C\-n , Down , j
+grow vertically
+.It Ic C\-p , Up , k
+shrink vertically
+.It Ic C\-f , Right , l
+grow horizontally
+.It Ic C\-b , Up , h
+shrink horizontally
+.It Ic s
+shrink to size of current window
+.El
+.Pp
+While resizing interactively, changes are in multiples of the amount
+of pixels given by
+.Ic set Cm resizeunit
+(by default 10).
+.It Ic restart
+Restart
+.Nm .
+.It Ic rudeness Op Ar rudeness
+Show or set what kind of windows are allowed to jostle into the foreground.
+.Ar rudeness
+is a bitwise OR of the following values:
+.Pp
+.Bl -tag -offset 2n -width 2n -compact
+.It 1
+Transient windows may raise.
+.It 2
+Normal windows may raise.
+.It 4
+New transient windows end up in the foreground.
+.It 8
+New normal windows end up in the foreground.
+.El
+.Pp
+Default is all allowed i.e.\& 15.
+.It Ic sdump
+Output the list of all screens.
+The screens are separated by commas. Each screen is shown as 6 values:
+its number, its x-coordinate, its y-coordinate, its width, its height
+and if it is currently selected (1=true, 0=false).
+.It Ic select Li \- | Ar name | number Pq Ic C-t \&'
+If a number is given, switch to the window with number
+.Ar number .
+If a name is given, switch to the window in the current group with
+name
+.Ar name .
+Blank the current frame, if
+.Li \-
+is given.
+.It Ic set Op Ar variable Op Ar value
+If no argument is given, output all
+.Nm
+variables and their values.
+.Pp
+If one argument is given, output the value of
+.Nm
+variable
+.Ar variable .
+Otherwise set
+.Ar variable
+to
+.Ar value .
+What values are valid depends on the variable.
+See the section
+.Sx VARIABLES
+later in this document for details.
+.It Ic setenv Ar variable value
+Set the environment variable
+.Ar variable
+to
+.Ar value .
+.Po
+Environment variables will be passed to all programs started from
+.Nm .
+.Pc
+.It Ic sfdump
+Output all frames similar to
+.Ic fdump ,
+but not limited to one screen, but all screens at once and with the
+screen number after each frame.
+.It Ic sfrestore Ar frames
+Replace the current frames with the ones specified in
+.Ar frames
+in the format as generated by
+.Ic sfdump .
+.It Ic shrink
+Shrink the current frame to the size of the current window with in.
+.It Ic split Oo Ar split Oc Pq Ic C\-t s
+alias for
+.Ic vsplit
+.It Ic source Ar file
+Read
+.Ar file
+and execute each line as
+.Nm
+command.
+.It Ic sselect Ar screennumber
+Switch to the screen
+.Ar screennumber .
+(If you have multiple physical ones.)
+.It Ic startup_message Li on | off
+Select whether
+.Nm
+will show a startup message or not.
+.It Ic swap Oo Ar dest-frame Oo Ar src-frame Oc Oc Pq Ic C\-t x
+Exchange the window in
+.Ar src\-frame
+(or the current frame if there is no second argument) with the window
+.Ar dest\-frame
+(or ask interactively which frame to swap with if there is no argument).
+.It Ic time Pq Ic C\-t a
+Output current data and time.
+.It Ic title Ar newname Pq Ic C\-t A
+Overwrite the title of the current window with
+.Ar newname .
+All following
+.Nm
+commands will only know the window under the new name.
+.It Ic tmpwm Ar tmpwm
+Temporarily give control over to the other window manager
+.Ar tmpwm ,
+reclaiming control when that WM terminates.
+.It Ic unalias Ar alias
+Remove the alias
+.Ar alias .
+.It Ic unbind Ar key
+alias for
+.Dl Ic undefinekey Ar root key
+.It Ic undefinekey Ar keymap key
+Remove the binding for
+.Ar key
+from
+.Ar keymap .
+.It Ic undo Pq Ic C\-t _ , C\-t u
+Un\-do the last change to the frameset.
+(Like splitting, resizing, deleting, ...)
+.Pp
+The amount of steps that can be undone is specified by the variable
+.Va maxundos .
+.It Ic unmanage Op Ar name
+Add
+.Ar name
+to the list of unmanaged windows.
+Thus, windows of this name will not be managed but allowed to choose
+their position themselves.
+.Pp
+In non\-interactive mode calling it without arguments will print the list.
+.Pp
+The list can be cleared again by calling
+.Ic clrunmanaged .
+.It Ic unsetenv Ar variable
+Remove variable
+.Ar variable
+from the list of environment variables.
+.It Ic verbexec Ar cmdline
+Spawn a shell executing
+.Ar cmdline
+after showing a message with the command.
+.It Ic version Pq Ic C\-t v
+Output version and compile time information.
+.It Ic vsplit Oo Ar l Ns Li / Ns Ar p | "pixels from top" | "-pixels from bottom" Oc Pq Ic C\-t s
+Split the current frame into upper frame and a lower frame.
+If no parameter is given, split in halves.
+If two numbers separated by a slash
+.Pq Dq Li /
+are given, the upper one is
+.Ar l
+times the
+.Ar p Ns
+th part and the lower one
+.Pq Ar p Li \- Ar l
+times the
+.Ar p Ns
+th
+part of the prior height.
+Otherwise the lower one is
+.Ar "pixels from bottom"
+wide or the upper one
+.Ar "pixels from top"
+high, depending whether there is a
+.Dq Li \-
+in front of the number or not.
+.It Ic warp Op Li on | off
+Select if focusing a window moves the rat cursor to the place it had been last
+time this window was focused, or not.
+.It Ic windows Oo Ar format Oc Pq Ic C\-t w
+In interactive mode,
+show the list of all windows in the current group for the duration
+specified by
+.Ic msgwait .
+If the
+.Ic msgwait
+argument was zero, toggle between indefinitely showing and not showing.
+.Pp
+The messages are shown in columns or rows depending on the value of
+.Va winliststyle
+in the format set by
+.Ic set Ar winfmt .
+The following substitutions happen in format:
+.Pp
+.Bl -tag -offset 2n -width 2n -compact
+.It Li %a
+application name (resource name)
+.It Li %c
+resource class
+.It Li %f
+frame number
+.It Li %g
+gravity of the window
+.It Li %h
+height of the window
+.It Li %H
+unit to resize the window vertically (height_inc)
+.It Li %i
+X Window ID
+.It Li %p
+process ID
+.It Li %l
+last access number
+.It Li %M
+string
+.Li Maxsize ,
+if it specifies a maximum size
+.It Li %n
+window number
+.It Li %s
+window status
+.Po
+.Ql *
+is active window,
+.Ql +
+would be chosen by
+.Ic other ,
+.Ql \-
+otherwise
+.Pc
+.It Li %S
+screen number
+.It Li %t
+window name
+.Po see
+.Ic set Ar winname
+.Pc ,
+.It Li "%T"
+the string
+.Dq Li Transient ,
+if it is a transient window
+.It Li %w
+width of the window
+.It Li %W
+unit to resize the window horizontally (width_inc)
+.It Li %x
+xine screen number
+.It Li %%
+litteral
+.Ql %
+.El
+.Pp
+Additionally there can be a positive decimal integer number between the
+percent sign and the format string to specify the length this value
+should be truncated to if longer.
+.Po
+For example:
+.Li %20t
+.Pc
+.Pp
+In non\-interactive mode, output the list of windows in the current group
+line by line. The format string can be overwritten by the optional parameter
+.Ar format .
+.El
+.Sh VARIABLES
+.Nm
+variables can be shown and set with
+.Ic set .
+There are:
+.Bl -tag -width Ds
+.It Cm resizeunit Ar pixels
+Set the amount of pixels interactive
+.Ic resize
+will add/subtract in each step.
+.Pp
+Default is 5.
+.It Cm maxundos Ar number
+The maximal amount of step
+.Nm
+can undo with the
+.Ic undo
+command.
+.Pp
+Default is 20.
+.It Cm wingravity Li nw | w | sw | n | c | s | ne | e | se
+Set the default gravity new normal windows will get.
+Possible values are the same as in the
+.Ic gravity
+command, which changes the gravity of an existing window: cardinal
+points or numbers 1 to 9.
+.Pp
+Default is
+.Li nw .
+.It Cm maxsizegravity Li nw | w | sw | n | c | s | ne | e | se
+Set the default gravity new self-maximized windows will get.
+Possible values are the same as in the
+.Ic gravity
+command, which changes the gravity of an existing window: cardinal
+points or numbers 1 to 9.
+.Pp
+Default is
+.Li c .
+.It Cm transgravity Li nw | w | sw | n | c | s | ne | e | se
+Set the default gravity new transient windows will get.
+Possible values are the same as in the
+.Ic gravity
+command, which changes the gravity of an existing window: cardinal
+points or numbers 1 to 9.
+.Pp
+Default is
+.Li c .
+.It Cm bargravity Li nw | w | sw | n | c | s | ne | e | se
+Select the location where message and prompt bars appear.
+.Pp
+Default is
+.Li ne .
+.It Cm font Ar font
+Make
+.Nm
+use font
+.Ar font .
+.It Cm padding Ar left top right bottom
+Set how much space at the borders of the screen will not be used.
+.Pp
+Default is
+.Li 0 0 0 0 .
+.It Cm border Ar pixels
+Selects how thick the frame around windows is.
+.Pp
+Default is
+.Li 1 .
+.It Cm barborder Ar pixels
+Selects how thick the frame around
+.Nm Ap
+s
+prompt or message windows is.
+.Pp
+Default is
+.Li 1 .
+.It Cm inputwidth Ar pixels
+Determine the width of the input window.
+.Pp
+Default is
+.Li 200 .
+.It Cm barinpadding Li 0 | 1
+If there is padding, determines whether the bar appears at the edge of
+the screen
+.Pq Li 1
+or at the edge of the window area
+.Pq Li 0 .
+.Pp
+Default is
+.Li 0 .
+.It Cm topkmap Ar kmap
+Make
+.Ar kmap
+the top keymap
+.Nm
+grabs directly.
+.Pp
+The default value is
+.Li top .
+.It Cm waitcursor Li 0 | 1
+Determine whether to change the rat cursor when waiting for a key
+.Pq Li 1
+or not
+.Pq Li 0
+See
+.Ic readkey
+and
+.Ic describekey .
+.Pp
+Default is
+.Li 1 .
+.It Cm winfmt Ar format
+Choose the default format for the the
+.Ic windows
+command.
+.Pp
+Default is
+.Li %n%s%t .
+.It Cm winname Li title | name | class
+Choose what is considered the "name" of the window by
+.Nm :
+.Pp
+.Bl -tag -width Ds -compact
+.It title
+The title of the window.
+.It name
+The resource name of the window.
+.It class
+The resource class i.e. the name of the application.
+.El
+.Pp
+Default is
+.Li title .
+.It Cm fgcolor Ar color
+The foreground color of the windows
+.Nm
+creates.
+.Pp
+Default is
+.Li black .
+.It Cm bgcolor Ar color
+The background color of the windows
+.Nm
+creates.
+.Pp
+Default is
+.Li white .
+.It Cm fwcolor Ar color
+The border color of the focused window.
+.Pp
+Default is
+.Li black .
+.It Cm bwcolor Ar color
+The border color of unfocused windows.
+.Pp
+Default is
+.Li black .
+.It Cm barpadding Ar x y
+Set horizontal padding of
+.Nm
+windows to
+.Ar x
+and vertical padding to
+.Ar y .
+.Pp
+Default is
+.Li 4 0 .
+.It Cm winliststyle Li row | column
+Determines whether windows are shown in rows or in columns.
+.Pp
+Default is column.
+.It Cm framesels Ar selectors
+Override the frame selectors
+.Ic fselect
+uses.
+The first character is the selector for the first frame,
+the second character is the selector for the second frame and so on.
+.Pp
+Using this variable, one can directly access more than 10 frames.
+.Pp
+Default is an empty string, which is equivalent to "0123456789".
+.It Cm historysize Ar number
+Specify maximum number of values kept in input history.
+.Pp
+Default is
+.Li 20 .
+.It Cm historycompaction Li 0 | 1
+Decide if new input lines added to history delete
+older equal lines from history.
+.Pp
+Default is
+.Li 1
+(on).
+.It Cm historyexpansion Li 0 | 1
+Decide if history expansion using ! is available.
+(Can only be activated when compiled with readline's libhistory.)
+.Pp
+Default is
+.Li 0
+(off).
+.El
+.Sh FILES
+.Bl -tag -width "%%sysconfdir%%/ratpoisonrc" -compact
+.It Pa ~/.ratpoisonrc
+Configuration file read at startup time, if present.
+.It Pa %%sysconfdir%%/ratpoisonrc
+Fallback configuration file, if
+.Pa ~/.ratpoisonrc
+is not found.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh AUTHORS
+.An -nosplit
+Upstream author is
+.An Shawn Betts Aq Mt sabetts@gmail.com .
+.Pp
+See the
+.Pa %%docdir%%/AUTHORS
+file for other contributors.
+.Pp
+This manual page was written by
+.An Bernhard R. Link Aq Mt brlink@debian.org .
+The conversion to the
+.Xr mdoc 7
+language
+.Pq Lk http://mdocml.bsd.lv
+was done by
+.An Jeremie Courreges-Anglas Aq Mt jca@wxcvbn.org .
+.Sh BUGS
+Please report any bug you find to the ratpoison mailing-list,
+.Aq Mt ratpoison-devel@nongnu.org .

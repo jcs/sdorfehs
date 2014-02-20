@@ -80,8 +80,25 @@ fi
 AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
 
+AC_MSG_CHECKING([manpage format])
+AC_ARG_ENABLE([mdoc],
+  [AS_HELP_STRING([--disable-mdoc],
+    [install man(7) manpages, useful if you don't have a mdoc(7) formatter\
+     such as mandoc(1) or groff(1)])],
+  [], [enable_mdoc=yes])
+AS_CASE([$enable_mdoc],
+  [yes], [manpage_format=mdoc],
+  [no],  [manpage_format=man],
+  [AC_MSG_ERROR([invalid --disable-mdoc="$enable_mdoc" parameter])])
+AC_MSG_RESULT([$manpage_format])
+AC_SUBST([manpage_format])
+
 dnl Checks for programs.
 AC_PROG_CC
+AC_PATH_PROG([MANDOC], [mandoc])
+AC_ARG_VAR([MANDOC],
+  [path to mandoc(1), only used when regenerating doc/ratpoison.man.1 \
+   after editing doc/ratpoison.mdoc.1])
 
 if test "x$CC" = "xgcc"; then
 	CFLAGS="-Wall $CFLAGS"

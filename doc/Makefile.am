@@ -19,5 +19,20 @@
 
 info_TEXINFOS = ratpoison.texi
 man_MANS      = ratpoison.1
-EXTRA_DIST    = $(man_MANS) sample.ratpoisonrc ipaq.ratpoisonrc fdl.texi
-MAINTAINERCLEANFILES = Makefile.in texinfo.tex
+CLEANFILES    = ratpoison.1
+EXTRA_DIST    = $(srcdir)/ratpoison.mdoc.1 $(srcdir)/ratpoison.man.1 sample.ratpoisonrc ipaq.ratpoisonrc fdl.texi
+MAINTAINERCLEANFILES = $(srcdir)/ratpoison.man.1 Makefile.in texinfo.tex
+
+ratpoison.1: $(srcdir)/ratpoison.$(manpage_format).1 Makefile
+	tmp=`mktemp` && \
+	sed -e 's|%%sysconfdir%%|$(sysconfdir)|g' \
+	    -e 's|%%docdir%%|$(docdir)|g' \
+	    < $(srcdir)/ratpoison.$(manpage_format).1 > "$$tmp" && \
+	chmod 0644 "$$tmp" && \
+	mv "$$tmp" ratpoison.1
+
+$(srcdir)/ratpoison.man.1: $(srcdir)/ratpoison.mdoc.1
+	tmp=`mktemp` && \
+	$(MANDOC) -Tman < $(srcdir)/ratpoison.mdoc.1 > "$$tmp" && \
+	chmod 0644 "$$tmp" && \
+	mv "$$tmp" $(srcdir)/ratpoison.man.1
