@@ -1996,10 +1996,6 @@ find_group (char *str)
   rp_group *group;
   int n;
 
-  /* Exact matches are special cases. */
-  if ((group = groups_find_group_by_name (str, 1)))
-    return group;
-
   /* Check if the user typed a group number. */
   n = string_to_number (str);
   if (n >= 0)
@@ -2008,6 +2004,10 @@ find_group (char *str)
       if (group)
         return group;
     }
+
+  /* Exact matches are special cases. */
+  if ((group = groups_find_group_by_name (str, 1)))
+    return group;
 
   group = groups_find_group_by_name (str, 0);
   return group;
