@@ -1992,7 +1992,7 @@ find_group (char *str)
   int n;
 
   /* Exact matches are special cases. */
-  if (group = groups_find_group_by_name (str, 1))
+  if ((group = groups_find_group_by_name (str, 1)))
     return group;
 
   /* Check if the user typed a group number. */
