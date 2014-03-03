@@ -283,14 +283,25 @@ find_window_number (int n)
 }
 
 rp_window *
-find_window_name (char *name)
+find_window_name (char *name, int exact_match)
 {
   rp_window_elem *cur;
 
-  list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
+  if (!exact_match)
     {
-      if (str_comp (name, window_name (cur->win), strlen (name)))
-        return cur->win;
+      list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
+        {
+          if (str_comp (name, window_name (cur->win), strlen (name)))
+            return cur->win;
+        }
+    }
+  else
+    {
+      list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
+        {
+          if (!strcmp (name, window_name (cur->win)))
+            return cur->win;
+        }
     }
 
   /* didn't find it */

@@ -1410,7 +1410,10 @@ cmd_select (int interactive UNUSED, struct cmdarg **args)
       else
         /* try by name */
         {
-          rp_window *win = find_window_name (str);
+          rp_window *win = find_window_name (str, 1);
+
+          if (!win)
+            win = find_window_name (str, 0);
 
           if (win)
             {
@@ -1901,7 +1904,9 @@ read_window (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
       else
         /* try by name */
         {
-          win = find_window_name (name);
+          win = find_window_name (name, 1);
+          if (win == NULL)
+            win = find_window_name (name, 0);
         }
 
       if (win)

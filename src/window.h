@@ -47,7 +47,7 @@ int is_transient_ancestor (rp_window *win, rp_window *transient_for);
 /* int goto_window_name (char *name); */
 rp_window *find_window_other (rp_screen *screen);
 rp_window *find_window_by_number (int n);
-rp_window *find_window_name (char *name);
+rp_window *find_window_name (char *name, int exact_match);
 rp_window *find_window_prev (rp_window *w);
 rp_window *find_window_prev_with_frame (rp_window *w);
 rp_window *find_window_next (rp_window *w);
