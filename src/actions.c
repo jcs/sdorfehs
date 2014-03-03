@@ -1289,7 +1289,7 @@ cmd_other (int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 static int
-string_to_window_number (char *str)
+string_to_number (char *str)
 {
   int i;
   char *s;
@@ -1390,7 +1390,7 @@ cmd_select (int interactive UNUSED, struct cmdarg **args)
           ret = cmdret_new (RET_SUCCESS, NULL);
         }
       /* try by number */
-      else if ((n = string_to_window_number (str)) >= 0)
+      else if ((n = string_to_number (str)) >= 0)
         {
           rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
 
@@ -1892,7 +1892,7 @@ read_window (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
   if (name)
     {
       /* try by number */
-      if ((n = string_to_window_number (name)) >= 0)
+      if ((n = string_to_number (name)) >= 0)
         {
           rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
           if (elem)
@@ -1996,7 +1996,7 @@ find_group (char *str)
     return group;
 
   /* Check if the user typed a group number. */
-  n = string_to_window_number (str);
+  n = string_to_number (str);
   if (n >= 0)
     {
       group = groups_find_group_by_number (n);
