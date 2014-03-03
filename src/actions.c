@@ -423,6 +423,7 @@ typedef struct
 static alias_t *alias_list;
 static int alias_list_size;
 static int alias_list_last;
+static const char *invalid_negative_arg = "invalid negative argument";
 
 static cmdret* frestore (char *data, rp_screen *s);
 static char* fdump (rp_screen *screen);
@@ -2972,7 +2973,7 @@ cmd_v_split (int interactive UNUSED, struct cmdarg **args)
   if (pixels > 0)
     h_split_frame (frame, pixels);
   else
-    return cmdret_new (RET_FAILURE, "vsplit: invalid argument");
+    return cmdret_new (RET_FAILURE, "vsplit: %s", invalid_negative_arg);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3000,7 +3001,7 @@ cmd_h_split (int interactive UNUSED, struct cmdarg **args)
   if (pixels > 0)
     v_split_frame (frame, pixels);
   else
-    return cmdret_new (RET_FAILURE, "hsplit: invalid argument");
+    return cmdret_new (RET_FAILURE, "hsplit: %s", invalid_negative_arg);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3182,7 +3183,7 @@ set_resizeunit (struct cmdarg **args)
   if (ARG(0,number) >= 0)
     defaults.frame_resize_unit = ARG(0,number);
   else
-    return cmdret_new (RET_FAILURE, "set resizeunit: invalid argument");
+    return cmdret_new (RET_FAILURE, "set resizeunit: %s", invalid_negative_arg);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3696,7 +3697,7 @@ cmd_msgwait (int interactive UNUSED, struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.bar_timeout);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "msgwait: invalid argument");
+    return cmdret_new (RET_FAILURE, "msgwait: %s", invalid_negative_arg);
   else
     defaults.bar_timeout = ARG(0,number);
 
@@ -3895,7 +3896,7 @@ set_border (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.window_border_width);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "set border: invalid argument");
+    return cmdret_new (RET_FAILURE, "set border: %s", invalid_negative_arg);
 
   defaults.window_border_width = ARG(0,number);
 
@@ -3918,7 +3919,7 @@ set_barborder (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.bar_border_width);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "set barborder: invalid argument");
+    return cmdret_new (RET_FAILURE, "set barborder: %s", invalid_negative_arg);
 
   defaults.bar_border_width = ARG(0,number);
 
@@ -3957,10 +3958,9 @@ set_inputwidth (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.input_window_size);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "set inputwidth: invalid argument");
-  else
-    defaults.input_window_size = ARG(0,number);
+    return cmdret_new (RET_FAILURE, "set inputwidth: %s", invalid_negative_arg);
 
+  defaults.input_window_size = ARG(0,number);
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
@@ -4527,14 +4527,11 @@ set_barpadding (struct cmdarg **args)
   x = ARG(0,number);
   y = ARG(1,number);
 
-  if (x >= 0 && y >= 0)
-    {
-      defaults.bar_x_padding = x;
-      defaults.bar_y_padding = y;
-    }
-  else
-    return cmdret_new (RET_FAILURE, "set barpadding: invalid arguments");
+  if (x < 0 || y < 0)
+    return cmdret_new (RET_FAILURE, "set barpadding: %s", invalid_negative_arg);
 
+  defaults.bar_x_padding = x;
+  defaults.bar_y_padding = y;
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
@@ -5660,7 +5657,7 @@ set_maxundos (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.maxundos);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "set maxundos: invalid argument");
+    return cmdret_new (RET_FAILURE, "set maxundos: %s", invalid_negative_arg);
 
   defaults.maxundos = ARG(0,number);
 
