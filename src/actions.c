@@ -3758,6 +3758,10 @@ set_historysize (struct cmdarg **args)
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%d", defaults.history_size);
 
+  if (ARG(0, number) < 0)
+    return cmdret_new (RET_FAILURE, "set historysize: %s",
+                       invalid_negative_arg);
+
   defaults.history_size = ARG(0, number);
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3850,6 +3854,9 @@ set_padding (struct cmdarg **args)
   t = ARG(1,number);
   r = ARG(2,number);
   b = ARG(3,number);
+
+  if (l < 0 || t < 0 || r < 0 || b < 0)
+    return cmdret_new (RET_FAILURE, "set padding: %s", invalid_negative_arg);
 
   /* Resize the frames to make sure they are not too big and not too
      small. */
