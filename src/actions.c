@@ -2185,9 +2185,19 @@ read_number (struct argspec *spec, struct sbuf *s,  struct cmdarg **arg)
 
   if (input)
     {
+      char *ep;
+      long lval;
+
+      errno = 0;
+      lval = strtol (input, &ep, 10);
+      if (input[0] == '\0' || *ep != '\0')
+        return cmdret_new (RET_FAILURE, "malformed number `%s'", input);
+      if ((errno == ERANGE && (lval == LONG_MAX || lval == LONG_MIN)) ||
+          (lval > INT_MAX || lval < INT_MIN))
+        return cmdret_new (RET_FAILURE, "out of range number `%s'", input);
       *arg = xmalloc (sizeof(struct cmdarg));
       (*arg)->type = arg_NUMBER;
-      (*arg)->arg.number = strtol (input, NULL, 10);
+      (*arg)->arg.number = lval;
       (*arg)->string = input;
       return NULL;
     }
