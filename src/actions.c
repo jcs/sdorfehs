@@ -3163,7 +3163,7 @@ set_resizeunit (struct cmdarg **args)
   if (ARG(0,number) >= 0)
     defaults.frame_resize_unit = ARG(0,number);
   else
-    return cmdret_new (RET_FAILURE, "defresizeunit: invalid argument");
+    return cmdret_new (RET_FAILURE, "set resizeunit: invalid argument");
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3779,7 +3779,7 @@ set_font (struct cmdarg **args)
   font = XftFontOpenName (dpy, s->screen_num, ARG_STRING (0));
 
   if (font == NULL)
-    return cmdret_new (RET_FAILURE, "deffont: unknown font");
+    return cmdret_new (RET_FAILURE, "set font: unknown font");
 
   XftFontClose (dpy, s->xft_font);
   s->xft_font = font;
@@ -3791,7 +3791,7 @@ set_font (struct cmdarg **args)
 
   font = load_query_font_set (dpy, ARG_STRING(0));
   if (font == NULL)
-    return cmdret_new (RET_FAILURE, "deffont: unknown font");
+    return cmdret_new (RET_FAILURE, "set font: unknown font");
 
   /* Save the font as the default. */
   XFreeFontSet (dpy, defaults.font);
@@ -3876,7 +3876,7 @@ set_border (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.window_border_width);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "defborder: invalid argument");
+    return cmdret_new (RET_FAILURE, "set border: invalid argument");
 
   defaults.window_border_width = ARG(0,number);
 
@@ -3899,7 +3899,7 @@ set_barborder (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.bar_border_width);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "defbarborder: invalid argument");
+    return cmdret_new (RET_FAILURE, "set barborder: invalid argument");
 
   defaults.bar_border_width = ARG(0,number);
 
@@ -3924,7 +3924,7 @@ set_barinpadding (struct cmdarg **args)
 
   new_value = ARG(0,number);
   if (new_value < 0)
-    return cmdret_new (RET_FAILURE, "defbarborder: invalid argument");
+    return cmdret_new (RET_FAILURE, "set barborder: invalid argument");
 
   defaults.bar_in_padding = new_value;
 
@@ -3938,7 +3938,7 @@ set_inputwidth (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.input_window_size);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "definputwidth: invalid argument");
+    return cmdret_new (RET_FAILURE, "set inputwidth: invalid argument");
   else
     defaults.input_window_size = ARG(0,number);
 
@@ -4029,7 +4029,7 @@ set_winname (struct cmdarg **args)
   else if (!strncmp (name, "class", 5))
     defaults.win_name = WIN_NAME_RES_CLASS;
   else
-    return cmdret_new (RET_FAILURE, "defwinname: invalid argument");
+    return cmdret_new (RET_FAILURE, "set winname: invalid argument `%s'", name);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4058,7 +4058,7 @@ set_fgcolor (struct cmdarg **args)
   for (i=0; i<num_screens; i++)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
-        return cmdret_new (RET_FAILURE, "deffgcolor: unknown color");
+        return cmdret_new (RET_FAILURE, "set fgcolor: unknown color");
 
       screens[i].fg_color = color.pixel;
       update_gc (&screens[i]);
@@ -4071,7 +4071,7 @@ set_fgcolor (struct cmdarg **args)
       if (!XftColorAllocName (dpy, DefaultVisual (dpy, screens[i].screen_num),
                               DefaultColormap (dpy, screens[i].screen_num),
                               ARG_STRING(0), &screens[i].xft_fg_color))
-        return cmdret_new (RET_FAILURE, "deffgcolor: unknown color");
+        return cmdret_new (RET_FAILURE, "set fgcolor: unknown color");
 #endif
 
       free (defaults.fgcolor_string);
@@ -4093,7 +4093,7 @@ set_bgcolor (struct cmdarg **args)
   for (i=0; i<num_screens; i++)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
-        return cmdret_new (RET_FAILURE, "defbgcolor: unknown color");
+        return cmdret_new (RET_FAILURE, "set bgcolor: unknown color");
 
       screens[i].bg_color = color.pixel;
       update_gc (&screens[i]);
@@ -4106,7 +4106,7 @@ set_bgcolor (struct cmdarg **args)
       if (!XftColorAllocName (dpy, DefaultVisual (dpy, screens[i].screen_num),
                               DefaultColormap (dpy, screens[i].screen_num),
                               ARG_STRING(0), &screens[i].xft_bg_color))
-        return cmdret_new (RET_FAILURE, "deffgcolor: unknown color");
+        return cmdret_new (RET_FAILURE, "set fgcolor: unknown color");
 #endif
 
       free (defaults.bgcolor_string);
@@ -4129,7 +4129,7 @@ set_fwcolor (struct cmdarg **args)
   for (i=0; i<num_screens; i++)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
-        return cmdret_new (RET_FAILURE, "deffwcolor: unknown color");
+        return cmdret_new (RET_FAILURE, "set fwcolor: unknown color");
 
       screens[i].fw_color = color.pixel;
       update_gc (&screens[i]);
@@ -4158,7 +4158,7 @@ set_bwcolor (struct cmdarg **args)
   for (i=0; i<num_screens; i++)
     {
       if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
-        return cmdret_new (RET_FAILURE, "defbwcolor: unknown color");
+        return cmdret_new (RET_FAILURE, "set bwcolor: unknown color");
 
       screens[i].bw_color = color.pixel;
       update_gc (&screens[i]);
@@ -4516,7 +4516,7 @@ set_barpadding (struct cmdarg **args)
       defaults.bar_y_padding = y;
     }
   else
-    return cmdret_new (RET_FAILURE, "defbarpadding: invalid arguments");
+    return cmdret_new (RET_FAILURE, "set barpadding: invalid arguments");
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -5070,7 +5070,7 @@ set_winliststyle (struct cmdarg **args)
   else if (!strcmp ("row", ARG_STRING(0)))
     defaults.window_list_style = STYLE_ROW;
   else
-    return cmdret_new (RET_FAILURE, "defwinliststyle: invalid argument");
+    return cmdret_new (RET_FAILURE, "set winliststyle: invalid argument");
 
    return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -5644,7 +5644,7 @@ set_maxundos (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.maxundos);
 
   if (ARG(0,number) < 0)
-    return cmdret_new (RET_FAILURE, "defmaxundos: invalid argument");
+    return cmdret_new (RET_FAILURE, "set maxundos: invalid argument");
 
   defaults.maxundos = ARG(0,number);
 
