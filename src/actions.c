@@ -3768,6 +3768,9 @@ set_historycompaction (struct cmdarg **args)
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%d", defaults.history_compaction);
 
+  if (ARG(0, number) != 0 && ARG(0, number) != 1)
+    return cmdret_new (RET_FAILURE, "set historycompaction: invalid argument");
+
   defaults.history_compaction = ARG(0, number);
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3782,6 +3785,10 @@ set_historyexpansion (struct cmdarg **args)
     return cmdret_new (RET_FAILURE, "Not compiled with libhistory");
   }
 #endif
+
+  if (ARG(0, number) != 0 && ARG(0, number) != 1)
+    return cmdret_new (RET_SUCCESS, "set historyexpansion: invalid argument");
+
   defaults.history_expansion = ARG(0, number);
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3969,6 +3976,9 @@ set_waitcursor (struct cmdarg **args)
 {
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%d", defaults.wait_for_key_cursor);
+
+  if (ARG(0,number) != 0 && ARG(0,number) != 1)
+    return cmdret_new (RET_FAILURE, "set waitcursor: invalid argument");
 
   defaults.wait_for_key_cursor = ARG(0,number);
   return cmdret_new (RET_SUCCESS, NULL);
