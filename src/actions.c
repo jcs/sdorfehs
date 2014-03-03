@@ -4020,13 +4020,11 @@ set_winname (struct cmdarg **args)
 
   name = ARG_STRING(0);
 
-  /* FIXME: Using strncmp is sorta dirty since `title' and
-     `titlefoobar' would both match. But its quick and dirty. */
-  if (!strncmp (name, "title", 5))
+  if (!strncmp (name, "title", sizeof ("title")))
     defaults.win_name = WIN_NAME_TITLE;
-  else if (!strncmp (name, "name", 4))
+  else if (!strncmp (name, "name", sizeof ("name")))
     defaults.win_name = WIN_NAME_RES_NAME;
-  else if (!strncmp (name, "class", 5))
+  else if (!strncmp (name, "class", sizeof ("class")))
     defaults.win_name = WIN_NAME_RES_CLASS;
   else
     return cmdret_new (RET_FAILURE, "set winname: invalid argument `%s'", name);
