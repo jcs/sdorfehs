@@ -5962,11 +5962,17 @@ cmd_putsel (int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_getsel (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  char *sel = get_selection();
+  char *sel;
   cmdret *ret;
-  ret = cmdret_new (RET_SUCCESS, "%s", sel);
-  free (sel);
-  return ret;
+  sel = get_selection();
+  if (sel != NULL)
+    {
+      ret = cmdret_new (RET_SUCCESS, "%s", sel);
+      free (sel);
+      return ret;
+    }
+  else
+    return cmdret_new (RET_FAILURE, "getsel: no X11 selection");
 }
 
 /* This is a command that restores old commands that have been
