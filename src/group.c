@@ -232,12 +232,19 @@ groups_find_group_by_name (char *s, int exact_match)
 {
   rp_group *cur;
 
-  list_for_each_entry (cur, &rp_groups, node)
+  if (!exact_match)
     {
-      if (cur->name)
+      list_for_each_entry (cur, &rp_groups, node)
         {
-          if ((!exact_match && str_comp (s, cur->name, strlen (s))) ||
-              (exact_match && !strcmp (cur->name, s)))
+          if (cur->name && str_comp (s, cur->name, strlen (s)))
+            return cur;
+        }
+    }
+  else
+    {
+      list_for_each_entry (cur, &rp_groups, node)
+        {
+          if (cur->name && !strcmp (cur->name, s))
             return cur;
         }
     }
