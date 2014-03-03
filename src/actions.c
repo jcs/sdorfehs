@@ -3943,8 +3943,8 @@ set_barinpadding (struct cmdarg **args)
     return cmdret_new (RET_SUCCESS, "%d", defaults.bar_in_padding);
 
   new_value = ARG(0,number);
-  if (new_value < 0)
-    return cmdret_new (RET_FAILURE, "set barborder: invalid argument");
+  if (new_value != 0 && new_value != 1)
+    return cmdret_new (RET_FAILURE, "set barinpadding: invalid argument");
 
   defaults.bar_in_padding = new_value;
 
