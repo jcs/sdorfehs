@@ -27,6 +27,7 @@
 #include <time.h>
 #include <errno.h>
 #include <signal.h>
+#include <limits.h>
 #include <X11/Xproto.h>
 
 #include "ratpoison.h"
@@ -1288,20 +1289,22 @@ cmd_other (int interactive UNUSED, struct cmdarg **args UNUSED)
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
+/* Parse a positive or null number, returns -1 on failure. */
 static int
-string_to_number (char *str)
+string_to_positive_int (char *str)
 {
-  int i;
-  char *s;
+  char *ep;
+  long lval;
 
-  for (i = 0, s = str; *s; s++)
-    {
-      if (*s < '0' || *s > '9')
-        break;
-      i = i * 10 + (*s - '0');
-    }
+  errno = 0;
+  lval = strtol (str, &ep, 10);
+  if (str[0] == '\0' || *ep != '\0')
+    return -1;
+  if ((errno == ERANGE && (lval == LONG_MAX || lval == LONG_MIN)) ||
+      (lval > INT_MAX || lval < 0))
+    return -1;
 
-  return *s ? -1 : i;
+  return (int)lval;
 }
 
 static struct list_head *
@@ -1390,7 +1393,7 @@ cmd_select (int interactive UNUSED, struct cmdarg **args)
           ret = cmdret_new (RET_SUCCESS, NULL);
         }
       /* try by number */
-      else if ((n = string_to_number (str)) >= 0)
+      else if ((n = string_to_positive_int (str)) >= 0)
         {
           rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
 
@@ -1857,7 +1860,7 @@ read_frame (struct sbuf *s,  struct cmdarg **arg)
     }
   else
     {
-      fnum = strtol (sbuf_get (s), NULL, 10);
+      fnum = string_to_positive_int (sbuf_get (s));
     }
   /* Now that we have a frame number to go to, let's try to jump to
      it. */
@@ -1895,7 +1898,7 @@ read_window (struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
   if (name)
     {
       /* try by number */
-      if ((n = string_to_number (name)) >= 0)
+      if ((n = string_to_positive_int (name)) >= 0)
         {
           rp_window_elem *elem = group_find_window_by_number (rp_current_group, n);
           if (elem)
@@ -1997,7 +2000,7 @@ find_group (char *str)
   int n;
 
   /* Check if the user typed a group number. */
-  n = string_to_number (str);
+  n = string_to_positive_int (str);
   if (n >= 0)
     {
       group = groups_find_group_by_number (n);
@@ -5574,14 +5577,13 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
         ptr++;
       ptr++;
 
-      screen = strtol (ptr, NULL, 10);
-
-      /* clobber screen number here, frestore() doesn't need it */
-      *ptr = '\0';
+      screen = string_to_positive_int (ptr);
 
       /* check that specified screen number is valid */
-      if (screen < num_screens)
+      if (screen >= 0 && screen < num_screens)
         {
+          /* clobber screen number here, frestore() doesn't need it */
+          *ptr = '\0';
           sbuf_concat (buffer[screen], token);
           sbuf_concat (buffer[screen], ",");
           restored++;
