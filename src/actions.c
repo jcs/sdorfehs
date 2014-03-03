@@ -1769,7 +1769,6 @@ read_shellcmd (struct argspec *spec, struct sbuf *s, struct cmdarg **arg, const 
   return ret;
 }
 
-/* Return NULL on abort/failure. */
 static cmdret *
 read_frame (struct sbuf *s,  struct cmdarg **arg)
 {
@@ -1851,16 +1850,21 @@ read_frame (struct sbuf *s,  struct cmdarg **arg)
         {
           fnum = frame_selector_match (keysym_buf[0]);
           if (fnum == -1)
-            goto frame_fail;
+            return cmdret_new (RET_FAILURE, "unknown frame selector `%s'",
+                               keysym_buf);
         }
       else
         {
-          goto frame_fail;
+          return cmdret_new (RET_FAILURE, "frame selector too long `%s'",
+                             keysym_buf);
         }
     }
   else
     {
       fnum = string_to_positive_int (sbuf_get (s));
+      if (fnum == -1)
+        return cmdret_new (RET_FAILURE, "invalid frame selector `%s',"
+                           " negative or too big", sbuf_get (s));
     }
   /* Now that we have a frame number to go to, let's try to jump to
      it. */
@@ -1876,11 +1880,8 @@ read_frame (struct sbuf *s,  struct cmdarg **arg)
       (*arg)->arg.frame = frame;
       return NULL;
     }
-
-
- frame_fail:
-  *arg = NULL;
-  return cmdret_new (RET_SUCCESS, NULL);
+  else
+    return cmdret_new (RET_FAILURE, "frame not found");
 }
 
 static cmdret *
