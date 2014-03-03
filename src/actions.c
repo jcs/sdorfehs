@@ -714,7 +714,7 @@ initialize_default_keybindings (void)
   top = keymap_new (defaults.top_kmap);
   list_add (&top->node, &rp_keymaps);
 
-  /* Initialive the alias list. */
+  /* Initialize the alias list. */
   alias_list_size = 5;
   alias_list_last = 0;
   alias_list = xmalloc (sizeof (alias_t) * alias_list_size);
