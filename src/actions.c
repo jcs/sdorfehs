@@ -4970,8 +4970,10 @@ cmd_fdump (int interactively UNUSED, struct cmdarg **args)
       int snum;
       snum = ARG(0,number);
 
-      if (snum < 0 || num_screens <= snum)
-        return cmdret_new (RET_FAILURE, "fdump: invalid argument");
+      if (snum < 0)
+        return cmdret_new (RET_FAILURE, "fdump: invalid negative screen number");
+      else if (num_screens <= snum)
+        return cmdret_new (RET_FAILURE, "fdump: unknown screen");
       else
         {
           char *s = fdump (&screens[snum]);
