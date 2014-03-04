@@ -404,10 +404,35 @@ read_rc_file (FILE *file)
   free (line);
 }
 
+const char *
+get_homedir (void)
+{
+  char *homedir;
+
+  homedir = getenv ("HOME");
+  if (homedir != NULL && homedir[0] == '\0')
+    homedir = NULL;
+
+#if defined (HAVE_PWD_H) && defined (HAVE_GETPWUID)
+  if (homedir == NULL)
+    {
+      struct passwd *pw;
+
+      pw = getpwuid (getuid ());
+      if (pw != NULL)
+        homedir = pw->pw_dir;
+
+      if (homedir != NULL && homedir[0] == '\0')
+        homedir = NULL;
+    }
+#endif
+
+  return homedir;
+}
+
 static int
 read_startup_files (char *alt_rcfile)
 {
-  char *homedir;
   FILE *fileptr = NULL;
 
   if (alt_rcfile)
@@ -423,18 +448,9 @@ read_startup_files (char *alt_rcfile)
     {
       /* first check $HOME/.ratpoisonrc and if that does not exist then try
          $sysconfdir/ratpoisonrc */
+      const char *homedir;
 
-      homedir = getenv ("HOME");
-#if defined (HAVE_PWD_H) && defined (HAVE_GETPWUID)
-      if (!homedir)
-        {
-          struct passwd *pw;
-
-          pw = getpwuid (getuid ());
-          if (pw)
-            homedir = pw->pw_dir;
-        }
-#endif
+      homedir = get_homedir ();
 
       if (!homedir)
         PRINT_ERROR (("ratpoison: no home directory!?\n"));
