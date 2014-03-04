@@ -1762,10 +1762,12 @@ read_shellcmd (struct argspec *spec, struct sbuf *s, struct cmdarg **arg, const 
   ret = read_string (spec, s, hist_SHELLCMD, exec_completions, arg);
   if (command_name && !s && !ret) {
     /* store for command history */
-    char *str = xmalloc (strlen(command_name) + strlen((*arg)->string) + 2);
-    sprintf (str, "%s %s", command_name, (*arg)->string);
-    history_add (hist_COMMAND, str);
-    free(str);
+    struct sbuf *buf;
+
+    buf = sbuf_new (0);
+    sbuf_printf (buf, "%s %s", command_name, (*arg)->string);
+    history_add (hist_COMMAND, sbuf_get (buf));
+    sbuf_free (buf);
   }
   return ret;
 }
