@@ -596,10 +596,8 @@ add_keybinding (KeySym keysym, int state, char *cmd, rp_keymap *map)
 static void
 replace_keybinding (rp_action *key_action, char *newcmd)
 {
-  if (strlen (key_action->data) < strlen (newcmd))
-    key_action->data = xrealloc (key_action->data, strlen (newcmd) + 1);
-
-  strcpy (key_action->data, newcmd);
+  free (key_action->data);
+  key_action->data = xstrdup (newcmd);
 }
 
 static int
