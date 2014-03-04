@@ -181,7 +181,7 @@ history_add (int history_id, const char *item)
 void
 history_load (void)
 {
-  char *filename = get_history_filename ();
+  char *filename;
   FILE *f;
   char *line = NULL;
   size_t s = 0;
@@ -194,8 +194,10 @@ history_load (void)
     histories[id].count = 0;
   }
 
+  filename = get_history_filename ();
   if (!filename)
     return;
+
   f = fopen (filename, "r");
   if (!f) {
     PRINT_DEBUG (("ratpoison: could not read %s - %s\n", filename, strerror (errno)));
@@ -227,15 +229,18 @@ history_load (void)
 void
 history_save (void)
 {
-  char *filename = get_history_filename ();
+  char *filename;
   FILE *f;
   struct history_item *item;
 
   if (!defaults.history_size)
     return;
 
+  filename = get_history_filename ();
+
   if (!filename)
     return;
+
   f = fopen (filename, "w");
   if (!f) {
     PRINT_DEBUG (("ratpoison: could not write %s - %s\n", filename, strerror (errno)));
