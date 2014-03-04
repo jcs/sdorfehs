@@ -548,8 +548,8 @@ editor_complete (rp_input_line *line, int direction)
 
   /* Create our partial string that will be used for completion. It is
      the characters up to the position of the cursor. */
-  tmp = xmalloc ((line->position + 1) * sizeof (char));
-  strncpy (tmp, line->buffer, line->position);
+  tmp = xmalloc (line->position + 1);
+  memcpy (tmp, line->buffer, line->position);
   tmp[line->position] = '\0';
 
   /* We don't need to free s because it's a string from the completion
