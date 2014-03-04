@@ -57,25 +57,21 @@ char *
 list_unmanaged_windows (void)
 {
   char *tmp = NULL;
+
   if (unmanaged_window_list)
     {
-      char *tpos;
-      int len = 0;
+      struct sbuf *buf;
       int i;
 
-      for (i = 0; i < num_unmanaged_windows; i++)
-        len += (strlen(unmanaged_window_list[i]) + 1);
-
-      tmp = xmalloc(len + 1);
-      tpos = tmp;
+      buf = sbuf_new (0);
 
       for (i = 0; i < num_unmanaged_windows; i++)
         {
-          sprintf(tpos, "%s\n", unmanaged_window_list[i]);
-          tpos += strlen(unmanaged_window_list[i])+1;
+          sbuf_concat (buf, unmanaged_window_list[i]);
+          sbuf_concat (buf, "\n");
         }
-      tpos--;
-      *tpos = '\0';
+      sbuf_chop (buf);
+      tmp = sbuf_free_struct (buf);
     }
   return tmp;
 }
