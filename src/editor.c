@@ -103,19 +103,22 @@ rp_input_line *
 input_line_new (char *prompt, char *preinput, int history_id, completion_fn fn)
 {
   rp_input_line *line;
+  size_t length;
 
   line = xmalloc (sizeof (rp_input_line));
   line->prompt = prompt;
   line->compl = completions_new (fn);
   line->history_id = history_id;
 
-  /* Allocate some memory to start with */
-  line->size = strlen (preinput) + 100;
+  /* Allocate some memory to start with (100 extra bytes) */
+  length = strlen (preinput);
+  line->size = length + 1 + 100;
   line->buffer = xmalloc (line->size);
 
   /* load in the preinput */
-  strcpy (line->buffer, preinput);
-  line->position = line->length = strlen (preinput);
+  memcpy (line->buffer, preinput, length);
+  line->buffer[length] = '\0';
+  line->position = line->length = length;
 
   return line;
 }
