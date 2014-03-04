@@ -475,7 +475,6 @@ editor_insert (rp_input_line *line, char *keysym_buf)
   nbytes = strlen (keysym_buf);
   if (line->length + nbytes > line->size - 1)
     {
-      /* FIXME: This seems like a very bad idea. */
       line->size += nbytes + 100;
       line->buffer = xrealloc (line->buffer, line->size);
     }
