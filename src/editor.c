@@ -529,10 +529,11 @@ static edit_status
 editor_paste_selection (rp_input_line *line)
 {
   char *text;
-  text = get_selection();
+
+  text = get_selection ();
   if (text)
     {
-      editor_insert(line, text);
+      editor_insert (line, text);
       free (text);
       return EDIT_INSERT;
     }
