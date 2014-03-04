@@ -32,13 +32,18 @@
 static char *
 get_history_filename (void)
 {
-  char *homedir = getenv ("HOME");
+  const char *homedir;
   char *filename;
+
+  homedir = get_homedir ();
 
   if (homedir)
     {
-      filename = xmalloc (strlen (homedir) + strlen ("/" HISTORY_FILE) + 1);
-      sprintf (filename, "%s/" HISTORY_FILE, homedir);
+      struct sbuf *buf;
+
+      buf = sbuf_new (0);
+      sbuf_printf (buf, "%s/%s", homedir, HISTORY_FILE);
+      filename = sbuf_free_struct (buf);
     }
   else
     {

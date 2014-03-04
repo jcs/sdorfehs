@@ -4264,14 +4264,14 @@ cmd_getenv (int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_chdir (int interactive UNUSED, struct cmdarg **args)
 {
-  char *dir;
+  const char *dir;
 
   if (args[0] == NULL)
     {
-      dir = getenv ("HOME");
-      if (dir == NULL || *dir == '\0')
+      dir = get_homedir ();
+      if (dir == NULL)
         {
-          return cmdret_new (RET_FAILURE, "chdir: HOME not set");
+          return cmdret_new (RET_FAILURE, "chdir: unable to find your HOME directory");
         }
     }
   else
