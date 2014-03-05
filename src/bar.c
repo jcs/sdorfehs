@@ -35,8 +35,6 @@
 
 #include "ratpoison.h"
 
-#include "assert.h"
-
 /* Possible values for bar_is_raised status. */
 #define BAR_IS_HIDDEN  0
 #define BAR_IS_WINDOW_LIST 1
