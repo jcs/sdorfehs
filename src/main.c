@@ -431,7 +431,7 @@ get_homedir (void)
 }
 
 static int
-read_startup_files (char *alt_rcfile)
+read_startup_files (const char *alt_rcfile)
 {
   FILE *fileptr = NULL;
 
