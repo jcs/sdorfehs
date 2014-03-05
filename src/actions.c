@@ -2768,13 +2768,6 @@ cmd_number (int interactive UNUSED, struct cmdarg **args)
   int old_number, new_number;
   rp_window_elem *other_win, *win;
 
-  if (args[0] == NULL)
-    {
-      /* XXX: Fix this. */
-      print_window_information (rp_current_group, current_window());
-      return cmdret_new (RET_SUCCESS, NULL);
-    }
-
   /* Gather the args. */
   new_number = ARG(0,number);
   if (args[1])
@@ -4485,9 +4478,9 @@ cmd_restart (int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_startup_message (int interactive, struct cmdarg **args)
+cmd_startup_message (int interactive UNUSED, struct cmdarg **args)
 {
-  if (args[0] == NULL && !interactive)
+  if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.startup_message ? "on":"off");
 
   if (!strcasecmp (ARG_STRING(0), "on"))
@@ -4648,9 +4641,9 @@ cmd_sselect(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_warp (int interactive, struct cmdarg **args)
+cmd_warp (int interactive UNUSED, struct cmdarg **args)
 {
-  if (args[0] == NULL && !interactive)
+  if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.warp ? "on":"off");
 
   if (!strcasecmp (ARG_STRING(0), "on"))

@@ -594,21 +594,6 @@ goto_window (rp_window *win)
     }
 }
 
-void
-print_window_information (rp_group *group, rp_window *win)
-{
-  rp_window_elem *win_elem;
-  /* Display the window's number in group. This gives the possibility
-     of windows existing in multiple groups. */
-  win_elem = group_find_window (&group->mapped_windows, win);
-  if (win_elem)
-    marked_message_printf (0, 0, MESSAGE_WINDOW_INFORMATION,
-                           win_elem->number, window_name (win));
-  else
-    marked_message_printf (0, 0, "%s doesn't exist in group %d\n",
-                           window_name(win), group->number);
-}
-
 /* get the window list and store it in buffer delimiting each window
    with delim. mark_start and mark_end will be filled with the text
    positions for the start and end of the current window. */
