@@ -655,8 +655,7 @@ main (int argc, char *argv[])
           cmd_count++;
           break;
         case 'd':
-          free (display);
-          display = xstrdup (optarg);
+          display = optarg;
           break;
         case 's':
           screen_arg = 1;
@@ -666,8 +665,7 @@ main (int argc, char *argv[])
           interactive = 1;
           break;
         case 'f':
-          free (alt_rcfile);
-          alt_rcfile = xstrdup (optarg);
+          alt_rcfile = optarg;
           break;
 
         default:
@@ -781,7 +779,6 @@ main (int argc, char *argv[])
 
   if (read_startup_files (alt_rcfile) == -1)
     return EXIT_FAILURE;
-  free (alt_rcfile);
 
   /* Indicate to the user that ratpoison has booted. */
   if (defaults.startup_message)
