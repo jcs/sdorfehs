@@ -523,20 +523,20 @@ unmanaged_window (Window w)
   if (!unmanaged_window_list)
     return 0;
 
-  wname = get_wmname(w);
+  wname = get_wmname (w);
   if (!wname)
     return 0;
 
   for (i = 0; i < num_unmanaged_windows; i++)
     {
-      if (!strcmp(unmanaged_window_list[i], wname))
+      if (!strcmp (unmanaged_window_list[i], wname))
         {
-          free(wname);
+          free (wname);
           return 1;
         }
     }
 
-  free(wname);
+  free (wname);
   return 0;
 }
 
