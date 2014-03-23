@@ -189,5 +189,8 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([],
 
 AM_LANGINFO_CODESET
 
+lispdir='${datarootdir}/emacs/site-lisp'
+AC_SUBST([lispdir])
+
 AC_CONFIG_FILES([Makefile doc/Makefile src/Makefile contrib/Makefile])
 AC_OUTPUT
