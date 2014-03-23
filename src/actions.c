@@ -5005,7 +5005,7 @@ frestore (char *data, rp_screen *s)
       if (new == NULL)
         {
           free (d);
-          return cmdret_new (RET_SUCCESS, "frestore: invalid frame format");;
+          return cmdret_new (RET_FAILURE, "frestore: invalid frame format");
         }
       list_add_tail (&new->node, &fset);
       token = strtok_r (NULL, ",", &nexttok);
