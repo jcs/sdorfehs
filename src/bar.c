@@ -215,24 +215,17 @@ update_window_names (rp_screen *s, char *fmt)
   struct sbuf *bar_buffer;
   int mark_start = 0;
   int mark_end = 0;
+  char *delimiter;
 
   if (s->bar_is_raised != BAR_IS_WINDOW_LIST) return;
 
+  delimiter = (defaults.window_list_style == STYLE_ROW) ? " " : "\n";
+
   bar_buffer = sbuf_new (0);
 
-  if(defaults.window_list_style == STYLE_ROW)
-    {
-      get_window_list (fmt, NULL, bar_buffer, &mark_start, &mark_end);
-      marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
-    }
-  else
-    {
-      get_window_list (fmt, "\n", bar_buffer, &mark_start, &mark_end);
-      marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
-    }
+  get_window_list (fmt, delimiter, bar_buffer, &mark_start, &mark_end);
+  marked_message (sbuf_get (bar_buffer), mark_start, mark_end);
 
-
-/*   marked_message (sbuf_get (bar_buffer), mark_start, mark_end); */
   sbuf_free (bar_buffer);
 }
 
@@ -244,21 +237,16 @@ update_group_names (rp_screen *s)
   struct sbuf *bar_buffer;
   int mark_start = 0;
   int mark_end = 0;
+  char *delimiter;
 
   if (s->bar_is_raised != BAR_IS_GROUP_LIST) return;
 
+  delimiter = (defaults.window_list_style == STYLE_ROW) ? " " : "\n";
+
   bar_buffer = sbuf_new (0);
 
-  if (defaults.window_list_style == STYLE_ROW)
-    {
-      get_group_list (NULL, bar_buffer, &mark_start, &mark_end);
-      marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
-    }
-  else    
-    {
-      get_group_list ("\n", bar_buffer, &mark_start, &mark_end);
-      marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
-    }
+  get_group_list (delimiter, bar_buffer, &mark_start, &mark_end);
+  marked_message_internal (sbuf_get (bar_buffer), mark_start, mark_end);
 
   sbuf_free (bar_buffer);
 }
