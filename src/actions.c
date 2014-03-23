@@ -4951,13 +4951,12 @@ fdump (rp_screen *screen)
 cmdret *
 cmd_fdump (int interactively UNUSED, struct cmdarg **args)
 {
+  rp_screen *screen;
+  cmdret *ret;
+  char *dump;
+
   if (args[0] == NULL)
-    {
-      char *s = fdump (current_screen());
-      cmdret *ret = cmdret_new (RET_SUCCESS, "%s", s);
-      free (s);
-      return ret;
-    }
+    screen = current_screen ();
   else
     {
       int snum;
@@ -4968,13 +4967,14 @@ cmd_fdump (int interactively UNUSED, struct cmdarg **args)
       else if (num_screens <= snum)
         return cmdret_new (RET_FAILURE, "fdump: unknown screen");
       else
-        {
-          char *s = fdump (&screens[snum]);
-          cmdret *ret = cmdret_new (RET_SUCCESS, "%s", s);
-          free (s);
-          return ret;
-        }
+        screen = &screens[snum];
     }
+
+  dump = fdump (screen);
+  ret = cmdret_new (RET_SUCCESS, "%s", dump);
+  free (dump);
+
+  return ret;
 }
 
 static cmdret *
