@@ -1,11 +1,49 @@
 ratpoison NEWS --- history of user-visible changes.  -*- outline -*-
 
 Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts
-Copyright (C) 2013 Jérémie Courrèges-Anglas
+Copyright (C) 2013, 2014 Jérémie Courrèges-Anglas
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
+
+* Changes since 1.4.7
+** More fixes and code cleanup.
+
+** UTF-8 editing support in the input bar
+
+** get rid of "XGetWMName failed" spam on stderr
+Introduced in the previous release, sorry!
+
+** groups can now be renumbered (`gnumber')
+
+** contrib/rpdate.sh, fancy calendar shell script to use instead of `time'
+
+** fix `meta', which was sending garbage and made firefox unusable
+Nasty...
+
+** handle errors about missing config files
+- ratpoison -f missing-config-file -> error
+- unreadable ~/.ratpoisonrc file -> warning
+
+** respect --sysconfdir for the global ratpoisonrc file
+Rather than a hardcoded /etc/ratpoisonrc location.
+
+** rpws gains a new `current' command (prints the current workspace)
+
+** new manpage, mdoc(7) formatted
+
+** X socket closed before spawning processes
+Let's save those precious file descriptors.
+
+** DWIM windows/groups names matching
+Window and group names are first looked up for exact match; in last
+resort a fuzzy match is attempted.
+
+** try to cope with unset/empty HOME env. variable
+
+** ratpoison.el is now installed at the proper location
+ie. in $prefix/share/emacs/site-lisp/
 
 * Changes since 1.4.5
 ** *Lots* of reliability fixes in ratpoison itself

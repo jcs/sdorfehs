@@ -1,3 +1,1259 @@
+commit 29246275028f9ce8729e37414949f9620a5af6e3
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 24 10:31:05 2014 +0100
+
+    Stray empty line introduced in 5dcd243
+
+commit 020dc81d058aa7f82039a373cc6f6e420b8f43c7
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 24 10:11:38 2014 +0100
+
+    Ensure NULL is treated as a pointer in  execl* calls
+
+commit e8f1cd328f9c15e2b1814962e2728d86a1565658
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 24 10:10:18 2014 +0100
+
+    Avoid malloc(0) in add_command.
+
+commit a2be2e6514801fe3f6829a05de017840f50a2b3e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Mar 23 21:38:12 2014 +0100
+
+    Install ratpoison.el in share/emacs/site-lisp
+
+commit d095cad0bdf17872786fa30626dd16851e72ef69
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Mar 23 21:36:44 2014 +0100
+
+    In frestore flag a frame_read error as appropriate.
+    
+    * while here kill a stray ';'
+
+commit 46ee8dd01fc8c8b8d4c1e5e28f7ec549bba489d0
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Mar 23 20:38:46 2014 +0100
+
+    Factorize code in cmd_fdump.
+
+commit 1788f077d4ce9fb3481321d7d5c45a5b2ceb5704
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Mar 23 20:36:53 2014 +0100
+
+    Factorize code in update_{window,group}_names.
+
+commit 2c41fe2d905f7ba743be164b74761acdef82d08c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:10:11 2014 +0100
+
+    Indent function calls in unmanaged_window.
+
+commit 905bce42660f9d0d2da7b3b7460ac672f9d798fd
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:08:30 2014 +0100
+
+    Make unmanaged_window cheaper.
+    
+    * No need to get then free the window name in the loop,
+      do it out of the loop.
+
+commit 33ed8c59d437ffc3ad993b6cad5fe4c7f23bc99c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:06:35 2014 +0100
+
+    Kill decls forgotten in a5ee817 "Kill code #if 0'ed since 2001."
+
+commit daa1f35ce4a1013865d7d6d2ef3df9dfa5317902
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:04:49 2014 +0100
+
+    read_startup_files doesn't mangle its argument.
+
+commit 693cc223a8b12af93874f23aa514d8e9c60ff195
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:04:01 2014 +0100
+
+    Don't dup args passed on the cli, we don't mangle them.
+
+commit f2db5efa8f582dfd2e2a2e27a0c702b97d079d55
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:02:45 2014 +0100
+
+    Put history_expand_line's return type on its own line.
+
+commit 2c5a4ad1e7b10a9c6a900932b8690a81811fd84e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:01:59 2014 +0100
+
+    In history_add_upto make sure we don't dereference a NULL pointer;
+
+commit 53b223551687397986d55bfbf34009663cec217a
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 24 10:23:41 2014 +0100
+
+    Kill history_resize, unused.
+
+commit 092295bc4a87c6af145c9231f598d55e2d5d9852
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:00:14 2014 +0100
+
+    Kill unused and forgotten include of assert.h in bar.c
+
+commit 977bfad903c35f1e33fc978289404226ac0693e9
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Mar 5 03:00:44 2014 +0100
+
+    Kill code and simplify cmd_number
+    
+    * cmd_number needs at least one argument
+    * The code that handled the zero argument case was thus unreachable,
+      and was the last user of print_window_information, so kill that
+      function.
+
+commit 77176d78b15a702d47725738df01eace86ebfa07
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 03:03:13 2014 +0100
+
+    Kill last strcpy occurrence.
+    
+    * replace_keybinding is seldom used, no need to half-optimize it
+
+commit d4884d7643e30ceaf7e9093d2fc41972971786f2
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 03:02:23 2014 +0100
+
+    strcpy -> memcpy
+    
+    * since we have to know the string length anyway
+
+commit d714a5a2776c0afc6397a9e89adc328eaa75ca8f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:59:13 2014 +0100
+
+    strncpy -> memcpy.
+    
+    * we NUL-terminate it anyway
+    * kill a useless "* sizeof (char)" while here
+
+commit 131be4c952fe939c210fd8bb649dae5e414d4fcc
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:56:43 2014 +0100
+
+    Kill useless comment.
+
+commit 7babe4652a3b781c982fd96a0ad697db9b711aa1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:54:45 2014 +0100
+
+    Simplify init_screen using sbuf
+
+commit ef423da9227bd6f360a16e1e6c8396d588d67cab
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:52:49 2014 +0100
+
+    Simplify read_shellcmd using sbuf
+
+commit 05525bcff126d698d3e9f18cb4df97c6fe528237
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:51:25 2014 +0100
+
+    Small coding standards fix.
+
+commit 710696420f50234716579c98367696a43a211482
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:49:35 2014 +0100
+
+    Simplify list_unmanaged_windows using sbuf
+
+commit 5dcd243c55447099e4ff353fafbbad2a02836b0c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:48:25 2014 +0100
+
+    More decls/code separation.  More spacing too.
+
+commit 41dc897f6dcf7b0be0832f95d624ef91b68f7edf
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:47:13 2014 +0100
+
+    Use get_homedir anywhere we can.
+
+commit c51dd419f9d40facf516558510704891c0cf66b6
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 4 02:44:15 2014 +0100
+
+    get_homedir(), checks HOME and the password database
+    
+    * ensures that the resulting home directory isn't the empty string
+      (else returns NULL)
+
+commit f010d26cbad242f2a98c2d67e5100bdf9387addb
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 21:37:17 2014 +0100
+
+    Refine error messages in cmd_fdump.
+
+commit aec1e90984d3a3bdebdeeac790b4a664781f0929
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 21:36:38 2014 +0100
+
+    Add error checking to set_padding and set_historysize.
+
+commit 9d4e28028437349eddf6171df29863d9499efdb8
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 21:35:49 2014 +0100
+
+    Add error checking for various boolean (0|1) settings.
+
+commit 5fdd6dbcf939806b6102c027d0b41c5efea07a11
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 21:34:44 2014 +0100
+
+    Correct error message in set_barinpadding.
+
+commit ca8d94d249452ccc16f506aa70983ea0bd945c5b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 21:29:52 2014 +0100
+
+    Factorize space for invalid negative args messages in various settings.
+
+commit 52e120f5533c93b0874cefd52b60bf65d6a640b9
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 21:25:09 2014 +0100
+
+    Make read_number more strict, returning errors.
+    
+    * use strtol, and warn about overflow or invalid input.
+
+commit 0dd5c323fae7881577963ce77012e317db19af88
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 20:52:03 2014 +0100
+
+    In read_frame, don't silently ignore invalid/unknown frame selectors.
+
+commit c87f7c334f4fef3279d7425a085f8279cd487f88
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 20:43:53 2014 +0100
+
+    Rename (again) string_to_number to string_to_positive_number
+    
+    * where it is used, only (small) positive numbers make sense.
+    * While here use strtol instead of manually parsing the string,
+      and be careful about validation.  (Still) return -1 to indicate failure.
+
+commit 7474a2c1f783304ff6d9838ba393fae103019eb1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 15:15:31 2014 +0100
+
+    Amend find_group: first match by number, then by name.
+    
+    * this is consistent with cmd_select and read_window.  If one has a
+      keybinding for "gselect 0" and then happens to have a group named "0",
+      "gselect 0" should keep the same behavior: lead to group numbered 0.
+    
+    Discussed with |cos| who proposed the recent "search groups for exact name
+    match first".
+
+commit e200c0efde7c6da7cd3357dd4c322a5dd6846518
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 14:45:39 2014 +0100
+
+    Search windows names for exact match then for fuzzy match
+    
+    * Contrary to the recent find_group change, windows are still searched
+      by number first.  This is inconsistent and a choice has to be made.
+
+commit 838d28ab5d5a3c9177e43e66df088f70cc243303
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 14:37:36 2014 +0100
+
+    Fix cmd_getsel when there is no X selection
+    
+    * instead of feeding stdio a NULL string and invoking undefined
+      behavior, return a failure
+
+commit 3aab77ce8a8b884d0575ba0f66398b0303936774
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 14:33:53 2014 +0100
+
+    In set_winname compare the full string, including the final NUL.
+    
+    * detects erroneous inputs such as "titlefoo" instead of "title"
+
+commit e8669d9f3c09101b81ad1d6e01f4b3e45bc1a33c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 14:22:28 2014 +0100
+
+    "deffoo..." -> "set foo..." in the error messages.
+    
+    * "deffoo"-style names are only compat aliases these days.
+
+commit c7bc35e610b165f49201537ca4d2425b46bd31bb
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 10:33:48 2014 +0100
+
+    Better, faster, prettier groups_find_by_group_name
+    
+    * there are really two operation modes that could even be put into separate
+      functions.  So disentangle the logic and put the operation mode check
+      outside of the loop parsing the groups list.
+
+commit 1e9ec347b28a884f6fee8f1f42c6d5360546dd08
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 10:28:53 2014 +0100
+
+    Rename string_to_window_number to string_to_number.
+    
+    * The previous name didn't make sense since it was also used for group
+      numbers.
+    * This function should probably make more checks or be deleted.
+
+commit ad7f295f0c91b146a8909263e223690314c9b052
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 10:27:24 2014 +0100
+
+    Fix a typo in a comment.
+
+commit 15c904d6589a731773e4b765a91ac481d92e142c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 3 03:46:58 2014 +0100
+
+    Silence warning in previous commit.
+
+commit 4c2a7e2167292e3aa40398f0e31b04af93853fc5
+Author: cos <cos>
+Date:   Wed Jun 5 21:36:29 2013 +0200
+
+    Allow exact matching with gselect.
+    
+    When having two groups where the second one's name partially matches the name
+    of the first one, it is hard to gselect the second one. Similarly it is not
+    possible to select groups with fully numerical names.
+    
+    e.g.
+    
+    If having the group list:
+    
+     0-default
+     1*other
+     2-de
+     3-0
+    
+    The user expactation when typing ":gselect de" or ":gselect 0" would likely be
+    to select group number 2 & group number 3 respectively.
+    
+    This commit modifies the behaviour of gselect, to primarily select the group
+    with an exactly matching name if possible, before trying numerical or partial
+    matches.
+
+commit 3cee18b208f1c8e3147b13148130ba12a7dcf6e2
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 14:04:58 2014 +0100
+
+    Fall back to ioctl(TIOCNOTTY) to detach from the controlling terminal.
+    
+    * As with setpgid, only do this if setsid fails or is absent.
+
+commit e88fc334835a4669d1dd27f7156ceb720a3eafb0
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 13:59:35 2014 +0100
+
+    Only call setpgid when setsid fails or is absent.
+
+commit 93b11cab322a5543a5f748bc4f70246abe5dace6
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 13:40:36 2014 +0100
+
+    Detect pwd.h and getpwuid.
+
+commit 4e6dcf3e37e9aba48ab80f4db3606bcdb46d3032
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 12:04:30 2014 +0100
+
+    If HOME is not set in the env., fallback to the passwd entry.
+    
+    * No attempt to detect pwd.h / getpwuid, not sure if needed.
+
+commit 3339bbbf9ee58d4562ed008ce45c5af7fbe222c9
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 12:01:52 2014 +0100
+
+    Mark the X socket as to be closed on exec.
+    
+    * Avoids leaking a descriptor, and potential problems described in the
+      comp.windows.x FAQ.
+
+commit f5fc5561be15f1b353a29e99679783878ed7503f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 11:56:46 2014 +0100
+
+    Change set_close_on_exec to take a file descriptor.
+    
+    * Since it's easier to get a fd from a FILE * rather than the other way
+      around.
+
+commit 15a8eaef00219421e4b9103ef974bc9ada2d0bca
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 02:27:42 2014 +0100
+
+    Kill getsid(2) check in get_child_info.
+    
+    * Purpose not understood, usage can't be right on OSes where getsid
+      fails with EPERM if ratpoison and the argument pid are not in the
+      session; guess what, ratpoison calls setsid(2) in spawn()...
+
+commit 13d5a48507a4aa161ea1353e0e6913719c6d57cc
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 02:20:29 2014 +0100
+
+    Kill noisy local variable.
+
+commit b4dd29b6c9881f80e02c5f4cf11a1bc8a8ee6d92
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 02:16:15 2014 +0100
+
+    Amend / kill weak comments.
+
+commit 387a4b85b1414336e69d3dda35b18e652e3990a2
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 02:13:54 2014 +0100
+
+    Simplify using sbuf_free_struct.
+
+commit 7e51d7eb7799cb3d5c4c2458725d84a7318ba293
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 02:12:23 2014 +0100
+
+    Stop using XKeycodeToKeysym (deprecated).
+    
+    * Use XkbKeycodeToKeysym instead.  Not sure if this is a good change,
+      but publish it at least so that people can test and report.
+
+commit b6543c169cc3dd1b0f7263bd3d70f70c7d67d1bb
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 02:07:45 2014 +0100
+
+    Make some members of struct rp_input_line size_t.
+
+commit 59f798c7c52247c7b3f565f96639d1af34ac70b5
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 02:02:02 2014 +0100
+
+    Test for __builtin_prefetch, not for __GNUC__.
+    
+    * Fixes build with pcc.
+
+commit 4bdb7748383f6cc59c397fdce05192e59571de5f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 01:55:58 2014 +0100
+
+    Fix formatting warning with groff(1).
+    
+    * groff interprets "%T" even when double-quoted.  Use \&%T instead.
+
+commit 571fedb62290ec6fc059830efc6ffaaff337e3d2
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 01:20:05 2014 +0100
+
+    Replace man(7) manpage with a mdoc(7)-formatted one.
+    
+    * The former manpage needed Groff to be properly formatted, this is a
+      dependancy I want to remove.  Support for systems where neither groff
+      nor mandoc are available is achieved by generating a man(7) manpage,
+      which will be shipped in the tarballs.
+    * The mdoc(7) language provides semantic annotations for better
+      documentation of Unix utilities, contrary to man(7) which provides
+      mere presentation markup.
+    * The build system now encodes paths in the manpage according to the
+      settings passed to ./configure.
+    
+    Note that some markup used may not be perfectly appropriate.  Comments
+    about this matter, and questions from distro maintainers using manpage
+    patches are welcome.
+    
+    Selected reading:
+    - http://mdocml.bsd.lv                general information about mdoc(7)
+    - http://mdocml.bsd.lv/mdoc.7.html    mdoc(7) macros reference
+    - http://manpages.bsd.lv/             mdoc(7) tutorial
+
+commit 9a65f65f5ed3be2eb1deefa97e797ee64137ba50
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 00:42:19 2014 +0100
+
+    Fix typos and wrap line.
+
+commit c9ffdd59b636bf68acf34bd7fc3f4f9e26862d96
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Feb 20 00:36:40 2014 +0100
+
+    Fit line in 80 chars after last commit.
+
+commit 77437e18e87bfd66ed7b492c66921e7781971caa
+Author: Vasil Zlatanov <vasil.zlatanov@gmail.com>
+Date:   Tue Feb 11 21:43:53 2014 +0100
+
+    Add documentation of the rpwsm$i and rpwsm{n,p} aliases in rpws.
+
+commit 4cdcce6a744376cebbba5aa016d9309248e9102c
+Author: Vasil Zlatanov <vasil.zlatanov@gmail.com>
+Date:   Tue Feb 11 21:40:32 2014 +0100
+
+    Add the "current" option to rpws to print the current workspace.
+
+commit f17d025b1af7dd31cd12768a0fefa611b760a60b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jan 15 17:05:56 2014 +0100
+
+    Casing.
+
+commit be181e8f00cee0d0a65ec6ada3ed689d88b6d098
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jan 15 17:05:43 2014 +0100
+
+    Fix double "the".
+
+commit e56b2ca2ee0a936c7b23b830ae334f129163893c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Jan 6 00:40:34 2014 +0100
+
+    Revert b470085.
+    
+    * Wrong usage of pointers.  Those two helper functions are supposed to
+      update frame parameters passed as pointers, but this does not work.
+      Assigning to a pointer merely changes its local value.
+    * Additionally, forgotten assignment to "done" in
+      find_non_dedicated_frame(), bug not visible in non-xinerama setups.
+
+commit a5ee817f2b81c98266c87f29171b82472fae5bfa
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Jan 5 17:46:34 2014 +0100
+
+    Kill code #if 0'ed since 2001.
+
+commit a26ca7a0560f17513217b1c1190949a6c0cbd8f5
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Jan 4 00:47:12 2014 +0100
+
+    Kill init_globals().
+    
+    * selection has static storage and is thus correctly initialized.
+
+commit 76e8b5988a3ae13d80bd34ff4a00766b724075b6
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Jan 4 00:18:55 2014 +0100
+
+    Ansify read_any_key().
+
+commit eb4d8278e5828217bcc5b8045147544c62c28372
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 23:28:19 2014 +0100
+
+    Make our fallback getline more compliant.
+    
+    * don't use xmalloc/xrealloc, but return -1 in case of memory allocation
+      failure
+    * modify the parameters only when allocation succeeds
+
+commit 3efe2d8254fe4cd5aecb56eb0f0861bd043b6782
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 23:12:19 2014 +0100
+
+    Don't mix code and decls.
+
+commit 496289f26ac6a1833c1d649665456c61277b03ee
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 22:51:29 2014 +0100
+
+    strdup -> xstrdup
+
+commit c2aa1264fc52f6df08868986ed81b2d199059f7c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 22:47:38 2014 +0100
+
+    malloc -> xmalloc
+
+commit 993dde6cfa315ceaa29dfd521f9fddb27a80e66a
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 22:42:10 2014 +0100
+
+    One realloc -> xrealloc.
+
+commit e5b64c4f193eb01c81b93ec6e27d6d6bddbfd78b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 22:40:46 2014 +0100
+
+    Get rid of useless casts of xmalloc/realloc return value.
+
+commit b8d5ca85d9a6e6f42b8dbd6d47cab7bbcffeea90
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 22:18:51 2014 +0100
+
+    if (ptr) free(ptr) is not a good idiom.
+
+commit 268732324fd37d9b001694a9206a66cce6681c20
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 11:16:50 2014 +0100
+
+    Check for alternative names of typeof().
+
+commit dbf308149ceb416ea58719917bcd6e1ceacb80a5
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 11:15:39 2014 +0100
+
+    Kill useless X_LDFLAGS and reorder variables.
+
+commit d02442c0d7de4748403d8b4af764b36ac2e9e7a3
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 11:10:49 2014 +0100
+
+    Open $sysconfdir/ratpoisonrc, don't hardcode /etc.
+
+commit e0dcdd3634c63dd6bf4ade9f07ccef90193d17b8
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 02:20:58 2014 +0100
+
+    Be more verbose about failures in read_startup_files().
+    
+    * If we fail with errno set to something != ENOENT then an error message
+      should probably be printed.
+
+commit e3e4dd2146df1d24887de3106c2b3cc4b44a5fb1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 02:13:29 2014 +0100
+
+    Better error checking for -f configfile.
+    
+    * make read_startup_files() return whether it succeeded.  A failure is
+      when the user passed a specific config file, but we couldn't load it.
+    * in main() exit if read_startup_files() failed.
+
+commit fcc722a02eecc697ad8c7058853a40aeccab2a1a
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 01:53:51 2014 +0100
+
+    Report bugs to PACKAGE_BUGREPORT.
+
+commit fa69587598d704de171736f1ba1fb53a9975a3ff
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 01:53:13 2014 +0100
+
+    In str_comp() make len and i size_t.
+
+commit 7125d41a6703e1bb3e4ae012c8ce04a8bad30de8
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 01:52:36 2014 +0100
+
+    Typo in comment.
+
+commit 1e7446e22af32d48f8db1d3e0fc067ef724282fa
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 01:52:03 2014 +0100
+
+    Tiny xmalloc/realloc/strdup cleanup.
+    
+    * kill "register"
+    * compare pointers against NULL
+    * separate declarations and code
+
+commit cde36665e2e5fbd1d5be70e5ca388a5d2d2365ef
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 01:45:21 2014 +0100
+
+    In parse_keydesc() strdup the key desc only if needed.
+
+commit 0441e8cb9332fb3193c3e025eeaab2f559f83380
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 00:40:42 2014 +0100
+
+    messages.h is included from ratpoison.h.
+
+commit 5cda1659f30b86cc37e20719ce6f01aba9d2a834
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 00:39:05 2014 +0100
+
+    Non-compliant enum forward declaration.
+
+commit 888e01e95c8674857dd3bacf95f3d99f252fb540
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 00:37:37 2014 +0100
+
+    Remove some fairly obvious comments.
+
+commit 2eeac71c8f4af60bf760ec6f0ad228c1cb4c0b4b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 00:25:56 2014 +0100
+
+    FD_CLOEXEC is only used in set_close_on_exec().
+
+commit eb524d8b80a72c04c9e7381b6c8bad6e4f7e3b52
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Jan 3 00:23:32 2014 +0100
+
+    We need config.h, no need for ifdef's.
+
+commit 9dbe0289e4c3cbec95334a88d5c0fc04cda076fd
+Author: Rob Paisley <paisley@rpaisley.com>
+Date:   Wed Dec 4 09:45:52 2013 -0500
+
+    Added contrib/ratdate.sh and updated Makefile.am
+
+commit 40415dff20c0e4456c3791a75e118fe537e1d44a
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Dec 3 11:44:14 2013 +0100
+
+    Bogus cmdret_free call.
+
+commit 4a6b9a22aa0c33fed4a3356b4399d5d58173e548
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Nov 26 11:41:19 2013 +0100
+
+    Prettify --with-xterm handling.
+
+commit c7b673ef8bebc39d336667a55bd5f36b9b14cbf7
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Nov 26 11:35:50 2013 +0100
+
+    Prettify --enable-debug handling.
+
+commit d246050de440fae1a7b3eae50c18eca9d41cdda5
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Nov 26 10:18:05 2013 +0100
+
+    If asked for, use the Electric Fence library.
+
+commit e7b0516410b46994e419c99caf45e5ee831cc031
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Nov 26 09:59:13 2013 +0100
+
+    Assume we have stdarg.h and unistd.h.
+
+commit c8a37d523e0cea3b0ca4ef790dade4eb4b95d1ad
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Nov 26 09:28:02 2013 +0100
+
+    Don't check for usleep, useless since Dec. 2004
+    
+    * see 9cb1a3d.  If your system doesn't provide usleep or ratpoison
+      doesn't manage to find it, please report back.
+
+commit b4d756008ca98e454904c64e151ae08e4e0f733f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Nov 26 09:04:01 2013 +0100
+
+    Don't check for getopt(3), we don't use it.
+
+commit 8c67c58fa4b9b80d95c277ae5d4c6b53359352c7
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Nov 22 10:52:29 2013 +0100
+
+    Document the titlechanged hook.
+
+commit 3e9e50cee4cb233539525a267e945381c3b97af5
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Nov 22 00:26:45 2013 +0100
+
+    Revert unintended changes in 1ecaccd77c18036d8ff4c137487aa8c5a04d2b36
+    
+    I'll be more careful when using 'c' in Magit.  ;)
+
+commit 5bc22db14b6ffd4cb39722a415d4cd176bb7fc0d
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Fri Nov 22 00:10:46 2013 +0100
+
+    Cast char arguments to to*/is* ctype calls to unsigned char
+    
+    * those functions expect an int whose value is between -1 and 255.
+      Cast to unsigned char so that sign extension when promoting to int
+      doesn't bite us.
+
+commit 407dc8b5e6a4db430381000256c87ba313bbed5e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Nov 21 23:35:15 2013 +0100
+
+    Don't assume getsid succeeds, fixes %p "glitches"
+    
+    * on eg. OpenBSD you get -1 with errno set to EPERM if you call getsid
+      on a pid no in the same session group as you.  This makes the session
+      id check much less useful, and exhibits glitches with %p in winfmt.
+      For now, just bail out if getsid fails...
+
+commit 1ecaccd77c18036d8ff4c137487aa8c5a04d2b36
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Nov 20 18:24:19 2013 +0100
+
+    Cleanup cmd_meta
+    
+    * plug memory leak
+    * consistent indentation
+    * minimize variables scope
+    * kill commented code
+
+commit 782e5d0f60412682ca5facde2d566c02bd176902
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Nov 20 16:51:46 2013 +0100
+
+    In cmd_meta, don't pass stack garbage to XSendEvent.
+    
+    * zero out the whole struct and explicitely assign CurrentTime (OL) to
+      ev.xkey.time.  This should please Firefox when using C-t t.
+
+commit 2335261cdf8c574331b676c74e9d5299faa82624
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Nov 17 18:38:27 2013 +0100
+
+    Use sbuf_chop in fdump() to trim trailing comma.
+    
+    * those commas shouldn't have been there in the first place.  If your
+      scripts rely on this, watch out!
+    * code simplified and variables better named, while here.
+
+commit 797796e2d9d4c708668ed05359695c53f8448386
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Nov 17 18:33:14 2013 +0100
+
+    Introduce sbuf_chop()
+
+commit 5304bcb44ff71ddfa02af3bff4d05812b4fc4be3
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Nov 17 17:54:07 2013 +0100
+
+    Revert "Added contrib/ratdate.sh and Makefile for building"
+    
+    This reverts commit 2e7e99fc780c4099861039ebaab0fb8629d7601b.
+    
+    Problems:
+    - no copyright statement
+    - CC BY-ND considered undesirable by myself.
+
+commit 2e7e99fc780c4099861039ebaab0fb8629d7601b
+Author: Rob Paisley <paisley@rpaisley.com>
+Date:   Sat Nov 16 19:38:28 2013 -0500
+
+    Added contrib/ratdate.sh and Makefile for building
+    
+    ratdate.sh displays the date with a calendar inditacting today's date. Designed to replace
+    ratpoison's default :time command.
+    Suggest rebinding as follows: bind a exec exec ratdate.sh
+
+commit df842f317f02414f28b8c81394446fb273301eec
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Aug 8 13:03:56 2013 +0200
+
+    Plug leak in cmd_sfrestore.
+    
+    Noticed by Repolho <repolho at zoho dot com>, who came with a different
+    fix.
+
+commit be52c867c96763cca28fed963efadd8fa0d37889
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Aug 8 03:04:39 2013 +0200
+
+    Cleanup cmd_sfdump.
+    
+    Better variable names, more readable formatting.
+    Use a fixed buffer for the screen number appended to each frameset.
+
+commit bb0b20dcce7493b583f3774606527ca6776e392c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Aug 8 02:50:00 2013 +0200
+
+    Consistent formatting in cmd_sfrestore.
+
+commit 9705efbde06e6b4d7758b2a7a3ff6373690e69fc
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Aug 8 02:45:55 2013 +0200
+
+    Remove useless/untrue comments in cmd_sfrestore.
+
+commit 2cf4738caa8970e47518b132983f3b447b141e3b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Aug 8 02:43:06 2013 +0200
+
+    Better variable names in cmd_sfrestore
+
+commit d21b9fb48d959c4cd8f6041ef701e0236b4ec39b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Aug 8 02:26:57 2013 +0200
+
+    In cmd_sfrestore don't pass screen number to frestore.
+    
+    Noticed by Repolho <repolho at zoho dot com>, who came with a similar
+    fix.
+
+commit 7ae3b6544091363334142df775708e1ea88bc9bc
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Aug 8 02:22:12 2013 +0200
+
+    Free buffer used to read history file.
+    
+    From Repolho <repolho at zoho dot com>, thanks!
+
+commit dedcb4677b67737a781c300d06de1022201f709b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Aug 8 02:20:40 2013 +0200
+
+    Do not leak mem if hook is already present.
+    
+    From Repolho <repolho at zoho dot com>, thanks!
+
+commit b02d855fbdab5849db59f0edd9cc5e6038d9aae2
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Jun 25 20:05:59 2013 +0200
+
+    No path hardcoding when generating bindings.
+
+commit bbcbb9a9c00cb4c0ad277282f5fa4e32e347893e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jun 5 01:08:54 2013 +0200
+
+    contrib/sloppy.c: ensure $RATPOISON is set
+
+commit 7a155e8fad801b99125a654f74a6125249da8104
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jun 5 00:59:46 2013 +0200
+
+    contrib/sloppy.c: no need for grep(1)
+
+commit 1142b82fe4dec980846a620409bb462f765ea74f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jun 5 00:49:19 2013 +0200
+
+    contrib/{sloppy,unrat}.c: make this code actually readable...
+
+commit 89df18eef0e12cc308e69adee192856bdc9e7098
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jun 5 00:20:59 2013 +0200
+
+    contrib/{unrat,sloppy}.c: perror(3) makes no sense here
+
+commit 3735257a6752491cdb1628225e028e15806466c8
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jun 5 00:15:46 2013 +0200
+
+    contrib/{unrat,sloppy}.c: main() takes void
+
+commit f42b1d5fd24ce9191418f660a3156614c2207101
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jun 5 00:10:03 2013 +0200
+
+    contrib/{unrat,sloppy}.c: ansify defaulthandler()
+
+commit 0e01bfb38f88915dc07baceff6dec588072af731
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Jun 5 00:08:28 2013 +0200
+
+    contrib/sloppy.c: include unistd.h for fork(2)
+
+commit b9d5b0e90b7d48b76ca8ee41bdb62e791d094ca6
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Jun 4 23:50:10 2013 +0200
+
+    contrib/genrpbindings: correct CL {pre,post}amble
+
+commit 785913c8cc9fb24d07f25914e253bab9f69e2f9f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Jun 4 23:49:22 2013 +0200
+
+    contrib/genrpbindings: use $RATPOISON at runtime
+    
+    Note: the Common-Lisp bindings now require the asdf-utils package
+
+commit 557fac6325af75b1b101f4a9333943c5a565f34c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Jun 4 21:37:23 2013 +0200
+
+    .gitignore for contrib/
+
+commit 13173aec710f2c80c85040025f5608cf97cd7f67
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Jun 4 21:22:04 2013 +0200
+
+    silence compilation warning in src/manage.c
+
+commit 06cba7be45f870664e4438ad27465ecfa6509092
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Jun 4 20:44:56 2013 +0200
+
+    contrib/sloppy.c: execl(3) wants a NULL pointer
+    
+    from Ellington Santos, thanks!
+
+commit 9c6d83f07aae8ca9005e4764c7ee2eebc72cb00a
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Jun 4 18:21:16 2013 +0200
+
+    fix logic in strtok_ws
+    
+    bug reported by Ellington Santos on the mailing-list, thanks!
+
+commit 7f384e37279dcab8dcad0149293483a23aa7aec4
+Merge: 164d3dc d3793db
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon May 27 16:27:35 2013 +0200
+
+    Merge "gnumber" feature from |cos|'s repo
+
+commit 164d3dc35fc82200086c5cecd6b3d2fab236f999
+Author: cos <cos>
+Date:   Sun May 26 22:29:04 2013 +0200
+
+    Check for and use $RATPOISON during runtime when possible.
+
+commit d3793dba2a57d2512ca0a7987b3385986ec2c9ea
+Author: cos <cos>
+Date:   Fri May 24 18:55:31 2013 +0200
+
+    Adapt group bar to be updated on group number or name change.
+
+commit 472a958a2ce149313239fb5eb4244f7607887b31
+Author: cos <cos>
+Date:   Sun May 19 15:37:44 2013 +0200
+
+    Remove redundant check for NULL.
+    
+    Since add_command() for cmd_gnumber is forcing one (or two) numerical argument,
+    command() will never allow calling the cmd_gnumber() with arg[0] set to NULL.
+
+commit e31bb04702f6825eb9a3cd491a8b7b54c9bc8438
+Author: cos <cos>
+Date:   Sat May 18 10:32:04 2013 +0200
+
+    Added user documentation for gnumber command.
+
+commit 14cce1cb74c2924e76fdee467ef06b5775c76421
+Author: cos <cos>
+Date:   Wed May 15 23:26:11 2013 +0200
+
+    Add initial cmd_gnumber implementation.
+
+commit 74e7f50fedca5052bebbaffd4ef2e9483686c62a
+Author: cos <cos>
+Date:   Wed May 15 23:15:29 2013 +0200
+
+    Make group_add_new_group() sort groups numerically.
+
+commit fc8e95ed136758206f09c8041195821e3c4193a1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun May 26 18:47:20 2013 +0200
+
+    draw_string: only call rp_text_width when needed
+
+commit 57ab5caed726ee6bacc5c5807345c0cfaa1ba25f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun May 26 18:29:47 2013 +0200
+
+    draw_string: more cleanup and clarifications
+    
+    rename "update" to "print_reason" and use #defined flags instead
+    of magic numbers
+
+commit dbe13fafc3fab58e4e9d249e46711d600345a6fd
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun May 26 18:29:05 2013 +0200
+
+    draw_string: document variables
+
+commit aaa86e3d7824bf6b255a5f45ce9bae2a8de26e59
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun May 26 18:27:40 2013 +0200
+
+    feed draw_partial_string with a string and a length
+    
+    makes it easier to call along with rp_text_width
+
+commit a1d8a495d81d2a78fec72456051ebb75a7c4d238
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun May 26 18:26:25 2013 +0200
+
+    draw_string: indentation
+
+commit f8f62656145ecf3e4f09a6431cfd9a4a37a5bbc8
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun May 26 18:25:41 2013 +0200
+
+    fix draw_string when winliststyle is "row"
+    
+    bug introduced in 14beabe
+
+commit 2c70b2880c9da9167ff673eedcd89c9ebf411932
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun May 26 18:23:35 2013 +0200
+
+    sync comment with reality
+
+commit 5ffd64be5b962e8bd8923f31e3bb14a9c8fd228c
+Author: cos <cos>
+Date:   Sun Dec 16 19:31:22 2012 +0100
+
+    Update my contact info.
+    
+    The email address listed for me have not existed for a few years.
+
+commit 5201477cbcb276bd13ec07e3d57b8c6cefe8201a
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Apr 27 01:28:16 2013 +0200
+
+    avoid get_wmname spamming
+    
+    This should be a PRINT_DEBUG, not a PRINT_ERROR.
+
+commit 01b4d568b99fc48fdab0ec628a550dfbeaa7b021
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Apr 15 01:21:04 2013 +0200
+
+    Support UTF-8 in the input bar
+    
+    * introduce RP_IS_UTF8_{CHAR,CONT,START} macros.  Those yield non-zero
+      only if the locale is UTF-8.
+    * use those macros in editor.c to properly handle UTF-8 multibyte
+      characters.
+    * use them also in input.c:update_input_window, to draw the cursor
+    
+    Reviewing and comments are welcome.
+    Patches for generic support of multibyte encodings are welcome too.
+    UTF-8 was chosen because of its processing simplicity and its wide use,
+    not because of any political opinion or religious belief. ;)
+
+commit 5a6fe0574c77342f29370219fb9010b72d6d3a00
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Apr 13 04:36:23 2013 +0200
+
+    read_rc_file: use getline(3) instead of emulating it
+
+commit b202c4e9385ec4d9a9f67a006ee363a2618051d9
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Apr 13 12:43:23 2013 +0200
+
+    Make our fallback getline implementation re-usable
+
+commit fef86ad797cbb240c05dd1e5930a7c82a724806f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Apr 13 04:32:55 2013 +0200
+
+    get_more_input: use a proper while loop and a switch statement
+
+commit 0eaf3cce3c3ef70d161928f836594bd8f741b3a0
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Apr 13 04:31:17 2013 +0200
+
+    get_more_input: remove useless variable
+
+commit 36c099119b8a4df16bdd2d49362613955470de31
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 16:39:22 2013 +0200
+
+    destroy_window: frame could be NULL
+    
+    * don't dereference it if NULL, as in unmap_notify
+
+commit 5b323d2cd5fc711229f9acef46b1b4f9a9c2378a
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 16:31:37 2013 +0200
+
+    free_bar: make this function reusable
+    
+    * set last_msg to NULL after freeing it
+    * no need to test for last_msg being NULL before freeing it
+      (likewise in update_last_message)
+
+commit a31ee19ed7861dae004451df2c1cea84c45092ed
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 16:23:15 2013 +0200
+
+    main: in case XOpenDisplay fails, use exit not return
+    
+    * this is consistent with surrounding code, and helps code analyzers
+      not to barf about possible memory leaks
+
+commit 8cf27972c87572e9b256e00a226fdaf275a1a43e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 16:09:08 2013 +0200
+
+    strtok_ws: account for erroneous usage
+    
+    * if s and last are both NULL then we'll get a fatal error;
+      instead of waiting for the segfault, display an error message
+      and call abort()
+
+commit 42a9fabacefc5595cc37448e6493fa51f1b75bf5
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 16:02:40 2013 +0200
+
+    main: free display and alt_rcfile
+    
+    * otherwise specifying -d or -f more than once would lead to
+      a memory leak
+
+commit 43d6810723ae64f597c17679357ae4a34f8498d1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 15:38:09 2013 +0200
+
+    history_add: make 2nd parameter const
+
+commit 289b548310a8ade383fe898fcc0ff80686e4de14
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 15:22:06 2013 +0200
+
+    Get rid of several unused variables
+    
+    * cmd_definekey: actually use cmd
+    * cmd_meta: remove ev1
+    * cmd_resize: remove nbytes
+    * cmd_ratrelwarp: remove s
+    * draw_string: remove lgv, lgc, mask; lgc wasn't XFreeGC'ed
+    * get_more_input: remove nbytes
+    * cleanup_frame: remove last_win
+    * get_window_list: remove other_window
+    
+    Patch from Bernhard R. Link
+
+commit fcad25a12f5dd358d3d33e928029d3359553855e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 14:42:18 2013 +0200
+
+    Refactor cmd_prompt
+    
+    * use a local variable instead of using ARG_STRING(0) ten times
+    * minimize scope of local variables
+    * use a struct sbuf instead of playing with xmalloc and strncpy
+    * correct indentation
+
+commit db8be33ae5bc8645342c62cca0a481bc0078d846
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 14:34:09 2013 +0200
+
+    Refactor cmd_time
+    
+    * instead of playing with xmalloc, strlen and strncpy, use xstrdup
+      to do the copying and strcspn to delete the newline
+
+commit 9c95991fcefa80ab54e3bc39aa3b66f2b44d05f0
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 10 08:17:35 2013 +0200
+
+    cmd_prompt: handle NULL output
+    
+    * if the user aborted we receive a NULL pointer; don't attempt to
+      dereference it, and treat this case as a failure.
+    
+    Matches the behaviour of cmd_colon and cmd_select
+
+commit b512806d40ca771ce9ee74b47e5a828ad6039e7c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Apr 7 17:12:23 2013 +0200
+
+    oops, actually bump to 1.4.7-beta
+
+commit 9e2bf1b60d7e603c6435b1763ab7506e4b5deb0d
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Apr 7 04:47:13 2013 +0200
+
+    Make git ignore .xz archives and HTML documentation
+
+commit 5eb7e54012f2b0166008d2710b6354450600c9ca
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Apr 7 04:46:19 2013 +0200
+
+    Bump to 1.4.7-beta
 commit 37fc06213b65b9b8ced68f08697608632be91de0
 Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
 Date:   Sun Apr 7 03:23:50 2013 +0200
