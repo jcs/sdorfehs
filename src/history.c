@@ -273,25 +273,6 @@ history_reset (void)
     	histories[id].current = &histories[id].head;
 }
 
-void
-history_resize (int size)
-{
-  struct history_item *i;
-  struct history *h;
-  int id;
-
-  for (id = hist_NONE ; id < hist_COUNT ; id++ ) {
-	  h = histories + id;
-	  while (h->count >= (size_t)size) {
-		  list_first (i, &h->head, node);
-		  list_del (&i->node);
-                  free (i->line);
-		  free (i);
-		  h->count--;
-	  }
-  }
-}
-
 const char *
 history_previous (int history_id)
 {
