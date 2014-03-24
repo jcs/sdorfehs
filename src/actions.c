@@ -171,7 +171,7 @@ add_command (char *name, cmdret * (*fn)(int, struct cmdarg **), int nargs, int i
   cmd->num_args = nargs;
   cmd->ni_required_args = ni_nrequired;
   cmd->i_required_args = i_nrequired;
-  cmd->args = xmalloc(sizeof(struct argspec) * nargs);
+  cmd->args = nargs ? xmalloc (nargs * sizeof (struct argspec)) : NULL;
 
   /* Fill cmd->args */
   va_start(va, ni_nrequired);
