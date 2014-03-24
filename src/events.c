@@ -943,7 +943,7 @@ handle_signals (void)
       {
 	      deactivate_screen(&screens[i]);
       }
-      execlp(rp_exec_newwm, rp_exec_newwm, NULL);
+      execlp (rp_exec_newwm, rp_exec_newwm, (char *)NULL);
 
       /* Failed. Clean up. */
       PRINT_ERROR (("exec %s ", rp_exec_newwm));

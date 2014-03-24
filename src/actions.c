@@ -2699,8 +2699,8 @@ spawn(char *cmd, int raw, rp_frame *frame)
 
       /* raw means don't run it through sh.  */
       if (raw)
-        execl (cmd, cmd, NULL);
-      execl("/bin/sh", "sh", "-c", cmd, NULL);
+        execl (cmd, cmd, (char *)NULL);
+      execl("/bin/sh", "sh", "-c", cmd, (char *)NULL);
       _exit(EXIT_FAILURE);
     }
 
