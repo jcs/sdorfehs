@@ -20,7 +20,7 @@ Introduced in the previous release, sorry!
 ** contrib/rpdate.sh, fancy calendar shell script to use instead of `time'
 
 ** fix `meta', which was sending garbage and made firefox unusable
-Nasty...
+Nasty... really.
 
 ** handle errors about missing config files
 - ratpoison -f missing-config-file -> error
