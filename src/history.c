@@ -237,7 +237,6 @@ history_save (void)
     return;
 
   filename = get_history_filename ();
-
   if (!filename)
     return;
 
