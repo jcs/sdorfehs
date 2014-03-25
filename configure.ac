@@ -95,7 +95,7 @@ AC_SUBST([manpage_format])
 
 dnl Checks for programs.
 AC_PROG_CC
-AC_PATH_PROG([MANDOC], [mandoc])
+AM_MISSING_PROG([MANDOC], [mandoc])
 AC_ARG_VAR([MANDOC],
   [path to mandoc(1), only used when regenerating doc/ratpoison.man.1 \
    after editing doc/ratpoison.mdoc.1])
