@@ -140,25 +140,25 @@ whenever
 is called.
 Possible events are:
 .Bl -tag -width Ds
-.It Ar deletewindow
+.It Cm deletewindow
 Run after a window is withdrawn.
-.It Ar newwindow
+.It Cm newwindow
 Run after a new window is mapped.
-.It Ar key
+.It Cm key
 Run whenever a top level key is pressed (by default
 .Ic C\-t ) .
-.It Ar quit
+.It Cm quit
 Run before exiting
 .Nm .
-.It Ar restart
+.It Cm restart
 Run before restarting
 .Nm .
-.It Ar switchframe
+.It Cm switchframe
 Run after a frame actually switched, but before the window in it is
 focused.
-.It Ar switchgroup
+.It Cm switchgroup
 Run after selecting a new group.
-.It Ar switchwin
+.It Cm switchwin
 Run after a new window is selected.
 (With dedication, it may already be inactive again, if it was put into
 another frame)
