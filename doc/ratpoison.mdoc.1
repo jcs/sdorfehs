@@ -250,11 +250,11 @@ I.e. instead of
 better use the new
 .Ic set Cm resizeunit
 and so on...
-.It Ic dedicate Op Li 0 | 1
+.It Ic dedicate Op Cm 0 | 1
 Consider the current frame dedicated/chaste
-.Pq Ql 1
+.Pq Cm 1
 or promiscuous
-.Pq Ql 0 .
+.Pq Cm 0 .
 .Pp
 A dedicated frame will not accept new windows.
 When new windows are to be focused, they will be opened in a non-dedicated
@@ -437,7 +437,7 @@ Most window commands only see windows in the effective group.
 .It Ic gprev
 Select the prior group.
 Most window commands only see windows in the effective group.
-.It Ic gravity Op Li nw | w | sw | n | c | s | ne | e | se
+.It Ic gravity Op Cm nw | w | sw | n | c | s | ne | e | se
 Change how in its frame the current window is aligned.
 .It Ic grename
 Rename current group.
@@ -605,7 +605,7 @@ relative to the current position.
 Simulate a rat click with
 .Ar button
 (button 1=left button if none given).
-.It Ic rathold Li ( up | down ) Op Ar button
+.It Ic rathold Cm ( up | down ) Op Ar button
 Simulate pressing|releasing rat button
 .Ar button
 (1=left button if none given).
@@ -712,14 +712,14 @@ Output the list of all screens.
 The screens are separated by commas. Each screen is shown as 6 values:
 its number, its x-coordinate, its y-coordinate, its width, its height
 and if it is currently selected (1=true, 0=false).
-.It Ic select Li \- | Ar name | number Pq Ic C-t \&'
+.It Ic select Cm \- | Ar name | number Pq Ic C-t \&'
 If a number is given, switch to the window with number
 .Ar number .
 If a name is given, switch to the window in the current group with
 name
 .Ar name .
 Blank the current frame, if
-.Li \-
+.Cm \-
 is given.
 .It Ic set Op Ar variable Op Ar value
 If no argument is given, output all
@@ -772,7 +772,7 @@ command.
 Switch to the screen
 .Ar screennumber .
 (If you have multiple physical ones.)
-.It Ic startup_message Li on | off
+.It Ic startup_message Cm on | off
 Select whether
 .Nm
 will show a startup message or not.
@@ -854,7 +854,7 @@ wide or the upper one
 high, depending whether there is a
 .Dq Li \-
 in front of the number or not.
-.It Ic warp Op Li on | off
+.It Ic warp Op Cm on | off
 Select if focusing a window moves the rat cursor to the place it had been last
 time this window was focused, or not.
 .It Ic windows Oo Ar format Oc Pq Ic C\-t w
