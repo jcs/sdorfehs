@@ -547,11 +547,11 @@ This keymap can be used to add new key-command mappings to it with
 .Ic definekey
 and can be called with
 .Ic readkey .
-.It Ic newwm Ar new window manager
+.It Ic newwm Ar new-window-manager
 Quit
 .Nm
 and execute
-.Ar new window manager
+.Ar new-window-manager
 instead.
 .It Ic next Pq Ic C\-t Return | C\-t n | C\-t space
 Switch to the next window in the current group.
@@ -832,7 +832,7 @@ Spawn a shell executing
 after showing a message with the command.
 .It Ic version Pq Ic C\-t v
 Output version and compile time information.
-.It Ic vsplit Oo Ar l Ns Li / Ns Ar p | "pixels from top" | "-pixels from bottom" Oc Pq Ic C\-t s
+.It Ic vsplit Oo Ar l Ns Li / Ns Ar p | "pixels-from-top" | "-pixels-from-bottom" Oc Pq Ic C\-t s
 Split the current frame into upper frame and a lower frame.
 If no parameter is given, split in halves.
 If two numbers separated by a slash
