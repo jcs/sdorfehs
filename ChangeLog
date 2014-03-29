@@ -1,3 +1,106 @@
+commit 9732d147d89b53f56bcded70f9fc2a375a235fd8
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 19:28:14 2014 +0100
+
+    Amend the VARIABLES introduction paragraph.
+
+commit e4d731ae29e557bda4ea166763ed0b58bb602049
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 19:10:49 2014 +0100
+
+    `warp' requires an argument.
+    
+    Noticed by Bernhard R. Link.
+
+commit a64a962304c00c19ebbf055b778cf81eef8367f9
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 18:48:10 2014 +0100
+
+    Better wording.
+
+commit 33b8758fb0118f9bf20375734935adc1bf7c33fb
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 18:47:27 2014 +0100
+
+    In read_shellcmd make sure we don't dereference a NULL pointer.
+
+commit bde541308ee998fd3185500b4362bb404f51ee4c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 18:46:40 2014 +0100
+
+    Detect XKB support at build and runtime.
+
+commit 8204551023d9b77294947a5170f3428fb5a4a225
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 17:18:58 2014 +0100
+
+    Group non-optional args with parens.
+
+commit e241f7927987f4ef542be028e7f03af39b57c105
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 16:33:33 2014 +0100
+
+    Make the `-pixels' case stand out for vsplit
+
+commit e8cf915db0e8cdacce8d2acb98c5fabcaf742d0c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 16:30:43 2014 +0100
+
+    Replace spaces with hyphens to stress the need for a single word.
+    
+    Proposed earlier by Bernhard R. Link.
+
+commit dca33335275d5a930c545b3b62f0dba2b2437866
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 16:26:43 2014 +0100
+
+    Li -> Cm for various command subarguments.
+    
+    Prompted by a discussion with Bernhard R. Link.
+
+commit 08ded19772a54f97aecd948271ed1957c9f89bca
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Thu Mar 27 10:57:33 2014 +0100
+
+    Hooks names aren't placeholders but really command modifiers.
+    
+    Prompted by a discussion with Bernhard R. Link.
+
+commit d75a70126012cc862cf6dacc1198118329033ef0
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 25 23:34:19 2014 +0100
+
+    `swap' needs at least one argument.
+
+commit 38f99d642d92cca601d87c719015cfcdbf26b618
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Mar 25 23:24:34 2014 +0100
+
+    Use AM_MISSING_PROG for mandoc (better error messages).
+    
+    Prompted by a discussion with Bernhard R. Link.
+
+commit 410c7f1d286c4060d1941df71b55a17ece27a0ad
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 24 21:32:16 2014 +0100
+
+    Yes, that ratpoison bug was nasty.
+    
+    * Hi, mist. :)
+    * for those of you that wonder the purpose of this commit,
+      don't ask. :)
+
+commit a7b3902ac77a037d9e32332f952d172ede738068
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 24 11:21:23 2014 +0100
+
+    Heading towards 1.4.7
+
+commit 2a556dae8158c0f02b025918f5262fa291c450c4
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Mar 24 11:20:51 2014 +0100
+
+    Initial NEWS ans ChangeLog entries for 1.4.7
 commit 29246275028f9ce8729e37414949f9620a5af6e3
 Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
 Date:   Mon Mar 24 10:31:05 2014 +0100
