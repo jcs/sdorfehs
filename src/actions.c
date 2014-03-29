@@ -1758,7 +1758,7 @@ read_shellcmd (struct argspec *spec, struct sbuf *s, struct cmdarg **arg, const 
   cmdret *ret;
 
   ret = read_string (spec, s, hist_SHELLCMD, exec_completions, arg);
-  if (command_name && !s && !ret) {
+  if (command_name && !s && !ret && (*arg)->string) {
     /* store for command history */
     struct sbuf *buf;
 
