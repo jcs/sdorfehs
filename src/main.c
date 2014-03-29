@@ -751,6 +751,7 @@ main (int argc, char *argv[])
 
   /* Setup ratpoison's internal structures */
   init_defaults ();
+  init_xkb ();
   init_groups ();
   init_window_stuff ();
   init_xinerama ();

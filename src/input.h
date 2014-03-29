@@ -36,4 +36,6 @@ void grab_key (KeySym keysym, unsigned int modifiers, Window grab_window);
 
 void ring_bell (void);
 
+void init_xkb (void);
+
 #endif /* ! _RATPOISON_INPUT_H */

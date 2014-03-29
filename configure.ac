@@ -80,6 +80,14 @@ fi
 AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
 
+AC_ARG_WITH([xkb],
+  [AS_HELP_STRING([--disable-xkb], [Don't build XKB support for keyboard input.])],
+  [xkb=$withval],
+  [xkb=yes])
+AS_IF([test "X$xkb" = "Xyes"],
+  [AC_DEFINE([WANT_XKB], 1,
+    [Define to 1 if you want to build XKB support for keyboard input.])])
+
 AC_MSG_CHECKING([manpage format])
 AC_ARG_ENABLE([mdoc],
   [AS_HELP_STRING([--disable-mdoc],
@@ -151,9 +159,20 @@ AC_CHECK_HEADERS([X11/extensions/Xinerama.h], [], [], [
 ])
 CPPFLAGS="$mysavedCPPFLAGS"
 
+mysavedCPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+AC_CHECK_HEADERS([X11/XKBlib.h], [], [], [
+#include <X11/Xlib.h>
+])
+CPPFLAGS="$mysavedCPPFLAGS"
+
 AC_CHECK_LIB(Xext, XMissingExtension, [X_LIBS="-lXext $X_LIBS"],,$X_LIBS $X_EXTRA_LIBS)
 AC_CHECK_LIB(Xinerama, XineramaQueryScreens, [X_LIBS="-lXinerama $X_LIBS"; AC_DEFINE(HAVE_LIBXINERAMA,1,[Xinerama])],,$X_LIBS $X_EXTRA_LIBS)
 AC_CHECK_LIB(Xtst, XTestFakeButtonEvent, [X_LIBS="-lXtst $X_LIBS"; AC_DEFINE(HAVE_LIBXTST,1,[Xtst])],,$X_LIBS $X_EXTRA_LIBS)
+AC_CHECK_LIB([X11], [XkbKeycodeToKeysym],
+  [AC_DEFINE(HAVE_XKBKEYCODETOKEYSYM, 1,
+    [Define to 1 if you have the `XkbKeycodeToKeysym' function.])],
+  [], [$X_LIBS $X_EXTRA_LIBS])
 
 AC_SUBST(X_LIBS)
 AC_SUBST(X_EXTRA_LIBS)
