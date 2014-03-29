@@ -712,7 +712,7 @@ Output the list of all screens.
 The screens are separated by commas. Each screen is shown as 6 values:
 its number, its x-coordinate, its y-coordinate, its width, its height
 and if it is currently selected (1=true, 0=false).
-.It Ic select Cm \- | Ar name | number Pq Ic C-t \&'
+.It Ic select ( Cm \- | Ar name | Ar number ) Pq Ic C-t \&'
 If a number is given, switch to the window with number
 .Ar number .
 If a name is given, switch to the window in the current group with
@@ -772,7 +772,7 @@ command.
 Switch to the screen
 .Ar screennumber .
 (If you have multiple physical ones.)
-.It Ic startup_message Cm on | off
+.It Ic startup_message Cm ( on | off )
 Select whether
 .Nm
 will show a startup message or not.
