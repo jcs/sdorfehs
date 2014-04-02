@@ -123,6 +123,9 @@ sbuf_printf (struct sbuf *b, char *fmt, ...)
   b->data = xvsprintf (fmt, ap);
   va_end (ap);
 
+  b->len = strlen (b->data);
+  b->maxsz = b->len + 1;
+
   return b->data;
 }
 
