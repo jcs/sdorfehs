@@ -221,7 +221,7 @@ history_load (void)
     free (filename);
     return;
   }
-  if (!fclose(f))
+  if (fclose (f))
     PRINT_DEBUG (("ratpoison: error reading %s - %s\n", filename, strerror (errno)));
   free (filename);
 }
@@ -258,7 +258,7 @@ history_save (void)
     free (filename);
     return;
   }
-  if (!fclose(f))
+  if (fclose (f))
     PRINT_DEBUG (("ratpoison: error writing %s - %s\n", filename, strerror (errno)));
   free (filename);
 }
