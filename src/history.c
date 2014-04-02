@@ -247,6 +247,10 @@ history_save (void)
     return;
   }
 
+  if (fchmod (fileno (f), 0600) == -1)
+    PRINT_ERROR (("ratpoison: could not change mode to 0600 on %s - %s\n",
+                  filename, strerror (errno)));
+
   list_for_each_entry(item, &histories[hist_COMMAND].head, node) {
     fputs(item->line, f);
     putc('\n', f);
