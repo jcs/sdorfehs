@@ -1,3 +1,40 @@
+commit efae2c8a3b12b983250cd3a9a2e3833a82b04ce7
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 2 07:40:36 2014 +0200
+
+    At saving time, restrict the permissions of the history file
+
+commit 2484f5ce9be86936f5b0e51b9a758ff48ba83054
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 2 07:37:53 2014 +0200
+
+    fclose returns 0 on success
+    
+    * amend the test to avoid needless spamming when running in debug mode
+    * tweak spacing while here
+
+commit bca76d995713e52327663aecdfa93f5d9ac447a1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 2 07:33:47 2014 +0200
+
+    Make sbuf_printf update the len and maxsz internal fields
+    
+    * sbuf_printf updated the .data field with a freshly allocated string,
+      but didn't bother setting the .len and .maxsz fields of the sbuf.
+      Calling other sbuf_* functions on the same sbuf could lead to erratic
+      behavior and data corruption.  eg. in init_screen, the screen's
+      display_string ended up corrupted, using putenv ratpoison couldn't
+      override the DISPLAY environment variable in child processes anymore,
+      introducing a regression on multi-screen setups.
+    
+    Bug reported and cause tracked down by William Yodlowsky, the maintainer
+    of the OpenBSD ratpoison port.  Thanks!
+
+commit f9d4a134f566b561c9c771166de2139c7ebb8c9d
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Mar 29 19:50:17 2014 +0100
+
+    Here's 1.4.7-rc2.
 commit 9732d147d89b53f56bcded70f9fc2a375a235fd8
 Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
 Date:   Sat Mar 29 19:28:14 2014 +0100
