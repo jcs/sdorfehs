@@ -1,3 +1,24 @@
+commit 72b119b2dfceeb544778c229cf6dcc82f96f56a5
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Apr 8 18:12:33 2014 +0200
+
+    Mention the permissions change on the history file
+    
+    * also delete a useless line while here
+
+commit f226bbdaebe96fd4e5f076c22dfe173a0e2c2bd1
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Apr 8 18:11:30 2014 +0200
+
+    Two hyphens that should be minus signs.
+    
+    Proposed earlier by Bernhard R. Link.
+
+commit 331ed8897ddf6464844696a453cd447aaf51d93e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 2 07:52:51 2014 +0200
+
+    Here's 1.4.7-rc3.
 commit efae2c8a3b12b983250cd3a9a2e3833a82b04ce7
 Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
 Date:   Wed Apr 2 07:40:36 2014 +0200
