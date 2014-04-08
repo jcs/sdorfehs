@@ -20,7 +20,6 @@ Introduced in the previous release, sorry!
 ** contrib/rpdate.sh, fancy calendar shell script to use instead of `time'
 
 ** fix `meta', which was sending garbage and made firefox unusable
-Nasty... really.
 
 ** handle errors about missing config files
 - ratpoison -f missing-config-file -> error
@@ -44,6 +43,8 @@ resort a fuzzy match is attempted.
 
 ** ratpoison.el is now installed at the proper location
 ie. in $prefix/share/emacs/site-lisp/
+
+** ratpoison now restricts permissions on your history file
 
 * Changes since 1.4.5
 ** *Lots* of reliability fixes in ratpoison itself
