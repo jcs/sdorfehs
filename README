@@ -22,13 +22,20 @@ that cripples EMACS and other quality pieces of software.
 Building
 --------
 
-ratpoison uses autoconf. To build it:
+ratpoison uses autoconf and automake. To build it:
 
 $ ./configure && make
 
-if you want to install it, simply type 'make install' as a privileged user:
+if you want to install it system-wide, simply type 'make install' as
+a privileged user:
 
-# make install
+$ sudo make install
+
+If you retrieved ratpoison from the source repository, you will have to
+install somewhat recent versions of autoconf and automake before
+running:
+
+$ ./autogen.sh
 
 Customization
 -------------
