@@ -103,8 +103,7 @@ main (void)
         char shell[256];
 
         snprintf (shell, sizeof(shell),
-                  "$RATPOISON -c \"select `$RATPOISON -c 'windows %%i %%n'"
-                  "| awk '$1 == %ld { print $2; }'`\"",
+                  "$RATPOISON -c \"select $($RATPOISON -c 'windows %%i %%n %%f' | grep '%ld' | awk '$3 != '$($RATPOISON -c curframe)' && $3 != \"\" {print $2}')\" 2>/dev/null",
                   event.xcrossing.window);
         spawn (shell);
         wait (NULL);
