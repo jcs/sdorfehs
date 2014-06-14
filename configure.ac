@@ -97,7 +97,7 @@ AC_ARG_ENABLE([mdoc],
 AS_CASE([$enable_mdoc],
   [yes], [manpage_format=mdoc],
   [no],  [manpage_format=man],
-  [AC_MSG_ERROR([invalid --disable-mdoc="$enable_mdoc" parameter])])
+  [AC_MSG_ERROR([invalid --enable-mdoc="$enable_mdoc" parameter])])
 AC_MSG_RESULT([$manpage_format])
 AC_SUBST([manpage_format])
 
