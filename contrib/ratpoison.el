@@ -8,8 +8,6 @@
 ;; Maintainer: Gergely Nagy <algernon@debian.org>
 ;; Version: 0.2
 ;; Keywords: faces, ratpoison, X
-;; CVS Id: $Id: ratpoison.el,v 1.5 2006/03/16 00:33:34 sabetts Exp $
-;; Last updated: <2001/10/05 17:58:38 algernon>
 
 ;; This file is NOT part of GNU Emacs.
 

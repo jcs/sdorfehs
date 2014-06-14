@@ -16,9 +16,6 @@ dnl
 dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-dnl
-dnl $Id: configure.in,v 1.54 2006/12/19 22:13:07 sabetts Exp $
-
 
 AC_INIT([ratpoison], [1.4.7-beta], [ratpoison-devel@nongnu.org])
 AC_CONFIG_AUX_DIR([build-aux])
