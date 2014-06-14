@@ -5560,8 +5560,8 @@ cmd_sfdump (int interactively UNUSED, struct cmdarg **args UNUSED)
           sbuf_concat (dump, screen_suffix);
           free (frameset);
         }
-      sbuf_chop (dump);
     }
+  sbuf_chop (dump);
   ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (dump));
   sbuf_free (dump);
   return ret;
