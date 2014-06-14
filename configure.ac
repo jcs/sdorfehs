@@ -20,7 +20,7 @@ dnl
 dnl $Id: configure.in,v 1.54 2006/12/19 22:13:07 sabetts Exp $
 
 
-AC_INIT([ratpoison], [1.4.7], [ratpoison-devel@nongnu.org])
+AC_INIT([ratpoison], [1.4.7-beta], [ratpoison-devel@nongnu.org])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/main.c])
