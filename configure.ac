@@ -31,9 +31,12 @@ dnl by default turn off debugging
 AC_MSG_CHECKING([whether to enable debugging])
 AC_ARG_ENABLE([debug],
   [AS_HELP_STRING([--enable-debug],[build with extra debugging messages])],
-  [AC_MSG_RESULT([yes])
-   AC_DEFINE([DEBUG], 1, [Define this to enable debugging messages])],
-  [AC_MSG_RESULT([no])])
+  [], [enable_debug=no])
+AS_CASE([$enable_debug],
+  [yes], [AC_MSG_RESULT([yes])
+   	  AC_DEFINE([DEBUG], 1, [Define this to enable debugging messages])],
+  [no], [AC_MSG_RESULT([no])],
+  [AC_MSG_ERROR([invalid --enable-debug="$enable_debug" parameter])])
 
 AC_ARG_WITH([electric-fence],
   [AS_HELP_STRING([--with-electric-fence],
