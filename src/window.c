@@ -467,34 +467,18 @@ set_active_window_body (rp_window *win, int force)
   /* With Xinerama, we can move a window over to the current screen; otherwise
    * we have to switch to the screen that the window belongs to.
    */
-  if (rp_have_xinerama)
+  rp_screen *screen = (rp_have_xinerama ? current_screen() : win->scr);
+  /* use the intended frame if we can. */
+  if (win->intended_frame_number >= 0)
     {
-      /* use the intended frame if we can. */
-      if (win->intended_frame_number >= 0)
-        {
-          frame = screen_get_frame (current_screen(), win->intended_frame_number);
-          win->intended_frame_number = -1;
-          if (frame != current_frame())
-            last_frame = current_frame();
-        }
-
-      if (!frame)
-        frame = screen_get_frame (current_screen(), current_screen()->current_frame);
+      frame = screen_get_frame (screen, win->intended_frame_number);
+      win->intended_frame_number = -1;
+      if (frame != current_frame())
+        last_frame = current_frame();
     }
-  else
-    {
-      /* use the intended frame if we can. */
-      if (win->intended_frame_number >= 0)
-        {
-          frame = screen_get_frame (win->scr, win->intended_frame_number);
-          win->intended_frame_number = -1;
-          if (frame != current_frame())
-            last_frame = current_frame();
-        }
 
-      if (!frame)
-        frame = screen_get_frame (win->scr, win->scr->current_frame);
-    }
+  if (!frame)
+    frame = screen_get_frame (screen, screen->current_frame);
 
   if (frame->dedicated && !force)
     {
