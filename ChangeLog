@@ -1,3 +1,120 @@
+commit 52ce472823ddc703866ab124e65a602d3e4f38b0
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Sep 14 18:31:01 2014 +0200
+
+    NEWS entries for 1.4.8
+
+commit b36c633127fcf41b76da9c01494e59ba272d3c7c
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sun Sep 14 18:26:33 2014 +0200
+
+    Check for and include sys/stat.h
+    
+    * needed by the recent use of fchmod, missing include warning triggered
+      on Debian stable but not OpenBSD
+
+commit 67b4b1b86ecdb251f23970ed0713da445c00804d
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Jun 14 16:57:28 2014 +0200
+
+    Fix sfdump.
+    
+    One more proof that I should not hack on the multiple screens support.
+    Patch from Joshua Leners.
+
+commit fa8ec99a9054f006fac10bb57df35d457c06ce93
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Jun 14 16:55:15 2014 +0200
+
+    Rewrite libhistory handling.
+
+commit fd4cfa89a0baaa0ecaf5a2901c9a506d1748907e
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Jun 14 16:49:47 2014 +0200
+
+    Fix --enable-mdoc error message.
+
+commit 8904b43449d280f39a738c09e3e649b58f519e4f
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Jun 14 16:48:55 2014 +0200
+
+    Support --enable-debug=no
+    
+    Reported by Jeroen Roovers (jer@gentoo) who proposed a similar patch.
+
+commit 4fe2bf0b5e7ac663285eb171d9dd7e4b85c0506b
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Jun 14 16:44:31 2014 +0200
+
+    Kill RCS Ids.
+
+commit 35151796c216f23739d8b7bc4c532de400e9d1dc
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Sat Jun 14 16:41:00 2014 +0200
+
+    Move to 1.4.7-beta
+
+commit 8269f900b7a09726c8010edcaa94601bd1699305
+Author: cos <cos>
+Date:   Wed May 28 11:54:12 2014 +0200
+
+    Clean-up duplicate entries in AUTHORS file.
+
+commit a65cdf85338c609218c0a16896f5e035bae918a8
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon May 19 22:37:55 2014 +0200
+
+    Bad version in the latest NEWS chunk.
+    
+    This is a listing of changes since 1.4.6, not 1.4.7.  Duh.
+    Noticed by brainwash on #ratpoison, thanks!
+
+commit 452bd9740bef7cf6c3b1dcb19616adfe84217612
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Apr 22 11:03:20 2014 +0200
+
+    "Fix" for sloppy.c
+    
+    * so it seems like this change makes some users' life better.  It still
+      fails to behave properly here, but I don't care. :)
+
+commit a10fe576ada8a294739d4cd65273acdc8e4db4e2
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Apr 21 22:56:47 2014 +0200
+
+    s/EMACS/Emacs/
+
+commit 8a8e8019f4c5c060df8815a075ef0874831ea842
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Mon Apr 21 22:49:31 2014 +0200
+
+    README tweaks from Jeff Abrahamson.
+    
+    * mention the use of sudo instead of a privileged shell
+    * advertize the use of ./autogen.sh for users that pull from git
+    * bonus: mention automake and the fact that recent autotools releases
+      are needed
+
+commit 9b16a4db5455728a35a7919cf3060907d8cb7df2
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Wed Apr 9 23:14:54 2014 +0200
+
+    Remove MERCHANDISE.
+    
+    As discussed with Ryan, the service has been discontinued. :)
+
+commit 114f29821912e890d44d9c2d3caa181d3edd46d0
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Apr 8 18:14:37 2014 +0200
+
+    Here comes ratpoison-1.4.7
+
+commit 1cff86f4551bdc5097c86af6656d9b4891d991a5
+Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
+Date:   Tue Apr 8 18:14:20 2014 +0200
+
+    Merge the last Changelog bits before release.
+
 commit 72b119b2dfceeb544778c229cf6dcc82f96f56a5
 Author: Jérémie Courrèges-Anglas <jca@wxcvbn.org>
 Date:   Tue Apr 8 18:12:33 2014 +0200
