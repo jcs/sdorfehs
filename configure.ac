@@ -188,7 +188,7 @@ AS_IF([test "$with_electric_fence" = yes],
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([pwd.h sys/ioctl.h])
+AC_CHECK_HEADERS([pwd.h sys/ioctl.h sys/stat.h])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_TYPEOF
