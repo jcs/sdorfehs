@@ -7,6 +7,21 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
+* Changes since 1.4.7
+This is mostly a bugfix release.
+
+** fix cmd_sfdump with multiple screens
+Broken since last release, from Joshua Leners.
+
+** respect --enable-history=no
+From Jeroen Roovers (jer@gentoo).
+
+** fix for sloppy.c
+The ugly sloppy.c had "a bug".  It may be fixed now.
+
+** README improvements
+From Jeff Abrahamson.
+
 * Changes since 1.4.6
 ** More fixes and code cleanup.
 
