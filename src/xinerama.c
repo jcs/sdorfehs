@@ -61,8 +61,12 @@ init_xinerama(void)
         }
 
         xine_screens = XineramaQueryScreens(dpy, &xine_screen_count);
-        if ((xine_screens == NULL) || (xine_screen_count < 2)) {
+        if (xine_screens == NULL) {
                 return;
+        }
+        if (xine_screen_count < 2) {
+               XFree (xine_screens);
+               return;
         }
 
         rp_have_xinerama = 1;
