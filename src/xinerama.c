@@ -47,7 +47,7 @@ init_xinerama(void)
                 return;
         }
 
-        if (!XineramaQueryVersion(dpy, &major, &minor) != Success) {
+        if (XineramaQueryVersion(dpy, &major, &minor) == 0) {
                 return;
         }
 
