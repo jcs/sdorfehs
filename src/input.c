@@ -109,6 +109,13 @@ init_xkb (void)
 KeySym
 keycode_to_keysym(Display *dpy, KeyCode kc, int group, int level)
 {
+  /*
+   * XKeycodeToKeysym has been deprecated upstream, however we still use
+   * it since XKB may not be available at build time or and not
+   * functional at runtime. The problems in XKeycodeToKeysym don't seem
+   * to matter in the ratpoison case anyway.
+   * https://bugs.freedesktop.org/show_bug.cgi?id=5349
+   */
 #if defined (WANT_XKB) && defined (HAVE_X11_XKBLIB_H) && defined (HAVE_XKBKEYCODETOKEYSYM)
   if (use_xkb)
     return XkbKeycodeToKeysym (dpy, kc, group, level);
