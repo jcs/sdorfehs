@@ -452,8 +452,41 @@ void set_active_window_force (rp_window *win)
   set_active_window_body(win, 1);
 }
 
-/* FIXME: This function is probably a mess. I can't remember a time
-   when I didn't think this. It probably needs to be fixed up. */
+static rp_frame *
+find_frame_non_dedicated(rp_screen *current_screen, rp_frame *current_frame)
+{
+  rp_frame *cur;
+
+  /* Try the only / current screen... */
+  for (cur = list_next_entry (current_frame, &current_screen->frames, node);
+       cur != current_frame;
+       cur = list_next_entry (cur, &current_screen->frames, node))
+    {
+      if (!cur->dedicated)
+        return cur;
+    }
+
+  /* If we have Xinerama, we can check *all* screens... */
+  if (rp_have_xinerama)
+    {
+      int i;
+
+      for (i = 0; i < num_screens; i++)
+        {
+          if (current_screen == &screens[i])
+            continue;
+
+          list_for_each_entry (cur, &screens[i].frames, node)
+            {
+              if (!cur->dedicated)
+                return cur;
+            }
+        }
+    }
+
+  return NULL;
+}
+
 void
 set_active_window_body (rp_window *win, int force)
 {
@@ -485,48 +518,15 @@ set_active_window_body (rp_window *win, int force)
 
   if (frame->dedicated && !force)
     {
-      /* Try to find a non-dedicated frame.  */
-      rp_frame *cur;
-      rp_screen *scr;
-      int done;
+      /* Try to find a non-dedicated frame. */
+      rp_frame *non_dedicated;
 
-      scr = (rp_have_xinerama)?&screens[rp_current_screen]:win->scr;
-      done = 0;
-
-      /* Try the only / current screen... */
-      for (cur = list_next_entry (frame, &scr->frames, node);
-           cur != frame && !done;
-           cur = list_next_entry (cur, &scr->frames, node))
+      non_dedicated = find_frame_non_dedicated (screen, frame);
+      if (non_dedicated != NULL)
         {
-          if (!cur->dedicated)
-            {
-              set_active_frame (cur, 0);
-              last_frame = frame;
-              frame = cur;
-              done = 1;
-            }
-        }
-
-      /* If we have Xinerama, we can check *all* screens... */
-      if (rp_have_xinerama && !done)
-        {
-          int i;
-
-          for (i=0; i<num_screens && !done; i++)
-            {
-              if (scr == &screens[i]) continue;
-              list_for_each_entry (cur,&screens[i].frames,node)
-                {
-                  if (!cur->dedicated)
-                    {
-                      set_active_frame (cur, 0);
-                      last_frame = frame;
-                      frame = cur;
-                      done = 1; /* Break outer loop. */
-                      break;    /* Break inner loop. */
-                    }
-                }
-            }
+          last_frame = frame;
+          frame = non_dedicated;
+          set_active_frame (frame, 0);
         }
     }
 
