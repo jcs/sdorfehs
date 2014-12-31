@@ -459,25 +459,28 @@ set_active_window_body (rp_window *win, int force)
 {
   rp_window *last_win;
   rp_frame *frame = NULL, *last_frame = NULL;
+  rp_screen *screen;
 
-  if (win == NULL) return;
+  if (win == NULL)
+    return;
 
   PRINT_DEBUG (("intended_frame_number: %d\n", win->intended_frame_number));
 
   /* With Xinerama, we can move a window over to the current screen; otherwise
    * we have to switch to the screen that the window belongs to.
    */
-  rp_screen *screen = (rp_have_xinerama ? current_screen() : win->scr);
+  screen = rp_have_xinerama ? current_screen () : win->scr;
+
   /* use the intended frame if we can. */
   if (win->intended_frame_number >= 0)
     {
       frame = screen_get_frame (screen, win->intended_frame_number);
       win->intended_frame_number = -1;
-      if (frame != current_frame())
-        last_frame = current_frame();
+      if (frame != current_frame ())
+        last_frame = current_frame ();
     }
 
-  if (!frame)
+  if (frame == NULL)
     frame = screen_get_frame (screen, screen->current_frame);
 
   if (frame->dedicated && !force)
@@ -529,7 +532,8 @@ set_active_window_body (rp_window *win, int force)
 
   last_win = set_frames_window (frame, win);
 
-  if (last_win) PRINT_DEBUG (("last window: %s\n", window_name (last_win)));
+  if (last_win != NULL)
+    PRINT_DEBUG (("last window: %s\n", window_name (last_win)));
   PRINT_DEBUG (("new window: %s\n", window_name (win)));
 
   /* Make sure the window comes up full screen */
@@ -549,7 +553,7 @@ set_active_window_body (rp_window *win, int force)
   XSync (dpy, False);
 
   /* If we switched frame, go back to the old one. */
-  if (last_frame)
+  if (last_frame != NULL)
     set_active_frame (last_frame, 0);
 
   /* Call the switch window hook */
