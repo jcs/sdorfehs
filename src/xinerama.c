@@ -66,6 +66,7 @@ init_xinerama(void)
         }
         if (xine_screen_count < 2) {
                XFree (xine_screens);
+               xine_screens = NULL;
                return;
         }
 
