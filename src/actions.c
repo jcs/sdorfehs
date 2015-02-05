@@ -5965,12 +5965,20 @@ cmd_dedicate (int interactive UNUSED, struct cmdarg **args)
 {
   rp_frame *f;
 
-  f = current_frame();
-  if (!f) return cmdret_new (RET_SUCCESS, NULL);
+  f = current_frame ();
+  if (f == NULL)
+    return cmdret_new (RET_SUCCESS, NULL);
 
-  if (args[0])
-    /* Whatever you set it to. */
-    f->dedicated = ARG(0,number);
+  if (args[0] != NULL)
+    {
+      int dedicated;
+
+      dedicated = ARG (0, number);
+      if (dedicated != 0 && dedicated != 1)
+        return cmdret_new (RET_FAILURE,
+                           "Invalid \"dedicate\" value, use 0 or 1.");
+      f->dedicated = dedicated;
+    }
   else
     /* Just toggle it, rather than on or off. */
     f->dedicated = !(f->dedicated);
