@@ -877,8 +877,10 @@ When called with no arguments, the current setting is returned.
 A dedicated frame is a frame that will not allow new windows to appear
 in it. Only the user may switch windows in this frame.
 
-@deffn Command dedicate
-Toggle whether the current frame is dedicated or not.
+@deffn Command dedicate @var{arg}
+Set the current frame as dedicated (@var{arg} = 1) or not (@var{arg} = 0).
+If @var{arg} is not supplied, toggle the dedicated state of the
+current frame.
 @end deffn
 
 @node Multiple Monitors
