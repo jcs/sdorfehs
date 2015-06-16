@@ -82,6 +82,7 @@ static cmdret * set_historysize (struct cmdarg **args);
 static cmdret * set_historycompaction (struct cmdarg **args);
 static cmdret * set_historyexpansion (struct cmdarg **args);
 static cmdret * set_msgwait(struct cmdarg **args);
+static cmdret * set_framemsgwait(struct cmdarg **args);
 
 LIST_HEAD(set_vars);
 
@@ -152,6 +153,7 @@ init_set_vars(void)
   add_set_var ("historycompaction", set_historycompaction, 1, "", arg_NUMBER);
   add_set_var ("historyexpansion", set_historyexpansion, 1, "", arg_NUMBER);
   add_set_var ("msgwait", set_msgwait, 1, "", arg_NUMBER);
+  add_set_var ("framemsgwait", set_framemsgwait, 1, "", arg_NUMBER);
 }
 
 /* rp_keymaps is ratpoison's list of keymaps. */
@@ -3704,6 +3706,20 @@ cmdret *
 cmd_msgwait (int interactive UNUSED, struct cmdarg **args)
 {
   return set_msgwait (args);
+}
+
+static cmdret *
+set_framemsgwait (struct cmdarg **args)
+{
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%d", defaults.frame_indicator_timeout);
+
+  if (ARG(0,number) < 0)
+    return cmdret_new (RET_FAILURE, "framemsgwait: %s", invalid_negative_arg);
+  else
+    defaults.frame_indicator_timeout = ARG(0,number);
+
+  return cmdret_new (RET_SUCCESS, NULL);
 }
 
 static cmdret *
