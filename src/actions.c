@@ -1369,7 +1369,7 @@ window_completions (char* str UNUSED)
 
 /* switch to window number or name */
 cmdret *
-cmd_select (int interactive UNUSED, struct cmdarg **args)
+cmd_select (int interactive, struct cmdarg **args)
 {
   cmdret *ret = NULL;
   char *str;
@@ -1407,10 +1407,17 @@ cmd_select (int interactive UNUSED, struct cmdarg **args)
             }
           else
             {
-              /* show the window list as feedback */
-              show_bar (current_screen (), defaults.window_fmt);
-              ret = cmdret_new (RET_FAILURE,
-                                "select: unknown window number '%d'", n);
+              if (interactive)
+                {
+                  /* show the window list as feedback */
+                  show_bar (current_screen (), defaults.window_fmt);
+                  ret = cmdret_new (RET_SUCCESS, NULL);
+                }
+              else
+                {
+                  ret = cmdret_new (RET_FAILURE,
+                                    "select: unknown window number '%d'", n);
+                }
             }
         }
       else
