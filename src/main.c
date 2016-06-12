@@ -312,9 +312,9 @@ set_sig_handler (int sig, void (*action)(int))
 {
   struct sigaction act;
 
+  memset (&act, 0, sizeof (act));
   act.sa_handler = action;
   sigemptyset (&act.sa_mask);
-  act.sa_flags = 0;
   if (sigaction (sig, &act, NULL))
     {
       PRINT_ERROR (("Error setting signal handler: %s\n",
