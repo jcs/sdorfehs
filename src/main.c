@@ -310,9 +310,6 @@ handler (Display *d, XErrorEvent *e)
 void
 set_sig_handler (int sig, void (*action)(int))
 {
-  /* use sigaction because SVR4 systems do not replace the signal
-    handler by default which is a tip of the hat to some god-aweful
-    ancient code.  So use the POSIX sigaction call instead. */
   struct sigaction act;
 
   /* check setting for sig */
