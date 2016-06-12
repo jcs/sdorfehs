@@ -612,9 +612,7 @@ main (int argc, char *argv[])
   myargv = argv;
   while (1)
     {
-      int option_index = 0;
-
-      c = getopt_long (argc, argv, ratpoison_opts, ratpoison_longopts, &option_index);
+      c = getopt_long (argc, argv, ratpoison_opts, ratpoison_longopts, NULL);
       if (c == -1) break;
 
       switch (c)
