@@ -431,38 +431,41 @@ read_startup_files (const char *alt_rcfile)
     }
   else
     {
-      /* first check $HOME/.ratpoisonrc and if that does not exist then try
-         $sysconfdir/ratpoisonrc */
       const char *homedir;
+      char *filename;
 
+      /* first check $HOME/.ratpoisonrc */
       homedir = get_homedir ();
-
       if (!homedir)
         PRINT_ERROR (("ratpoison: no home directory!?\n"));
       else
         {
-          char *filename;
           filename = xsprintf ("%s/.ratpoisonrc", homedir);
+          if ((fileptr = fopen (filename, "r")) == NULL)
+            {
+              if (errno != ENOENT)
+                PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
+                              filename, strerror (errno)));
+            }
+          free (filename);
+        }
+
+      if (fileptr == NULL)
+        {
+          /* couldn't open $HOME/.ratpoisonrc, fall back on system config */
+          filename = xsprintf ("%s/ratpoisonrc", SYSCONFDIR);
 
           if ((fileptr = fopen (filename, "r")) == NULL)
             {
               if (errno != ENOENT)
                 PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
                               filename, strerror (errno)));
-
-              free (filename);
-              filename = xsprintf ("%s/ratpoisonrc", SYSCONFDIR);
-
-              if ((fileptr = fopen (filename, "r")) == NULL)
-                if (errno != ENOENT)
-                    PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
-                                  filename, strerror (errno)));
             }
           free (filename);
         }
     }
 
-  if (fileptr)
+  if (fileptr != NULL)
     {
       set_close_on_exec (fileno (fileptr));
       read_rc_file (fileptr);
