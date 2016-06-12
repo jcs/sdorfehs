@@ -318,7 +318,7 @@ set_sig_handler (int sig, void (*action)(int))
   /* check setting for sig */
   if (sigaction (sig, NULL, &act))
     {
-      PRINT_ERROR (("Error %d fetching SIGALRM handler\n", errno ));
+      PRINT_ERROR (("Error %d fetching signal handler\n", errno ));
     }
   else
     {
@@ -331,7 +331,7 @@ set_sig_handler (int sig, void (*action)(int))
           act.sa_flags = 0;
           if (sigaction (sig, &act, NULL))
             {
-              PRINT_ERROR (("Error %d setting SIGALRM handler\n", errno ));
+              PRINT_ERROR (("Error %d setting signal handler\n", errno ));
             }
         }
     }
