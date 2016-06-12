@@ -312,26 +312,13 @@ set_sig_handler (int sig, void (*action)(int))
 {
   struct sigaction act;
 
-  /* check setting for sig */
-  if (sigaction (sig, NULL, &act))
+  act.sa_handler = action;
+  sigemptyset (&act.sa_mask);
+  act.sa_flags = 0;
+  if (sigaction (sig, &act, NULL))
     {
-      PRINT_ERROR (("Error fetching signal handler: %s\n", strerror (errno)));
-    }
-  else
-    {
-      /* if the existing action is to ignore then leave it intact
-         otherwise add our handler */
-      if (act.sa_handler != SIG_IGN)
-        {
-          act.sa_handler = action;
-          sigemptyset(&act.sa_mask);
-          act.sa_flags = 0;
-          if (sigaction (sig, &act, NULL))
-            {
-              PRINT_ERROR (("Error setting signal handler: %s\n",
-                            strerror (errno)));
-            }
-        }
+      PRINT_ERROR (("Error setting signal handler: %s\n",
+                    strerror (errno)));
     }
 }
 
