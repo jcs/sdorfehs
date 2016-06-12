@@ -441,12 +441,10 @@ read_startup_files (const char *alt_rcfile)
       else
         {
           filename = xsprintf ("%s/.ratpoisonrc", homedir);
-          if ((fileptr = fopen (filename, "r")) == NULL)
-            {
-              if (errno != ENOENT)
-                PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
-                              filename, strerror (errno)));
-            }
+          fileptr = fopen (filename, "r");
+          if (fileptr == NULL && errno != ENOENT)
+            PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
+                          filename, strerror (errno)));
           free (filename);
         }
 
@@ -455,12 +453,10 @@ read_startup_files (const char *alt_rcfile)
           /* couldn't open $HOME/.ratpoisonrc, fall back on system config */
           filename = xsprintf ("%s/ratpoisonrc", SYSCONFDIR);
 
-          if ((fileptr = fopen (filename, "r")) == NULL)
-            {
-              if (errno != ENOENT)
-                PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
-                              filename, strerror (errno)));
-            }
+          fileptr = fopen (filename, "r");
+          if (fileptr == NULL && errno != ENOENT)
+            PRINT_ERROR (("ratpoison: could not open %s (%s)\n",
+                          filename, strerror (errno)));
           free (filename);
         }
     }
