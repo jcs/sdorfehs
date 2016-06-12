@@ -1504,7 +1504,7 @@ cmd_kill (int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_version (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  return cmdret_new (RET_SUCCESS, "%s", PACKAGE " " VERSION " (built " __DATE__ " " __TIME__ ")");
+  return cmdret_new (RET_SUCCESS, "%s", PACKAGE " " VERSION);
 }
 
 static char *
@@ -3345,7 +3345,7 @@ cmd_license (int interactive UNUSED, struct cmdarg **args UNUSED)
   int y = 10;
   int i;
   int max_width = 0;
-  char *license_text[] = { PACKAGE " " VERSION, "(built " __DATE__ " " __TIME__ ")",
+  char *license_text[] = { PACKAGE " " VERSION,
                            "",
                            "Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts",
                            "",

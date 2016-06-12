@@ -340,7 +340,7 @@ set_sig_handler (int sig, void (*action)(int))
 static void
 print_version (void)
 {
-  printf ("%s %s (built %s %s)\n", PACKAGE, VERSION, __DATE__, __TIME__);
+  printf ("%s %s\n", PACKAGE, VERSION);
   printf ("Copyright (C) 2000-2008 Shawn Betts\n\n");
 
   exit (EXIT_SUCCESS);
