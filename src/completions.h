@@ -22,7 +22,7 @@
 #define _RATPOISON_COMPLETIONS_H 1
 
 char *completions_complete (rp_completions *c, char *partial, int direction);
-rp_completions *completions_new (completion_fn list_fn);
+rp_completions *completions_new (completion_fn list_fn, enum completion_styles style);
 void completions_free (rp_completions *c);
 
 #endif /* ! _RATPOISON_COMPLETIONS_H */

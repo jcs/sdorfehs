@@ -1378,8 +1378,8 @@ cmd_select (int interactive, struct cmdarg **args)
   /* FIXME: This is manually done because of the kinds of things
      select accepts. */
   if (args[0] == NULL)
-    str = get_input (MESSAGE_PROMPT_SWITCH_TO_WINDOW, hist_SELECT,
-		     window_completions);
+    str = get_more_input (MESSAGE_PROMPT_SWITCH_TO_WINDOW, "", hist_SELECT,
+                          SUBSTRING, window_completions);
   else
     str = xstrdup (ARG_STRING(0));
 
@@ -2641,7 +2641,7 @@ cmd_colon (int interactive UNUSED, struct cmdarg **args)
     input = get_input (MESSAGE_PROMPT_COMMAND, hist_COMMAND, colon_completions);
   else
     input = get_more_input (MESSAGE_PROMPT_COMMAND, ARG_STRING(0), hist_COMMAND,
-			    colon_completions);
+			    BASIC, colon_completions);
 
   /* User aborted. */
   if (input == NULL)
@@ -5930,7 +5930,7 @@ cmd_prompt (int interactive UNUSED, struct cmdarg **args)
           query = sbuf_new (prefix - arg_str);
           sbuf_nconcat (query, arg_str, prefix - arg_str);
           output = get_more_input (sbuf_get (query), prefix, hist_PROMPT,
-                                   trivial_completions);
+                                   BASIC, trivial_completions);
           sbuf_free (query);
         }
       else

@@ -332,6 +332,19 @@ struct modifier_info
 
 typedef struct list_head *(*completion_fn)(char *string);
 
+/*
+  BASIC: The completion shall begin with the same characters as the partial
+  string. Case is ignored.
+
+  SUBSTRING: The partial string shall be a subpart of the completion. Case
+  is ignored.
+*/
+enum completion_styles
+{
+  BASIC,
+  SUBSTRING
+};
+
 struct rp_completions
 {
   /* A pointer to the partial string that is being completed. We need
@@ -352,6 +365,9 @@ struct rp_completions
   /* virgin = 1 means no completions have been attempted on the input
      string. */
   unsigned short int virgin;
+
+  /* The completion style used to perform string comparisons */
+  enum completion_styles style;
 };
 
 struct rp_input_line

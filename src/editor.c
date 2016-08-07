@@ -100,14 +100,15 @@ static edit_binding edit_bindings[] =
      { {0,              0},     0} };
 
 rp_input_line *
-input_line_new (char *prompt, char *preinput, int history_id, completion_fn fn)
+input_line_new (char *prompt, char *preinput, int history_id,
+                enum completion_styles style, completion_fn fn)
 {
   rp_input_line *line;
   size_t length;
 
   line = xmalloc (sizeof (rp_input_line));
   line->prompt = prompt;
-  line->compl = completions_new (fn);
+  line->compl = completions_new (fn, style);
   line->history_id = history_id;
 
   /* Allocate some memory to start with (100 extra bytes) */

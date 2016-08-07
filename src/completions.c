@@ -18,13 +18,14 @@
  * Boston, MA 02111-1307 USA
  */
 
+#define _GNU_SOURCE
 #include <string.h>
 
 #include "ratpoison.h"
 #include "completions.h"
 
 rp_completions *
-completions_new (completion_fn list_fn)
+completions_new (completion_fn list_fn, enum completion_styles style)
 {
   rp_completions *c;
 
@@ -35,6 +36,7 @@ completions_new (completion_fn list_fn)
   c->last_match = NULL;
   c->partial = NULL;
   c->virgin = 1;
+  c->style = style;
 
   return c;
 }
@@ -96,6 +98,27 @@ completions_update (rp_completions *c, char *partial)
   free (new_list);
 }
 
+
+/* Return true if completion is an alternative for partial string,
+   given the style used. */
+static int
+completions_match(rp_completions *c, char *completion, char *partial)
+{
+  int match = 0;
+
+  switch (c->style)
+    {
+    case BASIC:
+      match = str_comp (completion, partial, strlen(partial));
+      break;
+    case SUBSTRING:
+      match = (strcasestr (completion, partial) != NULL);
+      break;
+    }
+
+  return match;
+}
+
 static char *
 completions_prev_match (rp_completions *c)
 {
@@ -107,7 +130,7 @@ completions_prev_match (rp_completions *c)
        cur != c->last_match;
        cur = list_prev_entry (cur, &c->completion_list, node))
     {
-      if (str_comp (sbuf_get (cur), c->partial, strlen (c->partial)))
+      if (completions_match (c, sbuf_get (cur), c->partial))
         {
           /* We found a match so update our last_match pointer and
              return the string. */
@@ -130,7 +153,7 @@ completions_next_match (rp_completions *c)
        cur != c->last_match;
        cur = list_next_entry (cur, &c->completion_list, node))
     {
-      if (str_comp (sbuf_get (cur), c->partial, strlen (c->partial)))
+      if (completions_match (c, sbuf_get (cur), c->partial))
         {
           /* We found a match so update our last_match pointer and
              return the string. */
@@ -162,8 +185,9 @@ completions_complete (rp_completions *c, char *partial, int direction)
       if (direction == COMPLETION_PREVIOUS)
         c->last_match = list_prev_entry (c->last_match, &c->completion_list, node);
 
+      PRINT_DEBUG(("%s -> %s\n", sbuf_get (c->last_match), c->partial));
       /* Now check if last_match is a match for partial. */
-      if (str_comp (sbuf_get (c->last_match), c->partial, strlen (c->partial)))
+      if (completions_match (c, sbuf_get (c->last_match), c->partial))
         return sbuf_get (c->last_match);
     }
 

@@ -39,7 +39,7 @@ typedef enum edit_status
 #define RP_IS_UTF8_CONT(c) (defaults.utf8_locale && ((c) & 0xC0) == 0x80)
 
 /* Input line functions */
-rp_input_line *input_line_new (char *prompt, char *preinput, int history_id, completion_fn fn);
+rp_input_line *input_line_new (char *prompt, char *preinput, int history_id, enum completion_styles style, completion_fn fn);
 void input_line_free (rp_input_line *line);
 
 edit_status execute_edit_action (rp_input_line *line, KeySym ch, unsigned int modifier, char *keysym_buf);

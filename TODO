@@ -25,9 +25,6 @@ stuff ???
 * Pasting into input buffer
 Fix it.
 
-* window name substring matching.
-Do it.
-
 * allow letters and numbers to be used for frames (in fselect)
 
 * dump all all def* settings
