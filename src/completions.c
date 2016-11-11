@@ -185,7 +185,6 @@ completions_complete (rp_completions *c, char *partial, int direction)
       if (direction == COMPLETION_PREVIOUS)
         c->last_match = list_prev_entry (c->last_match, &c->completion_list, node);
 
-      PRINT_DEBUG(("%s -> %s\n", sbuf_get (c->last_match), c->partial));
       /* Now check if last_match is a match for partial. */
       if (completions_match (c, sbuf_get (c->last_match), c->partial))
         return sbuf_get (c->last_match);
