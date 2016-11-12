@@ -59,7 +59,6 @@ static struct option ratpoison_longopts[] =
     {"version", no_argument,            0,      'v'},
     {"command", required_argument,      0,      'c'},
     {"display", required_argument,      0,      'd'},
-    {"screen",  required_argument,      0,      's'},
     {"file",            required_argument,      0,      'f'},
     {0,         0,                      0,      0} };
 
@@ -338,7 +337,6 @@ print_help (void)
   printf ("-h, --help            Display this help screen\n");
   printf ("-v, --version         Display the version\n");
   printf ("-d, --display <dpy>   Set the X display to use\n");
-  printf ("-s, --screen <num>    Only use the specified screen\n");
   printf ("-c, --command <cmd>   Send ratpoison a colon-command\n");
   printf ("-i, --interactive     Execute commands in interactive mode\n");
   printf ("-f, --file <file>     Specify an alternative configuration file\n\n");
@@ -588,12 +586,10 @@ init_defaults (void)
 int
 main (int argc, char *argv[])
 {
-  int i;
   int c;
   char **cmd = NULL;
   int cmd_count = 0;
-  int screen_arg = 0;
-  int screen_num = 0;
+  rp_screen *cur;
   char *display = NULL;
   unsigned char interactive = 0;
   char *alt_rcfile = NULL;
@@ -639,10 +635,6 @@ main (int argc, char *argv[])
         case 'd':
           display = optarg;
           break;
-        case 's':
-          screen_arg = 1;
-          screen_num = strtol (optarg, NULL, 10);
-          break;
         case 'i':
           interactive = 1;
           break;
@@ -686,13 +678,11 @@ main (int argc, char *argv[])
 
   if (cmd_count > 0)
     {
-      int j, screen, exit_status = EXIT_SUCCESS;
-
-      screen = screen_arg ? screen_num : -1;
+      int j, exit_status = EXIT_SUCCESS;
 
       for (j = 0; j < cmd_count; j++)
         {
-          if (!send_command (interactive, (unsigned char *)cmd[j], screen))
+          if (!send_command (interactive, (unsigned char *)cmd[j]))
 	    exit_status = EXIT_FAILURE;
           free (cmd[j]);
         }
@@ -736,8 +726,13 @@ main (int argc, char *argv[])
   init_xkb ();
   init_groups ();
   init_window_stuff ();
-  init_xinerama ();
-  init_screens (screen_arg, screen_num);
+
+#ifdef HAVE_LIBXRANDR
+  init_xrandr ();
+  rp_have_xrandr = 1;
+#endif
+
+  init_screens ();
 
   init_frame_lists ();
   update_modifier_map ();
@@ -745,19 +740,11 @@ main (int argc, char *argv[])
   initialize_default_keybindings ();
   history_load ();
 
-  /* Scan for windows */
-  if (screen_arg)
+  list_for_each_entry (cur, &rp_screens, node)
     {
-      rp_current_screen = screen_num;
-      scanwins (&screens[0]);
-    }
-  else
-    {
-      rp_current_screen = 0;
-      for (i=0; i<num_screens; i++)
-        {
-          scanwins (&screens[i]);
-        }
+      if (!rp_current_screen)
+        rp_current_screen = cur;
+      scanwins (cur);
     }
 
   if (read_startup_files (alt_rcfile) == -1)
@@ -769,58 +756,18 @@ main (int argc, char *argv[])
 
   /* If no window has focus, give the key_window focus. */
   if (current_window() == NULL)
-    set_window_focus (current_screen()->key_window);
+    set_window_focus (rp_current_screen->key_window);
 
   listen_for_events ();
 
   return EXIT_SUCCESS;
 }
 
-static void
-free_screen (rp_screen *s)
-{
-  rp_frame *frame;
-  struct list_head *iter, *tmp;
-
-  /* Relinquish our hold on the root window. */
-  XSelectInput(dpy, RootWindow (dpy, s->screen_num), 0);
-
-  list_for_each_safe_entry (frame, iter, tmp, &s->frames, node)
-    {
-      frame_free (s, frame);
-    }
-
-  deactivate_screen(s);
-
-  XDestroyWindow (dpy, s->bar_window);
-  XDestroyWindow (dpy, s->key_window);
-  XDestroyWindow (dpy, s->input_window);
-  XDestroyWindow (dpy, s->frame_window);
-  XDestroyWindow (dpy, s->help_window);
-
-#ifdef USE_XFT_FONT
-  if (s->xft_font)
-    {
-      XftColorFree (dpy, DefaultVisual (dpy, s->screen_num),
-                    DefaultColormap (dpy, s->screen_num), &s->xft_fg_color);
-      XftColorFree (dpy, DefaultVisual (dpy, s->screen_num),
-                    DefaultColormap (dpy, s->screen_num), &s->xft_bg_color);
-      XftFontClose (dpy, s->xft_font);
-    }
-#endif
-
-  XFreeCursor (dpy, s->rat);
-  XFreeColormap (dpy, s->def_cmap);
-  XFreeGC (dpy, s->normal_gc);
-  XFreeGC (dpy, s->inverse_gc);
-
-  free (s->display_string);
-}
-
 void
 clean_up (void)
 {
-  int i;
+  rp_screen *cur;
+  struct list_head *iter, *tmp;
 
   history_save ();
 
@@ -831,11 +778,14 @@ clean_up (void)
   free_window_stuff ();
   free_groups ();
 
-  for (i=0; i<num_screens; i++)
+  list_for_each_safe_entry (cur, iter, tmp, &rp_screens, node)
     {
-      free_screen (&screens[i]);
+      list_del (&cur->node);
+      screen_free (cur);
+      free (cur);
     }
-  free (screens);
+
+  screen_free_final ();
 
   /* Delete the undo histories */
   while (list_size (&rp_frame_undos) > 0)
@@ -848,8 +798,6 @@ clean_up (void)
 
   /* Free the global frame numset shared by all screens. */
   numset_free (rp_frame_numset);
-
-  free_xinerama();
 
 #ifndef USE_XFT_FONT
   XFreeFontSet (dpy, defaults.font);

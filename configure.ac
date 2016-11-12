@@ -158,20 +158,25 @@ AC_CHECK_LIB(X11, XOpenDisplay, [X_LIBS="-lX11 $X_LIBS"],
 
 mysavedCPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-AC_CHECK_HEADERS([X11/extensions/Xinerama.h], [], [], [
-#include <X11/Xlib.h>
-])
-CPPFLAGS="$mysavedCPPFLAGS"
-
-mysavedCPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 AC_CHECK_HEADERS([X11/XKBlib.h], [], [], [
 #include <X11/Xlib.h>
 ])
 CPPFLAGS="$mysavedCPPFLAGS"
 
 AC_CHECK_LIB(Xext, XMissingExtension, [X_LIBS="-lXext $X_LIBS"],,$X_LIBS $X_EXTRA_LIBS)
-AC_CHECK_LIB(Xinerama, XineramaQueryScreens, [X_LIBS="-lXinerama $X_LIBS"; AC_DEFINE(HAVE_LIBXINERAMA,1,[Xinerama])],,$X_LIBS $X_EXTRA_LIBS)
+
+AC_ARG_WITH([xrandr],
+[AS_HELP_STRING([--without-xrandr], [Build without xrandr support, even if available])],
+[],
+[with_xrandr=yes])
+
+compile_xrandr=no
+AS_IF([test "$with_xrandr" != no],
+[AC_CHECK_LIB(Xrandr, XRRGetScreenResources, [compile_xrandr=yes X_LIBS="-lXrandr $X_LIBS" AC_DEFINE(HAVE_LIBXRANDR, 1, [Xrandr])],,$X_LIBS $X_EXTRA_LIBS)]
+[])
+
+AM_CONDITIONAL(HAVE_LIBXRANDR, test "$compile_xrandr" = yes)
+
 AC_CHECK_LIB(Xtst, XTestFakeButtonEvent, [X_LIBS="-lXtst $X_LIBS"; AC_DEFINE(HAVE_LIBXTST,1,[Xtst])],,$X_LIBS $X_EXTRA_LIBS)
 AC_CHECK_LIB([X11], [XkbKeycodeToKeysym],
   [AC_DEFINE(HAVE_XKBKEYCODETOKEYSYM, 1,

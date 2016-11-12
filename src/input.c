@@ -446,7 +446,7 @@ read_single_key (KeySym *keysym, unsigned int *modifiers, char *keysym_name, int
   int nbytes;
 
   XGetInputFocus (dpy, &focus, &revert);
-  set_window_focus (current_screen()->key_window);
+  set_window_focus (rp_current_screen->key_window);
   nbytes = read_key (keysym, modifiers, keysym_name, len);
   set_window_focus (focus);
 
@@ -515,7 +515,7 @@ update_input_window (rp_screen *s, rp_input_line *line)
                   line->length);
 
   gcv.function = GXxor;
-  gcv.foreground = s->fg_color ^ s->bg_color;
+  gcv.foreground = rp_glob_screen.fg_color ^ rp_glob_screen.bg_color;
   lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gcv);
 
   /* Draw a cheap-o cursor - MkIII */
@@ -537,12 +537,12 @@ ring_bell (void)
   GC lgc;
   XGCValues gcv;
   XWindowAttributes attr;
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
 
   XGetWindowAttributes (dpy, s->input_window, &attr);
 
   gcv.function = GXxor;
-  gcv.foreground = s->fg_color ^ s->bg_color;
+  gcv.foreground = rp_glob_screen.fg_color ^ rp_glob_screen.bg_color;
   lgc = XCreateGC (dpy, s->input_window, GCFunction | GCForeground, &gcv);
 
   XFillRectangle (dpy, s->input_window, lgc, 0, 0, attr.width, attr.height);
@@ -570,7 +570,7 @@ get_more_input (char *prompt, char *preinput, int history_id,
 {
   /* Emacs 21 uses a 513 byte string to store the keysym name. */
   char keysym_buf[513];
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
   KeySym ch;
   unsigned int modifier;
   rp_input_line *line;

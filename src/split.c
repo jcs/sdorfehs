@@ -41,22 +41,8 @@ update_last_access (rp_frame *frame)
 rp_frame *
 current_frame (void)
 {
-  rp_screen *s = current_screen();
+  rp_screen *s = rp_current_screen;
   return screen_get_frame (s, s->current_frame);
-}
-
-int
-num_frames (rp_screen *s)
-{
- int count = 0;
- rp_frame *cur;
-
- list_for_each_entry (cur, &s->frames, node)
-   {
-     count++;
-   }
-
- return count;
 }
 
 void
@@ -95,7 +81,7 @@ set_frames_window (rp_frame *frame, rp_window *win)
       win->frame_number = frame->number;
 
       /* We need to make sure that win and frame are on the same screen,
-       * since with Xinerama, windows can move from one screen to another.
+       * since with Xrandr, windows can move from one screen to another.
        */
       win->scr = frames_screen(frame);
     }
@@ -110,15 +96,17 @@ set_frames_window (rp_frame *frame, rp_window *win)
 rp_screen *
 frames_screen (rp_frame *frame)
 {
-  int i;
-  rp_frame *cur;
+  rp_frame *cur_frame;
+  rp_screen *cur_screen;
 
-  for (i=0; i<num_screens; i++)
-    list_for_each_entry (cur, &screens[i].frames, node)
-      {
-        if (frame == cur)
-          return &screens[i];
-      }
+  list_for_each_entry (cur_screen, &rp_screens, node)
+    {
+      list_for_each_entry (cur_frame, &cur_screen->frames, node)
+        {
+          if (frame == cur_frame)
+            return cur_screen;
+        }
+    }
 
   /* This SHOULD be impossible to get to. FIXME: It'll crash higher up if we
      return NULL. */
@@ -171,10 +159,12 @@ create_initial_frame (rp_screen *screen)
 void
 init_frame_lists (void)
 {
-  int i;
+  rp_screen *cur;
 
-  for (i=0; i<num_screens; i++)
-    init_frame_list (&screens[i]);
+  list_for_each_entry (cur, &rp_screens, node)
+    {
+      init_frame_list (cur);
+    }
 }
 
 void
@@ -188,21 +178,19 @@ init_frame_list (rp_screen *screen)
 rp_frame *
 find_last_frame (void)
 {
-  rp_frame *cur, *last = NULL;
+  rp_frame *cur_frame, *last = NULL;
+  rp_screen *cur_screen;
   int last_access = -1;
-  int i;
 
-  for (i=0; i<num_screens; i++)
+  list_for_each_entry (cur_screen, &rp_screens, node)
     {
-      rp_screen *s = &screens[i];
-
-      list_for_each_entry (cur, &s->frames, node)
+      list_for_each_entry (cur_frame, &cur_screen->frames, node)
         {
-          if (cur->number != current_screen()->current_frame
-              && cur->last_access > last_access)
+          if (cur_frame->number != rp_current_screen->current_frame &&
+              cur_frame->last_access > last_access)
             {
-              last_access = cur->last_access;
-              last = cur;
+              last_access = cur_frame->last_access;
+              last = cur_frame;
             }
         }
     }
@@ -225,6 +213,12 @@ find_windows_frame (rp_window *win)
     }
 
   return NULL;
+}
+
+int
+num_frames (rp_screen *s)
+{
+  return list_size (&s->frames);
 }
 
 rp_frame *
@@ -277,7 +271,7 @@ find_window_for_frame (rp_frame *frame)
 
   list_for_each_entry (cur, &rp_current_group->mapped_windows, node)
     {
-      if ((cur->win->scr == s || rp_have_xinerama)
+      if ((cur->win->scr == s || rp_have_xrandr)
           && cur->win != current_window()
           && !find_windows_frame (cur->win)
           && cur->win->last_access >= last_access
@@ -382,7 +376,7 @@ void
 remove_all_splits (void)
 {
   struct list_head *tmp, *iter;
-  rp_screen *s = current_screen();
+  rp_screen *s = rp_current_screen;
   rp_frame *frame;
   rp_window *win;
 
@@ -822,9 +816,9 @@ remove_frame (rp_frame *frame)
 void
 set_active_frame (rp_frame *frame, int force_indicator)
 {
-  rp_screen *old_s = current_screen();
+  rp_screen *old_s = rp_current_screen;
   rp_screen *s = frames_screen (frame);
-  int old = current_screen()->current_frame;
+  int old = rp_current_screen->current_frame;
   rp_window *win, *old_win;
   rp_frame *old_frame;
 
@@ -845,7 +839,7 @@ set_active_frame (rp_frame *frame, int force_indicator)
   s->current_frame = frame->number;
 
   /* If frame->win == NULL, then rp_current_screen is not updated. */
-  rp_current_screen = s->xine_screen_num;
+  rp_current_screen = s;
 
   update_bar (s);
 
@@ -926,15 +920,18 @@ blank_frame (rp_frame *frame)
 void
 hide_frame_indicator (void)
 {
-  int i;
-  for (i=0; i<num_screens; i++)
-    XUnmapWindow (dpy, screens[i].frame_window);
+  rp_screen *cur;
+
+  list_for_each_entry (cur, &rp_screens, node)
+    {
+    XUnmapWindow (dpy, cur->frame_window);
+    }
 }
 
 void
 show_frame_indicator (int force)
 {
-  if (num_frames (current_screen()) > 1 || force)
+  if (num_frames (rp_current_screen) > 1 || force)
     {
       hide_frame_indicator ();
       show_frame_message (defaults.frame_fmt);
@@ -945,7 +942,7 @@ show_frame_indicator (int force)
 void
 show_frame_message (char *msg)
 {
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
   int width, height;
   rp_frame *frame;
   rp_window *win;
@@ -1072,17 +1069,15 @@ find_frame_right (rp_frame *frame)
 rp_frame *
 find_frame_number (int num)
 {
-  int i;
-  rp_frame *cur;
+  rp_frame *cur_frame;
+  rp_screen *cur_screen;
 
-  for (i=0; i<num_screens; i++)
+  list_for_each_entry (cur_screen, &rp_screens, node)
     {
-      rp_screen *s = &screens[i];
-
-      list_for_each_entry (cur, &s->frames, node)
+      list_for_each_entry (cur_frame, &cur_screen->frames, node)
         {
-          if (cur->number == num)
-            return cur;
+          if (cur_frame->number == num)
+            return cur_frame;
         }
     }
 

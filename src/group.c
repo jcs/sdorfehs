@@ -494,7 +494,7 @@ group_last_window (rp_group *g, rp_screen *s)
       if (cur->win->last_access >= last_access
           && cur->win != current_window()
           && !find_windows_frame (cur->win)
-          && (cur->win->scr == s || rp_have_xinerama))
+          && (cur->win->scr == s || rp_have_xrandr))
         {
           most_recent = cur;
           last_access = cur->win->last_access;
@@ -514,7 +514,7 @@ group_next_window (rp_group *g, rp_window *win)
 
   /* If there is no window, then get the last accessed one. */
   if (win == NULL)
-    return group_last_window (g, current_screen());
+    return group_last_window (g, rp_current_screen);
 
   /* If we can't find the window, then it's in a different group, so
      get the last accessed one in this group. */
@@ -528,7 +528,7 @@ group_next_window (rp_group *g, rp_window *win)
        cur != we;
        cur = list_next_entry (cur, &g->mapped_windows, node))
     {
-      if (!find_windows_frame (cur->win) && (cur->win->scr == win->scr || rp_have_xinerama))
+      if (!find_windows_frame (cur->win) && (cur->win->scr == win->scr || rp_have_xrandr))
         {
           return cur->win;
         }
@@ -544,7 +544,7 @@ group_prev_window (rp_group *g, rp_window *win)
 
   /* If there is no window, then get the last accessed one. */
   if (win == NULL)
-    return group_last_window (g, current_screen());
+    return group_last_window (g, rp_current_screen);
 
   /* If we can't find the window, then it's in a different group, so
      get the last accessed one in this group. */
@@ -558,7 +558,7 @@ group_prev_window (rp_group *g, rp_window *win)
        cur != we;
        cur = list_prev_entry (cur, &g->mapped_windows, node))
     {
-      if (!find_windows_frame (cur->win) && (cur->win->scr == win->scr || rp_have_xinerama))
+      if (!find_windows_frame (cur->win) && (cur->win->scr == win->scr || rp_have_xrandr))
         {
           return cur->win;
         }
@@ -676,14 +676,14 @@ group_last_window_by_class (rp_group *g, char *class)
   int last_access = 0;
   rp_window_elem *most_recent = NULL;
   rp_window_elem *cur;
-  rp_screen *s = current_screen();
+  rp_screen *s = rp_current_screen;
 
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
       if (cur->win->last_access >= last_access
           && cur->win != current_window()
           && !find_windows_frame (cur->win)
-          && (cur->win->scr == s || rp_have_xinerama)
+          && (cur->win->scr == s || rp_have_xrandr)
           && strcmp(class, cur->win->res_class))
         {
           most_recent = cur;
@@ -704,14 +704,14 @@ group_last_window_by_class_complement (rp_group *g, char *class)
   int last_access = 0;
   rp_window_elem *most_recent = NULL;
   rp_window_elem *cur;
-  rp_screen *s = current_screen();
+  rp_screen *s = rp_current_screen;
 
   list_for_each_entry (cur, &g->mapped_windows, node)
     {
       if (cur->win->last_access >= last_access
           && cur->win != current_window()
           && !find_windows_frame (cur->win)
-          && (cur->win->scr == s || rp_have_xinerama)
+          && (cur->win->scr == s || rp_have_xrandr)
           && !strcmp(class, cur->win->res_class))
         {
           most_recent = cur;

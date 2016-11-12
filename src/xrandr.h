@@ -1,4 +1,5 @@
-/* Copyright (C) 2003 Cameron Patrick
+/*
+ * Copyright (C) 2016 Mathieu OTHACEHE
  *
  * This file is part of ratpoison.
  *
@@ -18,11 +19,14 @@
  * Boston, MA 02111-1307 USA
  */
 
-#ifndef XINERAMA_H
-#define XINERAMA_H
+#ifndef XRANDR_H
+#define XRANDR_H
 
-void init_xinerama(void);
-void free_xinerama(void);
-void xinerama_get_screen_info(int sc, int *x, int *y, int *w, int *h);
+#include "ratpoison.h"
+
+void init_xrandr(void);
+int *xrandr_query_screen(int *screen_count);
+void xrandr_fill_screen(int rr_output, rp_screen *screen);
+void xrandr_notify(XEvent *ev);
 
 #endif

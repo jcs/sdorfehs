@@ -1,4 +1,5 @@
 /* Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
+ * Copyright (C) 2016 Mathieu OTHACEHE <m.othacehe@gmail.com>
  *
  * This file is part of ratpoison.
  *
@@ -22,7 +23,7 @@
 #include <string.h>
 #include <X11/cursorfont.h>
 
-static void init_screen (rp_screen *s, int screen_num);
+static void init_screen (rp_screen *s);
 
 int
 screen_width (rp_screen *s)
@@ -153,79 +154,119 @@ screen_find_frame_by_frame (rp_screen *s, rp_frame *f)
 rp_screen *
 find_screen (Window w)
 {
-  int i;
+  rp_screen *cur;
 
-  for (i=0; i<num_screens; i++)
-    if (screens[i].root == w) return &screens[i];
+  list_for_each_entry (cur, &rp_screens, node)
+    {
+      if (cur->root == w)
+        return cur;
+    }
 
-   return NULL;
- }
+  return NULL;
+}
 
 /* Return 1 if w is a root window of any of the screens. */
 int
 is_a_root_window (unsigned int w)
 {
-  int i;
-  for (i=0; i<num_screens; i++)
-    if (screens[i].root == w) return 1;
+  rp_screen *cur;
+
+  list_for_each_entry (cur, &rp_screens, node)
+    {
+      if (cur->root == w)
+        return 1;
+    }
+
+  return 0;
+}
+
+rp_screen *
+screen_at(int index)
+{
+  int i = 0;
+  rp_screen *cur;
+
+  list_for_each_entry (cur, &rp_screens, node)
+    {
+      if (index == i)
+        return cur;
+
+      i++;
+    }
+
+  return NULL;
+}
+
+static int
+screen_cmp_left (void *priv, struct list_head *a, struct list_head *b)
+{
+  rp_screen *sc_a = container_of (a, typeof(*sc_a), node);
+  rp_screen *sc_b = container_of (b, typeof(*sc_b), node);
+
+  if (sc_a->left < sc_b->left)
+    return -1;
+  else if (sc_a->left > sc_b->left)
+    return 1;
 
   return 0;
 }
 
 void
-init_screens (int screen_arg, int screen_num)
+screen_sort(void)
+{
+  return list_sort (NULL, &rp_screens, screen_cmp_left);
+}
+
+static void
+init_global_screen (rp_global_screen *s)
+{
+  int screen_num;
+
+  screen_num = DefaultScreen (dpy);
+  s->fg_color = BlackPixel (dpy, screen_num);
+  s->bg_color = WhitePixel (dpy, screen_num);
+  s->fw_color = BlackPixel (dpy, screen_num);
+  s->bw_color = BlackPixel (dpy, screen_num);
+}
+
+void
+init_screens ()
 {
   int i;
+  int screen_count;
+  int *rr_outputs = NULL;
+  rp_screen *screen;
 
   /* Get the number of screens */
-  if (rp_have_xinerama)
-      num_screens = xine_screen_count;
-  else
-      num_screens = ScreenCount (dpy);
-
-  /* make sure the screen specified is valid. */
-  if (screen_arg)
-    {
-      /* Using just a single Xinerama screen doesn't really make sense. So we
-       * disable Xinerama in this case.
-       */
-      if (rp_have_xinerama)
-        {
-            fprintf (stderr, "Warning: selecting a specific Xinerama screen is not implemented.\n");
-            rp_have_xinerama = 0;
-            screen_num = 0;
-            num_screens = ScreenCount(dpy);
-        }
-
-      if (screen_num < 0 || screen_num >= num_screens)
-        {
-          fprintf (stderr, "%d is an invalid screen for the display\n", screen_num);
-          exit (EXIT_FAILURE);
-        }
-
-      /* we're only going to use one screen. */
-      num_screens = 1;
-    }
+  if (rp_have_xrandr) {
+#ifdef HAVE_LIBXRANDR
+    rr_outputs = xrandr_query_screen (&screen_count);
+#endif
+  } else {
+    screen_count = ScreenCount (dpy);
+  }
 
   /* Create our global frame numset */
   rp_frame_numset = numset_new();
 
-  /* Initialize the screens */
-  screens = xmalloc (sizeof (rp_screen) * num_screens);
-  PRINT_DEBUG (("%d screens.\n", num_screens));
+  init_global_screen (&rp_glob_screen);
 
-  if (screen_arg)
+  for (i = 0; i < screen_count; i++)
     {
-      init_screen (&screens[0], screen_num);
-    }
-  else
-    {
-      for (i=0; i<num_screens; i++)
-        {
-          init_screen (&screens[i], i);
-        }
+      screen = xmalloc (sizeof(*screen));
+      list_add (&screen->node, &rp_screens);
+
+#ifdef HAVE_LIBXRANDR
+      if (rp_have_xrandr)
+        xrandr_fill_screen (rr_outputs[i], screen);
+#endif
+      init_screen (screen);
     }
 
+  screen_sort ();
+
+  if (rr_outputs)
+    free (rr_outputs);
 }
 
 static void
@@ -235,41 +276,30 @@ init_rat_cursor (rp_screen *s)
 }
 
 static void
-init_screen (rp_screen *s, int screen_num)
+init_screen (rp_screen *s)
 {
   XGCValues gcv;
   struct sbuf *buf;
-  int xine_screen_num;
   char *colon;
+  int screen_num;
 
-  /* We use screen_num below to refer to the real X screen number, but
-   * if we're using Xinerama, it will only be the Xinerama logical screen
-   * number.  So we shuffle it away and replace it with the real one now,
-   * to cause confusion.  -- CP
-   */
-  if (rp_have_xinerama)
+  screen_num = DefaultScreen (dpy);
+
+  if (!rp_have_xrandr)
     {
-      xine_screen_num = screen_num;
-      screen_num = DefaultScreen(dpy);
-      xinerama_get_screen_info(xine_screen_num,
-                      &s->left, &s->top, &s->width, &s->height);
-    }
-  else
-    {
-      xine_screen_num = screen_num;
       s->left = 0;
       s->top = 0;
-      s->width = DisplayWidth(dpy, screen_num);
-      s->height = DisplayHeight(dpy, screen_num);
+      s->width = DisplayWidth (dpy, screen_num);
+      s->height = DisplayHeight (dpy, screen_num);
     }
 
   /* Select on some events on the root window, if this fails, then
      there is already a WM running and the X Error handler will catch
      it, terminating ratpoison. */
-  XSelectInput(dpy, RootWindow (dpy, screen_num),
-               PropertyChangeMask | ColormapChangeMask
-	       | SubstructureRedirectMask | SubstructureNotifyMask
-	       | StructureNotifyMask);
+  XSelectInput (dpy, RootWindow (dpy, screen_num),
+                PropertyChangeMask | ColormapChangeMask
+                | SubstructureRedirectMask | SubstructureNotifyMask
+                | StructureNotifyMask);
   XSync (dpy, False);
 
   /* Set the numset for the frames to our global numset. */
@@ -295,21 +325,15 @@ init_screen (rp_screen *s, int screen_num)
 
   PRINT_DEBUG (("display string: %s\n", s->display_string));
 
-  s->screen_num = screen_num;
-  s->xine_screen_num = xine_screen_num;
   s->root = RootWindow (dpy, screen_num);
+  s->screen_num = screen_num;
   s->def_cmap = DefaultColormap (dpy, screen_num);
 
   init_rat_cursor (s);
 
-  s->fg_color = BlackPixel (dpy, s->screen_num);
-  s->bg_color = WhitePixel (dpy, s->screen_num);
-  s->fw_color = BlackPixel (dpy, s->screen_num);
-  s->bw_color = BlackPixel (dpy, s->screen_num);
-
   /* Setup the GC for drawing the font. */
-  gcv.foreground = s->fg_color;
-  gcv.background = s->bg_color;
+  gcv.foreground = rp_glob_screen.fg_color;
+  gcv.background = rp_glob_screen.bg_color;
   gcv.function = GXcopy;
   gcv.line_width = 1;
   gcv.subwindow_mode = IncludeInferiors;
@@ -317,8 +341,8 @@ init_screen (rp_screen *s, int screen_num)
                            GCForeground | GCBackground | GCFunction
                            | GCLineWidth | GCSubwindowMode,
                            &gcv);
-  gcv.foreground = s->bg_color;
-  gcv.background = s->fg_color;
+  gcv.foreground = rp_glob_screen.bg_color;
+  gcv.background = rp_glob_screen.fg_color;
   s->inverse_gc = XCreateGC(dpy, s->root,
                             GCForeground | GCBackground | GCFunction
                             | GCLineWidth | GCSubwindowMode,
@@ -328,28 +352,28 @@ init_screen (rp_screen *s, int screen_num)
   s->bar_is_raised = 0;
   s->bar_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1,
                                        defaults.bar_border_width,
-                                       s->fg_color, s->bg_color);
+                                       rp_glob_screen.fg_color, rp_glob_screen.bg_color);
 
   /* Setup the window that will receive all keystrokes once the prefix
      key has been pressed. */
   s->key_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1, 0,
-                                       WhitePixel (dpy, s->screen_num),
-                                       BlackPixel (dpy, s->screen_num));
+                                       WhitePixel (dpy, screen_num),
+                                       BlackPixel (dpy, screen_num));
   XSelectInput (dpy, s->key_window, KeyPressMask | KeyReleaseMask);
 
   /* Create the input window. */
   s->input_window = XCreateSimpleWindow (dpy, s->root, 0, 0, 1, 1,
                                          defaults.bar_border_width,
-                                         s->fg_color, s->bg_color);
+                                         rp_glob_screen.fg_color, rp_glob_screen.bg_color);
   XSelectInput (dpy, s->input_window, KeyPressMask | KeyReleaseMask);
 
   /* Create the frame indicator window */
   s->frame_window = XCreateSimpleWindow (dpy, s->root, 1, 1, 1, 1, defaults.bar_border_width,
-                                         s->fg_color, s->bg_color);
+                                         rp_glob_screen.fg_color, rp_glob_screen.bg_color);
 
   /* Create the help window */
   s->help_window = XCreateSimpleWindow (dpy, s->root, s->left, s->top, s->width,
-                                        s->height, 0, s->fg_color, s->bg_color);
+                                        s->height, 0, rp_glob_screen.fg_color, rp_glob_screen.bg_color);
   XSelectInput (dpy, s->help_window, KeyPressMask);
 
   activate_screen(s);
@@ -391,13 +415,13 @@ activate_screen (rp_screen *s)
 {
   /* Add netwm support. FIXME: I think this is busted. */
   XChangeProperty (dpy, RootWindow (dpy, s->screen_num),
-		   _net_supported, XA_ATOM, 32, PropModeReplace, 
-		   (unsigned char*)&_net_wm_pid, 1);
+                   _net_supported, XA_ATOM, 32, PropModeReplace,
+                   (unsigned char*)&_net_wm_pid, 1);
 
   /* set window manager name */
   XChangeProperty (dpy, RootWindow (dpy, s->screen_num),
-		   _net_wm_name, xa_utf8_string, 8, PropModeReplace,
-		   (unsigned char*)"ratpoison", 9);
+                   _net_wm_name, xa_utf8_string, 8, PropModeReplace,
+                   (unsigned char*)"ratpoison", 9);
   XMapWindow (dpy, s->key_window);
 }
 
@@ -409,9 +433,9 @@ deactivate_screen (rp_screen *s)
 
   /* delete everything so noone sees them while we are not there */
   XDeleteProperty (dpy, RootWindow (dpy, s->screen_num),
-		   _net_supported);
+                   _net_supported);
   XDeleteProperty (dpy, RootWindow (dpy, s->screen_num),
-		   _net_wm_name);
+                   _net_wm_name);
 }
 
 static int
@@ -429,18 +453,15 @@ is_rp_window_for_given_screen (Window w, rp_screen *s)
 int
 is_rp_window_for_screen(Window w, rp_screen *s)
 {
-  int i;
+  rp_screen *cur;
 
-  if (rp_have_xinerama)
+  list_for_each_entry (cur, &rp_screens, node)
     {
-      for (i=0; i<num_screens; i++)
-        if (is_rp_window_for_given_screen(w, &screens[i])) return 1;
-      return 0;
+      if (is_rp_window_for_given_screen (w, cur))
+        return 1;
     }
-  else
-    {
-      return is_rp_window_for_given_screen(w, s);
-    }
+
+  return 0;
 }
 
 char *
@@ -450,14 +471,17 @@ screen_dump (rp_screen *screen)
   struct sbuf *s;
 
   s = sbuf_new (0);
-  sbuf_printf (s, "%d %d %d %d %d %d",
-               (rp_have_xinerama)?screen->xine_screen_num:screen->screen_num,
-               screen->left,
-               screen->top,
-               screen->width,
-               screen->height,
-               (current_screen() == screen)?1:0 /* is current? */
-               );
+  if (rp_have_xrandr)
+    sbuf_printf(s, "%s ", sbuf_get (screen->xrandr.name));
+
+  sbuf_printf_concat (s, "%d %d %d %d %d %d",
+                      (rp_have_xrandr) ? screen->xrandr.output : screen->screen_num,
+                      screen->left,
+                      screen->top,
+                      screen->width,
+                      screen->height,
+                      (rp_current_screen == screen)?1:0 /* is current? */
+                      );
 
   /* Extract the string and return it, and don't forget to free s. */
   tmp = sbuf_get (s);
@@ -465,27 +489,67 @@ screen_dump (rp_screen *screen)
   return tmp;
 }
 
+int
+screen_count (void)
+{
+  return list_size (&rp_screens);
+}
+
+rp_screen *
+screen_next (void)
+{
+  return list_next_entry (rp_current_screen, &rp_screens, node);
+}
+
+rp_screen *
+screen_prev (void)
+{
+  return list_prev_entry (rp_current_screen, &rp_screens, node);
+}
+
+static void
+screen_remove_current (rp_screen *s)
+{
+  rp_screen *new_screen;
+  rp_frame *new_frame;
+  rp_window *cur_win;
+  int cur_frame;
+
+  cur_win = current_window ();
+  new_screen = screen_next ();
+
+  cur_frame = new_screen->current_frame;
+  new_frame = screen_get_frame (new_screen, cur_frame);
+
+  set_active_frame (new_frame, 1);
+
+  hide_window (cur_win);
+}
+
 void
-screen_update (rp_screen *s, int width, int height)
+screen_update (rp_screen *s, int left, int top, int width, int height)
 {
   rp_frame *f;
-  int oldwidth,oldheight;
+  int oldwidth, oldheight;
 
   PRINT_DEBUG (("screen_update(%d,%d)\n", width, height));
-  if (rp_have_xinerama)
-    {
-      /* TODO: how to do this with xinerama? */
-      return;
-    }
 
-  if (s->width == width && s->height == height)
+  if (s->width  == width  &&
+      s->height == height &&
+      s->left   == left   &&
+      s->top    == top)
     /* nothing to do */
     return;
 
-  oldwidth = s->width; oldheight = s->height;
-  s->width = width; s->height = height;
+  oldwidth = s->width;
+  oldheight = s->height;
 
-  XResizeWindow (dpy, s->help_window, width, height);
+  s->left = left;
+  s->top = top;
+  s->width = width;
+  s->height = height;
+
+  XMoveResizeWindow (dpy, s->help_window, s->left, s->top, s->width, s->height);
 
   list_for_each_entry (f, &s->frames, node)
     {
@@ -495,4 +559,100 @@ screen_update (rp_screen *s, int width, int height)
       f->height = (f->height*height)/oldheight;
       maximize_all_windows_in_frame (f);
     }
+}
+
+rp_screen *
+screen_add (int rr_output)
+{
+  rp_screen *screen;
+
+  screen = xmalloc (sizeof(*screen));
+  list_add (&screen->node, &rp_screens);
+
+  if (!rp_current_screen)
+    rp_current_screen = screen;
+
+  change_windows_screen (NULL, screen);
+
+#ifdef HAVE_LIBXRANDR
+  xrandr_fill_screen (rr_output, screen);
+#endif
+  init_screen (screen);
+  init_frame_list (screen);
+
+  return screen;
+}
+
+void
+screen_del (rp_screen *s)
+{
+  /*
+   * The deleted screen cannot be the current screen anymore,
+   * focus the next one.
+   */
+  if (s == rp_current_screen) {
+    screen_remove_current (s);
+  } else {
+    rp_frame *cur_frame;
+    rp_window *cur_win;
+
+    cur_frame = screen_get_frame (s, s->current_frame);
+    cur_win = find_window_number (cur_frame->win_number);
+    hide_window (cur_win);
+  }
+
+  change_windows_screen (s, rp_current_screen);
+  screen_free (s);
+
+  list_del (&s->node);
+  free (s);
+}
+
+void
+screen_free (rp_screen *s)
+{
+  rp_frame *frame;
+  struct list_head *iter, *tmp;
+
+  list_for_each_safe_entry (frame, iter, tmp, &s->frames, node)
+    {
+      frame_free (s, frame);
+    }
+
+  deactivate_screen(s);
+
+  XDestroyWindow (dpy, s->bar_window);
+  XDestroyWindow (dpy, s->key_window);
+  XDestroyWindow (dpy, s->input_window);
+  XDestroyWindow (dpy, s->frame_window);
+  XDestroyWindow (dpy, s->help_window);
+
+#ifdef USE_XFT_FONT
+  if (s->xft_font)
+    {
+      XftColorFree (dpy, DefaultVisual (dpy, s->screen_num),
+                    DefaultColormap (dpy, s->screen_num), &s->xft_fg_color);
+      XftColorFree (dpy, DefaultVisual (dpy, s->screen_num),
+                    DefaultColormap (dpy, s->screen_num), &s->xft_bg_color);
+      XftFontClose (dpy, s->xft_font);
+    }
+#endif
+
+  XFreeCursor (dpy, s->rat);
+  XFreeColormap (dpy, s->def_cmap);
+  XFreeGC (dpy, s->normal_gc);
+  XFreeGC (dpy, s->inverse_gc);
+
+  free (s->display_string);
+
+  if (rp_have_xrandr)
+    free (s->xrandr.name);
+}
+
+void
+screen_free_final (void)
+{
+  /* Relinquish our hold on the root window. */
+  XSelectInput(dpy, RootWindow (dpy, DefaultScreen (dpy)), 0);
+
 }

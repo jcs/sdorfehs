@@ -79,18 +79,9 @@ new_window (XCreateWindowEvent *e)
 
   win = find_window (e->window);
 
-  /* In Xinerama mode, all windows have the same root, so check
-   * all Xinerama screens
-   */
-  if (rp_have_xinerama)
-    {
-      /* New windows belong to the current screen */
-      s = &screens[rp_current_screen];
-    }
-  else
-    {
-      s = find_screen (e->parent);
-    }
+  /* New windows belong to the current screen */
+  s = rp_current_screen;
+
   if (is_rp_window_for_screen(e->window, s)) return;
 
   if (s && win == NULL
@@ -137,7 +128,7 @@ unmap_notify (XEvent *ev)
         {
           cleanup_frame (frame);
           if (frame->number == win->scr->current_frame
-              && current_screen() == win->scr)
+              && rp_current_screen == win->scr)
             set_active_frame (frame, 0);
 	  /* Since we may have switched windows, call the hook. */
 	  if (frame->win_number != EMPTY)
@@ -234,7 +225,7 @@ destroy_window (XDestroyWindowEvent *ev)
         {
           cleanup_frame (frame);
           if (frame->number == win->scr->current_frame
-              && current_screen() == win->scr)
+              && rp_current_screen == win->scr)
             set_active_frame (frame, 0);
           /* Since we may have switched windows, call the hook. */
           if (frame->win_number != EMPTY)
@@ -442,11 +433,7 @@ key_press (XEvent *ev)
   unsigned int modifier;
   KeySym ks;
 
-  if (rp_have_xinerama)
-    s = current_screen();
-  else
-    s = find_screen (ev->xkey.root);
-
+  s = rp_current_screen;
   if (!s) return;
 
 #ifdef HIDE_MOUSE
@@ -671,7 +658,7 @@ colormap_notify (XEvent *ev)
       win->colormap = attr.colormap;
 
       if (win == current_window()
-	  && !current_screen()->bar_is_raised)
+	  && !rp_current_screen->bar_is_raised)
         {
           XInstallColormap (dpy, win->colormap);
         }
@@ -713,18 +700,6 @@ mapping_notify (XMappingEvent *ev)
     }
 
   grab_keys_all_wins();
-}
-
-static void
-configure_notify (XConfigureEvent *ev)
-{
-  rp_screen *s;
-
-  s = find_screen(ev->window);
-  if (s != NULL)
-    /* This is a root window of a screen,
-     * look if its width or height changed: */
-    screen_update(s,ev->width,ev->height);
 }
 
 /* This is called whan an application has requested the
@@ -797,6 +772,11 @@ selection_clear (void)
 static void
 delegate_event (XEvent *ev)
 {
+
+#ifdef HAVE_LIBXRANDR
+  xrandr_notify (ev);
+#endif
+
   switch (ev->type)
     {
     case ConfigureRequest:
@@ -867,11 +847,6 @@ delegate_event (XEvent *ev)
       selection_clear();
       break;
 
-    case ConfigureNotify:
-      PRINT_DEBUG (("--- Handling ConfigureNotify ---\n"));
-      configure_notify( &ev->xconfigure );
-      break;
-	
     case MapNotify:
     case Expose:
     case MotionNotify:
@@ -894,14 +869,18 @@ handle_signals (void)
   /* An alarm means we need to hide the popup windows. */
   if (alarm_signalled > 0)
     {
-      int i;
+      rp_screen *cur;
 
       PRINT_DEBUG (("Alarm received.\n"));
 
       /* Only hide the bar if it times out. */
       if (defaults.bar_timeout > 0)
-        for (i=0; i<num_screens; i++)
-          hide_bar (&screens[i]);
+        {
+          list_for_each_entry (cur, &rp_screens, node)
+            {
+              hide_bar (cur);
+            }
+        }
 
       hide_frame_indicator();
       alarm_signalled = 0;
@@ -932,17 +911,19 @@ handle_signals (void)
 
   if (rp_exec_newwm)
     {
-      int i;
+      rp_screen *cur;
 
       PRINT_DEBUG (("Switching to %s\n", rp_exec_newwm));
 
-      putenv(current_screen()->display_string);
+      putenv (rp_current_screen->display_string);
       unhide_all_windows();
       XSync(dpy, False);
-      for (i=0; i<num_screens; i++)
-      {
-	      deactivate_screen(&screens[i]);
-      }
+
+      list_for_each_entry (cur, &rp_screens, node)
+        {
+          deactivate_screen (cur);
+        }
+
       execlp (rp_exec_newwm, rp_exec_newwm, (char *)NULL);
 
       /* Failed. Clean up. */
@@ -950,10 +931,11 @@ handle_signals (void)
       perror(" failed");
       free (rp_exec_newwm);
       rp_exec_newwm = NULL;
-      for (i=0; i<num_screens; i++)
-      {
-	      activate_screen(&screens[i]);
-      }
+
+      list_for_each_entry (cur, &rp_screens, node)
+        {
+          activate_screen (cur);
+        }
     }
 
   if (hup_signalled > 0)

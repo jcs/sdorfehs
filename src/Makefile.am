@@ -70,6 +70,8 @@ ratpoison_SOURCES	= actions.c		\
 			split.c			\
 			split.h			\
 			window.c		\
-			window.h		\
-			xinerama.c		\
-			xinerama.h
+			window.h
+
+if HAVE_LIBXRANDR
+ratpoison_SOURCES += xrandr.c xrandr.h
+endif

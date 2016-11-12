@@ -477,7 +477,7 @@ push_frame_undo(rp_screen *screen)
 static rp_frame_undo *
 pop_frame_list (struct list_head *undo_list, struct list_head *redo_list)
 {
-  rp_screen *screen = current_screen();
+  rp_screen *screen = rp_current_screen;
   rp_frame_undo *first, *new;
 
   /* Is there something to restore? */
@@ -1038,9 +1038,9 @@ parse_keydesc (char *keydesc, struct rp_key *key)
 static void
 grab_rat (void)
 {
-  XGrabPointer (dpy, current_screen()->root, True, 0,
+  XGrabPointer (dpy, rp_current_screen->root, True, 0,
                 GrabModeAsync, GrabModeAsync,
-                None, current_screen()->rat, CurrentTime);
+                None, rp_current_screen->rat, CurrentTime);
 }
 
 static void
@@ -1282,7 +1282,7 @@ cmd_other (int interactive UNUSED, struct cmdarg **args UNUSED)
   rp_window *w;
 
 /*   w = find_window_other (); */
-  w = group_last_window (rp_current_group, current_screen());
+  w = group_last_window (rp_current_group, rp_current_screen);
 
   if (!w)
     return cmdret_new (RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
@@ -1410,7 +1410,7 @@ cmd_select (int interactive, struct cmdarg **args)
               if (interactive)
                 {
                   /* show the window list as feedback */
-                  show_bar (current_screen (), defaults.window_fmt);
+                  show_bar (rp_current_screen, defaults.window_fmt);
                   ret = cmdret_new (RET_SUCCESS, NULL);
                 }
               else
@@ -1458,7 +1458,7 @@ cmd_rename (int interactive UNUSED, struct cmdarg **args)
   hook_run (&rp_title_changed_hook);
 
   /* Update the program bar. */
-  update_window_names (current_screen(), defaults.window_fmt);
+  update_window_names (rp_current_screen, defaults.window_fmt);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -1791,45 +1791,48 @@ read_frame (struct sbuf *s,  struct cmdarg **arg)
   int keysym_bufsize = sizeof (keysym_buf);
   unsigned int mod;
   Window *wins;
-  int i, j;
-  rp_frame *cur;
+  int i;
+  rp_frame *cur_frame;
+  rp_screen *cur_screen;
   int frames;
 
   if (s == NULL)
     {
       frames = 0;
-      for (j=0; j<num_screens; j++)
-        frames += num_frames(&screens[j]);
+
+      list_for_each_entry (cur_screen, &rp_screens, node)
+        {
+          frames += num_frames (cur_screen);
+        }
 
       wins = xmalloc (sizeof (Window) * frames);
 
       /* Loop through each frame and display its number in it's top
          left corner. */
       i = 0;
-      for (j=0; j<num_screens; j++)
+      list_for_each_entry (cur_screen, &rp_screens, node)
         {
           XSetWindowAttributes attr;
-          rp_screen *screen = &screens[j];
 
           /* Set up the window attributes to be used in the loop. */
-          attr.border_pixel = screen->fg_color;
-          attr.background_pixel = screen->bg_color;
+          attr.border_pixel = rp_glob_screen.fg_color;
+          attr.background_pixel = rp_glob_screen.bg_color;
           attr.override_redirect = True;
 
-          list_for_each_entry (cur, &screen->frames, node)
+          list_for_each_entry (cur_frame, &cur_screen->frames, node)
             {
               int width, height;
               char *num;
 
               /* Create the string to be displayed in the window and
                  determine the height and width of the window. */
-              /*              num = xsprintf (" %d ", cur->number); */
-              num = frame_selector (cur->number);
-              width = defaults.bar_x_padding * 2 + rp_text_width (screen, num, -1);
-              height = (FONT_HEIGHT (screen) + defaults.bar_y_padding * 2);
+              /*              num = xsprintf (" %d ", cur_frame->number); */
+              num = frame_selector (cur_frame->number);
+              width = defaults.bar_x_padding * 2 + rp_text_width (cur_screen, num, -1);
+              height = (FONT_HEIGHT (cur_screen) + defaults.bar_y_padding * 2);
 
               /* Create and map the window. */
-              wins[i] = XCreateWindow (dpy, screen->root, screen->left + cur->x, screen->top + cur->y, width, height, 1,
+              wins[i] = XCreateWindow (dpy, cur_screen->root, cur_screen->left + cur_frame->x, cur_screen->top + cur_frame->y, width, height, 1,
                                        CopyFromParent, CopyFromParent, CopyFromParent,
                                        CWOverrideRedirect | CWBorderPixel | CWBackPixel,
                                        &attr);
@@ -1837,9 +1840,9 @@ read_frame (struct sbuf *s,  struct cmdarg **arg)
               XClearWindow (dpy, wins[i]);
 
               /* Display the frame's number inside the window. */
-             rp_draw_string (screen, wins[i], STYLE_NORMAL,
+             rp_draw_string (cur_screen, wins[i], STYLE_NORMAL,
                              defaults.bar_x_padding,
-                             defaults.bar_y_padding + FONT_ASCENT(screen),
+                             defaults.bar_y_padding + FONT_ASCENT(cur_screen),
                              num, -1);
 
               free (num);
@@ -2684,7 +2687,7 @@ spawn(char *cmd, int raw, rp_frame *frame)
     {
       /* Some process setup to make sure the spawned process runs
          in its own session. */
-      putenv(current_screen()->display_string);
+      putenv(rp_current_screen->display_string);
 #ifdef HAVE_SETSID
       if (setsid() == -1)
 #endif
@@ -2725,7 +2728,7 @@ spawn(char *cmd, int raw, rp_frame *frame)
   child->terminated = 0;
   child->frame = frame;
   child->group = rp_current_group;
-  child->screen = current_screen();
+  child->screen = rp_current_screen;
   child->window_mapped = 0;
 
   list_add (&child->node, &rp_children);
@@ -2833,7 +2836,7 @@ cmd_windows (int interactive, struct cmdarg **args)
 
   if (interactive)
     {
-      s = current_screen ();
+      s = rp_current_screen;
       /* This is a yukky hack. If the bar already hidden then show the
          bar. This handles the case when msgwait is 0 (the bar sticks)
          and the user uses this command to toggle the bar on and
@@ -2961,7 +2964,7 @@ cmd_v_split (int interactive UNUSED, struct cmdarg **args)
   rp_frame *frame;
   int pixels;
 
-  push_frame_undo (current_screen()); /* fdump to stack */
+  push_frame_undo (rp_current_screen); /* fdump to stack */
   frame = current_frame();
 
   /* Default to dividing the frame in half. */
@@ -2989,7 +2992,7 @@ cmd_h_split (int interactive UNUSED, struct cmdarg **args)
   rp_frame *frame;
   int pixels;
 
-  push_frame_undo (current_screen()); /* fdump to stack */
+  push_frame_undo (rp_current_screen); /* fdump to stack */
   frame = current_frame();
 
   /* Default to dividing the frame in half. */
@@ -3013,7 +3016,7 @@ cmd_h_split (int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_only (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  push_frame_undo (current_screen()); /* fdump to stack */
+  push_frame_undo (rp_current_screen); /* fdump to stack */
   remove_all_splits();
   maximize (current_window());
 
@@ -3023,10 +3026,10 @@ cmd_only (int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_remove (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  rp_screen *s = current_screen();
+  rp_screen *s = rp_current_screen;
   rp_frame *frame;
 
-  push_frame_undo (current_screen()); /* fdump to stack */
+  push_frame_undo (rp_current_screen); /* fdump to stack */
 
   if (num_frames(s) <= 1)
     {
@@ -3048,7 +3051,7 @@ cmd_remove (int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_shrink (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  push_frame_undo (current_screen()); /* fdump to stack */
+  push_frame_undo (rp_current_screen); /* fdump to stack */
   resize_shrink_to_window (current_frame());
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3090,7 +3093,7 @@ static resize_binding resize_bindings[] =
 cmdret *
 cmd_resize (int interactive, struct cmdarg **args)
 {
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
 
   /* If the user calls resize with arguments, treat it like the
      non-interactive version. */
@@ -3198,7 +3201,7 @@ cmd_banish (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
   rp_screen *s;
 
-  s = current_screen ();
+  s = rp_current_screen;
 
   XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2, s->top + s->height - 2);
   return cmdret_new (RET_SUCCESS, NULL);
@@ -3207,7 +3210,7 @@ cmd_banish (int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_banishrel (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  rp_screen *s = current_screen();
+  rp_screen *s = rp_current_screen;
   rp_window *w = current_window();
   rp_frame *f = current_frame();
 
@@ -3227,7 +3230,7 @@ cmd_ratinfo (int interactive UNUSED, struct cmdarg **args UNUSED)
   int mouse_x, mouse_y, root_x, root_y;
   unsigned int mask;
 
-  s = current_screen();
+  s = rp_current_screen;
   XQueryPointer (dpy, s->root, &root_win, &child_win, &mouse_x, &mouse_y, &root_x, &root_y, &mask);
 
   return cmdret_new (RET_SUCCESS, "%d %d", mouse_x, mouse_y);
@@ -3243,7 +3246,7 @@ cmd_ratrelinfo (int interactive UNUSED, struct cmdarg **args UNUSED)
   int mouse_x, mouse_y, root_x, root_y;
   unsigned int mask;
 
-  s = current_screen();
+  s = rp_current_screen;
   rpw = current_window();
   f = current_frame();
 
@@ -3264,7 +3267,7 @@ cmd_ratwarp (int interactive UNUSED, struct cmdarg **args)
 {
   rp_screen *s;
 
-  s = current_screen ();
+  s = rp_current_screen;
   XWarpPointer (dpy, None, s->root, 0, 0, 0, 0, ARG(0,number), ARG(1,number));
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -3340,7 +3343,7 @@ cmd_curframe (int interactive, struct cmdarg **args UNUSED)
 cmdret *
 cmd_license (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  rp_screen *s = current_screen();
+  rp_screen *s = rp_current_screen;
   int x = 10;
   int y = 10;
   int i;
@@ -3416,7 +3419,7 @@ cmd_license (int interactive UNUSED, struct cmdarg **args UNUSED)
     }
 
   /* The help window overlaps the bar, so redraw it. */
-  if (current_screen()->bar_is_raised)
+  if (rp_current_screen->bar_is_raised)
     redraw_last_message();
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -3434,7 +3437,7 @@ cmd_help (int interactive, struct cmdarg **args)
 
   if (interactive)
     {
-      rp_screen *s = current_screen();
+      rp_screen *s = rp_current_screen;
       int i, old_i;
       int x = 10;
       int y = 0;
@@ -3551,7 +3554,7 @@ cmd_help (int interactive, struct cmdarg **args)
 	}
 
       /* The help window overlaps the bar, so redraw it. */
-      if (current_screen()->bar_is_raised)
+      if (rp_current_screen->bar_is_raised)
         redraw_last_message();
 
       return cmdret_new (RET_SUCCESS, NULL);
@@ -3745,8 +3748,8 @@ update_gc (rp_screen *s)
 {
   XGCValues gcv;
 
-  gcv.foreground = s->fg_color;
-  gcv.background = s->bg_color;
+  gcv.foreground = rp_glob_screen.fg_color;
+  gcv.background = rp_glob_screen.bg_color;
   gcv.function = GXcopy;
   gcv.line_width = 1;
   gcv.subwindow_mode = IncludeInferiors;
@@ -3755,8 +3758,8 @@ update_gc (rp_screen *s)
                            GCForeground | GCBackground
                            | GCFunction | GCLineWidth
                            | GCSubwindowMode, &gcv);
-  gcv.foreground = s->bg_color;
-  gcv.background = s->fg_color;
+  gcv.foreground = rp_glob_screen.bg_color;
+  gcv.background = rp_glob_screen.fg_color;
   XFreeGC (dpy, s->inverse_gc);
   s->inverse_gc = XCreateGC(dpy, s->root,
                             GCForeground | GCBackground
@@ -3769,10 +3772,11 @@ static void
 update_all_gcs (void)
 {
   int i;
+  rp_screen *cur;
 
-  for (i=0; i<num_screens; i++)
+  list_for_each_entry (cur, &rp_screens, node)
     {
-      update_gc (&screens[i]);
+      update_gc (cur);
     }
 }
 #endif
@@ -3827,7 +3831,7 @@ set_font (struct cmdarg **args)
 {
 #ifdef USE_XFT_FONT
   XftFont *font;
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.font_string);
@@ -3885,7 +3889,7 @@ set_padding (struct cmdarg **args)
 
   /* Resize the frames to make sure they are not too big and not too
      small. */
-  list_for_each_entry (frame,&(current_screen()->frames),node)
+  list_for_each_entry (frame,&(rp_current_screen->frames),node)
     {
       int bk_pos, bk_len;
 
@@ -3899,8 +3903,8 @@ set_padding (struct cmdarg **args)
           frame->width += bk_pos - l;
         }
 
-      if ((bk_pos + bk_len) == (current_screen()->left + current_screen()->width - defaults.padding_right))
-        frame->width = current_screen()->left + current_screen()->width - r - frame->x;
+      if ((bk_pos + bk_len) == (rp_current_screen->left + rp_current_screen->width - defaults.padding_right))
+        frame->width = rp_current_screen->left + rp_current_screen->width - r - frame->x;
 
       /* Resize vertically. */
       bk_pos = frame->y;
@@ -3912,8 +3916,8 @@ set_padding (struct cmdarg **args)
           frame->height += bk_pos - t;
         }
 
-      if ((bk_pos + bk_len) == (current_screen()->top + current_screen()->height - defaults.padding_bottom))
-        frame->height = current_screen()->top + current_screen()->height - b - frame->y;
+      if ((bk_pos + bk_len) == (rp_current_screen->top + rp_current_screen->height - defaults.padding_bottom))
+        frame->height = rp_current_screen->top + rp_current_screen->height - b - frame->y;
 
       maximize_all_windows_in_frame (frame);
     }
@@ -3952,7 +3956,7 @@ set_border (struct cmdarg **args)
 static cmdret *
 set_barborder (struct cmdarg **args)
 {
-  int i;
+  rp_screen *cur;
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%d", defaults.bar_border_width);
@@ -3963,11 +3967,11 @@ set_barborder (struct cmdarg **args)
   defaults.bar_border_width = ARG(0,number);
 
   /* Update the frame and bar windows. */
-  for (i=0; i<num_screens; i++)
+  list_for_each_entry (cur, &rp_screens, node)
     {
-      XSetWindowBorderWidth (dpy, screens[i].bar_window, defaults.bar_border_width);
-      XSetWindowBorderWidth (dpy, screens[i].frame_window, defaults.bar_border_width);
-      XSetWindowBorderWidth (dpy, screens[i].input_window, defaults.bar_border_width);
+      XSetWindowBorderWidth (dpy, cur->bar_window, defaults.bar_border_width);
+      XSetWindowBorderWidth (dpy, cur->frame_window, defaults.bar_border_width);
+      XSetWindowBorderWidth (dpy, cur->input_window, defaults.bar_border_width);
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -4108,28 +4112,28 @@ set_framefmt (struct cmdarg **args)
 static cmdret *
 set_fgcolor (struct cmdarg **args)
 {
-  int i;
   XColor color, junk;
+  rp_screen *cur;
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.fgcolor_string);
 
-  for (i=0; i<num_screens; i++)
+  list_for_each_entry (cur, &rp_screens, node)
     {
-      if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
+      if (!XAllocNamedColor (dpy, cur->def_cmap, ARG_STRING(0), &color, &junk))
         return cmdret_new (RET_FAILURE, "set fgcolor: unknown color");
 
-      screens[i].fg_color = color.pixel;
-      update_gc (&screens[i]);
-      XSetWindowBorder (dpy, screens[i].bar_window, color.pixel);
-      XSetWindowBorder (dpy, screens[i].input_window, color.pixel);
-      XSetWindowBorder (dpy, screens[i].frame_window, color.pixel);
-      XSetWindowBorder (dpy, screens[i].help_window, color.pixel);
+      rp_glob_screen.fg_color = color.pixel;
+      update_gc (cur);
+      XSetWindowBorder (dpy, cur->bar_window, color.pixel);
+      XSetWindowBorder (dpy, cur->input_window, color.pixel);
+      XSetWindowBorder (dpy, cur->frame_window, color.pixel);
+      XSetWindowBorder (dpy, cur->help_window, color.pixel);
 
 #ifdef USE_XFT_FONT
-      if (!XftColorAllocName (dpy, DefaultVisual (dpy, screens[i].screen_num),
-                              DefaultColormap (dpy, screens[i].screen_num),
-                              ARG_STRING(0), &screens[i].xft_fg_color))
+      if (!XftColorAllocName (dpy, DefaultVisual (dpy, cur->screen_num),
+                              DefaultColormap (dpy, cur->screen_num),
+                              ARG_STRING(0), &cur->xft_fg_color))
         return cmdret_new (RET_FAILURE, "set fgcolor: unknown color");
 #endif
 
@@ -4143,28 +4147,29 @@ set_fgcolor (struct cmdarg **args)
 static cmdret *
 set_bgcolor (struct cmdarg **args)
 {
-  int i;
   XColor color, junk;
+  rp_screen *cur;
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.bgcolor_string);
 
-  for (i=0; i<num_screens; i++)
+
+  list_for_each_entry (cur, &rp_screens, node)
     {
-      if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
+      if (!XAllocNamedColor (dpy, cur->def_cmap, ARG_STRING(0), &color, &junk))
         return cmdret_new (RET_FAILURE, "set bgcolor: unknown color");
 
-      screens[i].bg_color = color.pixel;
-      update_gc (&screens[i]);
-      XSetWindowBackground (dpy, screens[i].bar_window, color.pixel);
-      XSetWindowBackground (dpy, screens[i].input_window, color.pixel);
-      XSetWindowBackground (dpy, screens[i].frame_window, color.pixel);
-      XSetWindowBackground (dpy, screens[i].help_window, color.pixel);
+      rp_glob_screen.bg_color = color.pixel;
+      update_gc (cur);
+      XSetWindowBackground (dpy, cur->bar_window, color.pixel);
+      XSetWindowBackground (dpy, cur->input_window, color.pixel);
+      XSetWindowBackground (dpy, cur->frame_window, color.pixel);
+      XSetWindowBackground (dpy, cur->help_window, color.pixel);
 
 #ifdef USE_XFT_FONT
-      if (!XftColorAllocName (dpy, DefaultVisual (dpy, screens[i].screen_num),
-                              DefaultColormap (dpy, screens[i].screen_num),
-                              ARG_STRING(0), &screens[i].xft_bg_color))
+      if (!XftColorAllocName (dpy, DefaultVisual (dpy, cur->screen_num),
+                              DefaultColormap (dpy, cur->screen_num),
+                              ARG_STRING(0), &cur->xft_bg_color))
         return cmdret_new (RET_FAILURE, "set fgcolor: unknown color");
 #endif
 
@@ -4178,20 +4183,20 @@ set_bgcolor (struct cmdarg **args)
 static cmdret *
 set_fwcolor (struct cmdarg **args)
 {
-  int i;
   XColor color, junk;
   rp_window *win = current_window();
+  rp_screen *cur;
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.fwcolor_string);
 
-  for (i=0; i<num_screens; i++)
+  list_for_each_entry (cur, &rp_screens, node)
     {
-      if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
+      if (!XAllocNamedColor (dpy, cur->def_cmap, ARG_STRING(0), &color, &junk))
         return cmdret_new (RET_FAILURE, "set fwcolor: unknown color");
 
-      screens[i].fw_color = color.pixel;
-      update_gc (&screens[i]);
+      rp_glob_screen.fw_color = color.pixel;
+      update_gc (cur);
 
       free (defaults.fwcolor_string);
       defaults.fwcolor_string = xstrdup (ARG_STRING(0));
@@ -4199,7 +4204,7 @@ set_fwcolor (struct cmdarg **args)
 
   /* Update current window. */
   if (win != NULL)
-    XSetWindowBorder (dpy, win->w, win->scr->fw_color);
+    XSetWindowBorder (dpy, win->w, rp_glob_screen.fw_color);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4207,20 +4212,20 @@ set_fwcolor (struct cmdarg **args)
 static cmdret *
 set_bwcolor (struct cmdarg **args)
 {
-  int i;
   XColor color, junk;
-  rp_window *win, *cur = current_window();
+  rp_window *win, *cur_win = current_window();
+  rp_screen *cur_screen;
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.bwcolor_string);
 
-  for (i=0; i<num_screens; i++)
+  list_for_each_entry (cur_screen, &rp_screens, node)
     {
-      if (!XAllocNamedColor (dpy, screens[i].def_cmap, ARG_STRING(0), &color, &junk))
+      if (!XAllocNamedColor (dpy, cur_screen->def_cmap, ARG_STRING(0), &color, &junk))
         return cmdret_new (RET_FAILURE, "set bwcolor: unknown color");
 
-      screens[i].bw_color = color.pixel;
-      update_gc (&screens[i]);
+      rp_glob_screen.bw_color = color.pixel;
+      update_gc (cur_screen);
 
       free (defaults.bwcolor_string);
       defaults.bwcolor_string = xstrdup (ARG_STRING(0));
@@ -4229,8 +4234,8 @@ set_bwcolor (struct cmdarg **args)
   /* Update all the visible windows. */
   list_for_each_entry (win,&rp_mapped_window,node)
     {
-       if (win != cur)
-         XSetWindowBorder (dpy, win->w, win->scr->bw_color);
+       if (win != cur_win)
+         XSetWindowBorder (dpy, win->w, rp_glob_screen.bw_color);
     }
 
 
@@ -4490,7 +4495,7 @@ cmd_swap (int interactive UNUSED, struct cmdarg **args)
   dest_frame = ARG(0, frame);
   src_frame = args[1] ? ARG (1, frame) : current_frame();
 
-  if (!rp_have_xinerama)
+  if (!rp_have_xrandr)
     {
       s = frames_screen(src_frame);
       if (screen_find_frame_by_frame(s, dest_frame) == NULL)
@@ -4622,17 +4627,18 @@ cmd_unalias (int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_nextscreen (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  int new_screen;
+  rp_screen *new_screen;
+  rp_frame *new_frame;
+
+  new_screen = screen_next ();
 
   /* No need to go through the motions when we don't have to. */
-  if (num_screens <= 1)
+  if (screen_count() <= 1 || new_screen == rp_current_screen)
     return cmdret_new (RET_FAILURE, "nextscreen: no other screen");
 
-  new_screen = rp_current_screen + 1;
-  if (new_screen >= num_screens)
-    new_screen = 0;
+  new_frame = screen_get_frame (new_screen, new_screen->current_frame);
 
-  set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame), 1);
+  set_active_frame (new_frame, 1);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4640,17 +4646,18 @@ cmd_nextscreen (int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_prevscreen (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-  int new_screen;
+  rp_screen *new_screen;
+  rp_frame *new_frame;
+
+  new_screen = screen_prev ();
 
   /* No need to go through the motions when we don't have to. */
-  if (num_screens <= 1)
+  if (screen_count () <= 1 || new_screen == rp_current_screen)
     return cmdret_new (RET_SUCCESS, "prevscreen: no other screen");
 
-  new_screen = rp_current_screen - 1;
-  if (new_screen < 0)
-    new_screen = num_screens - 1;
+  new_frame = screen_get_frame (new_screen, new_screen->current_frame);
 
-  set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame), 1);
+  set_active_frame (new_frame, 1);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4659,15 +4666,23 @@ cmdret *
 cmd_sselect(int interactive UNUSED, struct cmdarg **args)
 {
   int new_screen;
+  rp_frame *new_frame;
+  rp_screen *screen;
 
   new_screen = ARG(0,number);
   if (new_screen < 0)
     return cmdret_new (RET_FAILURE, "sselect: out of range");
 
-  if (new_screen < num_screens)
-    set_active_frame (screen_get_frame (&screens[new_screen], screens[new_screen].current_frame), 1);
+  if (new_screen < screen_count ())
+    {
+      screen = screen_at (new_screen);
+      new_frame = screen_get_frame (screen, screen->current_frame);
+      set_active_frame (new_frame, 1);
+    }
   else
-    return cmdret_new (RET_FAILURE, "sselect: out of range");
+    {
+      return cmdret_new (RET_FAILURE, "sselect: out of range");
+    }
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -4854,20 +4869,21 @@ cmd_tmpwm (int interactive UNUSED, struct cmdarg **args)
 {
   struct list_head *tmp, *iter;
   rp_window *win = NULL;
+  rp_screen *cur_screen;
   int child;
   int status;
   int pid;
-  int i;
   int (*old_handler)(Display *, XErrorEvent *);
 
-  push_frame_undo (current_screen()); /* fdump to stack */
+  push_frame_undo (rp_current_screen); /* fdump to stack */
 
   /* Release event selection on the root windows, so the new WM can
      have it. */
-  for (i=0; i<num_screens; i++)
+
+  list_for_each_entry (cur_screen, &rp_screens, node)
     {
-      XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num), 0);
-      deactivate_screen(&screens[i]);
+      XSelectInput (dpy, RootWindow (dpy, cur_screen->screen_num), 0);
+      deactivate_screen (cur_screen);
     }
 
   /* Ungrab all our keys. */
@@ -4888,6 +4904,7 @@ cmd_tmpwm (int interactive UNUSED, struct cmdarg **args)
 
   /* Disable our SIGCHLD handler */
   set_sig_handler (SIGCHLD, SIG_DFL);
+
   /* Launch the new WM and wait for it to terminate. */
   pid = spawn (ARG_STRING(0), 0, NULL);
   PRINT_DEBUG (("spawn pid: %d\n", pid));
@@ -4895,8 +4912,10 @@ cmd_tmpwm (int interactive UNUSED, struct cmdarg **args)
     {
       child = waitpid (pid, &status, 0);
     } while (child != -1 && child != pid);
+
   /* Enable our SIGCHLD handler */
   set_sig_handler (SIGCHLD, chld_handler);
+
   /* Some processes may have quit while our sigchld handler was
      disabled, so check for them. */
   check_child_procs();
@@ -4908,26 +4927,33 @@ cmd_tmpwm (int interactive UNUSED, struct cmdarg **args)
   old_handler = XSetErrorHandler (tmpwm_error_handler);
   do {
     tmpwm_error_raised = 0;
-    for (i=0; i<num_screens; i++)
-      {
-        XSelectInput(dpy, RootWindow (dpy, screens[i].screen_num),
-                     PropertyChangeMask | ColormapChangeMask
-                     | SubstructureRedirectMask | SubstructureNotifyMask
-                     | StructureNotifyMask);
+
+  list_for_each_entry (cur_screen, &rp_screens, node)
+    {
+        XSelectInput (dpy, RootWindow (dpy, cur_screen->screen_num),
+                      PropertyChangeMask | ColormapChangeMask
+                      | SubstructureRedirectMask | SubstructureNotifyMask
+                      | StructureNotifyMask);
         XSync (dpy, False);
-      }
+    }
+
     if (tmpwm_error_raised)
       sleep(1);
   } while (tmpwm_error_raised);
+
   XSetErrorHandler (old_handler);
 
-  for (i=0; i<num_screens; i++)
-    activate_screen (&screens[i]);
+  list_for_each_entry (cur_screen, &rp_screens, node)
+    {
+      activate_screen (cur_screen);
+    }
 
   /* Sort through all the windows in each group and pick out the ones
      that are unmapped or destroyed. */
-  for (i=0; i<num_screens; i++)
-    sync_wins (&screens[i]);
+  list_for_each_entry (cur_screen, &rp_screens, node)
+    {
+    sync_wins (cur_screen);
+    }
 
   /* At this point, new windows have the top level keys grabbed but
      existing windows don't. So grab them on all windows just to be
@@ -4938,7 +4964,7 @@ cmd_tmpwm (int interactive UNUSED, struct cmdarg **args)
   if (current_window())
     set_active_window (current_window());
   else
-    set_window_focus (current_screen()->key_window);
+    set_window_focus (rp_current_screen->key_window);
 
   /* And we're back in ratpoison. */
   return cmdret_new (RET_SUCCESS, NULL);
@@ -4988,7 +5014,7 @@ cmd_fdump (int interactively UNUSED, struct cmdarg **args)
   char *dump;
 
   if (args[0] == NULL)
-    screen = current_screen ();
+    screen = rp_current_screen;
   else
     {
       int snum;
@@ -4996,10 +5022,10 @@ cmd_fdump (int interactively UNUSED, struct cmdarg **args)
 
       if (snum < 0)
         return cmdret_new (RET_FAILURE, "fdump: invalid negative screen number");
-      else if (num_screens <= snum)
+      else if (snum >= screen_count ())
         return cmdret_new (RET_FAILURE, "fdump: unknown screen");
       else
-        screen = &screens[snum];
+        screen = screen_at (snum);
     }
 
   dump = fdump (screen);
@@ -5105,8 +5131,8 @@ frestore (char *data, rp_screen *s)
 cmdret *
 cmd_frestore (int interactively UNUSED, struct cmdarg **args)
 {
-  push_frame_undo (current_screen()); /* fdump to stack */
-  return frestore (ARG_STRING(0), current_screen());
+  push_frame_undo (rp_current_screen); /* fdump to stack */
+  return frestore (ARG_STRING(0), rp_current_screen);
 }
 
 cmdret *
@@ -5212,7 +5238,7 @@ cmd_gnumber (int interactive UNUSED, struct cmdarg **args)
       group_resort_group (g);
 
       /* Update the group list. */
-      update_group_names (current_screen());
+      update_group_names (rp_current_screen);
     }
 
   return cmdret_new (RET_SUCCESS, NULL);
@@ -5226,7 +5252,7 @@ cmd_grename (int interactive UNUSED, struct cmdarg **args)
   group_rename (rp_current_group, ARG_STRING(0));
 
   /* Update the group list. */
-  update_group_names (current_screen());
+  update_group_names (rp_current_screen);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -5256,7 +5282,7 @@ cmd_groups (int interactive, struct cmdarg **args UNUSED)
 
   if (interactive)
     {
-      s = current_screen ();
+      s = rp_current_screen;
       /* This is a yukky hack. If the bar already hidden then show the
          bar. This handles the case when msgwait is 0 (the bar sticks)
          and the user uses this command to toggle the bar on and
@@ -5571,28 +5597,29 @@ cmd_sfdump (int interactively UNUSED, struct cmdarg **args UNUSED)
   char screen_suffix[16];
   cmdret *ret;
   struct sbuf *dump;
-  rp_frame *cur;
-  int i;
+  rp_frame *cur_frame;
+  rp_screen *cur_screen;
 
   dump = sbuf_new (0);
 
-  for (i = 0; i < num_screens; i++)
+  list_for_each_entry (cur_screen, &rp_screens, node)
     {
       snprintf (screen_suffix, sizeof (screen_suffix), " %d,",
-                rp_have_xinerama ?
-                  screens[i].xine_screen_num :
-                  screens[i].screen_num);
+                rp_have_xrandr ?
+                cur_screen->xrandr.output :
+                cur_screen->screen_num);
 
-      list_for_each_entry (cur, &(screens[i].frames), node)
+      list_for_each_entry (cur_frame, &(cur_screen->frames), node)
         {
           char *frameset;
 
-	  frameset = frame_dump (cur, &screens[i]);
+          frameset = frame_dump (cur_frame, cur_screen);
           sbuf_concat (dump, frameset);
           sbuf_concat (dump, screen_suffix);
           free (frameset);
         }
     }
+
   sbuf_chop (dump);
   ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (dump));
   sbuf_free (dump);
@@ -5602,14 +5629,16 @@ cmd_sfdump (int interactively UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
 {
-  struct sbuf *buffer[num_screens];
   char *copy, *ptr, *token;
   long screen;
   int out_of_screen = 0;
   int restored = 0;
+  int s_count = screen_count ();
+  struct sbuf *buffer[s_count];
+  rp_screen *cur_screen;
   int i;
 
-  for (i = 0; i < num_screens; i++)
+  for (i = 0; i < s_count; i++)
     buffer[i] = sbuf_new (0);
 
   copy = xstrdup (ARG_STRING (0));
@@ -5632,7 +5661,7 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
       screen = string_to_positive_int (ptr);
 
       /* check that specified screen number is valid */
-      if (screen >= 0 && screen < num_screens)
+      if (screen >= 0 && screen < s_count)
         {
           /* clobber screen number here, frestore() doesn't need it */
           *ptr = '\0';
@@ -5650,13 +5679,13 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
   free (copy);
 
   /* now restore the frames for each screen */
-  for (i = 0; i < num_screens; i++)
+  list_for_each_entry (cur_screen, &rp_screens, node)
     {
       cmdret * ret;
-      push_frame_undo (&screens[i]); /* fdump to stack */
+      push_frame_undo (cur_screen); /* fdump to stack */
       /* FIXME: store RET_SUCCESS || RET_FAILURE for each screen and output
          it later */
-      ret = frestore (sbuf_get (buffer[i]), &screens[i]);
+      ret = frestore (sbuf_get (buffer[i]), cur_screen);
       cmdret_free (ret);
       sbuf_free (buffer[i]);
     }
@@ -5675,12 +5704,12 @@ cmd_sdump (int interactive UNUSED, struct cmdarg **args UNUSED)
   cmdret *ret;
   struct sbuf *s;
   char *tmp;
-  int i;
+  rp_screen *cur_screen;
 
   s = sbuf_new (0);
-  for (i = 0; i < num_screens; ++i)
+  list_for_each_entry (cur_screen, &rp_screens, node)
   {
-    tmp = screen_dump (&screens[i]);
+    tmp = screen_dump (cur_screen);
     sbuf_concat (s, tmp);
     sbuf_concat (s, ",");
     free (tmp);

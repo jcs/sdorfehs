@@ -154,21 +154,6 @@ grab_keys_all_wins (void)
     }
 }
 
-rp_screen*
-current_screen (void)
-{
-  int i;
-
-  for (i=0; i<num_screens; i++)
-    {
-      if (screens[i].xine_screen_num == rp_current_screen)
-        return &screens[i];
-    }
-
-  /* This should never happen. */
-  return &screens[0];
-}
-
 void
 update_normal_hints (rp_window *win)
 {
@@ -479,9 +464,6 @@ scanwins(rp_screen *s)
           || attr.override_redirect == True
           || unmanaged_window (wins[i])) continue;
 
-      /* FIXME - with this code, windows which are entirely off-screen
-       * when RP starts won't ever be managed when Xinerama is enabled.
-       */
       {
         XWindowAttributes root_attr;
 
@@ -489,7 +471,7 @@ scanwins(rp_screen *s)
       PRINT_DEBUG (("attrs: %d %d %d %d %d %d\n", root_attr.x, root_attr.y,
                     s->left, s->top, s->left + s->width, s->top + s->height));}
 
-      if (rp_have_xinerama
+      if (rp_have_xrandr
           && ((attr.x > s->left + s->width)
                || (attr.x < s->left)
                || (attr.y > s->top + s->height)
@@ -901,7 +883,7 @@ hide_window (rp_window *win)
   XSelectInput (dpy, win->w, WIN_EVENTS);
   /* Ensure that the window doesn't have the focused border
      color. This is needed by remove_frame and possibly others. */
-  XSetWindowBorder (dpy, win->w, win->scr->bw_color);
+  XSetWindowBorder (dpy, win->w, rp_glob_screen.bw_color);
   set_state (win, IconicState);
 }
 

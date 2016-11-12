@@ -79,6 +79,9 @@
 /* The list of groups. */
 extern struct list_head rp_groups;
 
+/* Whether or not we support xrandr */
+int rp_have_xrandr;
+
 extern rp_group *rp_current_group;
 
 /* Each child process is stored in this list. spawn, creates a new
@@ -104,9 +107,10 @@ extern struct list_head rp_mapped_window;
    assigned to them and are not visible/active. */
 extern struct list_head rp_unmapped_window;
 
-extern int rp_current_screen;
-extern rp_screen *screens;
-extern int num_screens;
+/* The list of screens. */
+extern struct list_head rp_screens;
+extern rp_screen *rp_current_screen;
+extern rp_global_screen rp_glob_screen;
 
 extern XEvent rp_current_event;
 
@@ -193,8 +197,7 @@ extern struct rp_hook_db_entry rp_hook_db[];
 void set_rp_window_focus (rp_window *win);
 void set_window_focus (Window window);
 
-extern int rp_have_xinerama;
-extern int xine_screen_count;
+extern int rp_have_xrandr;
 
 extern struct numset *rp_frame_numset;
 
