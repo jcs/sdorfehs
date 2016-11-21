@@ -80,7 +80,7 @@
 extern struct list_head rp_groups;
 
 /* Whether or not we support xrandr */
-int rp_have_xrandr;
+extern int rp_have_xrandr;
 
 extern rp_group *rp_current_group;
 
@@ -196,8 +196,6 @@ extern struct rp_hook_db_entry rp_hook_db[];
 
 void set_rp_window_focus (rp_window *win);
 void set_window_focus (Window window);
-
-extern int rp_have_xrandr;
 
 extern struct numset *rp_frame_numset;
 
