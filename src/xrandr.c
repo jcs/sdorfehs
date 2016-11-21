@@ -49,6 +49,8 @@ init_xrandr (void)
 
   XRRSelectInput (dpy, RootWindow (dpy, DefaultScreen(dpy)),
                   RRCrtcChangeNotifyMask | RROutputChangeNotifyMask);
+
+  rp_have_xrandr = 1;
 }
 
 int *

@@ -729,7 +729,6 @@ main (int argc, char *argv[])
 
 #ifdef HAVE_LIBXRANDR
   init_xrandr ();
-  rp_have_xrandr = 1;
 #endif
 
   init_screens ();
