@@ -101,6 +101,14 @@ AS_CASE([$enable_mdoc],
 AC_MSG_RESULT([$manpage_format])
 AC_SUBST([manpage_format])
 
+AC_MSG_CHECKING([Xrandr support])
+AC_ARG_WITH([xrandr],
+  [AS_HELP_STRING([--without-xrandr],
+    [Build without Xrandr support, default is to use if available])],
+  [with_xrandr=$withval],
+  [with_xrandr=check])
+AC_MSG_RESULT([$with_xrandr])
+
 dnl Checks for programs.
 AC_PROG_CC
 AM_MISSING_PROG([MANDOC], [mandoc])
@@ -163,23 +171,31 @@ AC_CHECK_HEADERS([X11/XKBlib.h], [], [], [
 ])
 CPPFLAGS="$mysavedCPPFLAGS"
 
-AC_ARG_WITH([xrandr],
-[AS_HELP_STRING([--without-xrandr], [Build without xrandr support, even if available])],
-[],
-[with_xrandr=yes])
-
-compile_xrandr=no
-AS_IF([test "$with_xrandr" != no],
-[AC_CHECK_LIB(Xrandr, XRRGetScreenResources, [compile_xrandr=yes X_LIBS="-lXrandr $X_LIBS" AC_DEFINE(HAVE_LIBXRANDR, 1, [Xrandr])],,$X_LIBS $X_EXTRA_LIBS)]
-[])
-
-AM_CONDITIONAL(HAVE_LIBXRANDR, test "$compile_xrandr" = yes)
-
 AC_CHECK_LIB(Xtst, XTestFakeButtonEvent, [X_LIBS="-lXtst $X_LIBS"; AC_DEFINE(HAVE_LIBXTST,1,[Xtst])],,$X_LIBS $X_EXTRA_LIBS)
 AC_CHECK_LIB([X11], [XkbKeycodeToKeysym],
   [AC_DEFINE(HAVE_XKBKEYCODETOKEYSYM, 1,
     [Define to 1 if you have the `XkbKeycodeToKeysym' function.])],
   [], [$X_LIBS $X_EXTRA_LIBS])
+
+mysavedCPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+AC_CHECK_HEADERS([X11/extensions/Xrandr.h], [], [], [
+#include <X11/Xlib.h>
+])
+CPPFLAGS="$mysavedCPPFLAGS"
+
+AC_CHECK_LIB(Xrandr, XRRGetScreenResources,
+  [X_LIBS="-lXrandr $X_LIBS"
+   AC_DEFINE(HAVE_LIBXRANDR, 1, [Xrandr])],
+  [], [$X_LIBS $X_EXTRA_LIBS])
+
+compile_xrandr=no
+AS_CASE(["$with_xrandr:$ac_cv_header_X11_extensions_Xrandr_h:$ac_cv_lib_Xrandr_XRRGetScreenResources"],
+  [yes:no:*], [AC_MSG_ERROR([*** Can't enable Xrandr support, header Xrandr.h not found.])],
+  [yes:*:no], [AC_MSG_ERROR([*** Can't enable Xrandr support, libXrandr not found.])],
+  [yes:yes:yes|check:yes:yes], [compile_xrandr=yes])
+
+AM_CONDITIONAL(HAVE_LIBXRANDR, [test "$compile_xrandr" = yes])
 
 AC_SUBST(X_LIBS)
 AC_SUBST(X_EXTRA_LIBS)
