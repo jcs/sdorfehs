@@ -163,8 +163,6 @@ AC_CHECK_HEADERS([X11/XKBlib.h], [], [], [
 ])
 CPPFLAGS="$mysavedCPPFLAGS"
 
-AC_CHECK_LIB(Xext, XMissingExtension, [X_LIBS="-lXext $X_LIBS"],,$X_LIBS $X_EXTRA_LIBS)
-
 AC_ARG_WITH([xrandr],
 [AS_HELP_STRING([--without-xrandr], [Build without xrandr support, even if available])],
 [],
