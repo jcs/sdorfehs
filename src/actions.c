@@ -123,8 +123,9 @@ set_var_free (struct set_var *var)
 }
 
 static void
-init_set_vars(void)
+init_set_vars (void)
 {
+  /* Keep this sorted alphabetically. */
   add_set_var ("barborder", set_barborder, 1, "", arg_NUMBER);
   add_set_var ("bargravity", set_bargravity, 1, "", arg_GRAVITY);
   add_set_var ("barinpadding", set_barinpadding, 1, "", arg_NUMBER);
