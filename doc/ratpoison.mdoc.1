@@ -779,6 +779,9 @@ Switch to the screen
 Select whether
 .Nm
 will show a startup message or not.
+This command is deprecated, please use the
+.Va startupmessage
+variable instead.
 .It Ic swap Ar dest-frame Oo Ar src-frame Oc Pq Ic C\-t x
 Exchange the window in
 .Ar src\-frame
@@ -860,6 +863,9 @@ in front of the number or not.
 .It Ic warp Cm ( on | off )
 Select if focusing a window moves the rat cursor to the place it had been last
 time this window was focused, or not.
+This command is deprecated, please set the
+.Va warp
+variable instead.
 .It Ic windows Oo Ar format Oc Pq Ic C\-t w
 In interactive mode,
 show the list of all windows in the current group for the duration
@@ -1152,6 +1158,11 @@ indicator is shown.
 If
 .Ar seconds
 is zero, wait until the next interactive command.
+.It Cm startupmessage Li 0 | 1
+Decide whether to show a greeting message at startup.
+.It Cm warp Li 0 | 1
+Decide if focusing a window moves the rat cursor to the place it had
+been last time this window was focused, or not.
 .Pp
 Default is
 .Li 0
