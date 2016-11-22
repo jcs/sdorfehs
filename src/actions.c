@@ -402,7 +402,6 @@ init_user_commands(void)
   add_command ("putsel",        cmd_putsel,     1, 1, 1,
                "Text: ", arg_RAW);
   add_command ("getsel",        cmd_getsel,     0, 0, 0);
-  add_command ("compat",        cmd_compat,     0, 0, 0);
   /*@end (tag required for genrpbindings) */
 
   /* Commands to help debug ratpoison. */
@@ -6072,32 +6071,4 @@ cmd_getsel (int interactive UNUSED, struct cmdarg **args UNUSED)
     }
   else
     return cmdret_new (RET_FAILURE, "getsel: no X11 selection");
-}
-
-/* This is a command that restores old commands that have been
-   recently deprecated. */
-cmdret *
-cmd_compat (int interactive UNUSED, struct cmdarg **args UNUSED)
-{
-  add_alias ("defresizeunit", "set resizeunit");
-  add_alias ("defwingravity", "set wingravity");
-  add_alias ("deftransgravity", "set transgravity");
-  add_alias ("defmaxsizegravity", "set maxsizegravity");
-  add_alias ("defbargravity", "set bargravity");
-  add_alias ("deffont", "set font");
-  add_alias ("defpadding", "set padding");
-  add_alias ("defborder", "set border");
-  add_alias ("defbarborder", "set barborder");
-  add_alias ("definputwidth", "set inputwidth");
-  add_alias ("defwaitcursor", "set waitcursor");
-  add_alias ("defwinfmt", "set winfmt");
-  add_alias ("defwinname", "set winname");
-  add_alias ("deffgcolor", "set fgcolor");
-  add_alias ("defbgcolor", "set bgcolor");
-  add_alias ("defbarpadding", "set barpadding");
-  add_alias ("defwinliststyle", "set winliststyle");
-  add_alias ("defframesels", "set framesels");
-  add_alias ("defmaxundos", "set maxundos");
-
-  return cmdret_new (RET_SUCCESS, NULL);
 }

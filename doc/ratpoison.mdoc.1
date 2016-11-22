@@ -207,10 +207,6 @@ Execute
 .Ar ratpoison\-command
 interactively.
 (i.e. ask for possible missing arguments.)
-.It Ic compat
-Add aliases for the new
-.Ic set
-commands starting with "def" to support older scripts.
 .It Ic cother
 Like
 .Ic other
@@ -239,17 +235,6 @@ If you cannot guess a name of a key, try either
 and look at the error message, or try
 .Ic :describekey Li root
 and pressing the key.
-.It Ic def...
-When
-.Ic compat
-was called there are some aliases starting with "def", which alias the
-new form with
-.Ic set .
-I.e. instead of
-.Ic defresizeunit
-better use the new
-.Ic set Cm resizeunit
-and so on...
 .It Ic dedicate Op Cm 0 | 1
 Consider the current frame dedicated/chaste
 .Pq Cm 1
