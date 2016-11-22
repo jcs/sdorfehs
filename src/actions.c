@@ -5638,6 +5638,8 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
   rp_screen *cur_screen;
   int i;
 
+  return cmdret_new (RET_FAILURE, "FIXME: sfrestore is currently broken");
+
   for (i = 0; i < s_count; i++)
     buffer[i] = sbuf_new (0);
 
