@@ -540,6 +540,9 @@ Set the duration the message window is shown.
 If
 .Ar seconds
 is zero, wait infinitely.
+This command is deprecated, please set the
+.Va msgwait
+variable instead.
 .It Ic newkmap Ar keymap
 Generate a new keymap named
 .Ar keymap .
@@ -860,11 +863,11 @@ time this window was focused, or not.
 .It Ic windows Oo Ar format Oc Pq Ic C\-t w
 In interactive mode,
 show the list of all windows in the current group for the duration
-specified by
-.Ic msgwait .
-If the
-.Ic msgwait
-argument was zero, toggle between indefinitely showing and not showing.
+specified by the variable
+.Va msgwait .
+If
+.Va msgwait
+was zero, toggle between indefinitely showing and not showing.
 .Pp
 The messages are shown in columns or rows depending on the value of
 .Va winliststyle
@@ -1137,6 +1140,11 @@ Default is
 .It Cm historyexpansion Li 0 | 1
 Decide if history expansion using ! is available.
 (Can only be activated when compiled with readline's libhistory.)
+.It Cm msgwait Ar seconds
+The duration the message window is shown.
+If
+.Ar seconds
+is zero, wait infinitely.
 .Pp
 Default is
 .Li 0
