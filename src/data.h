@@ -166,7 +166,7 @@ struct rp_screen
   GC normal_gc, inverse_gc;
   Window root, bar_window, key_window, input_window, frame_window, help_window;
   int bar_is_raised;
-  int screen_num;               /* Our screen number as dictated my X */
+  int screen_num;               /* Our screen number as dictated by X */
   Colormap def_cmap;
   Cursor rat;
 

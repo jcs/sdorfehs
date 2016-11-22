@@ -181,7 +181,7 @@ is_a_root_window (unsigned int w)
 }
 
 rp_screen *
-screen_at(int index)
+screen_at (int index)
 {
   int i = 0;
   rp_screen *cur;
@@ -212,7 +212,7 @@ screen_cmp_left (void *priv, struct list_head *a, struct list_head *b)
 }
 
 void
-screen_sort(void)
+screen_sort (void)
 {
   return list_sort (NULL, &rp_screens, screen_cmp_left);
 }
@@ -230,7 +230,7 @@ init_global_screen (rp_global_screen *s)
 }
 
 void
-init_screens ()
+init_screens (void)
 {
   int i;
   int screen_count;
@@ -265,14 +265,13 @@ init_screens ()
 
   screen_sort ();
 
-  if (rr_outputs)
-    free (rr_outputs);
+  free (rr_outputs);
 }
 
 static void
 init_rat_cursor (rp_screen *s)
 {
-  s->rat = XCreateFontCursor( dpy, XC_icon );
+  s->rat = XCreateFontCursor (dpy, XC_icon);
 }
 
 static void

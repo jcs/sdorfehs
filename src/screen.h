@@ -35,7 +35,7 @@ void frameset_free (struct list_head *head);
 rp_frame *screen_get_frame (rp_screen *s, int frame_num);
 rp_frame *screen_find_frame_by_frame (rp_screen *s, rp_frame *f);
 
-void init_screens ();
+void init_screens (void);
 void activate_screen (rp_screen *s);
 void deactivate_screen (rp_screen *s);
 
@@ -53,8 +53,6 @@ rp_screen *screen_prev(void);
 
 rp_screen *screen_at (int index);
 
-rp_screen *screen_by_output(int rr_output);
-rp_screen *screen_by_crtc(int rr_crtc);
 void screen_sort(void);
 
 rp_screen *screen_add(int rr_output);

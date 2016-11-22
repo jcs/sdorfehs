@@ -4952,7 +4952,7 @@ cmd_tmpwm (int interactive UNUSED, struct cmdarg **args)
      that are unmapped or destroyed. */
   list_for_each_entry (cur_screen, &rp_screens, node)
     {
-    sync_wins (cur_screen);
+      sync_wins (cur_screen);
     }
 
   /* At this point, new windows have the top level keys grabbed but
