@@ -110,7 +110,7 @@ add_set_var (char *name, cmdret * (*fn)(struct cmdarg **), int nargs, ...)
     }
   va_end(va);
 
-  list_add (&var->node, &set_vars);
+  list_add_tail (&var->node, &set_vars);
 }
 
 static void
@@ -125,39 +125,39 @@ set_var_free (struct set_var *var)
 static void
 init_set_vars(void)
 {
-  add_set_var ("resizeunit", set_resizeunit, 1, "", arg_NUMBER);
-  add_set_var ("maxundos", set_maxundos, 1, "", arg_NUMBER);
-  add_set_var ("wingravity", set_wingravity, 1, "", arg_GRAVITY);
-  add_set_var ("transgravity", set_transgravity, 1, "", arg_GRAVITY);
-  add_set_var ("maxsizegravity", set_maxsizegravity, 1, "", arg_GRAVITY);
-  add_set_var ("bargravity", set_bargravity, 1, "", arg_GRAVITY);
-  add_set_var ("font", set_font, 1, "", arg_STRING);
-  add_set_var ("padding", set_padding, 4,
-               "", arg_NUMBER, "", arg_NUMBER, "", arg_NUMBER, "", arg_NUMBER);
-  add_set_var ("border", set_border, 1, "", arg_NUMBER);
   add_set_var ("barborder", set_barborder, 1, "", arg_NUMBER);
+  add_set_var ("bargravity", set_bargravity, 1, "", arg_GRAVITY);
   add_set_var ("barinpadding", set_barinpadding, 1, "", arg_NUMBER);
-  add_set_var ("inputwidth", set_inputwidth, 1, "", arg_NUMBER);
-  add_set_var ("waitcursor", set_waitcursor, 1, "", arg_NUMBER);
-  add_set_var ("winfmt", set_winfmt, 1, "", arg_REST);
-  add_set_var ("winname", set_winname, 1, "", arg_STRING);
-  add_set_var ("framefmt", set_framefmt, 1, "", arg_REST);
-  add_set_var ("fgcolor", set_fgcolor, 1, "", arg_STRING);
-  add_set_var ("bgcolor", set_bgcolor, 1, "", arg_STRING);
-  add_set_var ("fwcolor", set_fwcolor, 1, "", arg_STRING);
-  add_set_var ("bwcolor", set_bwcolor, 1, "", arg_STRING);
   add_set_var ("barpadding", set_barpadding, 2, "", arg_NUMBER, "", arg_NUMBER);
-  add_set_var ("winliststyle", set_winliststyle, 1, "", arg_STRING);
+  add_set_var ("bgcolor", set_bgcolor, 1, "", arg_STRING);
+  add_set_var ("border", set_border, 1, "", arg_NUMBER);
+  add_set_var ("bwcolor", set_bwcolor, 1, "", arg_STRING);
+  add_set_var ("fgcolor", set_fgcolor, 1, "", arg_STRING);
+  add_set_var ("font", set_font, 1, "", arg_STRING);
+  add_set_var ("framefmt", set_framefmt, 1, "", arg_REST);
+  add_set_var ("framemsgwait", set_framemsgwait, 1, "", arg_NUMBER);
   add_set_var ("framesels", set_framesels, 1, "", arg_STRING);
-  add_set_var ("infofmt", set_infofmt, 1, "", arg_REST);
-  add_set_var ("topkmap", set_topkmap, 1, "", arg_STRING);
-  add_set_var ("historysize", set_historysize, 1, "", arg_NUMBER);
+  add_set_var ("fwcolor", set_fwcolor, 1, "", arg_STRING);
   add_set_var ("historycompaction", set_historycompaction, 1, "", arg_NUMBER);
   add_set_var ("historyexpansion", set_historyexpansion, 1, "", arg_NUMBER);
+  add_set_var ("historysize", set_historysize, 1, "", arg_NUMBER);
+  add_set_var ("infofmt", set_infofmt, 1, "", arg_REST);
+  add_set_var ("inputwidth", set_inputwidth, 1, "", arg_NUMBER);
+  add_set_var ("maxsizegravity", set_maxsizegravity, 1, "", arg_GRAVITY);
+  add_set_var ("maxundos", set_maxundos, 1, "", arg_NUMBER);
   add_set_var ("msgwait", set_msgwait, 1, "", arg_NUMBER);
-  add_set_var ("framemsgwait", set_framemsgwait, 1, "", arg_NUMBER);
-  add_set_var ("warp", set_warp, 1, "", arg_NUMBER);
+  add_set_var ("padding", set_padding, 4, "", arg_NUMBER, "", arg_NUMBER, "",
+               arg_NUMBER, "", arg_NUMBER);
+  add_set_var ("resizeunit", set_resizeunit, 1, "", arg_NUMBER);
   add_set_var ("startupmessage", set_startupmessage, 1, "", arg_NUMBER);
+  add_set_var ("topkmap", set_topkmap, 1, "", arg_STRING);
+  add_set_var ("transgravity", set_transgravity, 1, "", arg_GRAVITY);
+  add_set_var ("waitcursor", set_waitcursor, 1, "", arg_NUMBER);
+  add_set_var ("warp", set_warp, 1, "", arg_NUMBER);
+  add_set_var ("winfmt", set_winfmt, 1, "", arg_REST);
+  add_set_var ("wingravity", set_wingravity, 1, "", arg_GRAVITY);
+  add_set_var ("winliststyle", set_winliststyle, 1, "", arg_STRING);
+  add_set_var ("winname", set_winname, 1, "", arg_STRING);
 }
 
 /* rp_keymaps is ratpoison's list of keymaps. */
