@@ -321,6 +321,15 @@ Set the default window format for the @command{info} command. See
 @command{set winfmt} for accepted format characters.
 @end deffn
 
+@deffn Command {set warp} @var{n}
+Set rat warping. By default this variable is set (@code{1}) and
+ratpoison saves the position of the rat when leaving a window and when
+the user returns to the window the rat's position is restored. If you
+find this counter-intuitive, set this variable to @code{0}.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
 @deffn Command {set winname} @var{name}
 @c @deffnx Command defwinname @var{name}
 There are three resources ratpoison can get a window's name from: the
@@ -1299,19 +1308,19 @@ opposed to the invisible evidence including the lack of title bars and
 your favorite desktop background) there are also copious visual
 customizations available for those rainy days.
 
-@deffn Command msgwait @var{n}
-Set the bar's timeout in seconds.
-
-When called with no arguments, the current setting is
-returned.
-@end deffn
-
 @deffn Command lastmsg
 Display the last message.
 @end deffn
 
 @deffn Command echo @var{text}
 Display @var{text} as a message.
+@end deffn
+
+@deffn Command {set msgwait} @var{n}
+Set the bar's timeout in seconds.
+
+When called with no arguments, the current setting is
+returned.
 @end deffn
 
 @deffn Command {set inputwidth} @var{n}
@@ -1361,6 +1370,13 @@ When called with no arguments, the current setting is returned.
 @deffn Command {set bwcolor} @var{color}
 Set the border color for unfocused windows.
 is any valid X11 color.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
+@deffn Command {set framemsgwait} @var{n}
+Set the duration the @samp{Current frame} indicator is shown.  If seconds
+is zero, wait until the next interactive command.
 
 When called with no arguments, the current setting is returned.
 @end deffn
@@ -1672,6 +1688,10 @@ Here is a list of variables that can be set:
 @item historysize
 @item historycompaction
 @item historyexpansion
+@item msgwait
+@item framemsgwait
+@item startupmessage
+@item warp
 @end itemize
 
 @end deffn
@@ -1682,14 +1702,6 @@ Set the environment variable @var{env} to @var{value}
 
 @deffn Command source @var{file}
 Read a text file containing ratpoison commands.
-@end deffn
-
-@deffn Command startup_message @var{state}
-Turn on or off the startup_message. This is most useful in your
-.ratpoisonrc file. @var{state} can be @code{on} or @code{off}.
-
-When called with no arguments, the current setting is
-returned.
 @end deffn
 
 @deffn Command swap @var{destination-frame} @var{source-frame}
@@ -1717,13 +1729,6 @@ message saying command was executed.
 
 @deffn Command version
 Print ratpoison version.  By default, this is bound to @kbd{C-t v}.
-@end deffn
-
-@deffn Command warp @var{state}
-Toggle rat warping. By default ratpoison saves the position of the
-rat when leaving a window and when the user returns to the window the
-rat's position is restored. This can be counter-intuitive, so you can
-toggle it with this command. @var{state} can be @code{on} or @code{off}.
 @end deffn
 
 @node Input
@@ -1884,6 +1889,13 @@ file.
 You can also use the @option{-f} option to specify another startup
 file, allowing you to switch between different configurations
 (@pxref{Command Line Arguments}).
+
+@deffn Command {set startupmessage} @var{n}
+Turn on or off the startup_message. This is most useful in your
+.ratpoisonrc file. @var{n} can be @code{1} (default) or @code{0}.
+
+When called with no arguments, the current setting is returned.
+@end deffn
 
 @node GNU Free Documentation License
 @chapter GNU Free Documentation License
