@@ -18,6 +18,7 @@
  * Boston, MA 02111-1307 USA
  */
 
+#define _BSD_SOURCE
 #define _GNU_SOURCE
 #include <string.h>
 
