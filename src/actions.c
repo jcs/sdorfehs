@@ -6075,7 +6075,7 @@ cmd_getsel (int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 /* This is a command that restores old commands that have been
-   recently depricated. */
+   recently deprecated. */
 cmdret *
 cmd_compat (int interactive UNUSED, struct cmdarg **args UNUSED)
 {
