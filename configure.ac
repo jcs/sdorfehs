@@ -81,7 +81,7 @@ AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
 
 AC_ARG_WITH([xkb],
-  [AS_HELP_STRING([--disable-xkb], [Don't build XKB support for keyboard input.])],
+  [AS_HELP_STRING([--without-xkb], [Don't build XKB support for keyboard input.])],
   [xkb=$withval],
   [xkb=yes])
 AS_IF([test "X$xkb" = "Xyes"],
