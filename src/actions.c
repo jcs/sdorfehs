@@ -83,6 +83,8 @@ static cmdret * set_historycompaction (struct cmdarg **args);
 static cmdret * set_historyexpansion (struct cmdarg **args);
 static cmdret * set_msgwait(struct cmdarg **args);
 static cmdret * set_framemsgwait(struct cmdarg **args);
+static cmdret * set_startupmessage(struct cmdarg **args);
+static cmdret * set_warp(struct cmdarg **args);
 
 LIST_HEAD(set_vars);
 
@@ -154,6 +156,8 @@ init_set_vars(void)
   add_set_var ("historyexpansion", set_historyexpansion, 1, "", arg_NUMBER);
   add_set_var ("msgwait", set_msgwait, 1, "", arg_NUMBER);
   add_set_var ("framemsgwait", set_framemsgwait, 1, "", arg_NUMBER);
+  add_set_var ("warp", set_warp, 1, "", arg_NUMBER);
+  add_set_var ("startupmessage", set_startupmessage, 1, "", arg_NUMBER);
 }
 
 /* rp_keymaps is ratpoison's list of keymaps. */
@@ -4509,6 +4513,20 @@ cmd_restart (int interactive UNUSED, struct cmdarg **args UNUSED)
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
+static cmdret *
+set_startupmessage (struct cmdarg **args)
+{
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%d", defaults.startup_message);
+
+  if (ARG(0, number) != 0 && ARG(0, number) != 1)
+    return cmdret_new (RET_FAILURE, "set startupmessage: invalid argument");
+
+  defaults.startup_message = ARG(0, number);
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+/* compat */
 cmdret *
 cmd_startup_message (int interactive UNUSED, struct cmdarg **args)
 {
@@ -4672,6 +4690,20 @@ cmd_sselect(int interactive UNUSED, struct cmdarg **args)
   return cmdret_new (RET_SUCCESS, NULL);
 }
 
+static cmdret *
+set_warp (struct cmdarg **args)
+{
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%d", defaults.warp);
+
+  if (ARG(0, number) != 0 && ARG(0, number) != 1)
+    return cmdret_new (RET_FAILURE, "set warp: invalid argument");
+
+  defaults.warp = ARG(0, number);
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+/* compat */
 cmdret *
 cmd_warp (int interactive UNUSED, struct cmdarg **args)
 {
