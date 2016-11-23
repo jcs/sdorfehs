@@ -1551,7 +1551,7 @@ work.
 @end deffn
 
 @deffn Command getenv @var{env}
-Display the value of the environment variable, @var{env}.
+Display the value of the environment variable @var{env}.
 @end deffn
 
 @deffn Command getsel
