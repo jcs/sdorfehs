@@ -786,7 +786,8 @@ delegate_event (XEvent *ev)
 {
 
 #ifdef HAVE_LIBXRANDR
-  xrandr_notify (ev);
+  if (rp_have_xrandr)
+    xrandr_notify (ev);
 #endif
 
   switch (ev->type)
@@ -860,10 +861,11 @@ delegate_event (XEvent *ev)
       break;
 
     case ConfigureNotify:
-      PRINT_DEBUG (("--- Handling ConfigureNotify ---\n"));
-#ifdef notdef
-      configure_notify (&ev->xconfigure);
-#endif
+      if (!rp_have_xrandr)
+        {
+          PRINT_DEBUG (("--- Handling ConfigureNotify ---\n"));
+          configure_notify (&ev->xconfigure);
+        }
       break;
 
     case MapNotify:
