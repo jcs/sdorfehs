@@ -24,58 +24,13 @@
 
 #include "ratpoison.h"
 
-/* arg_REST and arg_SHELLCMD eat the rest of the input. */
-enum argtype { arg_REST,
-               arg_NUMBER,
-               arg_STRING,
-               arg_FRAME,
-               arg_WINDOW,
-               arg_COMMAND,
-               arg_SHELLCMD,
-               arg_KEYMAP,
-               arg_KEY,
-               arg_GRAVITY,
-               arg_GROUP,
-               arg_HOOK,
-               arg_VARIABLE,
-               arg_RAW};
-
-union arg_union {
-    rp_frame *frame;
-    int number;
-    float fnumber;
-    rp_window *win;
-    rp_keymap *keymap;
-    rp_group *group;
-    struct list_head *hook;
-    struct set_var *variable;
-    struct rp_key *key;
-    int gravity;
-  };
-
-struct cmdarg
-{
-  int type;
-  char *string;
-  union arg_union arg;
-  struct list_head node;
-};
-
-struct argspec
-{
-  int type;
-  char *prompt;
-};
-
 /* The structure returned by a command. */
-typedef struct cmdret cmdret;
-struct cmdret
+typedef struct cmdret
 {
   char *output;
   int success;
-};
-
 void del_frame_undo (rp_frame_undo *u);
+} cmdret;
 
 rp_keymap *find_keymap (char *name);
 void init_user_commands(void);

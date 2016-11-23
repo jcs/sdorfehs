@@ -41,8 +41,54 @@
 #endif
 
 
+
+
+/* arg_REST and arg_SHELLCMD eat the rest of the input. */
+enum argtype {
+  arg_REST,
+  arg_NUMBER,
+  arg_STRING,
+  arg_FRAME,
+  arg_WINDOW,
+  arg_COMMAND,
+  arg_SHELLCMD,
+  arg_KEYMAP,
+  arg_KEY,
+  arg_GRAVITY,
+  arg_GROUP,
+  arg_HOOK,
+  arg_VARIABLE,
+  arg_RAW,
+};
+
+union arg_union {
+  rp_frame *frame;
+  int number;
+  float fnumber;
+  rp_window *win;
+  rp_keymap *keymap;
+  rp_group *group;
+  struct list_head *hook;
+  struct set_var *variable;
+  struct rp_key *key;
+  int gravity;
+};
+
+struct cmdarg
+{
+  int type;
+  char *string;
+  union arg_union arg;
+  struct list_head node;
+};
 #define ARG_STRING(elt) args[elt]->string
 #define ARG(elt, type)  args[elt]->arg.type
+
+struct argspec
+{
+  int type;
+  char *prompt;
+};
 
 struct set_var
 {
