@@ -390,14 +390,6 @@ struct rp_hook_db_entry
   struct list_head *hook;
 };
 
-typedef struct rp_frame_undo rp_frame_undo;
-struct rp_frame_undo
-{
-  char *frames;
-  rp_screen *screen;
-  struct list_head node;
-};
-
 typedef struct rp_xselection rp_xselection;
 struct rp_xselection
 {

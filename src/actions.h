@@ -29,9 +29,9 @@ typedef struct cmdret
 {
   char *output;
   int success;
-void del_frame_undo (rp_frame_undo *u);
 } cmdret;
 
+void clear_frame_undos (void);
 rp_keymap *find_keymap (char *name);
 void init_user_commands(void);
 void initialize_default_keybindings (void);

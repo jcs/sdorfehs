@@ -838,13 +838,7 @@ clean_up (void)
   free (screens);
 
   /* Delete the undo histories */
-  while (list_size (&rp_frame_undos) > 0)
-    {
-      /* Delete the oldest node */
-      rp_frame_undo *cur;
-      list_last (cur, &rp_frame_undos, node);
-      del_frame_undo (cur);
-    }
+  clear_frame_undos ();
 
   /* Free the global frame numset shared by all screens. */
   numset_free (rp_frame_numset);

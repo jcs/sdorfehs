@@ -120,11 +120,20 @@ typedef struct
   char *alias;
 } alias_t;
 
+typedef struct rp_frame_undo
+{
+  char *frames;
+  rp_screen *screen;
+  struct list_head node;
+} rp_frame_undo;
 
 
-static LIST_HEAD(user_commands);
-static LIST_HEAD(rp_keymaps);
-static LIST_HEAD(set_vars);
+
+static LIST_HEAD (user_commands);
+static LIST_HEAD (rp_keymaps);
+static LIST_HEAD (set_vars);
+static LIST_HEAD (rp_frame_undos);
+static LIST_HEAD (rp_frame_redos);
 
 static alias_t *alias_list;
 static int alias_list_size;
@@ -634,13 +643,25 @@ clear_frame_redos (void)
     }
 }
 
-void
+static void
 del_frame_undo (rp_frame_undo *u)
 {
   if (!u) return;
   free (u->frames);
   list_del (&(u->node));
   free (u);
+}
+
+void
+clear_frame_undos (void)
+{
+  while (list_size (&rp_frame_undos) > 0)
+    {
+      /* Delete the oldest node */
+      rp_frame_undo *cur;
+      list_last (cur, &rp_frame_undos, node);
+      del_frame_undo (cur);
+    }
 }
 
 static void

@@ -265,9 +265,6 @@ set_window_focus (Window window)
                   RevertToPointerRoot, CurrentTime);
 }
 
-LIST_HEAD (rp_frame_undos);
-LIST_HEAD (rp_frame_redos);
-
 
 /* Wrapper font functions to support Xft */
 

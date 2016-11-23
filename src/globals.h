@@ -198,9 +198,6 @@ extern int xine_screen_count;
 
 extern struct numset *rp_frame_numset;
 
-extern struct list_head rp_frame_undos;
-extern struct list_head rp_frame_redos;
-
 /* Selection handling globals */
 extern rp_xselection selection;
 void set_selection (char *txt);
