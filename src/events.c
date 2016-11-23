@@ -702,7 +702,19 @@ mapping_notify (XMappingEvent *ev)
   grab_keys_all_wins();
 }
 
-/* This is called whan an application has requested the
+static void
+configure_notify (XConfigureEvent *ev)
+{
+  rp_screen *s;
+
+  s = find_screen(ev->window);
+  if (s != NULL)
+    /* This is a root window of a screen,
+     * look if its width or height changed: */
+    screen_update (s, ev->x, ev->y, ev->width, ev->height);
+}
+
+/* This is called when an application has requested the
    selection. Copied from rxvt. */
 static void
 selection_request (XSelectionRequestEvent *rq)
@@ -845,6 +857,13 @@ delegate_event (XEvent *ev)
 
     case SelectionClear:
       selection_clear();
+      break;
+
+    case ConfigureNotify:
+      PRINT_DEBUG (("--- Handling ConfigureNotify ---\n"));
+#ifdef notdef
+      configure_notify (&ev->xconfigure);
+#endif
       break;
 
     case MapNotify:
