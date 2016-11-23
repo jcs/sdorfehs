@@ -210,7 +210,10 @@ xrandr_crtc_change (XRRCrtcChangeNotifyEvent *ev)
   if (!screen)
     return;
 
-  screen_update (screen, ev->x, ev->y, ev->width, ev->height);
+  if (ev->rotation == RR_Rotate_90 || ev->rotation == RR_Rotate_270)
+    screen_update (screen, ev->x, ev->y, ev->height, ev->width);
+  else
+    screen_update (screen, ev->x, ev->y, ev->width, ev->height);
 }
 
 void
