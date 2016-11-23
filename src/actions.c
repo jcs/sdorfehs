@@ -99,8 +99,6 @@ struct set_var
   struct list_head node;
 };
 
-LIST_HEAD(set_vars);
-
 struct user_command
 {
   char *name;
@@ -116,11 +114,29 @@ struct user_command
   struct list_head node;
 };
 
-LIST_HEAD(user_commands);
+typedef struct
+{
+  char *name;
+  char *alias;
+} alias_t;
 
-/* rp_keymaps is ratpoison's list of keymaps. */
-LIST_HEAD(rp_keymaps);
 
+
+static LIST_HEAD(user_commands);
+static LIST_HEAD(rp_keymaps);
+static LIST_HEAD(set_vars);
+
+static alias_t *alias_list;
+static int alias_list_size;
+static int alias_list_last;
+
+static const char invalid_negative_arg[] = "invalid negative argument";
+
+
+
+static cmdret* frestore (char *data, rp_screen *s);
+static char* fdump (rp_screen *screen);
+static int spawn(char *data, int raw, rp_frame *frame);
 
 /* setter function prototypes */
 static cmdret * set_resizeunit (struct cmdarg **args);
@@ -273,6 +289,8 @@ static cmdret *cmd_undo (int interactive, struct cmdarg **args);
 static cmdret *cmd_redo (int interactive, struct cmdarg **args);
 static cmdret *cmd_putsel (int interactive, struct cmdarg **args);
 static cmdret *cmd_getsel (int interactive, struct cmdarg **args);
+
+
 
 static void
 add_set_var (char *name, cmdret * (*fn)(struct cmdarg **), int nargs, ...)
@@ -601,22 +619,6 @@ init_user_commands(void)
 
   init_set_vars();
 }
-
-typedef struct
-{
-  char *name;
-  char *alias;
-} alias_t;
-
-static alias_t *alias_list;
-static int alias_list_size;
-static int alias_list_last;
-static const char *invalid_negative_arg = "invalid negative argument";
-
-static cmdret* frestore (char *data, rp_screen *s);
-static char* fdump (rp_screen *screen);
-static int spawn(char *data, int raw, rp_frame *frame);
-
 
 /* Delete all entries in the redo list. */
 static void
