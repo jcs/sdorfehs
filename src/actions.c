@@ -405,6 +405,7 @@ init_user_commands(void)
   add_command ("putsel",        cmd_putsel,     1, 1, 1,
                "Text: ", arg_RAW);
   add_command ("getsel",        cmd_getsel,     0, 0, 0);
+  add_command ("commands",      cmd_commands,   0, 0, 0);
   /*@end (tag required for genrpbindings) */
 
   /* Commands to help debug ratpoison. */
@@ -6081,4 +6082,23 @@ cmd_getsel (int interactive UNUSED, struct cmdarg **args UNUSED)
     }
   else
     return cmdret_new (RET_FAILURE, "getsel: no X11 selection");
+}
+
+cmdret *
+cmd_commands (int interactive UNUSED, struct cmdarg **args UNUSED)
+{
+  struct sbuf *sb;
+  struct user_command *cur;
+  cmdret *ret;
+
+  sb = sbuf_new (0);
+  list_for_each_entry (cur, &user_commands, node)
+    {
+      sbuf_printf_concat (sb, "%s\n", cur->name);
+    }
+  sbuf_chop (sb);
+
+  ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (sb));
+  sbuf_free (sb);
+  return ret;
 }

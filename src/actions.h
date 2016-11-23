@@ -111,6 +111,7 @@ RP_CMD (compat);
 RP_CMD (chdir);
 RP_CMD (clrunmanaged);
 RP_CMD (colon);
+RP_CMD (commands);
 RP_CMD (curframe);
 RP_CMD (delete);
 RP_CMD (echo);
