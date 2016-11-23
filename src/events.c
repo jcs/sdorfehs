@@ -785,7 +785,7 @@ static void
 delegate_event (XEvent *ev)
 {
 
-#ifdef HAVE_LIBXRANDR
+#ifdef HAVE_XRANDR
   if (rp_have_xrandr)
     xrandr_notify (ev);
 #endif

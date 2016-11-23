@@ -727,7 +727,7 @@ main (int argc, char *argv[])
   init_groups ();
   init_window_stuff ();
 
-#ifdef HAVE_LIBXRANDR
+#ifdef HAVE_XRANDR
   init_xrandr ();
 #endif
 

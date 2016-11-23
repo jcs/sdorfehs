@@ -184,18 +184,19 @@ AC_CHECK_HEADERS([X11/extensions/Xrandr.h], [], [], [
 ])
 CPPFLAGS="$mysavedCPPFLAGS"
 
-AC_CHECK_LIB(Xrandr, XRRGetScreenResources,
-  [X_LIBS="-lXrandr $X_LIBS"
-   AC_DEFINE(HAVE_LIBXRANDR, 1, [Xrandr])],
-  [], [$X_LIBS $X_EXTRA_LIBS])
+# XXX Find out why ":" is so important below, with no argument
+# half of config.h ends up #undef'd
+AC_CHECK_LIB(Xrandr, XRRGetScreenResources, [: nothing], [], [$X_LIBS $X_EXTRA_LIBS])
 
 compile_xrandr=no
 AS_CASE(["$with_xrandr:$ac_cv_header_X11_extensions_Xrandr_h:$ac_cv_lib_Xrandr_XRRGetScreenResources"],
   [yes:no:*], [AC_MSG_ERROR([*** Can't enable Xrandr support, header Xrandr.h not found.])],
   [yes:*:no], [AC_MSG_ERROR([*** Can't enable Xrandr support, libXrandr not found.])],
-  [yes:yes:yes|check:yes:yes], [compile_xrandr=yes])
+  [yes:yes:yes|check:yes:yes], [X_LIBS="-lXrandr $X_LIBS"
+  			        AC_DEFINE(HAVE_XRANDR, 1, [Xrandr])
+				compile_xrandr=yes])
 
-AM_CONDITIONAL(HAVE_LIBXRANDR, [test "$compile_xrandr" = yes])
+AM_CONDITIONAL(HAVE_XRANDR, [test "$compile_xrandr" = yes])
 
 AC_SUBST(X_LIBS)
 AC_SUBST(X_EXTRA_LIBS)

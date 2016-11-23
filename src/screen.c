@@ -239,7 +239,7 @@ init_screens (void)
 
   /* Get the number of screens */
   if (rp_have_xrandr) {
-#ifdef HAVE_LIBXRANDR
+#ifdef HAVE_XRANDR
     rr_outputs = xrandr_query_screen (&screen_count);
 #endif
   } else {
@@ -256,7 +256,7 @@ init_screens (void)
       screen = xmalloc (sizeof(*screen));
       list_add (&screen->node, &rp_screens);
 
-#ifdef HAVE_LIBXRANDR
+#ifdef HAVE_XRANDR
       if (rp_have_xrandr)
         xrandr_fill_screen (rr_outputs[i], screen);
 #endif
@@ -574,7 +574,7 @@ screen_add (int rr_output)
 
   change_windows_screen (NULL, screen);
 
-#ifdef HAVE_LIBXRANDR
+#ifdef HAVE_XRANDR
   if (rp_have_xrandr)
     xrandr_fill_screen (rr_output, screen);
 #endif

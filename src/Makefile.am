@@ -72,6 +72,6 @@ ratpoison_SOURCES	= actions.c		\
 			window.c		\
 			window.h
 
-if HAVE_LIBXRANDR
+if HAVE_XRANDR
 ratpoison_SOURCES += xrandr.c xrandr.h
 endif
