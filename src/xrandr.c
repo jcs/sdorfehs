@@ -216,13 +216,13 @@ xrandr_crtc_change (XRRCrtcChangeNotifyEvent *ev)
 void
 xrandr_notify (XEvent *ev)
 {
-  int ev_code = xrandr_evbase + RRNotify;
   XRRNotifyEvent *n_event;
   XRROutputChangeNotifyEvent *o_event;
   XRRCrtcChangeNotifyEvent *c_event;
 
-  if (ev->type != ev_code)
+  if (ev->type != xrandr_evbase + RRNotify)
     return;
+
   PRINT_DEBUG (("--- Handling RRNotify ---\n"));
 
   n_event = (XRRNotifyEvent *)ev;
