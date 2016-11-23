@@ -22,9 +22,6 @@
 #ifndef _RATPOISON_ACTIONS_H
 #define _RATPOISON_ACTIONS_H 1
 
-#define MAX_COMMAND_LENGTH 100
-#define MAX_ARGS_LENGTH 100
-
 #include "ratpoison.h"
 
 /* arg_REST and arg_SHELLCMD eat the rest of the input. */
