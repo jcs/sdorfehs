@@ -155,15 +155,40 @@ xrandr_output_change (XRROutputChangeNotifyEvent *ev)
   outinfo = XRRGetOutputInfo (dpy, res, ev->output);
 
   screen = xrandr_screen_output (ev->output);
+
   if (!screen && outinfo->crtc) {
-    screen_add (ev->output);
+    screen = screen_add (ev->output);
     screen_sort ();
+    PRINT_DEBUG (("%s: Added screen %s with crtc %lu\n", __func__,
+                  sbuf_get (screen->xrandr.name),
+                  (unsigned long)outinfo->crtc));
   } else if (screen && !outinfo->crtc) {
+    PRINT_DEBUG (("%s: Removing screen %s\n", __func__,
+                  sbuf_get (screen->xrandr.name)));
     screen_del (screen);
   }
 
   XRRFreeOutputInfo (outinfo);
   XRRFreeScreenResources (res);
+}
+
+static const char *
+xrandr_rotation_string (Rotation r)
+{
+  static char buf[64];
+
+#define CASE(c) case c : return #c
+  switch (r)
+    {
+      CASE(RR_Rotate_0);
+      CASE(RR_Rotate_90);
+      CASE(RR_Rotate_180);
+      CASE(RR_Rotate_270);
+#undef CASE
+    default:
+      snprintf(buf, sizeof buf, "Unknown rotation %hu", (unsigned short)r);
+      return buf;
+  }
 }
 
 static void
@@ -175,8 +200,17 @@ xrandr_crtc_change (XRRCrtcChangeNotifyEvent *ev)
     return;
 
   screen = xrandr_screen_crtc (ev->crtc);
-  if (screen)
-    screen_update (screen, ev->x, ev->y, ev->width, ev->height);
+
+  PRINT_DEBUG (("%s: crtc %s, rotation %s "
+                "ev->x %d, ev->y %d, ev->width %d, ev->height %d\n",
+                __func__, screen ? "found" : "not found",
+                xrandr_rotation_string (ev->rotation),
+                ev->x, ev->y, ev->width, ev->height));
+
+  if (!screen)
+    return;
+
+  screen_update (screen, ev->x, ev->y, ev->width, ev->height);
 }
 
 void
@@ -189,18 +223,25 @@ xrandr_notify (XEvent *ev)
 
   if (ev->type != ev_code)
     return;
+  PRINT_DEBUG (("--- Handling RRNotify ---\n"));
 
   n_event = (XRRNotifyEvent *)ev;
   switch (n_event->subtype) {
   case RRNotify_OutputChange:
+    PRINT_DEBUG (("---          XRROutputChangeNotifyEvent ---\n"));
     o_event = (XRROutputChangeNotifyEvent *)ev;
     xrandr_output_change (o_event);
     break;
   case RRNotify_CrtcChange:
+    PRINT_DEBUG (("---          XRRCrtcChangeNotifyEvent ---\n"));
     c_event = (XRRCrtcChangeNotifyEvent *)ev;
     xrandr_crtc_change (c_event);
     break;
+  case RRNotify_OutputProperty:
+    PRINT_DEBUG (("---          RRNotify_OutputProperty ---\n"));
+    break;
   default:
+    PRINT_DEBUG (("---          Unknown subtype %d ---\n", n_event->subtype));
     break;
   }
 }

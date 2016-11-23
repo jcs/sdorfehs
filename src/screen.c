@@ -531,7 +531,8 @@ screen_update (rp_screen *s, int left, int top, int width, int height)
   rp_frame *f;
   int oldwidth, oldheight;
 
-  PRINT_DEBUG (("screen_update(%d,%d)\n", width, height));
+  PRINT_DEBUG (("screen_update (left=%d, top=%d, width=%d, height=%d)\n",
+                left, top, width, height));
 
   if (s->width  == width  &&
       s->height == height &&
