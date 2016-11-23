@@ -1265,6 +1265,8 @@ Run when the user switches to another frame. This is also run when the
 user switches to a different screen, since a frame switch also occurs.
 @item switchgroup
 Run when the user switches to a different group.
+@item switchscreen
+Run when the user switches to a different screen.
 @item deletewindow
 Run when a window is deleted.
 @item newwindow
