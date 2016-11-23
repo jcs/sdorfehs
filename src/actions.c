@@ -117,8 +117,6 @@ static cmdret *cmd_addhook (int interactive, struct cmdarg **args);
 static cmdret *cmd_alias (int interactive, struct cmdarg **args);
 static cmdret *cmd_banish (int interactive, struct cmdarg **args);
 static cmdret *cmd_banishrel (int interactive, struct cmdarg **args);
-static cmdret *cmd_bind (int interactive, struct cmdarg **args);
-static cmdret *cmd_compat (int interactive, struct cmdarg **args);
 static cmdret *cmd_chdir (int interactive, struct cmdarg **args);
 static cmdret *cmd_clrunmanaged (int interactive, struct cmdarg **args);
 static cmdret *cmd_colon (int interactive, struct cmdarg **args);
@@ -193,8 +191,6 @@ static cmdret *cmd_startup_message (int interactive, struct cmdarg **args);
 static cmdret *cmd_time (int interactive, struct cmdarg **args);
 static cmdret *cmd_tmpwm (int interactive, struct cmdarg **args);
 static cmdret *cmd_unalias (int interactive, struct cmdarg **args);
-static cmdret *cmd_unbind (int interactive, struct cmdarg **args);
-static cmdret *cmd_unimplemented (int interactive, struct cmdarg **args);
 static cmdret *cmd_unmanage (int interactive, struct cmdarg **args);
 static cmdret *cmd_unsetenv (int interactive, struct cmdarg **args);
 static cmdret *cmd_v_split (int interactive, struct cmdarg **args);
@@ -547,19 +543,15 @@ init_user_commands(void)
   add_command ("commands",      cmd_commands,   0, 0, 0);
   /*@end (tag required for genrpbindings) */
 
-  /* Commands to help debug ratpoison. */
-#ifdef DEBUG
-#endif
-
-  /* the following screen commands may or may not be able to be
-     implemented.  See the screen documentation for what should be
-     emulated with these commands */
-#if 0
-  add_command ("msgminwait", cmd_unimplemented, 0);
-  add_command ("nethack", cmd_unimplemented, 0);
-  add_command ("sleep", cmd_unimplemented, 0);
-  add_command ("stuff", cmd_unimplemented, 0);
-#endif
+  /*
+    The following screen commands may or may not be able to be
+    implemented.  See the screen documentation for what should be
+    emulated with these commands
+    - msgminwait
+    - nethack
+    - sleep
+    - stuff
+  */
 
   init_set_vars();
 }
@@ -1293,12 +1285,6 @@ cmd_definekey (int interactive UNUSED, struct cmdarg **args)
     return ret;
   else
     return cmdret_new (RET_SUCCESS, NULL);
-}
-
-cmdret *
-cmd_unimplemented (int interactive UNUSED, struct cmdarg **args UNUSED)
-{
-  return cmdret_new (RET_FAILURE, "FIXME:  unimplemented command");
 }
 
 cmdret *
