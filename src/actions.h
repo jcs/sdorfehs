@@ -25,7 +25,7 @@
 #define MAX_COMMAND_LENGTH 100
 #define MAX_ARGS_LENGTH 100
 
-#include <ratpoison.h>
+#include "ratpoison.h"
 
 typedef struct user_command user_command;
 
