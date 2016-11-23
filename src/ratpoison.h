@@ -55,8 +55,6 @@ do {                                            \
 #define PRINT_DEBUG(fmt) do {} while (0)
 #endif /* DEBUG */
 
-extern XGCValues gv;
-
 #include "conf.h"
 
 #include "data.h"
