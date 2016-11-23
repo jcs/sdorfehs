@@ -1638,8 +1638,7 @@ Restart ratpoison.
 @end deffn
 
 @deffn Command set @var{var} @var{value}
-Set the value of a ratpoison variable. This command replaces the older
-@samp{def*} variable get/set style.
+Set the value of a ratpoison variable.
 
 Here is a list of variables that can be set:
 
@@ -1822,11 +1821,11 @@ from the command-line. with the @option{-c} option you can script
 ratpoison using any programming language that can spawn a
 process. Some commands behave differently when invoked this
 way. Currently the only commands that behaves differently are the
-@code{windows} command and some def* commands. Instead of displaying
-the window list in a message window, it is printed to stdout. The
-output can then be captured and used in the ratpoison script. For
-instance, this could be used to check whether a program is running and
-if it is switch to its window otherwise launch it.
+@code{windows} and @code{set} commands. For @code{windows}, instead of
+displaying the window list in a message window, it is printed to
+stdout. The output can then be captured and used in the ratpoison
+script. For instance, this could be used to check whether a program is
+running and if it is switch to its window otherwise launch it.
 
 It should also be noted that multiple @option{-c} options can be used.
 
