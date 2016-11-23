@@ -575,7 +575,8 @@ screen_add (int rr_output)
   change_windows_screen (NULL, screen);
 
 #ifdef HAVE_LIBXRANDR
-  xrandr_fill_screen (rr_output, screen);
+  if (rp_have_xrandr)
+    xrandr_fill_screen (rr_output, screen);
 #endif
   init_screen (screen);
   init_frame_list (screen);
