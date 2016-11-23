@@ -506,12 +506,12 @@ Some programs will attempt to steal the focus without the users
 permission. Not only is this a sign of a lame programmers attempt to fix
 a window manager problem in the wrong place, it's just plain rude. By
 default ratpoison will honour these rudeness requests, but it doesn't
-have to. Use the @command{rudeness} command to deal with such programs.
+have to. Use the rudeness variable to deal with such programs.
 
-@deffn Command rudeness @var{n}
-The rudeness command lets you decide what windows pop-up automatically
-and when. This is often useful for those deep hack sessions when you
-absolutely can't be disturbed.
+@deffn Command {set rudeness} @var{n}
+The rudeness variable lets you decide what windows pop-up
+automatically and when. This is often useful for those deep hack
+sessions when you absolutely can't be disturbed.
 
 There are two kinds of windows: normal windows (like an xterm) and
 transient windows (generally pop-up dialog boxes). When a client
@@ -539,8 +539,9 @@ Tells ratpoison to grant display requests on new normal windows
 @end table
 
 For example, if you wanted only wanted to grant transient windows
-raise requests and display requests you would type @samp{rudeness
-5}. If a request is not granted ratpoison will tell you about the
+raise requests and display requests you would type @samp{set rudeness
+5}.
+If a request is not granted ratpoison will tell you about the
 request with a message like @samp{Raise request from window 1
 (emacs)}.
 

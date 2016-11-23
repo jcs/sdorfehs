@@ -679,22 +679,9 @@ of pixels given by
 Restart
 .Nm .
 .It Ic rudeness Op Ar rudeness
-Show or set what kind of windows are allowed to jostle into the foreground.
-.Ar rudeness
-is a bitwise OR of the following values:
-.Pp
-.Bl -tag -offset 2n -width 2n -compact
-.It 1
-Transient windows may raise.
-.It 2
-Normal windows may raise.
-.It 4
-New transient windows end up in the foreground.
-.It 8
-New normal windows end up in the foreground.
-.El
-.Pp
-Default is all allowed i.e.\& 15.
+This command is deprecated, please use the
+.Va rudeness
+variable instead.
 .It Ic sdump
 Output the list of all screens.
 The screens are separated by commas. Each screen is shown as 6 values:
@@ -1152,6 +1139,25 @@ been last time this window was focused, or not.
 Default is
 .Li 0
 (off).
+.It Cm rudeness Ar number
+Show or set what kind of windows are allowed to jostle into the
+foreground.
+.sp
+.Ar number
+is a bitwise OR of the following values:
+.Pp
+.Bl -tag -offset 2n -width 2n -compact
+.It 1
+Transient windows may raise.
+.It 2
+Normal windows may raise.
+.It 4
+New transient windows end up in the foreground.
+.It 8
+New normal windows end up in the foreground.
+.El
+.Pp
+Default is all allowed i.e.\& 15.
 .El
 .Sh FILES
 .Bl -tag -width "%%sysconfdir%%/ratpoisonrc" -compact

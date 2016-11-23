@@ -85,6 +85,7 @@ static cmdret * set_msgwait(struct cmdarg **args);
 static cmdret * set_framemsgwait(struct cmdarg **args);
 static cmdret * set_startupmessage(struct cmdarg **args);
 static cmdret * set_warp(struct cmdarg **args);
+static cmdret * set_rudeness(struct cmdarg **args);
 
 LIST_HEAD(set_vars);
 
@@ -150,6 +151,7 @@ init_set_vars (void)
   add_set_var ("padding", set_padding, 4, "", arg_NUMBER, "", arg_NUMBER, "",
                arg_NUMBER, "", arg_NUMBER);
   add_set_var ("resizeunit", set_resizeunit, 1, "", arg_NUMBER);
+  add_set_var ("rudeness", set_rudeness, 1, "", arg_NUMBER);
   add_set_var ("startupmessage", set_startupmessage, 1, "", arg_NUMBER);
   add_set_var ("topkmap", set_topkmap, 1, "", arg_STRING);
   add_set_var ("transgravity", set_transgravity, 1, "", arg_GRAVITY);
@@ -3589,7 +3591,7 @@ cmd_help (int interactive, struct cmdarg **args)
 }
 
 cmdret *
-cmd_rudeness (int interactive UNUSED, struct cmdarg **args)
+set_rudeness (struct cmdarg **args)
 {
   int num;
 
@@ -3610,6 +3612,13 @@ cmd_rudeness (int interactive UNUSED, struct cmdarg **args)
   rp_honour_normal_map      = num & 8 ? 1 : 0;
 
   return cmdret_new (RET_SUCCESS, NULL);
+}
+
+/* compat */
+cmdret *
+cmd_rudeness (int interactive UNUSED, struct cmdarg **args)
+{
+  return set_rudeness (args);
 }
 
 char *
