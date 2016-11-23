@@ -124,47 +124,6 @@ keycode_to_keysym(Display *dpy, KeyCode kc, int group, int level)
   return XKeycodeToKeysym (dpy, kc, level);
 }
 
-/* /\* The caller is responsible for freeing the keycodes. *\/ */
-/* KeyCode * */
-/* keysym_to_keycodes (KeySym sym, int *n_returned) */
-/* { */
-/*   int min_code, max_code; */
-/*   int syms_per_code; */
-/*   KeySym *syms; */
-/*   KeyCode *codes; */
-/*   int code, code_col; */
-
-/*   XDisplayKeycodes (dpy, &min_code, &max_code); */
-/*   syms = XGetKeyboardMapping (dpy, */
-/* 			      min_code, max_code - min_code + 1, */
-/* 			      &syms_per_code); */
-
-/*   *n_returned = 0; */
-/*   codes = xmalloc (sizeof(KeyCode) * n_returned); */
-/*   for (code = min_code; code < max_code; code++) */
-/*     for (code_col = 0; code_col < syms_per_code; code_col++) */
-/*       {       */
-/* 	int s = syms[((code - min_code) * syms_per_code) + code_col]; */
-
-/* 	if (sym == s) */
-/* 	  { */
-/* 	    n_returned++; */
-/* 	    codes = xrealloc (sizeof(KeyCode) * n_returned); */
-/* 	    codes[n_returned-1] = code; */
-/* 	  } */
-/*       }	 */
-      
-/*   XFree ((char *) syms); */
-
-/*   if (n_returned > 0) */
-/*     return codes; */
-/*   else  */
-/*     { */
-/*       xfree (codes) */
-/*       return NULL; */
-/*     } */
-/* } */
-
 /* Figure out what keysyms are attached to what modifiers */
 void
 update_modifier_map (void)
