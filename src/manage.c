@@ -97,8 +97,6 @@ add_unmanaged_window (char *name)
   unmanaged_window_list = tmp;
 }
 
-extern Atom wm_state;
-
 void
 grab_top_level_keys (Window w)
 {
