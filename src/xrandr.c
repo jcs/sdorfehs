@@ -172,6 +172,7 @@ xrandr_output_change (XRROutputChangeNotifyEvent *ev)
   XRRFreeScreenResources (res);
 }
 
+#ifdef DEBUG
 static const char *
 xrandr_rotation_string (Rotation r)
 {
@@ -190,6 +191,7 @@ xrandr_rotation_string (Rotation r)
       return buf;
   }
 }
+#endif
 
 static void
 xrandr_crtc_change (XRRCrtcChangeNotifyEvent *ev)
