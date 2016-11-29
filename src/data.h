@@ -153,6 +153,9 @@ struct rp_group
 struct rp_global_screen
 {
   unsigned long fg_color, bg_color, fw_color, bw_color; /* The pixel color. */
+
+  /* This numset is responsible for giving out numbers for each screen */
+  struct numset *numset;
 };
 
 struct xrandr_info {
@@ -169,6 +172,9 @@ struct rp_screen
   int screen_num;               /* Our screen number as dictated by X */
   Colormap def_cmap;
   Cursor rat;
+
+  /* Screen number, handled by rp_global_screen numset */
+  int number;
 
   struct xrandr_info xrandr;
 

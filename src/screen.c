@@ -218,11 +218,24 @@ screen_sort (void)
 }
 
 static void
+screen_set_numbers (void)
+{
+  rp_screen *cur;
+
+  list_for_each_entry (cur, &rp_screens, node)
+    {
+      cur->number = numset_request (rp_glob_screen.numset);
+    }
+}
+
+static void
 init_global_screen (rp_global_screen *s)
 {
   int screen_num;
 
   screen_num = DefaultScreen (dpy);
+
+  s->numset = numset_new ();
   s->fg_color = BlackPixel (dpy, screen_num);
   s->bg_color = WhitePixel (dpy, screen_num);
   s->fw_color = BlackPixel (dpy, screen_num);
@@ -264,6 +277,7 @@ init_screens (void)
     }
 
   screen_sort ();
+  screen_set_numbers ();
 
   free (rr_outputs);
 }
@@ -474,7 +488,7 @@ screen_dump (rp_screen *screen)
     sbuf_printf(s, "%s ", sbuf_get (screen->xrandr.name));
 
   sbuf_printf_concat (s, "%d %d %d %d %d %d",
-                      (rp_have_xrandr) ? screen->xrandr.output : screen->screen_num,
+                      screen->number,
                       screen->left,
                       screen->top,
                       screen->width,
@@ -569,6 +583,8 @@ screen_add (int rr_output)
   screen = xmalloc (sizeof(*screen));
   list_add (&screen->node, &rp_screens);
 
+  screen->number = numset_request (rp_glob_screen.numset);
+
   if (!rp_current_screen)
     rp_current_screen = screen;
 
@@ -601,6 +617,8 @@ screen_del (rp_screen *s)
     cur_win = find_window_number (cur_frame->win_number);
     hide_window (cur_win);
   }
+
+  numset_release (rp_glob_screen.numset, s->number);
 
   change_windows_screen (s, rp_current_screen);
   screen_free (s);
@@ -656,4 +674,5 @@ screen_free_final (void)
   /* Relinquish our hold on the root window. */
   XSelectInput(dpy, RootWindow (dpy, DefaultScreen (dpy)), 0);
 
+  numset_free (rp_glob_screen.numset);
 }
