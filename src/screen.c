@@ -257,7 +257,7 @@ void
 init_screens (void)
 {
   int i;
-  int screen_count;
+  int screen_count = 0;
   int *rr_outputs = NULL;
   rp_screen *screen;
 
