@@ -181,17 +181,17 @@ is_a_root_window (unsigned int w)
 }
 
 rp_screen *
-screen_at (int index)
+screen_number (int number)
 {
-  int i = 0;
   rp_screen *cur;
+
+  if (number < 0)
+    return NULL;
 
   list_for_each_entry (cur, &rp_screens, node)
     {
-      if (index == i)
+      if (cur->number == number)
         return cur;
-
-      i++;
     }
 
   return NULL;

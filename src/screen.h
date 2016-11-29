@@ -51,7 +51,7 @@ int screen_count (void);
 rp_screen *screen_next(void);
 rp_screen *screen_prev(void);
 
-rp_screen *screen_at (int index);
+rp_screen *screen_number (int number);
 
 void screen_sort(void);
 

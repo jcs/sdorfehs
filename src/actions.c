@@ -4673,16 +4673,12 @@ cmd_sselect(int interactive UNUSED, struct cmdarg **args)
   if (new_screen < 0)
     return cmdret_new (RET_FAILURE, "sselect: out of range");
 
-  if (new_screen < screen_count ())
-    {
-      screen = screen_at (new_screen);
-      new_frame = screen_get_frame (screen, screen->current_frame);
-      set_active_frame (new_frame, 1);
-    }
-  else
-    {
-      return cmdret_new (RET_FAILURE, "sselect: out of range");
-    }
+  screen = screen_number (new_screen);
+  if (!screen)
+    return cmdret_new (RET_FAILURE, "sselect: screen not found");
+
+  new_frame = screen_get_frame (screen, screen->current_frame);
+  set_active_frame (new_frame, 1);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
@@ -5022,10 +5018,8 @@ cmd_fdump (int interactively UNUSED, struct cmdarg **args)
 
       if (snum < 0)
         return cmdret_new (RET_FAILURE, "fdump: invalid negative screen number");
-      else if (snum >= screen_count ())
-        return cmdret_new (RET_FAILURE, "fdump: unknown screen");
       else
-        screen = screen_at (snum);
+        screen = screen_number (snum);
     }
 
   dump = fdump (screen);
