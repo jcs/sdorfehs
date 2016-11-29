@@ -198,15 +198,26 @@ screen_number (int number)
 }
 
 static int
-screen_cmp_left (void *priv, struct list_head *a, struct list_head *b)
+screen_cmp (void *priv, struct list_head *a, struct list_head *b)
 {
   rp_screen *sc_a = container_of (a, typeof(*sc_a), node);
   rp_screen *sc_b = container_of (b, typeof(*sc_b), node);
 
   if (sc_a->left < sc_b->left)
-    return -1;
+    {
+      return -1;
+    }
   else if (sc_a->left > sc_b->left)
-    return 1;
+    {
+      return 1;
+    }
+  else if (sc_a->left == sc_b->left)
+    {
+      if (sc_a->top < sc_b->top)
+        return -1;
+      else
+        return 1;
+    }
 
   return 0;
 }
@@ -214,7 +225,7 @@ screen_cmp_left (void *priv, struct list_head *a, struct list_head *b)
 void
 screen_sort (void)
 {
-  return list_sort (NULL, &rp_screens, screen_cmp_left);
+  return list_sort (NULL, &rp_screens, screen_cmp);
 }
 
 static void
