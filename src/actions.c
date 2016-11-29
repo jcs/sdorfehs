@@ -5599,9 +5599,7 @@ cmd_sfdump (int interactively UNUSED, struct cmdarg **args UNUSED)
   list_for_each_entry (cur_screen, &rp_screens, node)
     {
       snprintf (screen_suffix, sizeof (screen_suffix), " %d,",
-                rp_have_xrandr ?
-                cur_screen->xrandr.output :
-                cur_screen->screen_num);
+                cur_screen->number);
 
       list_for_each_entry (cur_frame, &(cur_screen->frames), node)
         {
