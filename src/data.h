@@ -197,6 +197,9 @@ struct rp_screen
   /* This structure can exist in a list. */
   struct list_head node;
 
+  /* Used by sfrestore */
+  struct sbuf *scratch_buffer;
+
 #ifdef USE_XFT_FONT
   XftFont *xft_font;
   XftColor xft_fg_color, xft_bg_color;

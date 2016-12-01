@@ -5626,21 +5626,14 @@ cmdret *
 cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
 {
   char *copy, *ptr, *token;
-  int snum;
-  int out_of_screen = 0;
-  int s_count = screen_count ();
+  rp_screen *screen;
+  int out_of_screen = 0, restored = 0;
 
-  struct sf_data {
-    rp_screen *screen;
-    struct sbuf *frames;
-    int ret_restore;
-  } sf_data[s_count];
-
-  int sf_index = 0;
-  int i;
-
-  for (i = 0; i < s_count; i++)
-    sf_data[i].frames = sbuf_new (0);
+  list_for_each_entry (screen, &rp_screens, node)
+    {
+      sbuf_free (screen->scratch_buffer);
+      screen->scratch_buffer = sbuf_new (0);
+    }
 
   copy = xstrdup (ARG_STRING (0));
 
@@ -5653,7 +5646,7 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
 
   while (token != NULL)
     {
-      rp_screen *screen;
+      int snum;
 
       /* search for end of frameset */
       ptr = token;
@@ -5667,11 +5660,8 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
         {
           /* clobber screen number here, frestore() doesn't need it */
           *ptr = '\0';
-          sbuf_concat (sf_data[sf_index].frames, token);
-          sbuf_concat (sf_data[sf_index].frames, ",");
-
-          sf_data[sf_index].screen = screen;
-          sf_index++;
+          sbuf_concat (screen->scratch_buffer, token);
+          sbuf_concat (screen->scratch_buffer, ",");
         }
       else
         out_of_screen++;
@@ -5683,44 +5673,31 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
   free (copy);
 
   /* now restore the frames for each screen */
-  for (i = 0; i < sf_index; i++)
+  list_for_each_entry (screen, &rp_screens, node)
     {
-      cmdret * ret;
-      rp_screen *cur_screen;
-      struct sbuf *cur_frames;
+      cmdret *ret;
 
-      cur_screen = sf_data[i].screen;
-      cur_frames = sf_data[i].frames;
+      if (strlen (sbuf_get (screen->scratch_buffer)) == 0)
+        continue;
 
-      push_frame_undo (cur_screen); /* fdump to stack */
+      push_frame_undo (screen); /* fdump to stack */
 
-      ret = frestore (sbuf_get (cur_frames), cur_screen);
-      sf_data[i].ret_restore = ret->success;
-
+      /* XXX save the failure of each frestore and display it in case of error */
+      ret = frestore (sbuf_get (screen->scratch_buffer), screen);
+      if (ret->success)
+        restored++;
       cmdret_free (ret);
-    }
 
-  for (i = 0; i < s_count; i++)
-    sbuf_free (sf_data[i].frames);
-
-  for (i = 0; i < sf_index; i++)
-    {
-      int ret;
-
-      ret = sf_data[i].ret_restore;
-      if (ret != RET_SUCCESS)
-        {
-          return cmdret_new (ret, "Failed to restore frames for screen %d",
-                             sf_data[i].screen->number);
-        }
+      sbuf_free (screen->scratch_buffer);
+      screen->scratch_buffer = NULL;
     }
 
   if (!out_of_screen)
-    return cmdret_new (RET_SUCCESS, "Restored %i Frame(s)", sf_index);
+    return cmdret_new (RET_SUCCESS, "screens restored: %d", restored);
   else
     return cmdret_new (RET_SUCCESS,
-                       "Restored %i Frame(s), %i Frame(s) out of Screen(s)",
-                       sf_index, out_of_screen);
+                       "screens restored: %d, frames out of screen: %d",
+                       restored, out_of_screen);
 }
 
 cmdret *

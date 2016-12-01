@@ -320,6 +320,8 @@ init_screen (rp_screen *s)
   /* Set the numset for the frames to our global numset. */
   s->frames_numset = rp_frame_numset;
 
+  s->scratch_buffer = NULL;
+
   /* Build the display string for each screen */
   buf = sbuf_new (0);
   sbuf_printf (buf, "DISPLAY=%s", DisplayString (dpy));
