@@ -185,9 +185,6 @@ screen_number (int number)
 {
   rp_screen *cur;
 
-  if (number < 0)
-    return NULL;
-
   list_for_each_entry (cur, &rp_screens, node)
     {
       if (cur->number == number)
