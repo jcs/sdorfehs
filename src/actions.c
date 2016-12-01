@@ -4675,7 +4675,7 @@ cmd_sselect(int interactive UNUSED, struct cmdarg **args)
 
   screen = screen_number (new_screen);
   if (!screen)
-    return cmdret_new (RET_FAILURE, "sselect: screen not found");
+    return cmdret_new (RET_FAILURE, "sselect: screen %d not found", new_screen);
 
   new_frame = screen_get_frame (screen, screen->current_frame);
   set_active_frame (new_frame, 1);
