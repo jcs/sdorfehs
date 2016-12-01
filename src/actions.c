@@ -5711,7 +5711,7 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
       if (ret != RET_SUCCESS)
         {
           return cmdret_new (ret, "Failed to restore frames for screen %d",
-                             sf_data[i].screen->xrandr.output);
+                             sf_data[i].screen->number);
         }
     }
 
