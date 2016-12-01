@@ -5019,7 +5019,11 @@ cmd_fdump (int interactively UNUSED, struct cmdarg **args)
       if (snum < 0)
         return cmdret_new (RET_FAILURE, "fdump: invalid negative screen number");
       else
-        screen = screen_number (snum);
+        {
+          screen = screen_number (snum);
+          if (!screen)
+            return cmdret_new (RET_FAILURE, "fdump: screen %d not found", snum);
+        }
     }
 
   dump = fdump (screen);
