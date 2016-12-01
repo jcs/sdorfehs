@@ -5662,7 +5662,7 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
       ptr++;
 
       snum = string_to_positive_int (ptr);
-      screen = screen_number(snum);
+      screen = screen_number (snum);
       if (screen)
         {
           /* clobber screen number here, frestore() doesn't need it */
@@ -5698,8 +5698,10 @@ cmd_sfrestore (int interactively UNUSED, struct cmdarg **args)
       sf_data[i].ret_restore = ret->success;
 
       cmdret_free (ret);
-      sbuf_free (cur_frames);
     }
+
+  for (i = 0; i < s_count; i++)
+    sbuf_free (sf_data[i].frames);
 
   for (i = 0; i < sf_index; i++)
     {
