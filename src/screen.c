@@ -165,6 +165,24 @@ find_screen (Window w)
   return NULL;
 }
 
+/* Given a window attr, return the rp_screen struct */
+rp_screen *
+find_screen_by_attr (XWindowAttributes attr)
+{
+  rp_screen *cur;
+
+  list_for_each_entry (cur, &rp_screens, node)
+    {
+      if (attr.x >= cur->left &&
+          attr.x <= cur->left + cur->width &&
+          attr.y >= cur->top &&
+          attr.y <= cur->top + cur->height)
+        return cur;
+    }
+
+  return NULL;
+}
+
 /* Return 1 if w is a root window of any of the screens. */
 int
 is_a_root_window (unsigned int w)
