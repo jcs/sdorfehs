@@ -35,6 +35,7 @@ void frameset_free (struct list_head *head);
 rp_frame *screen_get_frame (rp_screen *s, int frame_num);
 rp_frame *screen_find_frame_by_frame (rp_screen *s, rp_frame *f);
 
+rp_screen *find_screen (Window w);
 void init_screens (void);
 void activate_screen (rp_screen *s);
 void deactivate_screen (rp_screen *s);

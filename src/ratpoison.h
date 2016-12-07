@@ -82,7 +82,6 @@ extern XGCValues gv;
 #include "format.h"
 
 void clean_up (void);
-rp_screen *find_screen (Window w);
 
 void set_close_on_exec (int fd);
 const char *get_homedir (void);
