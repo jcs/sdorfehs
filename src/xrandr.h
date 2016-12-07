@@ -26,6 +26,7 @@
 
 void init_xrandr(void);
 int *xrandr_query_screen(int *screen_count);
+int xrandr_is_primary (rp_screen *screen);
 void xrandr_fill_screen(int rr_output, rp_screen *screen);
 void xrandr_notify(XEvent *ev);
 

@@ -161,6 +161,7 @@ struct rp_global_screen
 struct xrandr_info {
   int output;
   int crtc;
+  int primary;
   struct sbuf* name;
 };
 

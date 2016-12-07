@@ -26,7 +26,7 @@
 static int xrandr_evbase;
 
 #define XRANDR_MAJOR 1
-#define XRANDR_MINOR 2
+#define XRANDR_MINOR 3
 
 void
 init_xrandr (void)
@@ -110,12 +110,19 @@ xrandr_screen_crtc (int rr_crtc)
   return NULL;
 }
 
+int
+xrandr_is_primary (rp_screen *screen)
+{
+  return screen->xrandr.primary;
+}
+
 void
 xrandr_fill_screen (int rr_output, rp_screen *screen)
 {
   XRRScreenResources *res;
   XRROutputInfo *outinfo;
   XRRCrtcInfo *crtinfo;
+  RROutput primary;
 
   res = XRRGetScreenResourcesCurrent (dpy, RootWindow (dpy, DefaultScreen (dpy)));
   outinfo = XRRGetOutputInfo (dpy, res, rr_output);
@@ -125,6 +132,12 @@ xrandr_fill_screen (int rr_output, rp_screen *screen)
   crtinfo = XRRGetCrtcInfo (dpy, res, outinfo->crtc);
   if (!crtinfo)
     goto free_out;
+
+  primary = XRRGetOutputPrimary (dpy, RootWindow (dpy, DefaultScreen (dpy)));
+  if (rr_output == primary)
+    screen->xrandr.primary = 1;
+  else
+    screen->xrandr.primary = 0;
 
   screen->xrandr.name = sbuf_new (0);
   sbuf_concat (screen->xrandr.name, outinfo->name);
