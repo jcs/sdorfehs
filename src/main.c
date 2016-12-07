@@ -743,8 +743,9 @@ main (int argc, char *argv[])
     {
       if (!rp_current_screen)
         rp_current_screen = cur;
-      scanwins (cur);
     }
+
+  scanwins ();
 
   if (read_startup_files (alt_rcfile) == -1)
     return EXIT_FAILURE;
