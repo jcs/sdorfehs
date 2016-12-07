@@ -589,7 +589,6 @@ main (int argc, char *argv[])
   int c;
   char **cmd = NULL;
   int cmd_count = 0;
-  rp_screen *cur;
   char *display = NULL;
   unsigned char interactive = 0;
   char *alt_rcfile = NULL;
@@ -738,12 +737,6 @@ main (int argc, char *argv[])
   init_user_commands();
   initialize_default_keybindings ();
   history_load ();
-
-  list_for_each_entry (cur, &rp_screens, node)
-    {
-      if (!rp_current_screen)
-        rp_current_screen = cur;
-    }
 
   scanwins ();
 

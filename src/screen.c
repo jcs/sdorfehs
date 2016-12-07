@@ -249,6 +249,32 @@ screen_set_numbers (void)
 }
 
 static void
+screen_select_primary (void)
+{
+  rp_screen *cur;
+
+  /* By default, take the first screen as current screen */
+  list_first(cur, &rp_screens, node);
+  if (!rp_current_screen)
+    rp_current_screen = cur;
+
+#ifdef HAVE_XRANDR
+  if (!rp_have_xrandr)
+    return;
+
+  list_for_each_entry (cur, &rp_screens, node)
+    {
+      if (xrandr_is_primary(cur)) {
+        rp_current_screen = cur;
+        PRINT_DEBUG(("Xrandr primary screen %d detected\n",
+                     rp_current_screen->number));
+        break;
+      }
+    }
+#endif
+}
+
+static void
 init_global_screen (rp_global_screen *s)
 {
   int screen_num;
@@ -298,6 +324,7 @@ init_screens (void)
 
   screen_sort ();
   screen_set_numbers ();
+  screen_select_primary ();
 
   free (rr_outputs);
 }
