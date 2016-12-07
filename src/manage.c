@@ -460,7 +460,7 @@ scanwins(rp_screen *s)
   for (i = 0; i < nwins; i++)
     {
       XGetWindowAttributes(dpy, wins[i], &attr);
-      if (is_rp_window_for_screen(wins[i], s)
+      if (is_rp_window_for_screen(wins[i])
           || attr.override_redirect == True
           || unmanaged_window (wins[i])) continue;
 

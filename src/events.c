@@ -82,7 +82,7 @@ new_window (XCreateWindowEvent *e)
   /* New windows belong to the current screen */
   s = rp_current_screen;
 
-  if (is_rp_window_for_screen(e->window, s)) return;
+  if (is_rp_window_for_screen(e->window)) return;
 
   if (s && win == NULL
       && e->window != s->key_window

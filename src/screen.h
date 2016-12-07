@@ -39,7 +39,7 @@ void init_screens (void);
 void activate_screen (rp_screen *s);
 void deactivate_screen (rp_screen *s);
 
-int is_rp_window_for_screen (Window w, rp_screen *s);
+int is_rp_window_for_screen (Window w);
 int is_a_root_window (unsigned int w);
 
 char *screen_dump (rp_screen *screen);
