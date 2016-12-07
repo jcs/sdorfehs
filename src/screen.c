@@ -280,6 +280,7 @@ init_global_screen (rp_global_screen *s)
   int screen_num;
 
   screen_num = DefaultScreen (dpy);
+  s->root = RootWindow (dpy, screen_num);
 
   s->numset = numset_new ();
   s->fg_color = BlackPixel (dpy, screen_num);
