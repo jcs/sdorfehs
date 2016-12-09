@@ -571,7 +571,7 @@ screen_prev (void)
 }
 
 static void
-screen_remove_current (rp_screen *s)
+screen_remove_current (void)
 {
   rp_screen *new_screen;
   rp_frame *new_frame;
@@ -658,7 +658,7 @@ screen_del (rp_screen *s)
    * focus the next one.
    */
   if (s == rp_current_screen) {
-    screen_remove_current (s);
+    screen_remove_current ();
   } else {
     rp_frame *cur_frame;
     rp_window *cur_win;
