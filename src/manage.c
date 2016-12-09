@@ -447,7 +447,7 @@ unmanage (rp_window *w)
 
 /* When starting up scan existing windows and start managing them. */
 void
-scanwins ()
+scanwins (void)
 {
   rp_window *win;
   XWindowAttributes attr;
