@@ -514,7 +514,7 @@ is_rp_window_for_given_screen (Window w, rp_screen *s)
 }
 
 int
-is_rp_window_for_screen(Window w)
+is_rp_window (Window w)
 {
   rp_screen *cur;
 
