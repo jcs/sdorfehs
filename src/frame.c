@@ -47,6 +47,33 @@ frame_bottom (rp_frame *frame)
   return frame->y + frame->height;
 }
 
+
+int
+frame_left_abs (rp_frame *frame)
+{
+  rp_screen *s = frames_screen (frame);
+  return s->left + frame->x;
+}
+
+int
+frame_top_abs (rp_frame *frame)
+{
+  rp_screen *s = frames_screen (frame);
+  return s->top + frame->y;
+}
+
+int
+frame_right_abs (rp_frame *frame)
+{
+  return frame_left_abs (frame) + frame->width;
+}
+
+int
+frame_bottom_abs (rp_frame *frame)
+{
+  return frame_top_abs (frame) + frame->height;
+}
+
 int
 frame_width(rp_frame *frame)
 {

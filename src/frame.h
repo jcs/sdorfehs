@@ -35,6 +35,10 @@ int frame_bottom (rp_frame *frame);
 int frame_right (rp_frame *frame);
 int frame_top (rp_frame *frame);
 int frame_left (rp_frame *frame);
+int frame_bottom_abs (rp_frame *frame);
+int frame_right_abs (rp_frame *frame);
+int frame_top_abs (rp_frame *frame);
+int frame_left_abs (rp_frame *frame);
 
 rp_frame *frame_new (rp_screen *s);
 void frame_free (rp_screen *s, rp_frame *f);
