@@ -635,11 +635,6 @@ screen_add (int rr_output)
 
   screen->number = numset_request (rp_glob_screen.numset);
 
-  if (!rp_current_screen)
-    rp_current_screen = screen;
-
-  change_windows_screen (NULL, screen);
-
 #ifdef HAVE_XRANDR
   if (rp_have_xrandr)
     xrandr_fill_screen (rr_output, screen);
@@ -647,30 +642,42 @@ screen_add (int rr_output)
   init_screen (screen);
   init_frame_list (screen);
 
+  if (screen_count () == 1)
+    {
+      rp_current_screen = screen;
+      change_windows_screen (NULL, rp_current_screen);
+      set_window_focus (rp_current_screen->key_window);
+    }
+
   return screen;
 }
 
 void
 screen_del (rp_screen *s)
 {
-  /*
-   * The deleted screen cannot be the current screen anymore,
-   * focus the next one.
-   */
-  if (s == rp_current_screen) {
-    screen_remove_current ();
-  } else {
-    rp_frame *cur_frame;
-    rp_window *cur_win;
+  if (screen_count () == 1)
+    {
+      hide_screen_windows (s);
+      rp_current_screen = NULL;
+    }
+  else if (s == rp_current_screen)
+    {
+      /*
+       * The deleted screen cannot be the current screen anymore,
+       * focus the next one.
+       */
+      screen_remove_current ();
+    }
+  else
+    {
+      hide_screen_windows (s);
+    }
 
-    cur_frame = screen_get_frame (s, s->current_frame);
-    cur_win = find_window_number (cur_frame->win_number);
-    hide_window (cur_win);
-  }
+  /* Affect window's screen backpointer to the new current screen */
+  change_windows_screen (s, rp_current_screen);
 
   numset_release (rp_glob_screen.numset, s->number);
 
-  change_windows_screen (s, rp_current_screen);
   screen_free (s);
 
   list_del (&s->node);
