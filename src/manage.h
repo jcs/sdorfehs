@@ -55,5 +55,6 @@ void unhide_all_windows (void);
 void unhide_window_below (rp_window *win);
 void withdraw_window (rp_window *win);
 void hide_others (rp_window *win);
+void hide_screen_windows (rp_screen *s);
 
 #endif /* ! _RATPOISION_MANAGE_H */

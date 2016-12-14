@@ -978,3 +978,17 @@ hide_others (rp_window *win)
       hide_window (cur);
     }
 }
+
+/* Hide any window displayed on the given screen */
+void
+hide_screen_windows (rp_screen *s)
+{
+    rp_frame *cur_frame;
+    rp_window *cur_win;
+
+  list_for_each_entry (cur_frame, &s->frames, node)
+    {
+      cur_win = find_window_number (cur_frame->win_number);
+      hide_window (cur_win);
+    }
+}
