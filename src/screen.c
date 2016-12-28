@@ -655,18 +655,21 @@ screen_add (int rr_output)
 void
 screen_del (rp_screen *s)
 {
-  if (screen_count () == 1)
+  if (s == rp_current_screen)
     {
-      hide_screen_windows (s);
-      rp_current_screen = NULL;
-    }
-  else if (s == rp_current_screen)
-    {
-      /*
-       * The deleted screen cannot be the current screen anymore,
-       * focus the next one.
-       */
-      screen_remove_current ();
+      if (screen_count () == 1)
+        {
+          hide_screen_windows (s);
+          rp_current_screen = NULL;
+        }
+      else
+        {
+          /*
+           * The deleted screen cannot be the current screen anymore,
+           * focus the next one.
+           */
+          screen_remove_current ();
+        }
     }
   else
     {
