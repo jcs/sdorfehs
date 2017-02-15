@@ -906,7 +906,9 @@ window.'' ratpoison means there's no other window to switch to in the
 current screen. If you want to switch to the other xterm you can
 switch to it by name (use @command{select} or @kbd{C-t '}), by number,
 or you can use @command{nextscreen}, @command{prevscreen}, and
-@command{sselect}.
+@command{sselect}. Note, however, that the commands
+@command{focusright}, @command{focusleft}, @command{focusup}, and
+@command{focusdown} do work across screens.
 
 @deffn Command nextscreen
 This jumps you to the next X11 screen. @command{nextscreen} is

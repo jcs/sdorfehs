@@ -35,6 +35,7 @@
 
 typedef struct rp_window rp_window;
 typedef struct rp_screen rp_screen;
+typedef struct rp_global_screen rp_global_screen;
 typedef struct rp_action rp_action;
 typedef struct rp_keymap rp_keymap;
 typedef struct rp_frame rp_frame;
@@ -149,18 +150,37 @@ struct rp_group
   struct list_head node;
 };
 
+struct rp_global_screen
+{
+  Window root;
+  unsigned long fg_color, bg_color, fw_color, bw_color; /* The pixel color. */
+
+  /* This numset is responsible for giving out numbers for each screen */
+  struct numset *numset;
+};
+
+struct xrandr_info {
+  int output;
+  int crtc;
+  int primary;
+  struct sbuf* name;
+};
+
 struct rp_screen
 {
   GC normal_gc, inverse_gc;
   Window root, bar_window, key_window, input_window, frame_window, help_window;
   int bar_is_raised;
-  int screen_num;               /* Our screen number as dictated my X */
-  int xine_screen_num;          /* Our screen number for the Xinerama extension */
+  int screen_num;               /* Our screen number as dictated by X */
   Colormap def_cmap;
   Cursor rat;
-  unsigned long fg_color, bg_color, fw_color, bw_color; /* The pixel color. */
 
-  /* Here to abstract over the Xinerama vs X screens difference */
+  /* Screen number, handled by rp_global_screen numset */
+  int number;
+
+  struct xrandr_info xrandr;
+
+  /* Here to abstract over the Xrandr vs X screens difference */
   int left, top, width, height;
 
   char *display_string;
@@ -175,6 +195,12 @@ struct rp_screen
   /* The number of the currently focused frame. One for each screen so
      when you switch screens the focus doesn't get frobbed. */
   int current_frame;
+
+  /* This structure can exist in a list. */
+  struct list_head node;
+
+  /* Used by sfrestore */
+  struct sbuf *scratch_buffer;
 
 #ifdef USE_XFT_FONT
   XftFont *xft_font;

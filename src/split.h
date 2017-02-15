@@ -22,7 +22,6 @@
 #ifndef SPLIT_H
 #define SPLIT_H
 
-int num_frames (rp_screen *s);
 rp_window *set_frames_window (rp_frame *frame, rp_window *win);
 void cleanup_frame (rp_frame *frame);
 void maximize_all_windows_in_frame (rp_frame *frame);
@@ -35,6 +34,7 @@ void resize_frame_vertically (rp_frame *frame, int diff);
 void remove_frame (rp_frame *frame);
 rp_window *find_window_for_frame (rp_frame *frame);
 rp_frame *find_windows_frame (rp_window *win);
+int num_frames (rp_screen *s);
 rp_frame *find_frame_next (rp_frame *frame);
 rp_frame *find_frame_prev (rp_frame *frame);
 rp_window *current_window (void);

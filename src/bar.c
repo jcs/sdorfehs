@@ -292,7 +292,7 @@ count_lines (char* msg, int len)
 static int
 max_line_length (char* msg)
 {
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
   size_t i;
   size_t start;
   int ret = 0;
@@ -512,7 +512,7 @@ static void
 get_mark_box (char *msg, size_t mark_start, size_t mark_end,
               int *x, int *y, int *width, int *height)
 {
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
   int start, end;
   int mark_end_is_new_line = 0;
   int start_line;
@@ -578,7 +578,7 @@ draw_box (rp_screen *s, int x, int y, int width, int height)
   GC lgc;
   unsigned long mask;
 
-  lgv.foreground = s->fg_color;
+  lgv.foreground = rp_glob_screen.fg_color;
   mask = GCForeground;
   lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
@@ -621,7 +621,7 @@ marked_message (char *msg, int mark_start, int mark_end)
 static void
 marked_message_internal (char *msg, int mark_start, int mark_end)
 {
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
   int num_lines;
   int width;
   int height;

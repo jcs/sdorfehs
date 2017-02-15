@@ -105,7 +105,7 @@ receive_command_result (Window w)
 }
 
 int
-send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
+send_command (unsigned char interactive, unsigned char *cmd)
 {
   Window w, root;
   int done = 0, return_status = RET_FAILURE;
@@ -114,14 +114,7 @@ send_command (unsigned char interactive, unsigned char *cmd, int screen_num)
   s = sbuf_new(0);
   sbuf_printf(s, "%c%s", interactive, cmd);
 
-
-  /* If the user specified a specific screen, then send the event to
-     that screen. */
-  if (screen_num >= 0)
-    root = RootWindow (dpy, screen_num);
-  else
-    root = DefaultRootWindow (dpy);
-
+  root = RootWindow (dpy, DefaultScreen (dpy));
   w = XCreateSimpleWindow (dpy, root, 0, 0, 1, 1, 0, 0, 0);
 
   /* Select first to avoid race condition */

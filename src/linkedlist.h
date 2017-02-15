@@ -25,6 +25,8 @@
 #ifndef _RATPOISON_LINKLIST_H
 #define _RATPOISON_LINKLIST_H
 
+#include <string.h>
+
 /*
  * Simple doubly linked list implementation.
  *
@@ -214,3 +216,7 @@ void __list_add(struct list_head *new,
   if (&first->member == (head))                                 \
     first = NULL;                                               \
 }
+
+void list_sort(void *priv, struct list_head *head,
+               int (*cmp)(void *priv, struct list_head *a,
+                          struct list_head *b));

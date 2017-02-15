@@ -28,8 +28,7 @@ void clear_unmanaged_list (void);
 char *list_unmanaged_windows (void);
 void add_unmanaged_window (char *name);
 int unmanaged_window (Window w);
-rp_screen* current_screen (void);
-void scanwins(rp_screen *s);
+void scanwins (void);
 void unmanage (rp_window *w);
 int update_window_name (rp_window *win);
 void update_normal_hints (rp_window *win);
@@ -56,5 +55,6 @@ void unhide_all_windows (void);
 void unhide_window_below (rp_window *win);
 void withdraw_window (rp_window *win);
 void hide_others (rp_window *win);
+void hide_screen_windows (rp_screen *s);
 
 #endif /* ! _RATPOISION_MANAGE_H */

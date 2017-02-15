@@ -152,21 +152,6 @@ grab_keys_all_wins (void)
     }
 }
 
-rp_screen*
-current_screen (void)
-{
-  int i;
-
-  for (i=0; i<num_screens; i++)
-    {
-      if (screens[i].xine_screen_num == rp_current_screen)
-        return &screens[i];
-    }
-
-  /* This should never happen. */
-  return &screens[0];
-}
-
 void
 update_normal_hints (rp_window *win)
 {
@@ -460,40 +445,34 @@ unmanage (rp_window *w)
 
 /* When starting up scan existing windows and start managing them. */
 void
-scanwins(rp_screen *s)
+scanwins (void)
 {
   rp_window *win;
   XWindowAttributes attr;
   unsigned int i, nwins;
   Window dw1, dw2, *wins;
 
-  XQueryTree(dpy, s->root, &dw1, &dw2, &wins, &nwins);
+  XQueryTree(dpy, rp_glob_screen.root, &dw1, &dw2, &wins, &nwins);
   PRINT_DEBUG (("windows: %d\n", nwins));
 
   for (i = 0; i < nwins; i++)
     {
+      rp_screen *screen;
+
       XGetWindowAttributes(dpy, wins[i], &attr);
-      if (is_rp_window_for_screen(wins[i], s)
+      if (is_rp_window (wins[i])
           || attr.override_redirect == True
           || unmanaged_window (wins[i])) continue;
 
-      /* FIXME - with this code, windows which are entirely off-screen
-       * when RP starts won't ever be managed when Xinerama is enabled.
-       */
-      {
-        XWindowAttributes root_attr;
 
-        XGetWindowAttributes (dpy, s->root, &root_attr);
-      PRINT_DEBUG (("attrs: %d %d %d %d %d %d\n", root_attr.x, root_attr.y,
-                    s->left, s->top, s->left + s->width, s->top + s->height));}
+      screen = find_screen_by_attr (attr);
+      if (!screen)
+        {
+          PRINT_ERROR (("Unable to find a screen by window attributes\n"));
+          continue;
+        }
 
-      if (rp_have_xinerama
-          && ((attr.x > s->left + s->width)
-               || (attr.x < s->left)
-               || (attr.y > s->top + s->height)
-               || (attr.y < s->top))) continue;
-
-      win = add_to_window_list (s, wins[i]);
+      win = add_to_window_list (screen, wins[i]);
 
       PRINT_DEBUG (("map_state: %s\n",
                     attr.map_state == IsViewable ? "IsViewable":
@@ -899,7 +878,7 @@ hide_window (rp_window *win)
   XSelectInput (dpy, win->w, WIN_EVENTS);
   /* Ensure that the window doesn't have the focused border
      color. This is needed by remove_frame and possibly others. */
-  XSetWindowBorder (dpy, win->w, win->scr->bw_color);
+  XSetWindowBorder (dpy, win->w, rp_glob_screen.bw_color);
   set_state (win, IconicState);
 }
 
@@ -995,5 +974,19 @@ hide_others (rp_window *win)
         continue;
 
       hide_window (cur);
+    }
+}
+
+/* Hide any window displayed on the given screen */
+void
+hide_screen_windows (rp_screen *s)
+{
+    rp_frame *cur_frame;
+    rp_window *cur_win;
+
+  list_for_each_entry (cur_frame, &s->frames, node)
+    {
+      cur_win = find_window_number (cur_frame->win_number);
+      hide_window (cur_win);
     }
 }

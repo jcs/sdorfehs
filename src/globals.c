@@ -59,10 +59,13 @@ Atom _net_wm_window_type;
 Atom _net_wm_window_type_dialog;
 Atom _net_wm_name;
 
-int rp_current_screen;
-rp_screen *screens;
-int num_screens;
+LIST_HEAD (rp_screens);
+rp_screen *rp_current_screen;
+rp_global_screen rp_glob_screen;
+
 Display *dpy;
+
+int rp_have_xrandr;
 
 rp_group *rp_current_group;
 LIST_HEAD (rp_groups);
@@ -94,11 +97,17 @@ rp_xselection selection;
 static void
 x_export_selection (void)
 {
+  rp_screen *screen;
+
+  list_first(screen, &rp_screens, node);
+  if (!screen)
+    return;
+
   /* Hang the selections off screen 0's key window. */
-  XSetSelectionOwner(dpy, XA_PRIMARY, screens[0].key_window, CurrentTime);
-  if (XGetSelectionOwner(dpy, XA_PRIMARY) != screens[0].key_window)
+  XSetSelectionOwner (dpy, XA_PRIMARY, screen->key_window, CurrentTime);
+  if (XGetSelectionOwner (dpy, XA_PRIMARY) != screen->key_window)
     PRINT_ERROR(("can't get primary selection"));
-  XChangeProperty(dpy, screens[0].root, XA_CUT_BUFFER0, xa_string, 8,
+  XChangeProperty(dpy, screen->root, XA_CUT_BUFFER0, xa_string, 8,
                   PropModeReplace, (unsigned char*)selection.text, selection.len);
 }
 
@@ -162,10 +171,10 @@ get_primary_selection(void)
   struct sbuf *s = sbuf_new(0);
 
   for (nread = 0, bytes_after = 1; bytes_after > 0; nread += ct.nitems) {
-    if ((XGetWindowProperty(dpy, current_screen()->input_window, rp_selection, (nread / 4), 4096,
-                            True, AnyPropertyType, &ct.encoding,
-                            &ct.format, &ct.nitems, &bytes_after,
-                            &ct.value) != Success)) {
+    if ((XGetWindowProperty (dpy, rp_current_screen->input_window, rp_selection, (nread / 4), 4096,
+                             True, AnyPropertyType, &ct.encoding,
+                             &ct.format, &ct.nitems, &bytes_after,
+                             &ct.value) != Success)) {
       XFree(ct.value);
       sbuf_free(s);
       return NULL;
@@ -185,7 +194,7 @@ get_selection (void)
 {
   Atom property;
   XEvent ev;
-  rp_screen *s = current_screen ();
+  rp_screen *s = rp_current_screen;
   int loops = 1000;
 
   /* Just insert our text, if we own the selection. */

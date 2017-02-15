@@ -17,7 +17,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-AC_INIT([ratpoison], [1.4.9-beta], [ratpoison-devel@nongnu.org])
+AC_INIT([ratpoison], [1.4.9-xrandr4], [ratpoison-devel@nongnu.org])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/main.c])
@@ -81,7 +81,7 @@ AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
 
 AC_ARG_WITH([xkb],
-  [AS_HELP_STRING([--disable-xkb], [Don't build XKB support for keyboard input.])],
+  [AS_HELP_STRING([--without-xkb], [Don't build XKB support for keyboard input.])],
   [xkb=$withval],
   [xkb=yes])
 AS_IF([test "X$xkb" = "Xyes"],
@@ -100,6 +100,14 @@ AS_CASE([$enable_mdoc],
   [AC_MSG_ERROR([invalid --enable-mdoc="$enable_mdoc" parameter])])
 AC_MSG_RESULT([$manpage_format])
 AC_SUBST([manpage_format])
+
+AC_MSG_CHECKING([Xrandr support])
+AC_ARG_WITH([xrandr],
+  [AS_HELP_STRING([--without-xrandr],
+    [Build without Xrandr support, default is to use if available])],
+  [with_xrandr=$withval],
+  [with_xrandr=check])
+AC_MSG_RESULT([$with_xrandr])
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -158,25 +166,35 @@ AC_CHECK_LIB(X11, XOpenDisplay, [X_LIBS="-lX11 $X_LIBS"],
 
 mysavedCPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-AC_CHECK_HEADERS([X11/extensions/Xinerama.h], [], [], [
-#include <X11/Xlib.h>
-])
-CPPFLAGS="$mysavedCPPFLAGS"
-
-mysavedCPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 AC_CHECK_HEADERS([X11/XKBlib.h], [], [], [
 #include <X11/Xlib.h>
 ])
 CPPFLAGS="$mysavedCPPFLAGS"
 
-AC_CHECK_LIB(Xext, XMissingExtension, [X_LIBS="-lXext $X_LIBS"],,$X_LIBS $X_EXTRA_LIBS)
-AC_CHECK_LIB(Xinerama, XineramaQueryScreens, [X_LIBS="-lXinerama $X_LIBS"; AC_DEFINE(HAVE_LIBXINERAMA,1,[Xinerama])],,$X_LIBS $X_EXTRA_LIBS)
 AC_CHECK_LIB(Xtst, XTestFakeButtonEvent, [X_LIBS="-lXtst $X_LIBS"; AC_DEFINE(HAVE_LIBXTST,1,[Xtst])],,$X_LIBS $X_EXTRA_LIBS)
 AC_CHECK_LIB([X11], [XkbKeycodeToKeysym],
   [AC_DEFINE(HAVE_XKBKEYCODETOKEYSYM, 1,
     [Define to 1 if you have the `XkbKeycodeToKeysym' function.])],
   [], [$X_LIBS $X_EXTRA_LIBS])
+
+mysavedCPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+AC_CHECK_HEADERS([X11/extensions/Xrandr.h], [xrandr_h=yes], [xrandr_h=no], [
+#include <X11/Xlib.h>
+])
+CPPFLAGS="$mysavedCPPFLAGS"
+
+AC_CHECK_LIB(Xrandr, XRRGetScreenResources, [libxrandr=yes], [libxrandr=no], [$X_LIBS $X_EXTRA_LIBS])
+
+compile_xrandr=no
+AS_CASE(["$with_xrandr:$xrandr_h:$libxrandr"],
+  [yes:no:*], [AC_MSG_ERROR([*** Can't enable Xrandr support, header Xrandr.h not found.])],
+  [yes:*:no], [AC_MSG_ERROR([*** Can't enable Xrandr support, libXrandr not found.])],
+  [yes:yes:yes|check:yes:yes], [X_LIBS="-lXrandr $X_LIBS"
+  			        AC_DEFINE(HAVE_XRANDR, 1, [Define to 1 if you want Xrandr support.])
+				compile_xrandr=yes])
+
+AM_CONDITIONAL(HAVE_XRANDR, [test "$compile_xrandr" = yes])
 
 AC_SUBST(X_LIBS)
 AC_SUBST(X_EXTRA_LIBS)

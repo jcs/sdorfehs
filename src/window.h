@@ -61,5 +61,6 @@ void set_active_window_force (rp_window *win);
 void set_active_window_body (rp_window *win, int force);
 
 struct rp_child_info *get_child_info (Window w);
+void change_windows_screen (rp_screen *s, rp_screen *new_screen);
 
 #endif /* ! _RATPOISON_LIST_H */

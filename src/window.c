@@ -412,7 +412,7 @@ give_window_focus (rp_window *win, rp_window *last_win)
   if (last_win != NULL && win != last_win)
     {
       save_mouse_position (last_win);
-      XSetWindowBorder (dpy, last_win->w, last_win->scr->bw_color);
+      XSetWindowBorder (dpy, last_win->w, rp_glob_screen.bw_color);
     }
 
   if (win == NULL) return;
@@ -432,10 +432,10 @@ give_window_focus (rp_window *win, rp_window *last_win)
   if (last_win != NULL) XUninstallColormap (dpy, last_win->colormap);
   XInstallColormap (dpy, win->colormap);
 
-  XSetWindowBorder (dpy, win->w, win->scr->fw_color);
+  XSetWindowBorder (dpy, win->w, rp_glob_screen.fw_color);
 
   /* Finally, give the window focus */
-  rp_current_screen = win->scr->xine_screen_num;
+  rp_current_screen = win->scr;
   set_rp_window_focus (win);
 
   XSync (dpy, False);
@@ -456,31 +456,17 @@ static rp_frame *
 find_frame_non_dedicated(rp_screen *current_screen, rp_frame *current_frame)
 {
   rp_frame *cur;
+  rp_screen *screen;
 
-  /* Try the only / current screen... */
-  for (cur = list_next_entry (current_frame, &current_screen->frames, node);
-       cur != current_frame;
-       cur = list_next_entry (cur, &current_screen->frames, node))
+  list_for_each_entry (screen, &rp_screens, node)
     {
-      if (!cur->dedicated)
-        return cur;
-    }
+      if (current_screen == screen)
+        continue;
 
-  /* If we have Xinerama, we can check *all* screens... */
-  if (rp_have_xinerama)
-    {
-      int i;
-
-      for (i = 0; i < num_screens; i++)
+      list_for_each_entry (cur, &screen->frames, node)
         {
-          if (current_screen == &screens[i])
-            continue;
-
-          list_for_each_entry (cur, &screens[i].frames, node)
-            {
-              if (!cur->dedicated)
-                return cur;
-            }
+          if (!cur->dedicated)
+            return cur;
         }
     }
 
@@ -492,36 +478,30 @@ set_active_window_body (rp_window *win, int force)
 {
   rp_window *last_win;
   rp_frame *frame = NULL, *last_frame = NULL;
-  rp_screen *screen;
 
   if (win == NULL)
     return;
 
   PRINT_DEBUG (("intended_frame_number: %d\n", win->intended_frame_number));
 
-  /* With Xinerama, we can move a window over to the current screen; otherwise
-   * we have to switch to the screen that the window belongs to.
-   */
-  screen = rp_have_xinerama ? current_screen () : win->scr;
-
   /* use the intended frame if we can. */
   if (win->intended_frame_number >= 0)
     {
-      frame = screen_get_frame (screen, win->intended_frame_number);
+      frame = screen_get_frame (rp_current_screen, win->intended_frame_number);
       win->intended_frame_number = -1;
       if (frame != current_frame ())
         last_frame = current_frame ();
     }
 
   if (frame == NULL)
-    frame = screen_get_frame (screen, screen->current_frame);
+    frame = screen_get_frame (rp_current_screen, rp_current_screen->current_frame);
 
   if (frame->dedicated && !force)
     {
       /* Try to find a non-dedicated frame. */
       rp_frame *non_dedicated;
 
-      non_dedicated = find_frame_non_dedicated (screen, frame);
+      non_dedicated = find_frame_non_dedicated (rp_current_screen, frame);
       if (non_dedicated != NULL)
         {
           last_frame = frame;
@@ -594,7 +574,7 @@ get_window_list (char *fmt, char *delim, struct sbuf *buffer,
   if (buffer == NULL) return;
 
   sbuf_clear (buffer);
-  find_window_other (current_screen());
+  find_window_other (rp_current_screen);
 
   /* We only loop through the current group to look for windows. */
   list_for_each_entry (we,&rp_current_group->mapped_windows,node)
@@ -670,4 +650,16 @@ win_get_frame (rp_window *win)
     return screen_get_frame (win->scr, win->frame_number);
   else
     return NULL;
+}
+
+void
+change_windows_screen (rp_screen *old_screen, rp_screen *new_screen)
+{
+  rp_window *win;
+
+  list_for_each_entry (win, &rp_mapped_window, node)
+    {
+      if (win->scr == old_screen)
+        win->scr = new_screen;
+    }
 }

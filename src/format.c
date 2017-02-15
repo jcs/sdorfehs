@@ -41,7 +41,7 @@ RP_FMT(incheight);
 RP_FMT(incwidth);
 RP_FMT(gravity);
 RP_FMT(screen);
-RP_FMT(xinescreen);
+RP_FMT(xrandrscreen);
 RP_FMT(transient);
 RP_FMT(maxsize);
 RP_FMT(pid);
@@ -72,7 +72,7 @@ struct fmt_item fmt_items[] = {
   { 'M', fmt_maxsize },  
   { 'w', fmt_width },
   { 'W', fmt_incwidth },
-  { 'x', fmt_xinescreen },
+  { 'x', fmt_xrandrscreen},
   { 0, NULL }
 };
 
@@ -218,7 +218,7 @@ fmt_status (rp_window_elem *win_elem, struct sbuf *buf)
 {
   rp_window *other_window;
 
-  other_window = find_window_other (current_screen());
+  other_window = find_window_other (rp_current_screen);
   if (win_elem->win == other_window)
     sbuf_copy (buf, "+");
   else if (win_elem->win == current_window())
@@ -282,9 +282,9 @@ fmt_screen (rp_window_elem *elem, struct sbuf *buf)
 }
 
 static void
-fmt_xinescreen (rp_window_elem *elem, struct sbuf *buf)
+fmt_xrandrscreen (rp_window_elem *elem, struct sbuf *buf)
 {
-  sbuf_printf_concat (buf, "%d", elem->win->scr->xine_screen_num);
+  sbuf_printf_concat (buf, "%d", elem->win->scr->xrandr.output);
 }
 
 static void
