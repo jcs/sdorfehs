@@ -16,6 +16,9 @@ runtime.  The Xinerama support has been removed.
 ** `msgwait' is now a variable
 The msgwait command will stay around for a few releases.
 
+** new variable `framemsgwait'
+Timeout (in seconds) for the `Current frame' message window.
+
 ** better `select' error handling
 
 ** no more timestamps in compiled code
