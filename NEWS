@@ -18,6 +18,7 @@ The msgwait command will stay around for a few releases.
 
 ** new variable `framemsgwait'
 Timeout (in seconds) for the `Current frame' message window.
+If set to -1, no message is shown.
 
 ** better `select' error handling
 

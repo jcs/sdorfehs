@@ -3934,7 +3934,7 @@ set_framemsgwait (struct cmdarg **args)
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%d", defaults.frame_indicator_timeout);
 
-  if (ARG(0,number) < 0)
+  if (ARG(0,number) < -1)
     return cmdret_new (RET_FAILURE, "framemsgwait: %s", invalid_negative_arg);
   else
     defaults.frame_indicator_timeout = ARG(0,number);

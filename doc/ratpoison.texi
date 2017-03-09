@@ -1369,7 +1369,8 @@ When called with no arguments, the current setting is returned.
 
 @deffn Command {set framemsgwait} @var{n}
 Set the duration the @samp{Current frame} indicator is shown.  If seconds
-is zero, wait until the next interactive command.
+is zero, wait until the next interactive command.  If seconds is -1,
+don't show any message.
 
 When called with no arguments, the current setting is returned.
 @end deffn

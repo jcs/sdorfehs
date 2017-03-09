@@ -934,8 +934,11 @@ show_frame_indicator (int force)
   if (num_frames (rp_current_screen) > 1 || force)
     {
       hide_frame_indicator ();
-      show_frame_message (defaults.frame_fmt);
-      alarm (defaults.frame_indicator_timeout);
+      if (defaults.frame_indicator_timeout != -1)
+        {
+          show_frame_message (defaults.frame_fmt);
+          alarm (defaults.frame_indicator_timeout);
+        }
     }
 }
 
