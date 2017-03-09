@@ -104,7 +104,7 @@ AC_SUBST([manpage_format])
 AC_MSG_CHECKING([Xrandr support])
 AC_ARG_WITH([xrandr],
   [AS_HELP_STRING([--without-xrandr],
-    [Build without Xrandr support, default is to use if available])],
+    [Build without Xrandr support, default is to require and use it.])],
   [with_xrandr=$withval],
   [with_xrandr=check])
 AC_MSG_RESULT([$with_xrandr])
@@ -190,6 +190,8 @@ compile_xrandr=no
 AS_CASE(["$with_xrandr:$xrandr_h:$libxrandr"],
   [yes:no:*], [AC_MSG_ERROR([*** Can't enable Xrandr support, header Xrandr.h not found.])],
   [yes:*:no], [AC_MSG_ERROR([*** Can't enable Xrandr support, libXrandr not found.])],
+  [check:no:*], [AC_MSG_ERROR([*** Header Xrandr.h not found, use ./configure --without-xrandr to build without multiple screens support.])],
+  [check:*:no], [AC_MSG_ERROR([*** libXrandr not found, use ./configure --without-xrandr to build without multiple screens support.])],
   [yes:yes:yes|check:yes:yes], [X_LIBS="-lXrandr $X_LIBS"
   			        AC_DEFINE(HAVE_XRANDR, 1, [Define to 1 if you want Xrandr support.])
 				compile_xrandr=yes])
