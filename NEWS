@@ -8,6 +8,11 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
 * Changes since 1.4.8
+
+** Xrandr support
+ratpoison now uses Xrandr to detect screens additions/removals at
+runtime.  The Xinerama support has been removed.
+
 ** `msgwait' is now a variable
 The msgwait command will stay around for a few releases.
 
