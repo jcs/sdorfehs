@@ -17,6 +17,9 @@ The msgwait command will stay around for a few releases.
 
 ** various cleanups and minor bugfixes
 
+** no ChangeLog file
+Please use the git repository instead.  Savannah offers a web interface.
+
 * Changes since 1.4.7
 This is mostly a bugfix release.
 
