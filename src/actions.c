@@ -3981,7 +3981,6 @@ update_gc (rp_screen *s)
 static void
 update_all_gcs (void)
 {
-  int i;
   rp_screen *cur;
 
   list_for_each_entry (cur, &rp_screens, node)
