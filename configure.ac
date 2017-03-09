@@ -116,9 +116,7 @@ AC_ARG_VAR([MANDOC],
   [path to mandoc(1), only used when regenerating doc/ratpoison.man.1 \
    after editing doc/ratpoison.mdoc.1])
 
-if test "x$CC" = "xgcc"; then
-	CFLAGS="-Wall $CFLAGS"
-fi
+AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="-Wall $CFLAGS"], [], [], [])
 
 dnl check for an x terminal emulator
 AC_MSG_CHECKING(terminal emulator)
