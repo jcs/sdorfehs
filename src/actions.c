@@ -3818,6 +3818,9 @@ set_rudeness (struct cmdarg **args)
 cmdret *
 cmd_rudeness (int interactive UNUSED, struct cmdarg **args)
 {
+  PRINT_WARNING (("command \"rudeness\" is deprecated, "
+                 "use \"set rudeness\" instead\n"));
+
   return set_rudeness (args);
 }
 
@@ -3925,6 +3928,9 @@ set_msgwait (struct cmdarg **args)
 cmdret *
 cmd_msgwait (int interactive UNUSED, struct cmdarg **args)
 {
+  PRINT_WARNING (("command \"msgwait\" is deprecated, "
+                 "use \"set msgwait\" instead\n"));
+
   return set_msgwait (args);
 }
 
@@ -4740,6 +4746,8 @@ set_startupmessage (struct cmdarg **args)
 cmdret *
 cmd_startup_message (int interactive UNUSED, struct cmdarg **args)
 {
+  PRINT_WARNING (("command \"startup_message\" is deprecated, "
+                 "use \"set startupmessage\" instead\n"));
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.startup_message ? "on":"off");
 
@@ -4923,6 +4931,9 @@ set_warp (struct cmdarg **args)
 cmdret *
 cmd_warp (int interactive UNUSED, struct cmdarg **args)
 {
+  PRINT_WARNING (("command \"warp\" is deprecated, "
+                 "use \"set warp\" instead\n"));
+
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.warp ? "on":"off");
 

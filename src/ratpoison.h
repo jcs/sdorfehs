@@ -44,6 +44,13 @@ do {                                            \
   fflush (stdout);                              \
 } while (0)
 
+#define PRINT_WARNING(fmt)                      \
+do {                                            \
+  PRINT_LINE (warning);                         \
+  printf fmt;                                   \
+  fflush (stdout);                              \
+} while (0)
+
 #ifdef DEBUG
 #define PRINT_DEBUG(fmt)                        \
 do {                                            \
