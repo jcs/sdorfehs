@@ -33,8 +33,14 @@
 #include <X11/Xlocale.h>
 #include <fcntl.h>
 
+#if defined(__BASE_FILE__)
+#define RP_FILE_NAME __BASE_FILE__
+#else
+#define RP_FILE_NAME __FILE__
+#endif
+
 /* Helper macro for error and debug reporting. */
-#define PRINT_LINE(type) printf (PACKAGE ":%s:%d: %s: ",__FILE__,  __LINE__, #type)
+#define PRINT_LINE(type) printf (PACKAGE ":%s:%d: %s: ",RP_FILE_NAME,  __LINE__, #type)
 
 /* Error and debug reporting macros. */
 #define PRINT_ERROR(fmt)                        \
