@@ -47,6 +47,9 @@ If set to -1, no message is shown.
 
 *** the command `set' with no argument dumps a list of all variables/values
 
+*** unknown commands are now logged as warnings to stdout too
+Should help debugging a config file.
+
 *** various cleanups and minor bugfixes
 
 * Changes since 1.4.7
