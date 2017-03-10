@@ -2830,6 +2830,7 @@ command (int interactive, char *data)
         }
     }
 
+  PRINT_WARNING (("command \"%s\" unknown, ignored\n", cmd));
   result = cmdret_new (RET_FAILURE, MESSAGE_UNKNOWN_COMMAND, cmd);
 
  done:
