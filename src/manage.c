@@ -467,10 +467,7 @@ scanwins (void)
 
       screen = find_screen_by_attr (attr);
       if (!screen)
-        {
-          PRINT_ERROR (("Unable to find a screen by window attributes\n"));
-          continue;
-        }
+          list_first (screen, &rp_screens, node);
 
       win = add_to_window_list (screen, wins[i]);
 
