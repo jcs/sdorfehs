@@ -25,7 +25,7 @@
 #define MESSAGE_NO_OTHER_WINDOW "No other window"
 #define MESSAGE_NO_OTHER_FRAME          "No other frame"
 #define MESSAGE_NO_MANAGED_WINDOWS      "No managed windows"
-#define MESSAGE_UNKNOWN_COMMAND ": unknown command '%s'"
+#define MESSAGE_UNKNOWN_COMMAND "unknown command '%s'"
 #define MESSAGE_WINDOW_INFORMATION      "This is window %d (%s)"
 
 #define MESSAGE_RAISE_TRANSIENT "Raise request from transient window %d (%s)"
