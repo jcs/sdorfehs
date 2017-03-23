@@ -40,7 +40,8 @@ $ ./autogen.sh
 Customization
 -------------
 
-Use the configure option '--enable-debug' to enable debugging symbols.
+Use the configure option '--enable-debug' to enable debugging symbols
+and verbose logging.
 
 Use the configure option '--with-xterm=PROG' to set the x terminal
 emulator to use. The default is `xterm'.
