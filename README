@@ -42,8 +42,6 @@ Customization
 
 Use the configure option '--enable-debug' to enable debugging symbols.
 
-Use the configure option '--disable-history' to disable the filesystem rat.
-
 Use the configure option '--with-xterm=PROG' to set the x terminal
 emulator to use. The default is `xterm'.
 
