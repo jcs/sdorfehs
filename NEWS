@@ -13,6 +13,9 @@ notice and this notice are preserved.
 
 *** ratpoison now depends on libXrandr instead of libXinerama
 
+*** ratpoison doesn't link against libhistory by default any more
+Use ./configure --enable-history to force the use of said library.
+
 *** no ChangeLog file
 Please use the git repository instead.  Savannah offers a web interface.
 
