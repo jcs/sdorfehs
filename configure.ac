@@ -134,26 +134,26 @@ fi
 dnl Those who do not learn the lessons of history
 dnl are doomed to delete it...  yuk yuk.  --ttn
 AC_ARG_ENABLE([history],
-  AS_HELP_STRING([--disable-history],
-    [ignore libhistory (default: use it if available, only used for ! expansion)]),
-  [], [enable_history=default])
+  AS_HELP_STRING([--enable-history],
+    [Link with libhistory (default: disabled. Note: only used for ! expansion)]),
+  [], [enable_history=no])
 
 HISTORY_LIBS=
 have_history=no
 AS_CASE([$enable_history],
   [no], [],
-  [yes|default],
+  [yes],
     [AC_CHECK_HEADERS([readline/history.h],
       [AC_CHECK_LIB([history], [add_history], [have_history=yes], [])],
       [])],
-   [AC_MSG_ERROR([invalid --enable-history="$enable_history" parameter])])
+   [AC_MSG_ERROR([invalid --disable-history="$enable_history" parameter])])
 
 AC_MSG_CHECKING([whether to use libhistory])
 AS_CASE([$enable_history:$have_history],
   [yes:no], [AC_MSG_ERROR([Can't find history headers/lib. \
 Install readline dev libs for history expansion.])],
-  [default:no|no:*], [AC_MSG_RESULT([no])],
-  [*:yes], [AC_MSG_RESULT([yes])
+  [no:*], [AC_MSG_RESULT([no])],
+  [yes:yes], [AC_MSG_RESULT([yes])
             AC_DEFINE_UNQUOTED(HAVE_HISTORY, 1, Define this to enable history)
   	    HISTORY_LIBS="-lhistory"])
 
