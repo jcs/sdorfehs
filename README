@@ -29,7 +29,7 @@ $ ./configure && make
 if you want to install it system-wide, simply type 'make install' as
 a privileged user:
 
-$ sudo make install
+# make install
 
 If you retrieved ratpoison from the source repository, you will have to
 install somewhat recent versions of autoconf and automake before
