@@ -73,7 +73,7 @@ This document explains how to use ratpoison @value{VERSION}.
 * Windows::                     Navigating The Windows
 * Groups::                      Grouping Windows Together
 * Frames::                      Dividing The Screen
-* Multiple Monitors::           What To Do With All Your Computer Junk
+* Multiple Screens::            What To Do With All Your Computer Junk
 * Keystrokes::                  Key Commands And Functionality
 * Hooks::                       Attaching Scripts To Ratpoison Events
 * The Status Bar::              Ratpoison's Input/Output Area
@@ -835,7 +835,7 @@ save and restore frame layouts with the press of a key.
 Dump the current frame layout as text.
 
 Without an argument the current screen's frames are dumped. With an
-argument the @var{screen-num}th screen is dumped. @xref{Multiple Monitors}.
+argument the @var{screen-num}th screen is dumped. @xref{Multiple Screens}.
 @end deffn
 
 @deffn Command frestore @var{frames}
@@ -885,15 +885,15 @@ If @var{arg} is not supplied, toggle the dedicated state of the
 current frame.
 @end deffn
 
-@node Multiple Monitors
-@chapter Multiple Monitors
+@node Multiple Screens
+@chapter Multiple Screens
+
 When you've finally accumulated enough computer junk, you'll find
-yourself attaching a second monitor to your computer. ratpoison has
+yourself attaching a second screen to your computer. ratpoison has
 functionality to help you get around your new and improved desktop
 space.
 
-The X Windowing System assigns each monitor a screen number. To switch
-to another screen use the commands @command{nextscreen} and
+To switch to another screen use the commands @command{nextscreen} and
 @command{prevscreen}. Or, @command{sselect} to jump to a specified
 screen. ratpoison will tell you which frame has focus by drawing the
 current frame indicator in it.
@@ -912,12 +912,12 @@ or you can use @command{nextscreen}, @command{prevscreen}, and
 
 @deffn Command nextscreen
 This jumps you to the next X11 screen. @command{nextscreen} is
-used for dual-head displays and multiple monitor setups.
+used for dual-head displays and multiple screen setups.
 @end deffn
 
 @deffn Command prevscreen
 This jumps you to the previous X11 screen. @command{prevscreen} is
-used for dual-head displays and multiple monitor setups.
+used for dual-head displays and multiple screen setups.
 @end deffn
 
 @deffn Command sselect @var{n}
