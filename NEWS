@@ -162,7 +162,8 @@ expected.
 This expands to Maxsize if the window is a maxsize window, nothing if not.
 
 ** ratpoison can use xft
-If xft is found on your system ratpoison will use it unless explicitely told not to using --without-xft
+If xft is found on your system ratpoison will use it unless explicitely
+told not to using --without-xft.
 
 * Changes since 1.4.2
 ** key event handling
