@@ -9,19 +9,6 @@ notice and this notice are preserved.
 
 * Changes since 1.4.8
 
-** Packaging changes
-
-*** ratpoison now depends on libXrandr instead of libXinerama
-
-*** ratpoison doesn't link against libhistory by default any more
-Use ./configure --enable-history to force the use of said library.
-
-*** no ChangeLog file
-Please use the git repository instead.  Savannah offers a web interface.
-
-*** no more timestamps in compiled code
-Should help reproducible builds.
-
 ** Incompatible changes
 
 *** command `compat' and the various def* compat commands were removed
@@ -56,6 +43,19 @@ If set to -1, no message is shown.
 Should help debugging a config file.
 
 *** various cleanups and minor bugfixes
+
+** Packaging changes
+
+*** ratpoison now depends on libXrandr instead of libXinerama
+
+*** ratpoison doesn't link against libhistory by default any more
+Use ./configure --enable-history to force the use of said library.
+
+*** no ChangeLog file
+Please use the git repository instead.  Savannah offers a web interface.
+
+*** no more timestamps in compiled code
+Should help reproducible builds.
 
 * Changes since 1.4.7
 This is mostly a bugfix release.
