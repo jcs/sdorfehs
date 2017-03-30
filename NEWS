@@ -17,23 +17,19 @@ notice and this notice are preserved.
 The msgwait, rudeness, startup_message and warp commands will stay
 around for a few releases.  Upgrade your config file now!
 
-*** Xinerama users may experience problems
-ratpoison doesn't use Xinerama any more, it uses Xrandr instead.  It is
-unknown how ratpoison behaves in a multiple screens Xinerama setup.
-
 ** Feature/misc changes
 
-*** Xrandr support
-ratpoison now uses Xrandr to detect screens additions/removals at
+*** XRandR support
+ratpoison now uses XRandR to detect screens additions/removals at
 runtime.  The Xinerama support has been removed.
+
+*** the focus* commands can be used to navigate across screens
 
 *** window completion match by substring, case-insensitive
 
 *** new variable `framemsgwait'
 Timeout (in seconds) for the `Current frame' message window.
 If set to -1, no message is shown.
-
-*** the focus* commands can be used to navigate to other screens
 
 *** better `select' error handling
 
