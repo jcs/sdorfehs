@@ -1,28 +1,5 @@
 -*- outline -*-
 
-* command stuff
-** general argument parsing strategy
-Its a free for all right now.
-
-** The non-interactive functionality of help
-
-It should dump all the bindings in an easy to parse format.
-
-* implement these screen commands (see the screen info for documentation):
-command ???
-hardcopy (screenshot)
-lockscreen
-msgminwait
-nethack
-redisplay
-screen (ratpoison)
-shell
-shelltitle
-sleep
-sorendition
-stuff ???
-
 * Pasting into input buffer
 Fix it.
 
-* allow letters and numbers to be used for frames (in fselect)
