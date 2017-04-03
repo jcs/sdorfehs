@@ -18,12 +18,12 @@
  * Boston, MA 02111-1307 USA
  */
 
-#include <strings.h>
 /*
  * Per POSIX strcasestr should be declared in strings.h
- * glibc declares it in string.h instead.
+ * glibc declares it in string.h instead and needs _GNU_SOURCE
  */
 #define _GNU_SOURCE
+#include <strings.h>
 #include <string.h>
 
 #include "ratpoison.h"
