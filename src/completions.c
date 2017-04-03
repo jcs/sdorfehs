@@ -18,7 +18,11 @@
  * Boston, MA 02111-1307 USA
  */
 
-#define _BSD_SOURCE
+#include <strings.h>
+/*
+ * Per POSIX strcasestr should be declared in strings.h
+ * glibc declares it in string.h instead.
+ */
 #define _GNU_SOURCE
 #include <string.h>
 
