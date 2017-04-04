@@ -1,7 +1,0 @@
-usr/bin
-etc/X11/ratpoison
-var/lib/ratpoison/menu
-usr/share/emacs/site-lisp/ratpoison
-usr/share/perl5
-usr/share/python-support/ratpoison
-usr/lib/ruby/1.8

@@ -1,4 +1,0 @@
-contrib/Ratpoison.pm /usr/share/perl5/
-contrib/ratpoison.rb /usr/lib/ruby/1.8/
-contrib/ratpoison.py /usr/share/python-support/ratpoison/
-contrib/ratpoison-cmd.el /usr/share/emacs/site-lisp/ratpoison/
