@@ -247,8 +247,8 @@ A dedicated frame will not accept new windows.
 When new windows are to be focused, they will be opened in a non-dedicated
 frame instead.
 .Pp
-If no argument is given, toggle the current dedicateness. By default no
-windows are dedicated.
+If no argument is given, toggle the current dedicateness.
+By default no windows are dedicated.
 .It Ic delete Pq Ic C\-t k
 Close the current window.
 .It Ic delkmap Ar keymap
@@ -264,7 +264,8 @@ and
 .Li root
 cannot be deleted.
 .It Ic describekey Ar keymap
-Grab the next key. Similar to
+Grab the next key.
+Similar to
 .Ic readkey ,
 .Ic describekey
 shows only the command in
@@ -381,8 +382,8 @@ If the optional argument
 .Ar group
 is supplied, delete
 .Ar group .
-Otherwise delete the current group. If the last group is deleted, a new
-group with name
+Otherwise delete the current group.
+If the last group is deleted, a new group with name
 .Li default
 is created.
 The group has to be empty, otherwise it cannot be deleted.
@@ -686,9 +687,10 @@ This command is deprecated, please use the
 variable instead.
 .It Ic sdump
 Output the list of all screens.
-The screens are separated by commas. Each screen is shown as 6 values:
-its number, its x-coordinate, its y-coordinate, its width, its height
-and if it is currently selected (1=true, 0=false).
+The screens are separated by commas.
+Each screen is shown as 6 values: its number, its x-coordinate, its
+y-coordinate, its width, its height and if it is currently selected
+(1=true, 0=false).
 .It Ic select ( Cm \- | Ar name | Ar number ) Pq Ic C\-t \&'
 If a number is given, switch to the window with number
 .Ar number .
@@ -922,7 +924,8 @@ For example:
 .Pc
 .Pp
 In non\-interactive mode, output the list of windows in the current group
-line by line. The format string can be overwritten by the optional parameter
+line by line.
+The format string can be overwritten by the optional parameter
 .Ar format .
 .El
 .Sh VARIABLES
