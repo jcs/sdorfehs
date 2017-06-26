@@ -1046,7 +1046,7 @@ find_frame_left (rp_frame *frame)
       list_for_each_entry (cur, &s->frames, node)
         {
           if (frame_left_abs (frame) == frame_right_abs (cur))
-            if (frame_top_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) < frame_bottom_abs (cur))
+            if (frame_bottom_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) <= frame_bottom_abs (cur))
               return cur;
         }
     }
@@ -1065,7 +1065,7 @@ find_frame_right (rp_frame *frame)
       list_for_each_entry (cur, &s->frames, node)
         {
           if (frame_right_abs (frame) == frame_left_abs (cur))
-            if (frame_top_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) < frame_bottom_abs (cur))
+            if (frame_bottom_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) <= frame_bottom_abs (cur))
               return cur;
         }
     }
