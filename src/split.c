@@ -847,6 +847,9 @@ set_active_frame (rp_frame *frame, int force_indicator)
   if ((old != s->current_frame && num_frames(s) > 1)
       || s != old_s)
     {
+      if (s != old_s)
+        force_indicator = 1;
+
       show_frame_indicator(force_indicator);
 
       /* run the frame switch hook. We call it in here because this is
