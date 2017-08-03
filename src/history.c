@@ -314,10 +314,10 @@ history_expand_line (int history_id UNUSED, char *string, char **output)
 
   if (strchr (string, '!')) {
     clear_history ();
-    using_history ();
     list_for_each_entry(item, &histories[history_id].head, node) {
       add_history (item->line);
     }
+    using_history ();
     return history_expand (string, output);
   }
 #endif
