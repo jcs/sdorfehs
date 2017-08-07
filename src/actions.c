@@ -4949,12 +4949,15 @@ cmd_warp (int interactive UNUSED, struct cmdarg **args)
 }
 
 static void
-sync_wins (rp_screen *s)
+sync_wins (void)
 {
+  rp_screen *s;
   rp_window *win, *wintmp;
   XWindowAttributes attr;
   unsigned int i, nwins;
   Window dw1, dw2, *wins;
+
+  list_first (s, &rp_screens, node);
   XQueryTree(dpy, s->root, &dw1, &dw2, &wins, &nwins);
 
   /* Remove any windows in our cached lists that aren't in the query
@@ -5009,11 +5012,7 @@ sync_wins (rp_screen *s)
   for (i=0; i<nwins; i++)
     {
       XGetWindowAttributes(dpy, wins[i], &attr);
-      if (wins[i] == s->bar_window
-          || wins[i] == s->key_window
-          || wins[i] == s->input_window
-          || wins[i] == s->frame_window
-          || wins[i] == s->help_window
+      if (is_rp_window (wins[i])
           || attr.override_redirect == True) continue;
 
       /* Find the window in our mapped window list. */
@@ -5195,10 +5194,7 @@ cmd_tmpwm (int interactive UNUSED, struct cmdarg **args)
 
   /* Sort through all the windows in each group and pick out the ones
      that are unmapped or destroyed. */
-  list_for_each_entry (cur_screen, &rp_screens, node)
-    {
-      sync_wins (cur_screen);
-    }
+  sync_wins ();
 
   /* At this point, new windows have the top level keys grabbed but
      existing windows don't. So grab them on all windows just to be
