@@ -22,7 +22,7 @@
 .\" [2] http://mdocml.bsd.lv/
 .\" [3] http://mdocml.bsd.lv/mdoc.7.html
 .\"
-.Dd May 6, 2017
+.Dd Aug 22, 2017
 .Dt RATPOISON 1
 .Os
 .Sh NAME
@@ -992,6 +992,15 @@ Default is
 .Li 0 0 0 0 .
 .It Cm border Ar pixels
 Selects how thick the frame around windows is.
+.Pp
+Default is
+.Li 1 .
+.It Cm onlyborder Li 0 | 1
+Determine whether to show borders
+.Pq Li 1
+or not
+.Pq Li 0
+when there is only one frame on the screen.
 .Pp
 Default is
 .Li 1 .

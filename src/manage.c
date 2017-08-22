@@ -686,7 +686,12 @@ maximize_normal (rp_window *win)
     return;
 
   /* Set the window's border */
-  win->border = defaults.window_border_width;
+  if (defaults.only_border == 0 && num_frames(win->scr) <= 1){
+    win->border = 0;
+  } else {
+    win->border = defaults.window_border_width;
+  }
+
 
   /* Honour the window's maximum size */
   if (win->hints->flags & PMaxSize)

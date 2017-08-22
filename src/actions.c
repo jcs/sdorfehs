@@ -156,6 +156,7 @@ static cmdret * set_bargravity (struct cmdarg **args);
 static cmdret * set_font (struct cmdarg **args);
 static cmdret * set_padding (struct cmdarg **args);
 static cmdret * set_border (struct cmdarg **args);
+static cmdret * set_onlyborder(struct cmdarg **args);
 static cmdret * set_barborder (struct cmdarg **args);
 static cmdret * set_barinpadding (struct cmdarg **args);
 static cmdret * set_inputwidth (struct cmdarg **args);
@@ -345,6 +346,7 @@ init_set_vars (void)
   add_set_var ("barpadding", set_barpadding, 2, "", arg_NUMBER, "", arg_NUMBER);
   add_set_var ("bgcolor", set_bgcolor, 1, "", arg_STRING);
   add_set_var ("border", set_border, 1, "", arg_NUMBER);
+  add_set_var ("onlyborder", set_onlyborder, 1, "", arg_NUMBER);
   add_set_var ("bwcolor", set_bwcolor, 1, "", arg_STRING);
   add_set_var ("fgcolor", set_fgcolor, 1, "", arg_STRING);
   add_set_var ("font", set_font, 1, "", arg_STRING);
@@ -4158,6 +4160,29 @@ set_border (struct cmdarg **args)
     return cmdret_new (RET_FAILURE, "set border: %s", invalid_negative_arg);
 
   defaults.window_border_width = ARG(0,number);
+
+  /* Update all the visible windows. */
+  list_for_each_entry (win,&rp_mapped_window,node)
+    {
+      if (win_get_frame (win))
+        maximize (win);
+    }
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_onlyborder (struct cmdarg **args)
+{
+  rp_window *win;
+
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%d", defaults.only_border);
+
+  if (ARG(0, number) != 0 && ARG(0, number) != 1)
+    return cmdret_new (RET_FAILURE, "set onlyborder: invalid argument");
+
+  defaults.only_border = ARG(0, number);
 
   /* Update all the visible windows. */
   list_for_each_entry (win,&rp_mapped_window,node)
