@@ -42,16 +42,6 @@
 # include <langinfo.h>
 #endif
 
-#if defined (HAVE_PWD_H) && defined (HAVE_GETPWUID)
-#include <pwd.h>
-#endif
-
-/* Several systems seem not to have WAIT_ANY defined, so define it if
-   it isn't. */
-#ifndef WAIT_ANY
-# define WAIT_ANY -1
-#endif
-
 /* Command line options */
 static struct option ratpoison_longopts[] =
   { {"help",            no_argument,            0,      'h'},
@@ -63,162 +53,6 @@ static struct option ratpoison_longopts[] =
     {0,         0,                      0,      0} };
 
 static char ratpoison_opts[] = "hvic:d:s:f:";
-
-void
-fatal (const char *msg)
-{
-  fprintf (stderr, "ratpoison: %s", msg);
-  abort ();
-}
-
-void *
-xmalloc (size_t size)
-{
-  void *value;
-
-  value = malloc (size);
-  if (value == NULL)
-    fatal ("Virtual memory exhausted");
-  return value;
-}
-
-void *
-xrealloc (void *ptr, size_t size)
-{
-  void *value;
-
-  value = realloc (ptr, size);
-  if (value == NULL)
-    fatal ("Virtual memory exhausted");
-  return value;
-}
-
-char *
-xstrdup (const char *s)
-{
-  char *value;
-  value = strdup (s);
-  if (value == NULL)
-    fatal ("Virtual memory exhausted");
-  return value;
-}
-
-/* Return a new string based on fmt. */
-char *
-xvsprintf (char *fmt, va_list ap)
-{
-  int size, nchars;
-  char *buffer;
-  va_list ap_copy;
-
-  /* A reasonable starting value. */
-  size = strlen (fmt) + 1;
-  buffer = xmalloc (size);
-
-  while (1)
-    {
-#if defined(va_copy)
-      va_copy (ap_copy, ap);
-#elif defined(__va_copy)
-      __va_copy (ap_copy, ap);
-#else
-      /* If there is no copy macro then this MAY work. On some systems
-         this could fail because va_list is a pointer so assigning one
-         to the other as below wouldn't make a copy of the data, but
-         just the pointer to the data. */
-      ap_copy = ap;
-#endif
-      nchars = vsnprintf (buffer, size, fmt, ap_copy);
-#if defined(va_copy) || defined(__va_copy)
-      va_end (ap_copy);
-#endif
-
-      if (nchars > -1 && nchars < size)
-        return buffer;
-      else if (nchars > -1)
-        size = nchars + 1;
-      /* c99 says -1 is an error other than truncation,
-       * which thus will not go away with a larger buffer.
-       * To support older system but not making errors fatal
-       * (ratpoison will abort when trying to get too much memory otherwise),
-       * try to increase a bit but not too much: */
-      else if (size < MAX_LEGACY_SNPRINTF_SIZE)
-        size *= 2;
-      else
-	{
-	  free(buffer);
-	  break;
-	}
-
-      /* Resize the buffer and try again. */
-      buffer = xrealloc (buffer, size);
-    }
-
-  return xstrdup("<FAILURE>");
-}
-
-/* Return a new string based on fmt. */
-char *
-xsprintf (char *fmt, ...)
-{
-  char *buffer;
-  va_list ap;
-
-  va_start (ap, fmt);
-  buffer = xvsprintf (fmt, ap);
-  va_end (ap);
-
-  return buffer;
-}
-
-/* strtok but do it for whitespace and be locale compliant. */
-char *
-strtok_ws (char *s)
-{
-  char *nonws;
-  static char *last = NULL;
-
-  if (s != NULL)
-    last = s;
-  else if (last == NULL)
-    {
-      PRINT_ERROR (("strtok_ws() called but not initalized, this is a *BUG*\n"));
-      abort();
-    }
-
-  /* skip to first non-whitespace char. */
-  while (*last && isspace ((unsigned char)*last))
-    last++;
-
-  /* If we reached the end of the string here then there is no more
-     data. */
-  if (*last == '\0')
-    return NULL;
-
-  /* Now skip to the end of the data. */
-  nonws = last;
-  while (*last && !isspace ((unsigned char)*last))
-    last++;
-  if (*last)
-    {
-      *last = '\0';
-      last++;
-    }
-  return nonws;
-}
-
-/* A case insensitive strncmp. */
-int
-str_comp (char *s1, char *s2, size_t len)
-{
-  size_t i;
-
-  for (i = 0; i < len; i++)
-    if (toupper ((unsigned char)s1[i]) != toupper ((unsigned char)s2[i]))
-      return 0;
-
-  return 1;
-}
 
 static void
 sighandler (int signum UNUSED)
@@ -236,46 +70,6 @@ static void
 alrm_handler (int signum UNUSED)
 {
   alarm_signalled++;
-}
-
-/* Check for child processes that have quit but haven't been
-   acknowledged yet. Update their structure. */
-void
-check_child_procs (void)
-{
-  rp_child_info *cur;
-  int pid, status;
-  while (1)
-    {
-      pid = waitpid (WAIT_ANY, &status, WNOHANG);
-      if (pid <= 0)
-        break;
-
-      PRINT_DEBUG(("Child status: %d\n", WEXITSTATUS (status)));
-
-      /* Find the child and update its structure. */
-      list_for_each_entry (cur, &rp_children, node)
-        {
-          if (cur->pid == pid)
-            {
-              cur->terminated = 1;
-              cur->status = WEXITSTATUS (status);
-              break;
-            }
-        }
-
-      chld_signalled = 1;
-    }
-}
-
-void
-chld_handler (int signum UNUSED)
-{
-  int serrno;
-
-  serrno = errno;
-  check_child_procs();
-  errno = serrno;
 }
 
 static int
@@ -306,21 +100,6 @@ handler (Display *d, XErrorEvent *e)
   return 0;
 }
 
-void
-set_sig_handler (int sig, void (*action)(int))
-{
-  struct sigaction act;
-
-  memset (&act, 0, sizeof (act));
-  act.sa_handler = action;
-  sigemptyset (&act.sa_mask);
-  if (sigaction (sig, &act, NULL))
-    {
-      PRINT_ERROR (("Error setting signal handler: %s\n",
-                    strerror (errno)));
-    }
-}
-
 static void
 print_version (void)
 {
@@ -344,73 +123,6 @@ print_help (void)
   printf ("Report bugs to %s\n\n", PACKAGE_BUGREPORT);
 
   exit (EXIT_SUCCESS);
-}
-
-/* Some systems don't define the close-on-exec flag in fcntl.h */
-#ifndef FD_CLOEXEC
-# define FD_CLOEXEC 1
-#endif
-
-void
-set_close_on_exec (int fd)
-{
-  int flags = fcntl (fd, F_GETFD);
-  if (flags >= 0)
-    fcntl (fd, F_SETFD, flags | FD_CLOEXEC);
-}
-
-void
-read_rc_file (FILE *file)
-{
-  char *line;
-  size_t linesize = 256;
-
-  line = xmalloc (linesize);
-
-  while (getline (&line, &linesize, file) != -1)
-    {
-      line[strcspn (line, "\n")] = '\0';
-
-      PRINT_DEBUG (("rcfile line: %s\n", line));
-
-      if (*line != '\0' && *line != '#')
-        {
-          cmdret *result;
-          result = command (0, line);
-
-          /* Gobble the result. */
-          if (result)
-            cmdret_free (result);
-        }
-    }
-
-  free (line);
-}
-
-const char *
-get_homedir (void)
-{
-  char *homedir;
-
-  homedir = getenv ("HOME");
-  if (homedir != NULL && homedir[0] == '\0')
-    homedir = NULL;
-
-#if defined (HAVE_PWD_H) && defined (HAVE_GETPWUID)
-  if (homedir == NULL)
-    {
-      struct passwd *pw;
-
-      pw = getpwuid (getuid ());
-      if (pw != NULL)
-        homedir = pw->pw_dir;
-
-      if (homedir != NULL && homedir[0] == '\0')
-        homedir = NULL;
-    }
-#endif
-
-  return homedir;
 }
 
 static int
@@ -755,45 +467,6 @@ main (int argc, char *argv[])
   listen_for_events ();
 
   return EXIT_SUCCESS;
-}
-
-void
-clean_up (void)
-{
-  rp_screen *cur;
-  struct list_head *iter, *tmp;
-
-  history_save ();
-
-  free_keymaps ();
-  free_aliases ();
-  free_user_commands ();
-  free_bar ();
-  free_window_stuff ();
-  free_groups ();
-
-  list_for_each_safe_entry (cur, iter, tmp, &rp_screens, node)
-    {
-      list_del (&cur->node);
-      screen_free (cur);
-      free (cur);
-    }
-
-  screen_free_final ();
-
-  /* Delete the undo histories */
-  clear_frame_undos ();
-
-  /* Free the global frame numset shared by all screens. */
-  numset_free (rp_frame_numset);
-
-#ifndef USE_XFT_FONT
-  XFreeFontSet (dpy, defaults.font);
-#endif
-  free (defaults.window_fmt);
-
-  XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
-  XCloseDisplay (dpy);
 }
 
 void

@@ -210,4 +210,20 @@ char *get_selection (void);
 void rp_draw_string (rp_screen *s, Drawable d, int style, int x, int y, char *string, int length);
 int rp_text_width (rp_screen *s, char *string, int count);
 
+void fatal (const char *msg);
+void *xmalloc (size_t size);
+void *xrealloc (void *ptr, size_t size);
+char *xstrdup (const char *s);
+char *xvsprintf (char *fmt, va_list ap);
+char *xsprintf (char *fmt, ...);
+char *strtok_ws (char *s);
+int str_comp (char *s1, char *s2, size_t len);
+void check_child_procs (void);
+void chld_handler (int signum);
+void set_sig_handler (int sig, void (*action)(int));
+void set_close_on_exec (int fd);
+void read_rc_file (FILE *file);
+const char *get_homedir (void);
+void clean_up (void);
+
 #endif

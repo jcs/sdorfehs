@@ -92,23 +92,6 @@ do {                                            \
 #include "xrandr.h"
 #include "format.h"
 
-void clean_up (void);
-
-void set_close_on_exec (int fd);
-const char *get_homedir (void);
-void read_rc_file (FILE *file);
-
-void fatal (const char *msg);
-void *xmalloc (size_t size);
-void *xrealloc (void *ptr, size_t size);
-char *xstrdup (const char *s);
-char *xsprintf (char *fmt, ...);
-char *xvsprintf (char *fmt, va_list ap);
-int str_comp (char *s1, char *s2, size_t len);
-char *strtok_ws (char *s);
-void check_child_procs (void);
-void chld_handler (int signum);
-void set_sig_handler (int sig, void (*action)(int));
 void set_extents_of_fontset (XFontSet font);
 XFontSet load_query_font_set (Display *disp, const char *fontset_name);
 
