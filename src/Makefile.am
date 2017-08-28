@@ -75,3 +75,14 @@ ratpoison_SOURCES	= actions.c		\
 if HAVE_XRANDR
 ratpoison_SOURCES += xrandr.c xrandr.h
 endif
+
+TESTS = format_test
+
+check_PROGRAMS = format_test
+
+format_test_SOURCES = actions.c bar.c completions.c editor.c events.c format.c \
+											frame.c globals.c group.c history.c hook.c input.c \
+											linkedlist.c manage.c number.c sbuf.c screen.c split.c \
+											window.c xrandr.c
+format_test_CPPFLAGS = $(AM_CPPFLAGS) -DRUN_FORMAT_TEST
+format_test_LDADD = $(ratpoison_LDADD)

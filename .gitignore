@@ -13,6 +13,8 @@ ratpoison-*.tar.gz
 ratpoison-*.tar.gz.sig
 ratpoison-*.tar.xz
 ratpoison-*.tar.xz.sig
+src/format_test
+src/format_test.trs
 TAGS
 /doc/version.texi
 /doc/stamp-vti
