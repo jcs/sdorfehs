@@ -437,6 +437,14 @@ When called with no arguments, the current setting is
 returned.
 @end deffn
 
+@deffn Command {set onlyborder} @var{n}
+Allows hiding of borders when only one frame is on the current
+screen. The argument @var{n} can be @code{1} (default) which shows
+borders or @code{0} which hides them for single frames.
+
+When called with no arguments, the current setting is returned.
+@end deffn
+
 @node Window Classes
 @section Window Classes
 
