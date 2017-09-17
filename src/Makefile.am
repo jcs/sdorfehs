@@ -80,13 +80,14 @@ if HAVE_XRANDR
 ratpoison_SOURCES += xrandr.c xrandr.h
 endif
 
-TESTS = format_test
+TESTS =			test-sbuf-utf8-nconcat
+check_PROGRAMS =	test-sbuf-utf8-nconcat
 
-check_PROGRAMS = format_test
-
-format_test_SOURCES = actions.c bar.c completions.c editor.c events.c format.c \
-											frame.c globals.c group.c history.c hook.c input.c \
-											linkedlist.c manage.c number.c sbuf.c screen.c split.c \
-											window.c xrandr.c utf8.c utf8.h util.c util.h
-format_test_CPPFLAGS = $(AM_CPPFLAGS) -DRUN_FORMAT_TEST
-format_test_LDADD = $(ratpoison_LDADD)
+test_sbuf_utf8_nconcat_SOURCES = 		\
+			test-sbuf-utf8-nconcat.c \
+			sbuf.c			\
+			sbuf.h			\
+			utf8.c			\
+			utf8.h			\
+			util.c			\
+			util.h
