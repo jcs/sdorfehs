@@ -267,12 +267,6 @@ init_defaults (void)
   set_extents_of_fontset (defaults.font);
 #endif
 
-#ifdef HAVE_LANGINFO_CODESET
-  utf8_locale = !strcmp (nl_langinfo (CODESET), "UTF-8");
-#endif
-  PRINT_DEBUG (("UTF-8 locale detected: %s\n",
-	       utf8_locale ? "yes" : "no"));
-
   defaults.fgcolor_string = xstrdup ("black");
   defaults.bgcolor_string = xstrdup ("white");
   defaults.fwcolor_string = xstrdup ("black");
@@ -314,6 +308,10 @@ main (int argc, char *argv[])
     }
   else
     PRINT_ERROR (("X doesn't seem to support your locale.\n"));
+
+#ifdef HAVE_LANGINFO_CODESET
+  utf8_locale = !strcmp (nl_langinfo (CODESET), "UTF-8");
+#endif
 
   /* Parse the arguments */
   myargv = argv;
