@@ -3,4 +3,6 @@
 
 extern int utf8_locale;
 
+int utf8_check_locale(void);
+
 #endif

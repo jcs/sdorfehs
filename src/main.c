@@ -38,10 +38,6 @@
 
 #include "ratpoison.h"
 
-#ifdef HAVE_LANGINFO_CODESET
-# include <langinfo.h>
-#endif
-
 /* Command line options */
 static struct option ratpoison_longopts[] =
   { {"help",            no_argument,            0,      'h'},
@@ -309,9 +305,7 @@ main (int argc, char *argv[])
   else
     PRINT_ERROR (("X doesn't seem to support your locale.\n"));
 
-#ifdef HAVE_LANGINFO_CODESET
-  utf8_locale = !strcmp (nl_langinfo (CODESET), "UTF-8");
-#endif
+  utf8_check_locale();
 
   /* Parse the arguments */
   myargv = argv;
