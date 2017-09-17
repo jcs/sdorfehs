@@ -7,6 +7,31 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
+* Changes since 1.4.9
+
+** Feature/misc changes
+
+*** manpage fixes
+
+*** fix how find_frame_left, find_frame_right check for overlap
+
+*** always show the frame indicator when switching to a different screen
+
+*** fix bogus libhistory usage
+
+*** fix for tmpwm and multiple screens
+
+*** new 'onlyborder' variable
+To print borders only when >=2 frames are on screen.
+
+*** %42s-style format strings now account for UTF-8 characters
+
+** Packaging changes
+
+*** the debian/ subdirectory was removed (outdated)
+
+*** a basic regress test has been added
+
 * Changes since 1.4.8
 
 ** Incompatible changes
