@@ -297,6 +297,8 @@ main (int argc, char *argv[])
   char *alt_rcfile = NULL;
 
   setlocale (LC_CTYPE, "");
+  utf8_check_locale();
+
   if (XSupportsLocale ())
     {
       if (!XSetLocaleModifiers (""))
@@ -304,8 +306,6 @@ main (int argc, char *argv[])
     }
   else
     PRINT_ERROR (("X doesn't seem to support your locale.\n"));
-
-  utf8_check_locale();
 
   /* Parse the arguments */
   myargv = argv;
