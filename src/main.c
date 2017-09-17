@@ -331,18 +331,8 @@ main (int argc, char *argv[])
           print_version ();
           break;
         case 'c':
-          if (!cmd)
-            {
-              cmd = xmalloc (sizeof(char *));
-              cmd_count = 0;
-            }
-          else
-            {
-              cmd = xrealloc (cmd, sizeof (char *) * (cmd_count + 1));
-            }
-
-          cmd[cmd_count] = xstrdup (optarg);
-          cmd_count++;
+          cmd = xrealloc (cmd, sizeof (char *) * (cmd_count + 1));
+          cmd[cmd_count++] = xstrdup (optarg);
           break;
         case 'd':
           display = optarg;
