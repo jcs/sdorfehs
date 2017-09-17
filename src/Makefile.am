@@ -71,6 +71,8 @@ ratpoison_SOURCES	= actions.c		\
 			split.h			\
 			utf8.c			\
 			utf8.h			\
+			util.c			\
+			util.h			\
 			window.c		\
 			window.h
 
@@ -85,6 +87,6 @@ check_PROGRAMS = format_test
 format_test_SOURCES = actions.c bar.c completions.c editor.c events.c format.c \
 											frame.c globals.c group.c history.c hook.c input.c \
 											linkedlist.c manage.c number.c sbuf.c screen.c split.c \
-											window.c xrandr.c utf8.c utf8.h
+											window.c xrandr.c utf8.c utf8.h util.c util.h
 format_test_CPPFLAGS = $(AM_CPPFLAGS) -DRUN_FORMAT_TEST
 format_test_LDADD = $(ratpoison_LDADD)

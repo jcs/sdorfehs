@@ -92,6 +92,7 @@ do {                                            \
 #include "xrandr.h"
 #include "format.h"
 #include "utf8.h"
+#include "util.h"
 
 void set_extents_of_fontset (XFontSet font);
 XFontSet load_query_font_set (Display *disp, const char *fontset_name);
