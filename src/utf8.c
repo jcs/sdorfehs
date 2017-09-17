@@ -33,3 +33,21 @@ utf8_check_locale(void)
 #endif
   return utf8_locale;
 }
+
+int
+isu8char(char c)
+{
+  return utf8_locale && (c) & 0xC0;
+}
+
+int
+isu8start(char c)
+{
+  return utf8_locale && ((c) & 0xC0) == 0xC0;
+}
+
+int
+isu8cont(char c)
+{
+  return utf8_locale && ((c) & 0xC0) == 0x80;
+}

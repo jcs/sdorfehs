@@ -442,10 +442,10 @@ update_input_window (rp_screen *s, rp_input_line *line)
   total_width = defaults.bar_x_padding * 2 + prompt_width + input_width + MAX_FONT_WIDTH (defaults.font);
   height = (FONT_HEIGHT (s) + defaults.bar_y_padding * 2);
 
-  if (RP_IS_UTF8_START (line->buffer[line->position]))
+  if (isu8start (line->buffer[line->position]))
     do
       char_len++;
-    while (RP_IS_UTF8_CONT (line->buffer[line->position + char_len]));
+    while (isu8cont (line->buffer[line->position + char_len]));
   else
     char_len = 1;
 

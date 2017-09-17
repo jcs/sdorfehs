@@ -164,11 +164,11 @@ editor_forward_char (rp_input_line *line)
   if (line->position == line->length)
     return EDIT_NO_OP;
 
-  if (RP_IS_UTF8_START (line->buffer[line->position]))
+  if (isu8start (line->buffer[line->position]))
     {
       do
         line->position++;
-      while (RP_IS_UTF8_CONT (line->buffer[line->position]));
+      while (isu8cont (line->buffer[line->position]));
     }
   else
     line->position++;
@@ -184,7 +184,7 @@ editor_backward_char (rp_input_line *line)
 
   do
     line->position--;
-  while (line->position > 0 && RP_IS_UTF8_CONT (line->buffer[line->position]));
+  while (line->position > 0 && isu8cont (line->buffer[line->position]));
 
   return EDIT_MOVE;
 }
@@ -201,7 +201,7 @@ editor_forward_word (rp_input_line *line)
 
   while (line->position < line->length
 	 && (isalnum ((unsigned char)line->buffer[line->position])
-	     || RP_IS_UTF8_CHAR (line->buffer[line->position])))
+	     || isu8char (line->buffer[line->position])))
     line->position++;
 
   return EDIT_MOVE;
@@ -218,7 +218,7 @@ editor_backward_word (rp_input_line *line)
 
   while (line->position > 0
 	 && (isalnum ((unsigned char)line->buffer[line->position])
-	     || RP_IS_UTF8_CHAR (line->buffer[line->position])))
+	     || isu8char (line->buffer[line->position])))
     line->position--;
 
   return EDIT_MOVE;
@@ -256,11 +256,11 @@ editor_delete_char (rp_input_line *line)
   if (line->position == line->length)
     return EDIT_NO_OP;
 
-  if (RP_IS_UTF8_START (line->buffer[line->position]))
+  if (isu8start (line->buffer[line->position]))
     {
       do
         diff++;
-      while (RP_IS_UTF8_CONT (line->buffer[line->position + diff]));
+      while (isu8cont (line->buffer[line->position + diff]));
     }
   else
     diff++;
@@ -283,7 +283,7 @@ editor_backward_delete_char (rp_input_line *line)
     return EDIT_NO_OP;
 
   while (line->position - diff > 0
-         && RP_IS_UTF8_CONT (line->buffer[line->position - diff]))
+         && isu8cont (line->buffer[line->position - diff]))
     diff++;
 
   memmove (&line->buffer[line->position - diff],
@@ -310,7 +310,7 @@ editor_kill_word (rp_input_line *line)
 
   while (line->position + diff < line->length
 	 && (isalnum ((unsigned char)line->buffer[line->position + diff])
-	     || RP_IS_UTF8_CHAR (line->buffer[line->position + diff])))
+	     || isu8char (line->buffer[line->position + diff])))
     diff++;
 
   /* Add the word to the X11 selection. */
@@ -339,7 +339,7 @@ editor_backward_kill_word (rp_input_line *line)
 
   while (line->position - diff > 0
 	 && (isalnum ((unsigned char)line->buffer[line->position - diff])
-	     || RP_IS_UTF8_CHAR (line->buffer[line->position - diff])))
+	     || isu8char (line->buffer[line->position - diff])))
     diff++;
 
   /* Add the word to the X11 selection. */

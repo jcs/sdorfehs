@@ -156,10 +156,10 @@ sbuf_utf8_nconcat (struct sbuf *b, const char *s, int width)
       len = nchars = 0;
       while (s[len] != '\0' && nchars < width)
         {
-          if (RP_IS_UTF8_START (s[len]))
+          if (isu8start (s[len]))
             do
               len++;
-            while (RP_IS_UTF8_CONT (s[len]));
+            while (isu8cont (s[len]));
           else
             len++;
           nchars++;
