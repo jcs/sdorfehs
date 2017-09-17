@@ -34,11 +34,6 @@ typedef enum edit_status
   EDIT_NO_OP
 } edit_status;
 
-/* UTF-8 handling macros */
-#define RP_IS_UTF8_CHAR(c) (utf8_locale && (c) & 0xC0)
-#define RP_IS_UTF8_START(c) (utf8_locale && ((c) & 0xC0) == 0xC0)
-#define RP_IS_UTF8_CONT(c) (utf8_locale && ((c) & 0xC0) == 0x80)
-
 /* Input line functions */
 rp_input_line *input_line_new (char *prompt, char *preinput, int history_id, enum completion_styles style, completion_fn fn);
 void input_line_free (rp_input_line *line);
