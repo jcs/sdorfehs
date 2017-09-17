@@ -2,5 +2,10 @@
 config.h
 config.h.in
 stamp-h1
+core
+*.core
+*.log
 *.o
+*.trs
 ratpoison
+test-sbuf-utf8-nconcat
