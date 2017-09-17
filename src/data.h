@@ -262,7 +262,6 @@ struct rp_defaults
 
   XFontSet font;
   char *font_string;
-  int utf8_locale;
 
   char *fgcolor_string;
   char *bgcolor_string;

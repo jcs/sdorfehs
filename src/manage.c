@@ -184,7 +184,7 @@ get_wmname (Window w)
 
   /* If current encoding is UTF-8, try to use the window's _NET_WM_NAME ewmh
      property */
-  if (defaults.utf8_locale)
+  if (utf8_locale)
     {
       Atom type = None;
       unsigned long nitems, bytes_after;
@@ -231,7 +231,7 @@ get_wmname (Window w)
      _NET_WM_NAME don't bother making their WM_NAME available as
      UTF8_STRING (but only as either STRING or COMPOUND_TEXT).
      Let's try anyway.  */
-  if (defaults.utf8_locale && text_prop.encoding == xa_utf8_string)
+  if (utf8_locale && text_prop.encoding == xa_utf8_string)
     {
       ret = Xutf8TextPropertyToTextList (dpy, &text_prop, &cl, &n);
       PRINT_DEBUG (("Xutf8TextPropertyToTextList: %s\n",

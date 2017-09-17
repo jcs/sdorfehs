@@ -316,7 +316,7 @@ rp_draw_string (rp_screen *s, Drawable d, int style, int x, int y,
 	  return;
 	}
 
-      if (defaults.utf8_locale)
+      if (utf8_locale)
 	{
 	  XftDrawStringUtf8 (draw, style == STYLE_NORMAL ? &s->xft_fg_color :
 			     &s->xft_bg_color, s->xft_font, x, y,
@@ -349,7 +349,7 @@ rp_text_width (rp_screen *s, char *string, int count)
   if (s->xft_font)
     {
       XGlyphInfo extents;
-      if (defaults.utf8_locale)
+      if (utf8_locale)
         XftTextExtentsUtf8 (dpy, s->xft_font, (FcChar8*) string, count, &extents);
       else
         XftTextExtents8 (dpy, s->xft_font, (FcChar8*) string, count, &extents);

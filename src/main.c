@@ -268,10 +268,10 @@ init_defaults (void)
 #endif
 
 #ifdef HAVE_LANGINFO_CODESET
-  defaults.utf8_locale = !strcmp (nl_langinfo (CODESET), "UTF-8");
+  utf8_locale = !strcmp (nl_langinfo (CODESET), "UTF-8");
 #endif
   PRINT_DEBUG (("UTF-8 locale detected: %s\n",
-	       defaults.utf8_locale ? "yes" : "no"));
+	       utf8_locale ? "yes" : "no"));
 
   defaults.fgcolor_string = xstrdup ("black");
   defaults.bgcolor_string = xstrdup ("white");
