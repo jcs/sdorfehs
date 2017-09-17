@@ -76,17 +76,26 @@ struct fmt_item fmt_items[] = {
   { 0, NULL }
 };
 
-/* if width >= 0 then limit the width of s to width chars. */
+/* if width >= 0 then limit the width of s to width UTF-8 chars. */
 static void
 concat_width (struct sbuf *buf, char *s, int width)
 {
   if (width >= 0)
     {
-      char *s1 = xsprintf ("%%.%ds", width);
-      char *s2 = xsprintf (s1, s);
-      sbuf_concat (buf, s2);
-      free (s1);
-      free (s2);
+      int len, nchars;
+
+      len = nchars = 0;
+      while (s[len] != '\0' && nchars < width)
+        {
+          if (RP_IS_UTF8_START (s[len]))
+            do
+              len++;
+            while (RP_IS_UTF8_CONT (s[len]));
+          else
+            len++;
+          nchars++;
+        }
+      sbuf_printf_concat (buf, "%.*s", len, s);
     }
   else
     sbuf_concat (buf, s);
