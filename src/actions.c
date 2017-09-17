@@ -1055,7 +1055,7 @@ cmdret_free (cmdret *ret)
   free (ret);
 }
 
-void
+static void
 keymap_free (rp_keymap *map)
 {
   int i;

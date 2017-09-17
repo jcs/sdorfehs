@@ -38,7 +38,6 @@ void initialize_default_keybindings (void);
 cmdret *command (int interactive, char *data);
 cmdret *cmdret_new (int success, char *fmt, ...);
 void cmdret_free (cmdret *ret);
-void keymap_free (rp_keymap *map);
 void free_user_commands (void);
 void free_aliases (void);
 void free_keymaps (void);
