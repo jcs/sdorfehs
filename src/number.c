@@ -24,6 +24,20 @@
 
 #include "ratpoison.h"
 
+/* Keep track of a set of numbers. For frames and windows. */
+struct numset
+{
+  /* A list of the numbers taken. */
+  int *numbers_taken;
+
+/* the number of numbers currently stored in the numbers_taken
+   array. */
+  int num_taken;
+
+/* the size of the numbers_taken array. */
+  int max_taken;
+};
+
 /* Initialize a numset structure. */
 static void
 numset_init (struct numset *ns)
