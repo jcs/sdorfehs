@@ -76,31 +76,6 @@ struct fmt_item fmt_items[] = {
   { 0, NULL }
 };
 
-/* if width >= 0 then limit the width of s to width UTF-8 chars. */
-static void
-concat_width (struct sbuf *buf, char *s, int width)
-{
-  if (width >= 0)
-    {
-      int len, nchars;
-
-      len = nchars = 0;
-      while (s[len] != '\0' && nchars < width)
-        {
-          if (RP_IS_UTF8_START (s[len]))
-            do
-              len++;
-            while (RP_IS_UTF8_CONT (s[len]));
-          else
-            len++;
-          nchars++;
-        }
-      sbuf_printf_concat (buf, "%.*s", len, s);
-    }
-  else
-    sbuf_concat (buf, s);
-}
-
 void
 format_string (char *fmt, rp_window_elem *win_elem, struct sbuf *buffer)
 {
@@ -147,7 +122,7 @@ format_string (char *fmt, rp_window_elem *win_elem, struct sbuf *buffer)
                     {
                       sbuf_clear (retbuf);
                       fmt_items[fip].fmt_fn(win_elem, retbuf);
-                      concat_width (buffer, sbuf_get (retbuf), width);
+                      sbuf_utf8_nconcat (buffer, sbuf_get (retbuf), width);
                       found = 1;
                       break;
                     }
@@ -327,7 +302,7 @@ fmt_pid (rp_window_elem *elem, struct sbuf *buf)
 #include <assert.h>
 #include <locale.h>
 
-void rtp_test_concat_width(void);
+void test_sbuf_utf8_nconcat(void);
 
 int main(void)
 {
@@ -335,48 +310,48 @@ int main(void)
      correctly. */
   setlocale(LC_ALL, "");
 
-  rtp_test_concat_width();
+  test_sbuf_utf8_nconcat();
   return 0;
 }
 
-void rtp_test_concat_width(void)
+void test_sbuf_utf8_nconcat(void)
 {
   struct sbuf *buf = NULL;
 
   /* Zero length string, no limit. */
 
   buf = sbuf_new(0);
-  concat_width(buf, "", -1);
+  sbuf_utf8_nconcat(buf, "", -1);
   assert(strcmp(sbuf_get(buf), "") == 0);
   sbuf_free(buf);
 
   /* Zero length string, non-zero limit. */
 
   buf = sbuf_new(0);
-  concat_width(buf, "", 5);
+  sbuf_utf8_nconcat(buf, "", 5);
   assert(strcmp(sbuf_get(buf), "") == 0);
   sbuf_free(buf);
 
   /* ASCII string, no limit. */
 
   buf = sbuf_new(0);
-  concat_width(buf, "hi there", -1);
+  sbuf_utf8_nconcat(buf, "hi there", -1);
   assert(strcmp(sbuf_get(buf), "hi there") == 0);
-  concat_width(buf, " you", -1);
+  sbuf_utf8_nconcat(buf, " you", -1);
   assert(strcmp(sbuf_get(buf), "hi there you") == 0);
   sbuf_free(buf);
 
   /* ASCII string, non-zero limit, truncated. */
 
   buf = sbuf_new(0);
-  concat_width(buf, "hi there", 4);
+  sbuf_utf8_nconcat(buf, "hi there", 4);
   assert(strcmp(sbuf_get(buf), "hi t") == 0);
   sbuf_free(buf);
 
   /* ASCII string, non-zero limit, not truncated. */
 
   buf = sbuf_new(0);
-  concat_width(buf, "hi", 4);
+  sbuf_utf8_nconcat(buf, "hi", 4);
   assert(strcmp(sbuf_get(buf), "hi") == 0);
   sbuf_free(buf);
 
@@ -384,7 +359,7 @@ void rtp_test_concat_width(void)
 
   buf = sbuf_new(0);
   /* 0xe2 0x84 0xa2 is U+2122, the trademark symbol. */
-  concat_width(buf, "hi \xe2\x84\xa2 there", -1);
+  sbuf_utf8_nconcat(buf, "hi \xe2\x84\xa2 there", -1);
   assert(strcmp(sbuf_get(buf), "hi \xe2\x84\xa2 there") == 0);
   sbuf_free(buf);
 
@@ -392,7 +367,7 @@ void rtp_test_concat_width(void)
      by bytes or by characters. */
 
   buf = sbuf_new(0);
-  concat_width(buf, "hi \xe2\x84\xa2 there you", 11);
+  sbuf_utf8_nconcat(buf, "hi \xe2\x84\xa2 there you", 11);
   assert(strcmp(sbuf_get(buf), "hi \xe2\x84\xa2 there ") == 0);
   sbuf_free(buf);
 
@@ -400,14 +375,14 @@ void rtp_test_concat_width(void)
      bytes that we would cut in the middle of a character. */
 
   buf = sbuf_new(0);
-  concat_width(buf, "hi \xe2\x84\xa2 there you", 5);
+  sbuf_utf8_nconcat(buf, "hi \xe2\x84\xa2 there you", 5);
   assert(strcmp(sbuf_get(buf), "hi \xe2\x84\xa2 ") == 0);
   sbuf_free(buf);
 
   /* UTF-8 string, non-zero limit, not truncated. */
 
   buf = sbuf_new(0);
-  concat_width(buf, "hi \xe2\x84\xa2 there you", 20);
+  sbuf_utf8_nconcat(buf, "hi \xe2\x84\xa2 there you", 20);
   assert(strcmp(sbuf_get(buf), "hi \xe2\x84\xa2 there you") == 0);
   sbuf_free(buf);
 
@@ -415,7 +390,7 @@ void rtp_test_concat_width(void)
 
   buf = sbuf_new(0);
   /* This is an invalid UTF-8 sequence. It's missing 0xa2. */
-  concat_width(buf, "hi \xe2\x84 there you", 20);
+  sbuf_utf8_nconcat(buf, "hi \xe2\x84 there you", 20);
   assert(strcmp(sbuf_get(buf), "hi ") == 0);
   sbuf_free(buf);
 }

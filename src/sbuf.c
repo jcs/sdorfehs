@@ -145,6 +145,33 @@ sbuf_printf_concat (struct sbuf *b, char *fmt, ...)
   return b->data;
 }
 
+/* if width >= 0 then limit the width of s to width chars. */
+char *
+sbuf_utf8_nconcat (struct sbuf *b, const char *s, int width)
+{
+  if (width >= 0)
+    {
+      int len, nchars;
+
+      len = nchars = 0;
+      while (s[len] != '\0' && nchars < width)
+        {
+          if (RP_IS_UTF8_START (s[len]))
+            do
+              len++;
+            while (RP_IS_UTF8_CONT (s[len]));
+          else
+            len++;
+          nchars++;
+        }
+      sbuf_printf_concat (b, "%.*s", len, s);
+    }
+  else
+    sbuf_concat (b, s);
+
+  return b->data;
+}
+
 void
 sbuf_chop (struct sbuf *b)
 {

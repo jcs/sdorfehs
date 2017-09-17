@@ -39,6 +39,7 @@ void sbuf_free (struct sbuf *b);
 char *sbuf_free_struct (struct sbuf *b);
 char *sbuf_concat (struct sbuf *b, const char *str);
 char *sbuf_nconcat (struct sbuf *b, const char *str, int len);
+char *sbuf_utf8_nconcat (struct sbuf *b, const char *s, int width);
 char *sbuf_copy (struct sbuf *b, const char *str);
 char *sbuf_clear (struct sbuf *b);
 char *sbuf_get (struct sbuf *b);
