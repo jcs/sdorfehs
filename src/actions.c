@@ -5351,7 +5351,6 @@ frestore (char *data, rp_screen *s)
 
   /* Splice in our new frameset. */
   screen_restore_frameset (s, &fset);
-/*   numset_clear (s->frames_numset); */
 
   /* Process the frames a bit to make sure everything lines up. */
   list_for_each_entry (cur, &s->frames, node)
