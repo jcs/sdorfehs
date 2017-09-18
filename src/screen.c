@@ -717,8 +717,7 @@ screen_free (rp_screen *s)
 
   free (s->display_string);
 
-  if (rp_have_xrandr)
-    free (s->xrandr.name);
+  sbuf_free (s->xrandr.name);
 }
 
 void
