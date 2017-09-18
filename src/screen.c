@@ -531,7 +531,7 @@ screen_dump (rp_screen *screen)
 
   s = sbuf_new (0);
   if (rp_have_xrandr)
-    sbuf_printf(s, "%s ", sbuf_get (screen->xrandr.name));
+    sbuf_printf(s, "%s ", screen->xrandr.name);
 
   sbuf_printf_concat (s, "%d %d %d %d %d %d",
                       screen->number,
@@ -716,8 +716,7 @@ screen_free (rp_screen *s)
   XFreeGC (dpy, s->inverse_gc);
 
   free (s->display_string);
-
-  sbuf_free (s->xrandr.name);
+  free (s->xrandr.name);
 }
 
 void

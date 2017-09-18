@@ -163,7 +163,7 @@ struct xrandr_info {
   int output;
   int crtc;
   int primary;
-  struct sbuf* name;
+  char *name;
 };
 
 struct rp_screen

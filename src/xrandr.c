@@ -140,9 +140,7 @@ xrandr_fill_screen (int rr_output, rp_screen *screen)
   else
     screen->xrandr.primary = 0;
 
-  screen->xrandr.name = sbuf_new (0);
-  sbuf_concat (screen->xrandr.name, outinfo->name);
-
+  screen->xrandr.name = xstrdup (outinfo->name);
   screen->xrandr.output  = rr_output;
   screen->xrandr.crtc    = outinfo->crtc;
 
@@ -174,11 +172,11 @@ xrandr_output_change (XRROutputChangeNotifyEvent *ev)
     screen = screen_add (ev->output);
     screen_sort ();
     PRINT_DEBUG (("%s: Added screen %s with crtc %lu\n", __func__,
-                  sbuf_get (screen->xrandr.name),
+                  screen->xrandr.name,
                   (unsigned long)outinfo->crtc));
   } else if (screen && !outinfo->crtc) {
     PRINT_DEBUG (("%s: Removing screen %s\n", __func__,
-                  sbuf_get (screen->xrandr.name)));
+                  screen->xrandr.name));
     screen_del (screen);
   }
 
@@ -296,8 +294,7 @@ xrandr_fill_screen (int rr_output, rp_screen *screen)
   memset(&screen->xrandr, 0, sizeof(screen->xrandr));
   screen->xrandr.primary = (rr_output == 0);
   screen->xrandr.output  = rr_output;
-  screen->xrandr.name = sbuf_new (0);
-  sbuf_concat (screen->xrandr.name, "N/A");
+  screen->xrandr.name = xstrdup ("N/A");
 }
 
 void
