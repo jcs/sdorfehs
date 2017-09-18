@@ -32,6 +32,8 @@ rp_window *find_window (Window w);
 void maximize_current_window (void);
 void give_window_focus (rp_window *win, rp_window *last_win);
 void set_active_window (rp_window *win);
+void set_active_window_force (rp_window *win);
+void set_active_window_body (rp_window *win, int force);
 void goto_window (rp_window *win);
 void set_current_window (rp_window *win);
 void update_window_gravity (rp_window *win);
@@ -56,9 +58,6 @@ void init_window_stuff (void);
 void free_window_stuff (void);
 
 rp_frame *win_get_frame (rp_window *win);
-
-void set_active_window_force (rp_window *win);
-void set_active_window_body (rp_window *win, int force);
 
 struct rp_child_info *get_child_info (Window w);
 void change_windows_screen (rp_screen *s, rp_screen *new_screen);
