@@ -258,7 +258,6 @@ screen_select_primary (void)
   if (!rp_current_screen)
     rp_current_screen = cur;
 
-#ifdef HAVE_XRANDR
   if (!rp_have_xrandr)
     return;
 
@@ -271,7 +270,6 @@ screen_select_primary (void)
         break;
       }
     }
-#endif
 }
 
 static void
@@ -298,13 +296,10 @@ init_screens (void)
   rp_screen *screen;
 
   /* Get the number of screens */
-  if (rp_have_xrandr) {
-#ifdef HAVE_XRANDR
+  if (rp_have_xrandr)
     screen_count = xrandr_query_screen (&rr_outputs);
-#endif
-  } else {
+  else
     screen_count = ScreenCount (dpy);
-  }
 
   /* Create our global frame numset */
   rp_frame_numset = numset_new();
@@ -316,10 +311,11 @@ init_screens (void)
       screen = xmalloc (sizeof(*screen));
       list_add (&screen->node, &rp_screens);
 
-#ifdef HAVE_XRANDR
       if (rp_have_xrandr)
         xrandr_fill_screen (rr_outputs[i], screen);
-#endif
+      else
+        xrandr_fill_screen (i, screen);
+
       init_screen (screen);
     }
 
@@ -635,10 +631,7 @@ screen_add (int rr_output)
 
   screen->number = numset_request (rp_glob_screen.numset);
 
-#ifdef HAVE_XRANDR
-  if (rp_have_xrandr)
-    xrandr_fill_screen (rr_output, screen);
-#endif
+  xrandr_fill_screen (rr_output, screen);
   init_screen (screen);
   init_frame_list (screen);
 

@@ -420,11 +420,7 @@ main (int argc, char *argv[])
   init_xkb ();
   init_groups ();
   init_window_stuff ();
-
-#ifdef HAVE_XRANDR
   init_xrandr ();
-#endif
-
   init_screens ();
 
   init_frame_lists ();

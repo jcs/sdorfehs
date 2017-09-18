@@ -74,11 +74,9 @@ ratpoison_SOURCES	= actions.c		\
 			util.c			\
 			util.h			\
 			window.c		\
-			window.h
-
-if HAVE_XRANDR
-ratpoison_SOURCES += xrandr.c xrandr.h
-endif
+			window.h		\
+			xrandr.c 		\
+			xrandr.h
 
 TESTS =			test-sbuf-utf8-nconcat
 check_PROGRAMS =	test-sbuf-utf8-nconcat
