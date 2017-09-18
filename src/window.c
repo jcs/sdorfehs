@@ -453,7 +453,7 @@ void set_active_window_force (rp_window *win)
 }
 
 static rp_frame *
-find_frame_non_dedicated(rp_screen *current_screen, rp_frame *current_frame)
+find_frame_non_dedicated(rp_screen *current_screen)
 {
   rp_frame *cur;
   rp_screen *screen;
@@ -501,7 +501,7 @@ set_active_window_body (rp_window *win, int force)
       /* Try to find a non-dedicated frame. */
       rp_frame *non_dedicated;
 
-      non_dedicated = find_frame_non_dedicated (rp_current_screen, frame);
+      non_dedicated = find_frame_non_dedicated (rp_current_screen);
       if (non_dedicated != NULL)
         {
           last_frame = frame;
