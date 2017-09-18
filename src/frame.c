@@ -112,30 +112,6 @@ frame_resize_down (rp_frame *frame, int amount)
   frame->height += amount;
 }
 
-void
-frame_move_left (rp_frame *frame, int amount)
-{
-  frame->x -= amount;
-}
-
-void
-frame_move_right (rp_frame *frame, int amount)
-{
-  frame->x += amount;
-}
-
-void
-frame_move_up (rp_frame *frame, int amount)
-{
-  frame->y -= amount;
-}
-
-void
-frame_move_down (rp_frame *frame, int amount)
-{
-  frame->y += amount;
-}
-
 static void
 init_frame (rp_frame *f)
 {

@@ -263,12 +263,6 @@ find_window (Window w)
   return win;
 }
 
-void
-set_current_window (rp_window *win)
-{
-  set_frames_window (current_frame(), win);
-}
-
 rp_window *
 find_window_number (int n)
 {
@@ -310,57 +304,11 @@ find_window_name (char *name, int exact_match)
   return NULL;
 }
 
-/* Return the previous window in the list. Assumes window is in the
-   mapped window list. */
-rp_window*
-find_window_prev (rp_window *w)
-{
-  rp_window *cur;
-
-  if (!w) return NULL;
-
-  for (cur = list_prev_entry (w, &rp_mapped_window, node);
-       cur != w;
-       cur = list_prev_entry (cur, &rp_mapped_window, node))
-    {
-      if (!find_windows_frame (cur))
-        {
-          return cur;
-        }
-    }
-
-  return NULL;
-}
-
-/* Return the next window in the list. Assumes window is in the mapped
-   window list. */
-rp_window*
-find_window_next (rp_window *w)
-{
-  rp_window *cur;
-
-  if (!w) return NULL;
-
-  for (cur = list_next_entry (w, &rp_mapped_window, node);
-       cur != w;
-       cur = list_next_entry (cur, &rp_mapped_window, node))
-    {
-      if (!find_windows_frame (cur))
-        {
-          return cur;
-        }
-    }
-
-  return NULL;
-}
-
 rp_window *
 find_window_other (rp_screen *screen)
 {
   return group_last_window (rp_current_group, screen);
 }
-
-
 
 /* Assumes the list is sorted by increasing number. Inserts win into
    to Right place to keep the list sorted. */

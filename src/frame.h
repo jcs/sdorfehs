@@ -21,10 +21,6 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-void frame_move_down (rp_frame *frame, int amount);
-void frame_move_up (rp_frame *frame, int amount);
-void frame_move_right (rp_frame *frame, int amount);
-void frame_move_left (rp_frame *frame, int amount);
 void frame_resize_down (rp_frame *frame, int amount);
 void frame_resize_up (rp_frame *frame, int amount);
 void frame_resize_right (rp_frame *frame, int amount);

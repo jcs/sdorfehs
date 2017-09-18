@@ -34,7 +34,6 @@ void give_window_focus (rp_window *win, rp_window *last_win);
 void set_active_window (rp_window *win);
 void set_active_window_force (rp_window *win);
 void goto_window (rp_window *win);
-void set_current_window (rp_window *win);
 void update_window_gravity (rp_window *win);
 char *window_name (rp_window *win);
 
@@ -42,12 +41,7 @@ char *window_name (rp_window *win);
 rp_window *find_window_other (rp_screen *screen);
 rp_window *find_window_by_number (int n);
 rp_window *find_window_name (char *name, int exact_match);
-rp_window *find_window_prev (rp_window *w);
-rp_window *find_window_prev_with_frame (rp_window *w);
-rp_window *find_window_next (rp_window *w);
-rp_window *find_window_next_with_frame (rp_window *w);
 rp_window *find_window_number (int n);
-void sort_window_list_by_number (void);
 
 void insert_into_list (rp_window *win, struct list_head *list);
 

@@ -327,26 +327,6 @@ update_window_name (rp_window *win)
   return changed;
 }
 
-/* Send an artificial configure event to the window. */
-void
-send_configure (Window w, int x, int y, int width, int height, int border)
-{
-  XConfigureEvent ce;
-
-  ce.type = ConfigureNotify;
-  ce.event = w;
-  ce.window = w;
-  ce.x = x;
-  ce.y = y;
-  ce.width = width;
-  ce.height = height;
-  ce.border_width = border;
-  ce.above = None;
-  ce.override_redirect = 0;
-
-  XSendEvent (dpy, w, False, StructureNotifyMask, (XEvent*)&ce);
-}
-
 /* This function is used to determine if the window should be treated
    as a transient. */
 int
@@ -906,23 +886,6 @@ unhide_all_windows (void)
 
   list_for_each_safe_entry (win, iter, tmp, &rp_mapped_window, node)
     unhide_window (win);
-}
-
-/* same as unhide_window except that it makes sure the window is mapped
-   on the bottom of the window stack. */
-void
-unhide_window_below (rp_window *win)
-{
-  if (win == NULL) return;
-
-  /* Always lower the window, but if its not iconic we don't need to
-     map it since it already is mapped. */
-  XLowerWindow (dpy, win->w);
-
-  if (win->state != IconicState) return;
-
-  XMapWindow (dpy, win->w);
-  set_state (win, NormalState);
 }
 
 void

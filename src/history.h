@@ -35,7 +35,6 @@ ssize_t getline (char **lineptr, size_t *n, FILE *f);
 
 void  history_load (void);
 void  history_save (void);
-void  history_resize (int size);
 void  history_reset (void);
 void  history_add (int, const char *item);
 const char *history_next (int);
