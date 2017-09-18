@@ -4049,18 +4049,20 @@ set_font (struct cmdarg **args)
 {
 #ifdef USE_XFT_FONT
   XftFont *font;
-  rp_screen *s = rp_current_screen;
+  rp_screen *s;
 
   if (args[0] == NULL)
     return cmdret_new (RET_SUCCESS, "%s", defaults.font_string);
 
-  font = XftFontOpenName (dpy, s->screen_num, ARG_STRING (0));
+  list_for_each_entry (s, &rp_screens, node)
+    {
+      font = XftFontOpenName (dpy, s->screen_num, ARG_STRING (0));
+      if (font == NULL)
+        return cmdret_new (RET_FAILURE, "set font: unknown font");
 
-  if (font == NULL)
-    return cmdret_new (RET_FAILURE, "set font: unknown font");
-
-  XftFontClose (dpy, s->xft_font);
-  s->xft_font = font;
+      XftFontClose (dpy, s->xft_font);
+      s->xft_font = font;
+    }
 #else
   XFontSet font;
 
