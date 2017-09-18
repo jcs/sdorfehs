@@ -30,6 +30,8 @@ LIST_HEAD(rp_mapped_window);
 
 struct numset *rp_window_numset;
 
+static void set_active_window_body (rp_window *win, int force);
+
 /* Get the mouse position relative to the the specified window */
 static void
 get_mouse_position (rp_window *win, int *mouse_x, int *mouse_y)
@@ -473,7 +475,7 @@ find_frame_non_dedicated(rp_screen *current_screen)
   return NULL;
 }
 
-void
+static void
 set_active_window_body (rp_window *win, int force)
 {
   rp_window *last_win;

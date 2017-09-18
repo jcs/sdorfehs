@@ -33,7 +33,6 @@ void maximize_current_window (void);
 void give_window_focus (rp_window *win, rp_window *last_win);
 void set_active_window (rp_window *win);
 void set_active_window_force (rp_window *win);
-void set_active_window_body (rp_window *win, int force);
 void goto_window (rp_window *win);
 void set_current_window (rp_window *win);
 void update_window_gravity (rp_window *win);
