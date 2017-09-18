@@ -53,8 +53,8 @@ init_xrandr (void)
   rp_have_xrandr = 1;
 }
 
-int *
-xrandr_query_screen (int *screen_count)
+int
+xrandr_query_screen (int **outputs)
 {
   XRRScreenResources *res;
   XRROutputInfo *outinfo;
@@ -70,16 +70,15 @@ xrandr_query_screen (int *screen_count)
     if (!outinfo->crtc)
       continue;
 
-    output_array[count] = res->outputs[i];
-    count++;
+    output_array[count++] = res->outputs[i];
 
     XRRFreeOutputInfo (outinfo);
   }
 
-  *screen_count = count;
   XRRFreeScreenResources (res);
 
-  return output_array;
+  *outputs = output_array;
+  return count;
 }
 
 static rp_screen *

@@ -300,7 +300,7 @@ init_screens (void)
   /* Get the number of screens */
   if (rp_have_xrandr) {
 #ifdef HAVE_XRANDR
-    rr_outputs = xrandr_query_screen (&screen_count);
+    screen_count = xrandr_query_screen (&rr_outputs);
 #endif
   } else {
     screen_count = ScreenCount (dpy);
