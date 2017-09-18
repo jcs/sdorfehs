@@ -395,7 +395,7 @@ The window's width
 @item %W
 The window's width increment hint
 @item %x
-the window's xinerama screen
+the window's xrandr screen
 @end table
 
 Additionally there can be a number between the percent sign and the format
