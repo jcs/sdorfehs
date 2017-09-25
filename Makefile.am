@@ -29,11 +29,3 @@ SUBDIRS			= src doc contrib
 doc_DATA		= AUTHORS COPYING NEWS README
 
 EXTRA_DIST		= $(doc_DATA)
-
-dist-hook:
-	chmod -R go-w $(distdir)
-
-sense:
-	@echo 42
-
-.PHONY: dist-hook sense
