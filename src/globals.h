@@ -1,21 +1,21 @@
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
+/*
+ * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This file is part of ratpoison.
  *
- * ratpoison is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
+ * ratpoison is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2, or (at your option) any later
+ * version.
  *
- * ratpoison is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * ratpoison is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA
+ * You should have received a copy of the GNU General Public License along with
+ * this software; see the file COPYING.  If not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 #ifndef GLOBALS_H
@@ -42,10 +42,14 @@
 
 #define MAX_FONT_WIDTH(f) (rp_font_width)
 
-#define WIN_EVENTS (StructureNotifyMask | PropertyChangeMask | ColormapChangeMask | FocusChangeMask)
-/* EMPTY is used when a frame doesn't contain a window, or a window
-   doesn't have a frame. Any time a field refers to the number of a
-   window/frame/screen/etc, Use EMPTY to denote a lack there of. */
+#define WIN_EVENTS (StructureNotifyMask | PropertyChangeMask | \
+    ColormapChangeMask | FocusChangeMask)
+
+/*
+ * EMPTY is used when a frame doesn't contain a window, or a window doesn't
+ * have a frame. Any time a field refers to the number of a
+ * window/frame/screen/etc, Use EMPTY to denote a lack there of.
+ */
 #define EMPTY -1
 
 /* Possible values for defaults.window_list_style */
@@ -84,11 +88,12 @@ extern int rp_have_xrandr;
 
 extern rp_group *rp_current_group;
 
-/* Each child process is stored in this list. spawn, creates a new
-   entry in this list, the SIGCHLD handler sets child.terminated to be
-   true and handle_signals in events.c processes each terminated
-   process by printing a message saying the process ended and
-   displaying it's exit code. */
+/*
+ * Each child process is stored in this list. spawn, creates a new entry in
+ * this list, the SIGCHLD handler sets child.terminated to be true and
+ * handle_signals in events.c processes each terminated process by printing a
+ * message saying the process ended and displaying it's exit code.
+ */
 extern struct list_head rp_children;
 
 extern struct rp_defaults defaults;
@@ -99,12 +104,16 @@ extern int rp_font_ascent, rp_font_descent, rp_font_width;
 /* The prefix key also known as the command character under screen. */
 extern struct rp_key prefix_key;
 
-/* A list of mapped windows. These windows show up in the window
-   list and have a number assigned to them. */
+/*
+ * A list of mapped windows. These windows show up in the window list and have
+ * a number assigned to them.
+ */
 extern struct list_head rp_mapped_window;
 
-/* A list of unmapped windows. These windows do not have a number
-   assigned to them and are not visible/active. */
+/*
+ * A list of unmapped windows. These windows do not have a number assigned to
+ * them and are not visible/active.
+ */
 extern struct list_head rp_unmapped_window;
 
 /* The list of screens. */
@@ -145,9 +154,11 @@ extern int rat_x;
 extern int rat_y;
 extern int rat_visible;
 
-/* When unmapping or deleting windows, it is sometimes helpful to
-   ignore a bad window when attempting to clean the window up. This
-   does just that when set to 1 */
+/*
+ * When unmapping or deleting windows, it is sometimes helpful to ignore a bad
+ * window when attempting to clean the window up. This does just that when set
+ * to 1
+ */
 extern int ignore_badwindow;
 
 /* Arguments passed to ratpoison. */
@@ -156,17 +167,20 @@ extern char **myargv;
 /* Keeps track of which mod mask each modifier is under. */
 extern struct modifier_info rp_modifier_info;
 
-/* nonzero if an alarm signal was raised. This means ratpoison should
-   hide its popup windows. */
+/*
+ * nonzero if an alarm signal was raised. This means ratpoison should hide its
+ * popup windows.
+ */
 extern int alarm_signalled;
 extern int kill_signalled;
 extern int hup_signalled;
 extern int chld_signalled;
 
-/* When set to a string, ratpoison should exec the command. The reason
-   this variable is needed and why it is not exec'd in cmd_newwm is
-   because if called with ratpoison -c, the rp -c process never
-   returns. */
+/*
+ * When set to a string, ratpoison should exec the command. The reason this
+ * variable is needed and why it is not exec'd in cmd_newwm is because if
+ * called with ratpoison -c, the rp -c process never returns.
+ */
 extern char *rp_exec_newwm;
 
 /* rudeness levels */
@@ -194,28 +208,29 @@ extern struct list_head rp_title_changed_hook;
 
 extern struct rp_hook_db_entry rp_hook_db[];
 
-void set_rp_window_focus (rp_window *win);
-void set_window_focus (Window window);
+void set_rp_window_focus(rp_window * win);
+void set_window_focus(Window window);
 
 extern struct numset *rp_frame_numset;
 
 /* Selection handling globals */
 extern rp_xselection selection;
-void set_selection (char *txt);
-void set_nselection (char *txt, int len);
-char *get_selection (void);
+void set_selection(char *txt);
+void set_nselection(char *txt, int len);
+char *get_selection(void);
 
 /* Wrapper font functions to support Xft */
 
-void rp_draw_string (rp_screen *s, Drawable d, int style, int x, int y, char *string, int length);
-int rp_text_width (rp_screen *s, char *string, int count);
+void rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y,
+    char *string, int length);
+int rp_text_width(rp_screen *s, char *string, int count);
 
-void check_child_procs (void);
-void chld_handler (int signum);
-void set_sig_handler (int sig, void (*action)(int));
-void set_close_on_exec (int fd);
-void read_rc_file (FILE *file);
-const char *get_homedir (void);
-void clean_up (void);
+void check_child_procs(void);
+void chld_handler(int signum);
+void set_sig_handler(int sig, void (*action)(int));
+void set_close_on_exec(int fd);
+void read_rc_file(FILE *file);
+const char *get_homedir(void);
+void clean_up(void);
 
 #endif

@@ -1,25 +1,25 @@
-/* This file was taken from the Linux kernel and is
- * Copyright (C) 2003 Linus Torvalds
+/*
+ * This file was taken from the Linux kernel and is Copyright (C) 2003 Linus
+ * Torvalds
  *
- * Modified by Shawn Betts. Portions created by Shawn Betts are
- * Copyright (C) 2003, 2004 Shawn Betts
+ * Modified by Shawn Betts. Portions created by Shawn Betts are Copyright (C)
+ * 2003, 2004 Shawn Betts
  *
  * This file is part of ratpoison.
  *
- * ratpoison is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
+ * ratpoison is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2, or (at your option) any later
+ * version.
  *
- * ratpoison is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * ratpoison is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA
+ * You should have received a copy of the GNU General Public License along with
+ * this software; see the file COPYING.  If not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 #ifndef _RATPOISON_LINKLIST_H
@@ -38,7 +38,7 @@
  */
 
 struct list_head {
-        struct list_head *next, *prev;
+	struct list_head *next, *prev;
 };
 
 #define LIST_HEAD_INIT(name) { &(name), &(name) }
@@ -51,33 +51,26 @@ struct list_head {
 } while (0)
 
 /* Prototypes of C functions. */
-int list_size (struct list_head *list);
-void list_splice_init(struct list_head *list,
-                      struct list_head *head);
-
-void list_splice_init(struct list_head *list,
-                      struct list_head *head);
+int list_size(struct list_head * list);
+void list_splice_init(struct list_head *list, struct list_head *head);
 
 void list_splice(struct list_head *list, struct list_head *head);
 
-void __list_splice(struct list_head *list,
-                   struct list_head *head);
+void __list_splice(struct list_head *list, struct list_head *head);
 
 int list_empty(struct list_head *head);
 
-void list_move_tail(struct list_head *list,
-                    struct list_head *head);
+void list_move_tail(struct list_head *list, struct list_head *head);
 
 void list_move(struct list_head *list, struct list_head *head);
 
 void list_del_init(struct list_head *entry);
 void list_del(struct list_head *entry);
-void __list_del(struct list_head * prev, struct list_head * next);
+void __list_del(struct list_head *prev, struct list_head * next);
 void list_add_tail(struct list_head *new, struct list_head *head);
 void list_add(struct list_head *new, struct list_head *head);
-void __list_add(struct list_head *new,
-                struct list_head *prev,
-                struct list_head *next);
+void __list_add(struct list_head *new, struct list_head *prev,
+    struct list_head *next);
 
 #ifdef HAVE___BUILTIN_PREFETCH
 #define prefetch(x) __builtin_prefetch(x)
@@ -217,6 +210,7 @@ void __list_add(struct list_head *new,
     first = NULL;                                               \
 }
 
-void list_sort(void *priv, struct list_head *head,
-               int (*cmp)(void *priv, struct list_head *a,
-                          struct list_head *b));
+void
+list_sort(void *priv, struct list_head * head,
+    int (*cmp) (void *priv, struct list_head * a,
+	struct list_head * b));
