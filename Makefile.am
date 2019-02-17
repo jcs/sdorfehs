@@ -24,8 +24,8 @@ MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure src/config.h.in \
 			build-aux/depcomp build-aux/install-sh  \
 			build-aux/missing build-aux/texinfo.tex
 
-SUBDIRS			= src doc contrib
+SUBDIRS			= src doc
 
-doc_DATA		= AUTHORS COPYING NEWS README
+doc_DATA		= AUTHORS COPYING README
 
 EXTRA_DIST		= $(doc_DATA)

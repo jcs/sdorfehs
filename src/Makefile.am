@@ -77,15 +77,3 @@ ratpoison_SOURCES	= actions.c		\
 			window.h		\
 			xrandr.c 		\
 			xrandr.h
-
-TESTS =			test-sbuf-utf8-nconcat
-check_PROGRAMS =	test-sbuf-utf8-nconcat
-
-test_sbuf_utf8_nconcat_SOURCES = 		\
-			test-sbuf-utf8-nconcat.c \
-			sbuf.c			\
-			sbuf.h			\
-			utf8.c			\
-			utf8.h			\
-			util.c			\
-			util.h

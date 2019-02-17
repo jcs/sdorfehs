@@ -17,7 +17,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-info_TEXINFOS = ratpoison.texi
 man_MANS      = ratpoison.1
 CLEANFILES    = ratpoison.1
 EXTRA_DIST    = $(srcdir)/ratpoison.mdoc.1 $(srcdir)/ratpoison.man.1 sample.ratpoisonrc ipaq.ratpoisonrc fdl.texi
