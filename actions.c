@@ -130,38 +130,38 @@ static char *fdump(rp_screen *screen);
 static int spawn(char *data, int raw, rp_frame *frame);
 
 /* setter function prototypes */
-static cmdret *set_resizeunit(struct cmdarg **args);
-static cmdret *set_wingravity(struct cmdarg **args);
-static cmdret *set_transgravity(struct cmdarg **args);
-static cmdret *set_maxsizegravity(struct cmdarg **args);
-static cmdret *set_bargravity(struct cmdarg **args);
-static cmdret *set_font(struct cmdarg **args);
-static cmdret *set_padding(struct cmdarg **args);
-static cmdret *set_border(struct cmdarg **args);
-static cmdret *set_onlyborder(struct cmdarg **args);
 static cmdret *set_barborder(struct cmdarg **args);
+static cmdret *set_bargravity(struct cmdarg **args);
 static cmdret *set_barinpadding(struct cmdarg **args);
-static cmdret *set_inputwidth(struct cmdarg **args);
-static cmdret *set_waitcursor(struct cmdarg **args);
-static cmdret *set_winfmt(struct cmdarg **args);
-static cmdret *set_winname(struct cmdarg **args);
-static cmdret *set_framefmt(struct cmdarg **args);
-static cmdret *set_fgcolor(struct cmdarg **args);
-static cmdret *set_bgcolor(struct cmdarg **args);
-static cmdret *set_fwcolor(struct cmdarg **args);
-static cmdret *set_bwcolor(struct cmdarg **args);
 static cmdret *set_barpadding(struct cmdarg **args);
-static cmdret *set_winliststyle(struct cmdarg **args);
-static cmdret *set_framesels(struct cmdarg **args);
-static cmdret *set_maxundos(struct cmdarg **args);
-static cmdret *set_infofmt(struct cmdarg **args);
-static cmdret *set_topkmap(struct cmdarg **args);
-static cmdret *set_historysize(struct cmdarg **args);
-static cmdret *set_msgwait(struct cmdarg **args);
+static cmdret *set_bgcolor(struct cmdarg **args);
+static cmdret *set_border(struct cmdarg **args);
+static cmdret *set_bwcolor(struct cmdarg **args);
+static cmdret *set_fgcolor(struct cmdarg **args);
+static cmdret *set_font(struct cmdarg **args);
+static cmdret *set_framefmt(struct cmdarg **args);
 static cmdret *set_framemsgwait(struct cmdarg **args);
-static cmdret *set_startupmessage(struct cmdarg **args);
-static cmdret *set_warp(struct cmdarg **args);
+static cmdret *set_framesels(struct cmdarg **args);
+static cmdret *set_fwcolor(struct cmdarg **args);
+static cmdret *set_historysize(struct cmdarg **args);
+static cmdret *set_infofmt(struct cmdarg **args);
+static cmdret *set_inputwidth(struct cmdarg **args);
+static cmdret *set_maxsizegravity(struct cmdarg **args);
+static cmdret *set_maxundos(struct cmdarg **args);
+static cmdret *set_msgwait(struct cmdarg **args);
+static cmdret *set_onlyborder(struct cmdarg **args);
+static cmdret *set_padding(struct cmdarg **args);
+static cmdret *set_resizeunit(struct cmdarg **args);
 static cmdret *set_rudeness(struct cmdarg **args);
+static cmdret *set_startupmessage(struct cmdarg **args);
+static cmdret *set_topkmap(struct cmdarg **args);
+static cmdret *set_transgravity(struct cmdarg **args);
+static cmdret *set_waitcursor(struct cmdarg **args);
+static cmdret *set_warp(struct cmdarg **args);
+static cmdret *set_winfmt(struct cmdarg **args);
+static cmdret *set_wingravity(struct cmdarg **args);
+static cmdret *set_winliststyle(struct cmdarg **args);
+static cmdret *set_winname(struct cmdarg **args);
 
 /* command function prototypes. */
 static cmdret *cmd_abort(int interactive, struct cmdarg **args);
@@ -171,12 +171,23 @@ static cmdret *cmd_banish(int interactive, struct cmdarg **args);
 static cmdret *cmd_banishrel(int interactive, struct cmdarg **args);
 static cmdret *cmd_chdir(int interactive, struct cmdarg **args);
 static cmdret *cmd_clrunmanaged(int interactive, struct cmdarg **args);
+static cmdret *cmd_cnext(int interactive, struct cmdarg **args);
 static cmdret *cmd_colon(int interactive, struct cmdarg **args);
 static cmdret *cmd_commands(int interactive, struct cmdarg **args);
+static cmdret *cmd_cother(int interactive, struct cmdarg **args);
+static cmdret *cmd_cprev(int interactive, struct cmdarg **args);
 static cmdret *cmd_curframe(int interactive, struct cmdarg **args);
+static cmdret *cmd_dedicate(int interactive, struct cmdarg **args);
+static cmdret *cmd_definekey(int interactive, struct cmdarg **args);
 static cmdret *cmd_delete(int interactive, struct cmdarg **args);
+static cmdret *cmd_delkmap(int interactive, struct cmdarg **args);
+static cmdret *cmd_describekey(int interactive, struct cmdarg **args);
 static cmdret *cmd_echo(int interactive, struct cmdarg **args);
 static cmdret *cmd_escape(int interactive, struct cmdarg **args);
+static cmdret *cmd_exchangedown(int interactive, struct cmdarg **args);
+static cmdret *cmd_exchangeleft(int interactive, struct cmdarg **args);
+static cmdret *cmd_exchangeright(int interactive, struct cmdarg **args);
+static cmdret *cmd_exchangeup(int interactive, struct cmdarg **args);
 static cmdret *cmd_exec(int interactive, struct cmdarg **args);
 static cmdret *cmd_execa(int interactive, struct cmdarg **args);
 static cmdret *cmd_execf(int interactive, struct cmdarg **args);
@@ -186,35 +197,35 @@ static cmdret *cmd_focuslast(int interactive, struct cmdarg **args);
 static cmdret *cmd_focusleft(int interactive, struct cmdarg **args);
 static cmdret *cmd_focusright(int interactive, struct cmdarg **args);
 static cmdret *cmd_focusup(int interactive, struct cmdarg **args);
-static cmdret *cmd_exchangeup(int interactive, struct cmdarg **args);
-static cmdret *cmd_exchangedown(int interactive, struct cmdarg **args);
-static cmdret *cmd_exchangeleft(int interactive, struct cmdarg **args);
-static cmdret *cmd_exchangeright(int interactive, struct cmdarg **args);
-static cmdret *cmd_swap(int interactive, struct cmdarg **args);
 static cmdret *cmd_frestore(int interactive, struct cmdarg **args);
 static cmdret *cmd_fselect(int interactive, struct cmdarg **args);
 static cmdret *cmd_gdelete(int interactive, struct cmdarg **args);
 static cmdret *cmd_getenv(int interactive, struct cmdarg **args);
+static cmdret *cmd_getsel(int interactive, struct cmdarg **args);
 static cmdret *cmd_gmerge(int interactive, struct cmdarg **args);
 static cmdret *cmd_gmove(int interactive, struct cmdarg **args);
 static cmdret *cmd_gnew(int interactive, struct cmdarg **args);
 static cmdret *cmd_gnewbg(int interactive, struct cmdarg **args);
 static cmdret *cmd_gnext(int interactive, struct cmdarg **args);
 static cmdret *cmd_gnumber(int interactive, struct cmdarg **args);
-static cmdret *cmd_gprev(int interactive, struct cmdarg **args);
 static cmdret *cmd_gother(int interactive, struct cmdarg **args);
+static cmdret *cmd_gprev(int interactive, struct cmdarg **args);
 static cmdret *cmd_gravity(int interactive, struct cmdarg **args);
 static cmdret *cmd_grename(int interactive, struct cmdarg **args);
 static cmdret *cmd_groups(int interactive, struct cmdarg **args);
 static cmdret *cmd_gselect(int interactive, struct cmdarg **args);
 static cmdret *cmd_h_split(int interactive, struct cmdarg **args);
 static cmdret *cmd_help(int interactive, struct cmdarg **args);
+static cmdret *cmd_inext(int interactive, struct cmdarg **args);
 static cmdret *cmd_info(int interactive, struct cmdarg **args);
+static cmdret *cmd_iother(int interactive, struct cmdarg **args);
+static cmdret *cmd_iprev(int interactive, struct cmdarg **args);
 static cmdret *cmd_kill(int interactive, struct cmdarg **args);
 static cmdret *cmd_lastmsg(int interactive, struct cmdarg **args);
 static cmdret *cmd_link(int interactive, struct cmdarg **args);
 static cmdret *cmd_listhook(int interactive, struct cmdarg **args);
 static cmdret *cmd_meta(int interactive, struct cmdarg **args);
+static cmdret *cmd_newkmap(int interactive, struct cmdarg **args);
 static cmdret *cmd_next(int interactive, struct cmdarg **args);
 static cmdret *cmd_next_frame(int interactive, struct cmdarg **args);
 static cmdret *cmd_nextscreen(int interactive, struct cmdarg **args);
@@ -224,53 +235,42 @@ static cmdret *cmd_other(int interactive, struct cmdarg **args);
 static cmdret *cmd_prev(int interactive, struct cmdarg **args);
 static cmdret *cmd_prev_frame(int interactive, struct cmdarg **args);
 static cmdret *cmd_prevscreen(int interactive, struct cmdarg **args);
+static cmdret *cmd_prompt(int interactive, struct cmdarg **args);
+static cmdret *cmd_putsel(int interactive, struct cmdarg **args);
 static cmdret *cmd_quit(int interactive, struct cmdarg **args);
+static cmdret *cmd_ratclick(int interactive, struct cmdarg **args);
+static cmdret *cmd_rathold(int interactive, struct cmdarg **args);
+static cmdret *cmd_ratinfo(int interactive, struct cmdarg **args);
+static cmdret *cmd_ratrelinfo(int interactive, struct cmdarg **args);
+static cmdret *cmd_ratrelwarp(int interactive, struct cmdarg **args);
+static cmdret *cmd_ratwarp(int interactive, struct cmdarg **args);
+static cmdret *cmd_readkey(int interactive, struct cmdarg **args);
 static cmdret *cmd_redisplay(int interactive, struct cmdarg **args);
+static cmdret *cmd_redo(int interactive, struct cmdarg **args);
 static cmdret *cmd_remhook(int interactive, struct cmdarg **args);
 static cmdret *cmd_remove(int interactive, struct cmdarg **args);
 static cmdret *cmd_rename(int interactive, struct cmdarg **args);
 static cmdret *cmd_resize(int interactive, struct cmdarg **args);
 static cmdret *cmd_restart(int interactive, struct cmdarg **args);
+static cmdret *cmd_sdump(int interactive, struct cmdarg **args);
 static cmdret *cmd_select(int interactive, struct cmdarg **args);
+static cmdret *cmd_set(int interactive, struct cmdarg **args);
 static cmdret *cmd_setenv(int interactive, struct cmdarg **args);
+static cmdret *cmd_sfdump(int interactive, struct cmdarg **args);
+static cmdret *cmd_sfrestore(int interactive, struct cmdarg **args);
 static cmdret *cmd_shrink(int interactive, struct cmdarg **args);
 static cmdret *cmd_source(int interactive, struct cmdarg **args);
+static cmdret *cmd_sselect(int interactive, struct cmdarg **args);
+static cmdret *cmd_swap(int interactive, struct cmdarg **args);
 static cmdret *cmd_unalias(int interactive, struct cmdarg **args);
+static cmdret *cmd_undefinekey(int interactive, struct cmdarg **args);
+static cmdret *cmd_undo(int interactive, struct cmdarg **args);
 static cmdret *cmd_unmanage(int interactive, struct cmdarg **args);
 static cmdret *cmd_unsetenv(int interactive, struct cmdarg **args);
 static cmdret *cmd_v_split(int interactive, struct cmdarg **args);
 static cmdret *cmd_verbexec(int interactive, struct cmdarg **args);
 static cmdret *cmd_version(int interactive, struct cmdarg **args);
 static cmdret *cmd_windows(int interactive, struct cmdarg **args);
-static cmdret *cmd_readkey(int interactive, struct cmdarg **args);
-static cmdret *cmd_newkmap(int interactive, struct cmdarg **args);
-static cmdret *cmd_delkmap(int interactive, struct cmdarg **args);
-static cmdret *cmd_definekey(int interactive, struct cmdarg **args);
-static cmdret *cmd_undefinekey(int interactive, struct cmdarg **args);
-static cmdret *cmd_set(int interactive, struct cmdarg **args);
-static cmdret *cmd_sselect(int interactive, struct cmdarg **args);
-static cmdret *cmd_ratwarp(int interactive, struct cmdarg **args);
-static cmdret *cmd_ratinfo(int interactive, struct cmdarg **args);
-static cmdret *cmd_ratrelinfo(int interactive, struct cmdarg **args);
-static cmdret *cmd_ratclick(int interactive, struct cmdarg **args);
-static cmdret *cmd_ratrelwarp(int interactive, struct cmdarg **args);
-static cmdret *cmd_rathold(int interactive, struct cmdarg **args);
-static cmdret *cmd_cnext(int interactive, struct cmdarg **args);
-static cmdret *cmd_cother(int interactive, struct cmdarg **args);
-static cmdret *cmd_cprev(int interactive, struct cmdarg **args);
-static cmdret *cmd_dedicate(int interactive, struct cmdarg **args);
-static cmdret *cmd_describekey(int interactive, struct cmdarg **args);
-static cmdret *cmd_inext(int interactive, struct cmdarg **args);
-static cmdret *cmd_iother(int interactive, struct cmdarg **args);
-static cmdret *cmd_iprev(int interactive, struct cmdarg **args);
-static cmdret *cmd_prompt(int interactive, struct cmdarg **args);
-static cmdret *cmd_sdump(int interactive, struct cmdarg **args);
-static cmdret *cmd_sfdump(int interactive, struct cmdarg **args);
-static cmdret *cmd_sfrestore(int interactive, struct cmdarg **args);
-static cmdret *cmd_undo(int interactive, struct cmdarg **args);
-static cmdret *cmd_redo(int interactive, struct cmdarg **args);
-static cmdret *cmd_putsel(int interactive, struct cmdarg **args);
-static cmdret *cmd_getsel(int interactive, struct cmdarg **args);
 
 static void
 add_set_var(char *name, cmdret *(*fn)(struct cmdarg **), int nargs, ...)
@@ -402,23 +402,32 @@ init_user_commands(void)
 	add_command("chdir",		cmd_chdir,	1, 0, 0,
 	            "Dir: ", arg_REST);
 	add_command("clrunmanaged",	cmd_clrunmanaged, 0, 0, 0);
+	add_command("cnext",		cmd_cnext,	0, 0, 0);
 	add_command("colon",		cmd_colon,	1, 0, 0,
 	            "", arg_REST);
+	add_command("commands",		cmd_commands,	0, 0, 0);
+	add_command("cother",		cmd_cother,	0, 0, 0);
+	add_command("cprev",		cmd_cprev,	0, 0, 0);
 	add_command("curframe",		cmd_curframe,	0, 0, 0);
+	add_command("dedicate",		cmd_dedicate,	1, 0, 0,
+                    "", arg_NUMBER);
 	add_command("definekey",	cmd_definekey,	3, 3, 3,
 	            "Keymap: ", arg_KEYMAP,
 	            "Key: ", arg_KEY,
 	            "Command: ", arg_COMMAND);
-	add_command("undefinekey",	cmd_undefinekey, 2, 2, 2,
-	            "Keymap: ", arg_KEYMAP,
-	            "Key: ", arg_KEY);
 	add_command("delete",		cmd_delete,	0, 0, 0);
 	add_command("delkmap",		cmd_delkmap,	1, 1, 1,
 	            "Keymap: ", arg_KEYMAP);
+	add_command("describekey",	cmd_describekey, 1, 1, 1,
+                    "Keymap: ", arg_KEYMAP);
 	add_command("echo",		cmd_echo,	1, 1, 1,
 	            "Echo: ", arg_RAW);
 	add_command("escape",		cmd_escape,	1, 1, 1,
 	            "Key: ", arg_KEY);
+	add_command("exchangedown",	cmd_exchangedown, 0, 0, 0);
+	add_command("exchangeleft",	cmd_exchangeleft, 0, 0, 0);
+	add_command("exchangeright",	cmd_exchangeright, 0, 0, 0);
+	add_command("exchangeup",	cmd_exchangeup,	0, 0, 0);
 	add_command("exec",		cmd_exec,	1, 1, 1,
 	            "/bin/sh -c ", arg_SHELLCMD);
 	add_command("execa",		cmd_execa,	1, 1, 1,
@@ -429,15 +438,8 @@ init_user_commands(void)
 	add_command("fdump",		cmd_fdump,	1, 0, 0,
 	            "", arg_NUMBER);
 	add_command("focus",		cmd_next_frame,	0, 0, 0);
-	add_command("focusprev",	cmd_prev_frame,	0, 0, 0);
 	add_command("focusdown",	cmd_focusdown,	0, 0, 0);
-	add_command("exchangeup",	cmd_exchangeup,	0, 0, 0);
-	add_command("exchangedown",	cmd_exchangedown, 0, 0, 0);
-	add_command("exchangeleft",	cmd_exchangeleft, 0, 0, 0);
-	add_command("exchangeright",	cmd_exchangeright, 0, 0, 0);
-	add_command("swap",		cmd_swap,	2, 1, 1,
-	            "destination frame: ", arg_FRAME,
-	            "source frame: ", arg_FRAME);
+	add_command("focusprev",	cmd_prev_frame,	0, 0, 0);
 	add_command("focuslast",	cmd_focuslast,	0, 0, 0);
 	add_command("focusleft",	cmd_focusleft,	0, 0, 0);
 	add_command("focusright",	cmd_focusright,	0, 0, 0);
@@ -450,6 +452,7 @@ init_user_commands(void)
 	            "Group:", arg_GROUP);
 	add_command("getenv",		cmd_getenv,	1, 1, 1,
 	            "Variable: ", arg_STRING);
+	add_command("getsel",		cmd_getsel,	0, 0, 0);
 	add_command("gmerge",		cmd_gmerge,	1, 1, 1,
 	            "Group: ", arg_GROUP);
 	add_command("gmove",		cmd_gmove,	1, 1, 1,
@@ -458,16 +461,16 @@ init_user_commands(void)
 	            "Name: ", arg_STRING);
 	add_command("gnewbg",		cmd_gnewbg,	1, 1, 1,
 	            "Name: ", arg_STRING);
+	add_command("gnext",		cmd_gnext,	0, 0, 0);
 	add_command("gnumber",		cmd_gnumber,	2, 1, 1,
 	            "Number: ", arg_NUMBER,
 	            "Number: ", arg_NUMBER);
-	add_command("grename",		cmd_grename,	1, 1, 1,
-	            "Change group name to: ", arg_REST);
-	add_command("gnext",		cmd_gnext,	0, 0, 0);
-	add_command("gprev",		cmd_gprev,	0, 0, 0);
 	add_command("gother",		cmd_gother,	0, 0, 0);
+	add_command("gprev",		cmd_gprev,	0, 0, 0);
 	add_command("gravity",		cmd_gravity,	1, 0, 0,
 	            "Gravity: ", arg_GRAVITY);
+	add_command("grename",		cmd_grename,	1, 1, 1,
+	            "Change group name to: ", arg_REST);
 	add_command("groups",		cmd_groups,	0, 0, 0);
 	add_command("gselect",		cmd_gselect,	1, 1, 1,
 	            "Group: ", arg_GROUP);
@@ -475,8 +478,11 @@ init_user_commands(void)
 	            "Keymap: ", arg_KEYMAP);
 	add_command("hsplit",		cmd_h_split,	1, 0, 0,
 	            "Split: ", arg_STRING);
+	add_command("inext",		cmd_inext,	0, 0, 0);
 	add_command("info",		cmd_info,	1, 0, 0,
 	            "Format: ", arg_REST);
+	add_command("iother",		cmd_iother,	0, 0, 0);
+	add_command("iprev",		cmd_iprev,	0, 0, 0);
 	add_command("kill",		cmd_kill,	0, 0, 0);
 	add_command("lastmsg",		cmd_lastmsg,	0, 0, 0);
 	add_command("link",		cmd_link,	2, 1, 1,
@@ -497,6 +503,10 @@ init_user_commands(void)
 	add_command("other",		cmd_other,	0, 0, 0);
 	add_command("prev",		cmd_prev,	0, 0, 0);
 	add_command("prevscreen",	cmd_prevscreen,	0, 0, 0);
+	add_command("prompt",		cmd_prompt,	1, 0, 0,
+                    "", arg_REST);
+	add_command("putsel",		cmd_putsel,	1, 1, 1,
+                    "Text: ", arg_RAW);
 	add_command("quit",		cmd_quit,	0, 0, 0);
 	add_command("ratinfo",		cmd_ratinfo,	0, 0, 0);
 	add_command("ratrelinfo",	cmd_ratrelinfo,	0, 0, 0);
@@ -515,6 +525,7 @@ init_user_commands(void)
 	add_command("readkey",		cmd_readkey,	1, 1, 1,
                     "Keymap: ", arg_KEYMAP);
 	add_command("redisplay",	cmd_redisplay,	0, 0, 0);
+	add_command("redo",		cmd_redo,	0, 0, 0);
 	add_command("remhook",		cmd_remhook,	2, 2, 2,
                     "Hook: ", arg_HOOK,
                     "Command: ", arg_COMMAND);
@@ -523,6 +534,7 @@ init_user_commands(void)
                     "", arg_NUMBER,
                     "", arg_NUMBER);
 	add_command("restart",		cmd_restart,	0, 0, 0);
+	add_command("sdump",		cmd_sdump,	0, 0, 0);
 	add_command("select",		cmd_select,	1, 0, 1,
                     "Select window: ", arg_REST);
 	add_command("set",		cmd_set,	2, 0, 0,
@@ -531,6 +543,7 @@ init_user_commands(void)
 	add_command("setenv",		cmd_setenv,	2, 2, 2,
                     "Variable: ", arg_STRING,
                     "Value: ", arg_REST);
+	add_command("sfdump",		cmd_sfdump,	0, 0, 0);
 	add_command("shrink",		cmd_shrink,	0, 0, 0);
 	add_command("sfrestore",	cmd_sfrestore,	1, 1, 1,
                     "Frames: ", arg_REST);
@@ -538,10 +551,17 @@ init_user_commands(void)
                     "File: ", arg_REST);
 	add_command("sselect",		cmd_sselect,	1, 1, 1,
                     "Screen: ", arg_NUMBER);
+	add_command("swap",		cmd_swap,	2, 1, 1,
+	            "destination frame: ", arg_FRAME,
+	            "source frame: ", arg_FRAME);
 	add_command("title",		cmd_rename,	1, 1, 1,
                     "Set window's title to: ", arg_REST);
 	add_command("unalias",		cmd_unalias,	1, 1, 1,
                     "Alias: ", arg_STRING);
+	add_command("undefinekey",	cmd_undefinekey, 2, 2, 2,
+	            "Keymap: ", arg_KEYMAP,
+	            "Key: ", arg_KEY);
+	add_command("undo",		cmd_undo,	0, 0, 0);
 	add_command("unmanage",		cmd_unmanage,	1, 1, 0,
                     "Unmanage: ", arg_REST);
 	add_command("unsetenv",		cmd_unsetenv,	1, 1, 1,
@@ -553,26 +573,6 @@ init_user_commands(void)
                     "Split: ", arg_STRING);
 	add_command("windows",		cmd_windows,	1, 0, 0,
                     "", arg_REST);
-	add_command("cnext",		cmd_cnext,	0, 0, 0);
-	add_command("cother",		cmd_cother,	0, 0, 0);
-	add_command("cprev",		cmd_cprev,	0, 0, 0);
-	add_command("dedicate",		cmd_dedicate,	1, 0, 0,
-                    "", arg_NUMBER);
-	add_command("describekey",	cmd_describekey, 1, 1, 1,
-                    "Keymap: ", arg_KEYMAP);
-	add_command("inext",		cmd_inext,	0, 0, 0);
-	add_command("iother",		cmd_iother,	0, 0, 0);
-	add_command("iprev",		cmd_iprev,	0, 0, 0);
-	add_command("prompt",		cmd_prompt,	1, 0, 0,
-                    "", arg_REST);
-	add_command("sdump",		cmd_sdump,	0, 0, 0);
-	add_command("sfdump",		cmd_sfdump,	0, 0, 0);
-	add_command("undo",		cmd_undo,	0, 0, 0);
-	add_command("redo",		cmd_redo,	0, 0, 0);
-	add_command("putsel",		cmd_putsel,	1, 1, 1,
-                    "Text: ", arg_RAW);
-	add_command("getsel",		cmd_getsel,	0, 0, 0);
-	add_command("commands",		cmd_commands,	0, 0, 0);
 	/* @end (tag required for genrpbindings) */
 
 	init_set_vars();
