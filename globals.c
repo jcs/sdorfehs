@@ -47,9 +47,6 @@ int hup_signalled = 0;
 int chld_signalled = 0;
 int rat_x;
 int rat_y;
-int rat_visible = 1;	/* rat is visible by default */
-
-char *rp_exec_newwm = NULL;
 
 int rp_font_ascent, rp_font_descent, rp_font_width;
 

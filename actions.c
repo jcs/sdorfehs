@@ -24,7 +24,6 @@
 #include <X11/keysym.h>
 #include <string.h>
 #include <strings.h>
-#include <time.h>
 #include <errno.h>
 #include <signal.h>
 #include <limits.h>
@@ -213,12 +212,9 @@ static cmdret *cmd_help(int interactive, struct cmdarg **args);
 static cmdret *cmd_info(int interactive, struct cmdarg **args);
 static cmdret *cmd_kill(int interactive, struct cmdarg **args);
 static cmdret *cmd_lastmsg(int interactive, struct cmdarg **args);
-static cmdret *cmd_license(int interactive, struct cmdarg **args);
 static cmdret *cmd_link(int interactive, struct cmdarg **args);
 static cmdret *cmd_listhook(int interactive, struct cmdarg **args);
 static cmdret *cmd_meta(int interactive, struct cmdarg **args);
-static cmdret *cmd_msgwait(int interactive, struct cmdarg **args);
-static cmdret *cmd_newwm(int interactive, struct cmdarg **args);
 static cmdret *cmd_next(int interactive, struct cmdarg **args);
 static cmdret *cmd_next_frame(int interactive, struct cmdarg **args);
 static cmdret *cmd_nextscreen(int interactive, struct cmdarg **args);
@@ -235,21 +231,16 @@ static cmdret *cmd_remove(int interactive, struct cmdarg **args);
 static cmdret *cmd_rename(int interactive, struct cmdarg **args);
 static cmdret *cmd_resize(int interactive, struct cmdarg **args);
 static cmdret *cmd_restart(int interactive, struct cmdarg **args);
-static cmdret *cmd_rudeness(int interactive, struct cmdarg **args);
 static cmdret *cmd_select(int interactive, struct cmdarg **args);
 static cmdret *cmd_setenv(int interactive, struct cmdarg **args);
 static cmdret *cmd_shrink(int interactive, struct cmdarg **args);
 static cmdret *cmd_source(int interactive, struct cmdarg **args);
-static cmdret *cmd_startup_message(int interactive, struct cmdarg **args);
-static cmdret *cmd_time(int interactive, struct cmdarg **args);
-static cmdret *cmd_tmpwm(int interactive, struct cmdarg **args);
 static cmdret *cmd_unalias(int interactive, struct cmdarg **args);
 static cmdret *cmd_unmanage(int interactive, struct cmdarg **args);
 static cmdret *cmd_unsetenv(int interactive, struct cmdarg **args);
 static cmdret *cmd_v_split(int interactive, struct cmdarg **args);
 static cmdret *cmd_verbexec(int interactive, struct cmdarg **args);
 static cmdret *cmd_version(int interactive, struct cmdarg **args);
-static cmdret *cmd_warp(int interactive, struct cmdarg **args);
 static cmdret *cmd_windows(int interactive, struct cmdarg **args);
 static cmdret *cmd_readkey(int interactive, struct cmdarg **args);
 static cmdret *cmd_newkmap(int interactive, struct cmdarg **args);
@@ -907,8 +898,6 @@ initialize_default_keybindings(void)
 	add_keybinding(XK_K, RP_CONTROL_MASK, "kill", map);
 	add_keybinding(XK_Return, 0, "next", map);
 	add_keybinding(XK_Return, RP_CONTROL_MASK, "next", map);
-	add_keybinding(XK_a, 0, "time", map);
-	add_keybinding(XK_a, RP_CONTROL_MASK, "time", map);
 	add_keybinding(XK_b, 0, "banish", map);
 	add_keybinding(XK_b, RP_CONTROL_MASK, "banish", map);
 	add_keybinding(XK_c, 0, "exec " TERM_PROG, map);
@@ -935,8 +924,6 @@ initialize_default_keybindings(void)
 	add_keybinding(XK_space, RP_CONTROL_MASK, "next", map);
 	add_keybinding(XK_v, 0, "version", map);
 	add_keybinding(XK_v, RP_CONTROL_MASK, "version", map);
-	add_keybinding(XK_V, 0, "license", map);
-	add_keybinding(XK_V, RP_CONTROL_MASK, "license", map);
 	add_keybinding(XK_w, 0, "windows", map);
 	add_keybinding(XK_w, RP_CONTROL_MASK, "windows", map);
 	add_keybinding(XK_s, 0, "split", map);
@@ -2845,47 +2832,11 @@ spawn(char *cmd, int raw, rp_frame *frame)
 	return pid;
 }
 
-/*
- * Switch to a different Window Manager. Thanks to "Chr. v. Stuckrad"
- * <stucki@math.fu-berlin.de> for the patch.
- */
-cmdret *
-cmd_newwm(int interactive UNUSED, struct cmdarg **args)
-{
-	/* in the event loop, this will switch WMs. */
-	rp_exec_newwm = xstrdup(ARG_STRING(0));
-
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
 cmdret *
 cmd_quit(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	kill_signalled = 1;
 	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-/*
- * Show the current time on the bar. Thanks to Martin Samuelsson
- * <cosis@lysator.liu.se> for the patch. Thanks to Jonathan Walther
- * <krooger@debian.org> for making it pretty.
- */
-cmdret *
-cmd_time(int interactive UNUSED, struct cmdarg **args UNUSED)
-{
-	char *msg, *tmp;
-	time_t timep;
-	cmdret *ret;
-
-	timep = time(NULL);
-	tmp = ctime(&timep);
-	msg = xstrdup(tmp);
-	msg[strcspn(msg, "\n")] = '\0';	/* Remove the newline */
-
-	ret = cmdret_new(RET_SUCCESS, "%s", msg);
-	free(msg);
-
-	return ret;
 }
 
 /* Assign a new number to a window ala screen's number command. */
@@ -3453,92 +3404,6 @@ cmd_curframe(int interactive, struct cmdarg **args UNUSED)
 	return cmdret_new(RET_SUCCESS, "%d", current_frame()->number);
 }
 
-/*
- * Thanks to Martin Samuelsson <cosis@lysator.liu.se> for the original patch.
- */
-cmdret *
-cmd_license(int interactive UNUSED, struct cmdarg **args UNUSED)
-{
-	rp_screen *s = rp_current_screen;
-	int x = 10;
-	int y = 10;
-	int i;
-	int max_width = 0;
-	char *license_text[] = {PACKAGE " " VERSION,
-		"",
-		"Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts",
-		"",
-		"ratpoison is free software; you can redistribute it and/or modify ",
-		"it under the terms of the GNU General Public License as published by ",
-		"the Free Software Foundation; either version 2, or (at your option) ",
-		"any later version.",
-		"",
-		"ratpoison is distributed in the hope that it will be useful, ",
-		"but WITHOUT ANY WARRANTY; without even the implied warranty of ",
-		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the ",
-		"GNU General Public License for more details.",
-		"",
-		"You should have received a copy of the GNU General Public License ",
-		"along with this software; see the file COPYING.  If not, write to ",
-		"the Free Software Foundation, Inc., 59 Temple Place, Suite 330, ",
-		"Boston, MA 02111-1307 USA",
-		"",
-		"Send bugreports, fixes, enhancements, t-shirts, money, beer & pizza ",
-		"to ratpoison-devel@nongnu.org or visit ",
-		"http://www.nongnu.org/ratpoison/",
-		"",
-		"[Press any key to end.] ",
-	NULL};
-
-	/* Switch to the default colormap. */
-	if (current_window())
-		XUninstallColormap(dpy, current_window()->colormap);
-	XInstallColormap(dpy, s->def_cmap);
-
-	XMapRaised(dpy, s->help_window);
-
-	/* Find the longest line. */
-	for (i = 0; license_text[i]; i++) {
-		int tmp;
-
-		tmp = rp_text_width(s, license_text[i], -1);
-		if (tmp > max_width)
-			max_width = tmp;
-	}
-
-	/* Offset the text so its in the center. */
-	x = s->left + (s->width - max_width) / 2;
-	y = s->top + (s->height - i * FONT_HEIGHT(s)) / 2;
-	if (x < 0)
-		x = 0;
-	if (y < 0)
-		y = 0;
-
-	/* Print the text. */
-	for (i = 0; license_text[i]; i++) {
-		rp_draw_string(s, s->help_window, STYLE_NORMAL,
-		    x, y + FONT_ASCENT(s),
-		    license_text[i], -1);
-
-		y += FONT_HEIGHT(s);
-	}
-
-	/* Wait for a key press. */
-	read_any_key();
-	XUnmapWindow(dpy, s->help_window);
-
-	/* Possibly restore colormap. */
-	if (current_window()) {
-		XUninstallColormap(dpy, s->def_cmap);
-		XInstallColormap(dpy, current_window()->colormap);
-	}
-	/* The help window overlaps the bar, so redraw it. */
-	if (rp_current_screen->bar_is_raised)
-		redraw_last_message();
-
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
 cmdret *
 cmd_help(int interactive, struct cmdarg **args)
 {
@@ -3709,16 +3574,6 @@ set_rudeness(struct cmdarg **args)
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
-/* compat */
-cmdret *
-cmd_rudeness(int interactive UNUSED, struct cmdarg **args)
-{
-	PRINT_WARNING(("command \"rudeness\" is deprecated, "
-		"use \"set rudeness\" instead\n"));
-
-	return set_rudeness(args);
-}
-
 char *
 wingravity_to_string(int g)
 {
@@ -3820,16 +3675,6 @@ set_msgwait(struct cmdarg **args)
 		defaults.bar_timeout = ARG(0, number);
 
 	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-/* compat */
-cmdret *
-cmd_msgwait(int interactive UNUSED, struct cmdarg **args)
-{
-	PRINT_WARNING(("command \"msgwait\" is deprecated, "
-		"use \"set msgwait\" instead\n"));
-
-	return set_msgwait(args);
 }
 
 static cmdret *
@@ -4590,27 +4435,6 @@ set_startupmessage(struct cmdarg **args)
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
-/* compat */
-cmdret *
-cmd_startup_message(int interactive UNUSED, struct cmdarg **args)
-{
-	PRINT_WARNING(("command \"startup_message\" is deprecated, "
-		"use \"set startupmessage\" instead\n"));
-	if (args[0] == NULL)
-		return cmdret_new(RET_SUCCESS, "%s",
-		    defaults.startup_message ? "on" : "off");
-
-	if (!strcasecmp(ARG_STRING(0), "on"))
-		defaults.startup_message = 1;
-	else if (!strcasecmp(ARG_STRING(0), "off"))
-		defaults.startup_message = 0;
-	else
-		return cmdret_new(RET_FAILURE,
-		    "startup_message: invalid argument");
-
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
 cmdret *
 cmd_focuslast(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
@@ -4777,283 +4601,6 @@ set_warp(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE, "set warp: invalid argument");
 
 	defaults.warp = ARG(0, number);
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-/* compat */
-cmdret *
-cmd_warp(int interactive UNUSED, struct cmdarg **args)
-{
-	PRINT_WARNING(("command \"warp\" is deprecated, "
-		"use \"set warp\" instead\n"));
-
-	if (args[0] == NULL)
-		return cmdret_new(RET_SUCCESS, "%s",
-		    defaults.warp ? "on" : "off");
-
-	if (!strcasecmp(ARG_STRING(0), "on"))
-		defaults.warp = 1;
-	else if (!strcasecmp(ARG_STRING(0), "off"))
-		defaults.warp = 0;
-	else
-		return cmdret_new(RET_FAILURE, "warp: invalid argument");
-
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-static void
-sync_wins(void)
-{
-	rp_screen *s;
-	rp_window *win, *wintmp;
-	XWindowAttributes attr;
-	unsigned int i, nwins;
-	Window dw1, dw2, *wins;
-
-	list_first(s, &rp_screens, node);
-	XQueryTree(dpy, s->root, &dw1, &dw2, &wins, &nwins);
-
-	/*
-	 * Remove any windows in our cached lists that aren't in the query
-	 * tree. These windows have been destroyed.
-	 */
-	list_for_each_entry_safe(win, wintmp, &rp_mapped_window, node) {
-		int found;
-
-		found = 0;
-		for (i = 0; i < nwins; i++) {
-			if (win->w == wins[i]) {
-				found = 1;
-				break;
-			}
-		}
-		if (!found) {
-			ignore_badwindow++;
-
-			/*
-			 * If, somehow, the window is not withdrawn before it
-			 * is destroyed, perform the necessary steps to
-			 * withdraw the window before it is unmanaged.
-			 */
-			if (win->state == IconicState) {
-				PRINT_DEBUG(("Destroying Iconic Window (%s)\n",
-				    window_name(win)));
-				withdraw_window(win);
-			} else if (win->state == NormalState) {
-				rp_frame *frame;
-
-				PRINT_DEBUG(("Destroying Normal Window (%s)\n",
-				    window_name(win)));
-				frame = find_windows_frame(win);
-				if (frame) {
-					cleanup_frame(frame);
-					if (frame->number == win->scr->current_frame)
-						set_active_frame(frame, 0);
-				}
-				withdraw_window(win);
-			}
-			/*
-			 * Now that the window is guaranteed to be in the unmapped
-			 * window list, we can safely stop managing it.
-			 */
-			unmanage(win);
-			ignore_badwindow--;
-		}
-	}
-
-	for (i = 0; i < nwins; i++) {
-		XGetWindowAttributes(dpy, wins[i], &attr);
-		if (is_rp_window(wins[i]) ||
-		    attr.override_redirect == True)
-			continue;
-
-		/* Find the window in our mapped window list. */
-		win = find_window_in_list(wins[i], &rp_mapped_window);
-		if (win) {
-			rp_frame *frame;
-			/*
-			 * If the window is viewable and it is in a frame, then
-			 * maximize it and go to the next window.
-			 */
-			if (attr.map_state == IsViewable) {
-				frame = find_windows_frame(win);
-				if (frame) {
-					maximize(win);
-				} else {
-					hide_window(win);
-				}
-			} else if (attr.map_state == IsUnmapped
-			    && get_state(win) == IconicState) {
-				frame = find_windows_frame(win);
-				if (frame) {
-					unhide_window(win);
-					maximize(win);
-				}
-			} else {
-				PRINT_DEBUG(("I don't know what to do...\n"));
-			}
-
-			/* We've handled the window. */
-			continue;
-		}
-
-		/* Try the unmapped window list. */
-		win = find_window_in_list(wins[i], &rp_unmapped_window);
-		if (win) {
-			/*
-			 * If the window is viewable and it is in a frame, then
-			 * maximize it and go to the next window.
-			 */
-			if (attr.map_state == IsViewable) {
-				/* We need to map it since it's visible now. */
-				map_window(win);
-			} else if (attr.map_state == IsUnmapped
-			    && get_state(win) == IconicState) {
-				/* We need to map the window and then hide it. */
-				map_window(win);
-				hide_window(win);
-			} else {
-				PRINT_DEBUG(("I think it's all sync'd up...\n"));
-			}
-
-			/* We've handled the window. */
-			continue;
-		}
-
-		/*
-		 * The window isn't in the mapped or unmapped window list so
-		 * add it.
-		 */
-		win = add_to_window_list(s, wins[i]);
-
-		/* If it's visible or iconized. "Map" it. */
-		if (attr.map_state == IsViewable
-		    || (attr.map_state == IsUnmapped
-			&& get_state(win) == IconicState))
-			map_window(win);
-	}
-
-}
-
-static int tmpwm_error_raised = 0;
-
-static int
-tmpwm_error_handler(Display * d UNUSED, XErrorEvent * e)
-{
-	if (e->request_code == X_ChangeWindowAttributes &&
-	    e->error_code == BadAccess) {
-		PRINT_DEBUG(("failed to grab root properties\n"));
-		tmpwm_error_raised++;
-	}
-	return 0;
-}
-
-/*
- * Temporarily give control over to another window manager, reclaiming control
- * when that WM terminates.
- */
-cmdret *
-cmd_tmpwm(int interactive UNUSED, struct cmdarg **args)
-{
-	struct list_head *tmp, *iter;
-	rp_window *win = NULL;
-	rp_screen *cur_screen;
-	int child;
-	int status;
-	int pid;
-	int (*old_handler) (Display *, XErrorEvent *);
-
-	push_frame_undo(rp_current_screen);	/* fdump to stack */
-
-	/*
-	 * Release event selection on the root windows, so the new WM can have
-	 * it.
-	 */
-	list_for_each_entry(cur_screen, &rp_screens, node) {
-		XSelectInput(dpy, RootWindow(dpy, cur_screen->screen_num), 0);
-		deactivate_screen(cur_screen);
-	}
-
-	/* Ungrab all our keys. */
-	ungrab_keys_all_wins();
-
-	/* Don't listen for any events from any window. */
-	list_for_each_safe_entry(win, iter, tmp, &rp_mapped_window, node) {
-		unhide_window(win);
-		maximize(win);
-		XSelectInput(dpy, win->w, 0);
-	}
-
-	list_for_each_safe_entry(win, iter, tmp, &rp_unmapped_window, node)
-	    XSelectInput(dpy, win->w, 0);
-
-	XSync(dpy, False);
-
-	/* Disable our SIGCHLD handler */
-	set_sig_handler(SIGCHLD, SIG_DFL);
-
-	/* Launch the new WM and wait for it to terminate. */
-	pid = spawn(ARG_STRING(0), 0, NULL);
-	PRINT_DEBUG(("spawn pid: %d\n", pid));
-	do {
-		child = waitpid(pid, &status, 0);
-	} while (child != -1 && child != pid);
-
-	/* Enable our SIGCHLD handler */
-	set_sig_handler(SIGCHLD, chld_handler);
-
-	/*
-	 * Some processes may have quit while our sigchld handler was disabled,
-	 * so check for them.
-	 */
-	check_child_procs();
-
-	/*
-	 * Enable the event selection on the root window. We need to loop until
-	 * we don't get an X error. This is due to a race between the X server
-	 * cleaning up after the temporary wm and ratpoison grabbing events.
-	 */
-	old_handler = XSetErrorHandler(tmpwm_error_handler);
-	do {
-		tmpwm_error_raised = 0;
-
-		list_for_each_entry(cur_screen, &rp_screens, node) {
-			XSelectInput(dpy, RootWindow(dpy, cur_screen->screen_num),
-			    PropertyChangeMask | ColormapChangeMask
-			    | SubstructureRedirectMask | SubstructureNotifyMask
-			    | StructureNotifyMask);
-			XSync(dpy, False);
-		}
-
-		if (tmpwm_error_raised)
-			sleep(1);
-	} while (tmpwm_error_raised);
-
-	XSetErrorHandler(old_handler);
-
-	list_for_each_entry(cur_screen, &rp_screens, node) {
-		activate_screen(cur_screen);
-	}
-
-	/*
-	 * Sort through all the windows in each group and pick out the ones
-	 * that are unmapped or destroyed.
-	 */
-	sync_wins();
-
-	/*
-	 * At this point, new windows have the top level keys grabbed but
-	 * existing windows don't. So grab them on all windows just to be sure.
-	 */
-	grab_keys_all_wins();
-
-	/* If no window has focus, give the key_window focus. */
-	if (current_window())
-		set_active_window(current_window());
-	else
-		set_window_focus(rp_current_screen->key_window);
-
-	/* And we're back in ratpoison. */
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 

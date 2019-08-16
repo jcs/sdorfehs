@@ -142,7 +142,6 @@ extern Atom _net_wm_name;
 /* mouse properties */
 extern int rat_x;
 extern int rat_y;
-extern int rat_visible;
 
 /*
  * When unmapping or deleting windows, it is sometimes helpful to ignore a bad
@@ -165,13 +164,6 @@ extern int alarm_signalled;
 extern int kill_signalled;
 extern int hup_signalled;
 extern int chld_signalled;
-
-/*
- * When set to a string, ratpoison should exec the command. The reason this
- * variable is needed and why it is not exec'd in cmd_newwm is because if
- * called with ratpoison -c, the rp -c process never returns.
- */
-extern char *rp_exec_newwm;
 
 /* rudeness levels */
 extern int rp_honour_transient_raise;

@@ -493,10 +493,6 @@ has the same resource class but is not currently visible.
 Close the X-connection of the X-client responsible for the current window.
 .It Ic lastmsg Pq Ic C\-t m
 Reshow the last message.
-.It Ic license Pq Ic C\-t V
-Show
-.Nm Ap
-s license.
 .It Ic link Ar key Op Ar keymap
 Do what
 .Ar key
@@ -523,14 +519,6 @@ is specified, this is sent instead.
 Note that some applications by default ignore the synthetic key that is
 sent using this command as it is considered a security hole.
 xterm is one such application.
-.It Ic msgwait Op Ar seconds
-Set the duration the message window is shown.
-If
-.Ar seconds
-is zero, wait infinitely.
-This command is deprecated, please set the
-.Va msgwait
-variable instead.
 .It Ic newkmap Ar keymap
 Generate a new keymap named
 .Ar keymap .
@@ -538,12 +526,6 @@ This keymap can be used to add new key-command mappings to it with
 .Ic definekey
 and can be called with
 .Ic readkey .
-.It Ic newwm Ar new-window-manager
-Quit
-.Nm
-and execute
-.Ar new-window-manager
-instead.
 .It Ic next Pq Ic C\-t Return | C\-t n | C\-t space
 Switch to the next window in the current group.
 .It Ic nextscreen Pq Ic C\-t N
@@ -681,10 +663,6 @@ of pixels given by
 .It Ic restart
 Restart
 .Nm .
-.It Ic rudeness Op Ar rudeness
-This command is deprecated, please use the
-.Va rudeness
-variable instead.
 .It Ic sdump
 Output the list of all screens.
 The screens are separated by commas.
@@ -751,31 +729,18 @@ command.
 Switch to the screen
 .Ar screennumber .
 (If you have multiple physical ones.)
-.It Ic startup_message Cm ( on | off )
-Select whether
-.Nm
-will show a startup message or not.
-This command is deprecated, please use the
-.Va startupmessage
-variable instead.
 .It Ic swap Ar dest-frame Oo Ar src-frame Oc Pq Ic C\-t x
 Exchange the window in
 .Ar src\-frame
 (or the current frame if there is no second argument) with the window
 .Ar dest\-frame
 (or ask interactively which frame to swap with if there is no argument).
-.It Ic time Pq Ic C\-t a
-Output current data and time.
 .It Ic title Ar newname Pq Ic C\-t A
 Overwrite the title of the current window with
 .Ar newname .
 All following
 .Nm
 commands will only know the window under the new name.
-.It Ic tmpwm Ar tmpwm
-Temporarily give control over to the other window manager
-.Ar tmpwm ,
-reclaiming control when that WM terminates.
 .It Ic unalias Ar alias
 Remove the alias
 .Ar alias .
@@ -836,12 +801,6 @@ wide or the upper one
 high, depending whether there is a
 .Dq Li \-
 in front of the number or not.
-.It Ic warp Cm ( on | off )
-Select if focusing a window moves the rat cursor to the place it had been last
-time this window was focused, or not.
-This command is deprecated, please set the
-.Va warp
-variable instead.
 .It Ic windows Oo Ar format Oc Pq Ic C\-t w
 In interactive mode,
 show the list of all windows in the current group for the duration

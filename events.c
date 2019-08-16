@@ -426,11 +426,6 @@ key_press(XEvent *ev)
 	if (!s)
 		return;
 
-#ifdef HIDE_MOUSE
-	XWarpPointer(dpy, None, s->root, 0, 0, 0, 0, s->left + s->width - 2,
-	    s->top + s->height - 2);
-#endif
-
 	modifier = ev->xkey.state;
 	cook_keycode(&ev->xkey, &ks, &modifier, NULL, 0, 1);
 
@@ -918,31 +913,6 @@ handle_signals(void)
 		}
 
 		chld_signalled = 0;
-	}
-	if (rp_exec_newwm) {
-		rp_screen *cur;
-
-		PRINT_DEBUG(("Switching to %s\n", rp_exec_newwm));
-
-		putenv(rp_current_screen->display_string);
-		unhide_all_windows();
-		XSync(dpy, False);
-
-		list_for_each_entry(cur, &rp_screens, node) {
-			deactivate_screen(cur);
-		}
-
-		execlp(rp_exec_newwm, rp_exec_newwm, (char *) NULL);
-
-		/* Failed. Clean up. */
-		PRINT_ERROR(("exec %s ", rp_exec_newwm));
-		perror(" failed");
-		free(rp_exec_newwm);
-		rp_exec_newwm = NULL;
-
-		list_for_each_entry(cur, &rp_screens, node) {
-			activate_screen(cur);
-		}
 	}
 	if (hup_signalled > 0) {
 		PRINT_DEBUG(("Restarting\n"));

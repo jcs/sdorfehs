@@ -97,10 +97,6 @@ add_unmanaged_window(char *name)
 void
 grab_top_level_keys(Window w)
 {
-#ifdef HIDE_MOUSE
-	XGrabKey(dpy, AnyKey, AnyModifier, w, True,
-	    GrabModeAsync, GrabModeAsync);
-#else
 	rp_keymap *map = find_keymap(defaults.top_kmap);
 	int i;
 
@@ -114,7 +110,6 @@ grab_top_level_keys(Window w)
 		PRINT_DEBUG(("%d\n", i));
 		grab_key(map->actions[i].key, map->actions[i].state, w);
 	}
-#endif
 }
 
 void
@@ -384,25 +379,6 @@ unmanage(rp_window *w)
 	groups_del_window(w);
 
 	free_window(w);
-
-#ifdef AUTO_CLOSE
-	if (rp_mapped_window.next == &rp_mapped_window
-	    && rp_mapped_window.prev == &rp_mapped_window) {
-		/*
-		 * If the mapped window list is empty then we have run out of
-		 * managed windows, so kill ratpoison.
-		 */
-
-		/*
-		 * FIXME: The unmapped window list may also have to be checked
-		 * in the case that the only mapped window in unmapped and
-		 * shortly after another window is mapped most likely by the
-		 * same app.
-		 */
-
-		kill_signalled = 1;
-	}
-#endif
 }
 
 /* When starting up scan existing windows and start managing them. */

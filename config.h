@@ -92,23 +92,6 @@
  */
 #define MAX_ALIAS_RECURSIVE_DEPTH 16
 
-/*
- * Pressing a key sends the mouse to the bottom right corner. This doesn't work
- * very well yet.
- */
-/* #define HIDE_MOUSE  */
-
-/* When the last window closes, quit ratpoison. */
-/* #define AUTO_CLOSE */
-
-/*
- * If for some sick reason you don't want ratpoison to manage a window, put its
- * name in this list. These windows get drawn but ratpoison won't have any
- * knowledge of them and you won't be able to jump to them or give them
- * keyboard focus. This has been added mostly for use with hand-helds.
- */
-#define UNMANAGED_WINDOW_LIST "xapm","xclock","xscribble"
-
 /* Maximum depth of a link. Used in the 'link' command. */
 #define MAX_LINK_DEPTH 16
 
