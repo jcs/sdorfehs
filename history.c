@@ -22,12 +22,9 @@
 #include <errno.h>
 #include <string.h>
 #include <limits.h>
+#include <sys/stat.h>
 
 #include "ratpoison.h"
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
 
 static char *
 get_history_filename(void)
@@ -74,49 +71,6 @@ static struct history {
 	struct list_head head, *current;
 	size_t count;
 }       histories[hist_COUNT];
-
-#ifndef HAVE_GETLINE
-ssize_t
-getline(char **lineptr, size_t *n, FILE *f)
-{
-	size_t ofs;
-
-	if (*lineptr == NULL) {
-		*lineptr = malloc(4096);
-		if (*lineptr == NULL)
-			return -1;
-		*n = 4096;
-	}
-	ofs = 0;
-	do {
-		(*lineptr)[ofs] = '\0';
-		if (!fgets(*lineptr, (*n) - ofs, f)) {
-			/*
-			 * do not tread unterminated last lines as errors,
-			 * (it's still a malformed text file and noone should
-			 * have created it)
-			 */
-			return ofs ? (ssize_t) ofs : -1;
-		}
-		ofs += strlen((*lineptr) + ofs);
-		if (ofs >= *n)
-			/* should never happen... */
-			return -1;
-		if (ofs > 0 && (*lineptr)[ofs - 1] == '\n')
-			return ofs;
-		if (ofs + 1 == *n) {
-			void *tmp;
-			if (*n >= INT_MAX - 4096)
-				return -1;
-			tmp = realloc(*lineptr, *n + 4096);
-			if (tmp == NULL)
-				return -1;
-			*lineptr = tmp;
-			*n += 4096;
-		}
-	} while (1);
-}
-#endif
 
 static void
 history_add_upto(int history_id, const char *item, size_t max)

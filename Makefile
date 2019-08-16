@@ -3,10 +3,12 @@ PREFIX=		/usr/local
 X11BASE=	/usr/X11R6
 SYSCONFDIR=	/etc
 
+PKGLIBS=	x11 xft xrandr xtst
+
 CC=		cc
-CFLAGS=		-g -O2 -Wall -DSYSCONFDIR="\"$(SYSCONFDIR)\"" -I$(X11BASE)/include \
-		`pkg-config --cflags x11 xft xrandr xtst`
-LDFLAGS=	-L$(X11BASE)/lib `pkg-config --libs x11 xft xrandr xtst`
+CFLAGS=		-g -O2 -Wall -DSYSCONFDIR="\"$(SYSCONFDIR)\"" \
+		`pkg-config --cflags ${PKGLIBS}`
+LDFLAGS=	`pkg-config --libs ${PKGLIBS}`
 
 # uncomment to enable debugging
 #CFLAGS+=	-DDEBUG=1

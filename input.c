@@ -26,12 +26,9 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
+#include <X11/XKBlib.h>
 
 #include "ratpoison.h"
-
-#ifdef HAVE_X11_XKBLIB_H
-#include <X11/XKBlib.h>
-#endif
 
 /*
  * Convert an X11 modifier mask to the rp modifier mask equivalent, as best it
@@ -77,51 +74,6 @@ rp_mask_to_x11_mask(unsigned int mask)
 	PRINT_DEBUG(("x11 mask = %x\n", result));
 
 	return result;
-}
-
-static Bool use_xkb;
-
-void
-init_xkb(void)
-{
-#if defined (WANT_XKB) && defined (HAVE_X11_XKBLIB_H) && defined (HAVE_XKBKEYCODETOKEYSYM)
-	int error, event, major, minor, opcode;
-
-	major = XkbMajorVersion;
-	minor = XkbMajorVersion;
-
-	use_xkb = XkbLibraryVersion(&major, &minor);
-	if (!use_xkb) {
-		PRINT_ERROR(("Not using XKB, compile and load time version mismatch:"));
-		PRINT_ERROR((" (%d, %d) vs. (%d, %d)\n", XkbMajorVersion,
-			XkbMajorVersion, major, minor));
-		return;
-	}
-	use_xkb = XkbQueryExtension(dpy, &opcode, &event, &error, &major, &minor);
-	if (!use_xkb)
-		PRINT_DEBUG(("Not using XKB, XkbQueryExtension failed\n"));
-#else
-	PRINT_DEBUG(("Built with no XKB support."));
-	use_xkb = False;
-#endif
-}
-
-KeySym
-keycode_to_keysym(Display *dpy, KeyCode kc, int group, int level)
-{
-	/*
-         * XKeycodeToKeysym has been deprecated upstream, however we still use
-         * it since XKB may not be available at build time or and not
-         * functional at runtime. The problems in XKeycodeToKeysym don't seem
-         * to matter in the ratpoison case anyway.
-         * https://bugs.freedesktop.org/show_bug.cgi?id=5349
-         */
-#if defined (WANT_XKB) && defined (HAVE_X11_XKBLIB_H) && defined (HAVE_XKBKEYCODETOKEYSYM)
-	if (use_xkb)
-		return XkbKeycodeToKeysym(dpy, kc, group, level);
-#endif
-	(void) group;
-	return XKeycodeToKeysym(dpy, kc, level);
 }
 
 /* Figure out what keysyms are attached to what modifiers */
@@ -252,8 +204,8 @@ keysym_to_keycode_mod(KeySym keysym, KeyCode * code, unsigned int *mod)
 
 	*mod = 0;
 	*code = XKeysymToKeycode(dpy, keysym);
-	lower = keycode_to_keysym(dpy, *code, 0, 0);
-	upper = keycode_to_keysym(dpy, *code, 0, 1);
+	lower = XkbKeycodeToKeysym(dpy, *code, 0, 0);
+	upper = XkbKeycodeToKeysym(dpy, *code, 0, 1);
 	/*
 	 * If you need to press shift to get the keysym, add the shift mask.
 	 */
@@ -369,8 +321,8 @@ cook_keycode(XKeyEvent *ev, KeySym *keysym, unsigned int *mod,
 	}
 	/* Find out if XLookupString gobbled the shift modifier */
 	if (ev->state & ShiftMask) {
-		lower = keycode_to_keysym(dpy, ev->keycode, 0, 0);
-		upper = keycode_to_keysym(dpy, ev->keycode, 0, 1);
+		lower = XkbKeycodeToKeysym(dpy, ev->keycode, 0, 0);
+		upper = XkbKeycodeToKeysym(dpy, ev->keycode, 0, 1);
 		/*
 		 * If the keysym isn't affected by the shift key, then keep the
 		 * shift modifier.

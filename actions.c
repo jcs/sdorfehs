@@ -29,16 +29,10 @@
 #include <signal.h>
 #include <limits.h>
 #include <X11/Xproto.h>
+#include <X11/extensions/XTest.h>
+#include <sys/ioctl.h>
 
 #include "ratpoison.h"
-
-#ifdef HAVE_LIBXTST
-#include <X11/extensions/XTest.h>
-#endif
-
-#ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>
-#endif
 
 /* arg_REST and arg_SHELLCMD eat the rest of the input. */
 enum argtype {
@@ -2813,11 +2807,8 @@ spawn(char *cmd, int raw, rp_frame *frame)
 		 * its own session.
 		 */
 		putenv(rp_current_screen->display_string);
-#ifdef HAVE_SETSID
 		if (setsid() == -1)
-#endif
 		{
-#if defined (HAVE_SYS_IOCTL_H) && defined (TIOCNOTTY)
 			int ctty;
 
 			ctty = open("/dev/tty", O_RDONLY);
@@ -2825,14 +2816,8 @@ spawn(char *cmd, int raw, rp_frame *frame)
 				ioctl(ctty, TIOCNOTTY);
 				close(ctty);
 			}
-#endif
 
-#if defined (HAVE_SETPGID)
 			setpgid(0, 0);
-#elif defined (HAVE_SETPGRP)
-			/* Assume BSD-style setpgrp */
-			setpgrp(0, 0);
-#endif
 		}
 
 		/* raw means don't run it through sh.  */
@@ -3429,14 +3414,9 @@ cmd_ratclick(int interactive UNUSED, struct cmdarg **args)
 			    "ratclick: invalid argument");
 	}
 
-#ifdef HAVE_LIBXTST
 	XTestFakeButtonEvent(dpy, button, True, CurrentTime);
 	XTestFakeButtonEvent(dpy, button, False, CurrentTime);
 	return cmdret_new(RET_SUCCESS, NULL);
-#else
-	return cmdret_new(RET_FAILURE,
-	    "ratclick: Please compile with the Xtst extension");
-#endif
 }
 
 cmdret *
@@ -3451,7 +3431,6 @@ cmd_rathold(int interactive UNUSED, struct cmdarg **args)
 			    "ratclick: invalid argument");
 	}
 
-#ifdef HAVE_LIBXTST
 	if (!strcmp(ARG_STRING(0), "down"))
 		XTestFakeButtonEvent(dpy, button, True, CurrentTime);
 	else if (!strcmp(ARG_STRING(0), "up"))
@@ -3461,10 +3440,6 @@ cmd_rathold(int interactive UNUSED, struct cmdarg **args)
 		    "rathold: '%s' invalid argument", ARG_STRING(0));
 
 	return cmdret_new(RET_SUCCESS, NULL);
-#else
-	return cmdret_new(RET_FAILURE,
-	    "rathold: Please compile with the Xtst extension");
-#endif
 }
 
 cmdret *
@@ -4391,29 +4366,9 @@ cmdret *
 cmd_setenv(int interactive UNUSED, struct cmdarg **args)
 {
 	const char *var = ARG_STRING(0), *val = ARG_STRING(1);
-	int ret;
 
-#ifdef HAVE_SETENV
 	PRINT_DEBUG(("setenv (\"%s\", \"%s\", 1)\n", var, val));
-	ret = setenv(var, val, 1);
-
-#else	/* not HAVE_SETENV */
-	struct sbuf *env;
-
-	/* Setup the environment string. */
-	env = sbuf_new(strlen(var) + 1 + strlen(val) + 1);
-
-	sbuf_copy(env, var);
-	sbuf_concat(env, "=");
-	sbuf_concat(env, val);
-
-	/* Stick it in the environment.  We must *not* free it. */
-	PRINT_DEBUG(("putenv(\"%s\")\n", sbuf_get(env)));
-	ret = putenv(sbuf_free_struct(env));
-
-#endif	/* not HAVE_SETENV */
-
-	if (ret == -1)
+	if (setenv(var, val, 1) == -1)
 		return cmdret_new(RET_FAILURE, "cmd_setenv failed: %s",
 		    strerror(errno));
 	else
@@ -4463,24 +4418,12 @@ cmdret *
 cmd_unsetenv(int interactive UNUSED, struct cmdarg **args)
 {
 	const char *var = ARG_STRING(0);
-	int ret;
 
 	/*
 	 * Use unsetenv() where possible since putenv("FOO") is not legit
 	 * everywhere
 	 */
-#ifdef HAVE_UNSETENV
-	ret = unsetenv(var);
-#else
-	/* MinGW doesn't have unsetenv() and uses putenv("FOO=") */
-	struct sbuf *s = sbuf_new(strlen(var) + 1 + 1);
-	sbuf_copy(s, var);
-	sbuf_concat(s, "=");
-	/* let putenv() decide whether to call free() */
-	ret = putenv(sbuf_free_struct(s));
-#endif
-
-	if (ret == -1)
+	if (unsetenv(var) == -1)
 		return cmdret_new(RET_FAILURE, "cmd_unsetenv failed: %s",
 		    strerror(errno));
 	else

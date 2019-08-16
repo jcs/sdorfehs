@@ -22,45 +22,14 @@
 #ifndef _RATPOISON_CONF_H
 #define _RATPOISON_CONF_H 1
 
-#include "data.h"
-#include "actions.h"
+/* Whether to draw text with Xft */
+#define USE_XFT_FONT	1
 
 #define PACKAGE		"ratpoison"
 #define VERSION		"20190816"
 
-#define HAVE_GETLINE 1
-#define HAVE_GETOPT_LONG 1
-#define HAVE_GETPWUID 1
-#define HAVE_INTTYPES_H 1
-#define HAVE_LANGINFO_CODESET 1
-/* #undef HAVE_LIBEFENCE */
-#define HAVE_LIBXTST 1
-#define HAVE_MEMORY_H 1
-#define HAVE_PWD_H 1
-#define HAVE_SETENV 1
-#define HAVE_SETPGID 1
-#define HAVE_SETPGRP 1
-#define HAVE_SETSID 1
-#define HAVE_STDINT_H 1
-#define HAVE_STDLIB_H 1
-#define HAVE_STRINGS_H 1
-#define HAVE_STRING_H 1
-#define HAVE_SYS_IOCTL_H 1
-#define HAVE_SYS_STAT_H 1
-#define HAVE_SYS_TYPES_H 1
-#define HAVE_TYPEOF 1
-#define HAVE_UNISTD_H 1
-#define HAVE_UNSETENV 1
-#define HAVE_VSNPRINTF 1
-#define HAVE_X11_EXTENSIONS_XRANDR_H 1
-#define HAVE_X11_XKBLIB_H 1
-#define HAVE_XKBKEYCODETOKEYSYM 1
-#define HAVE_XRANDR 1
-#define HAVE___BUILTIN_PREFETCH 1
-
-
-/* Whether to draw text with Xft */
-#define USE_XFT_FONT	1
+#include "data.h"
+#include "actions.h"
 
 /* Enter command mode with Control+T by default. */
 #define KEY_PREFIX      XK_t
@@ -176,13 +145,5 @@
 #define BACKUP_FONT "*"
 
 #define DEFAULT_XFT_FONT "Mono-11"
-
-/*
- * maximum xvsprintf result string length for systems with pre-C99 snprintf: on
- * errors that are either permanent or cannot be distinguished from those as
- * libc's snprintf might by returning -1 for too small buffers, at most the
- * double of this value is tried before giving up
- */
-#define MAX_LEGACY_SNPRINTF_SIZE 102400
 
 #endif	/* !_ _RATPOISON_CONF_H */

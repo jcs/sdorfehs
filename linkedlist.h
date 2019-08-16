@@ -72,11 +72,7 @@ void list_add(struct list_head *new, struct list_head *head);
 void __list_add(struct list_head *new, struct list_head *prev,
     struct list_head *next);
 
-#ifdef HAVE___BUILTIN_PREFETCH
 #define prefetch(x) __builtin_prefetch(x)
-#else
-#define prefetch(x) ((void)(x))
-#endif
 
 /* Return the last element in the list. */
 #define list_last(last, head, member)                           \

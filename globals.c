@@ -25,9 +25,7 @@
 
 #include <ctype.h>
 #include <errno.h>
-#if defined (HAVE_PWD_H) && defined (HAVE_GETPWUID)
 #include <pwd.h>
-#endif
 #include <signal.h>
 #include <unistd.h>
 
@@ -467,7 +465,6 @@ get_homedir(void)
 	if (homedir != NULL && homedir[0] == '\0')
 		homedir = NULL;
 
-#if defined (HAVE_PWD_H) && defined (HAVE_GETPWUID)
 	if (homedir == NULL) {
 		struct passwd *pw;
 
@@ -478,7 +475,6 @@ get_homedir(void)
 		if (homedir != NULL && homedir[0] == '\0')
 			homedir = NULL;
 	}
-#endif
 
 	return homedir;
 }

@@ -31,10 +31,6 @@ enum {
 	hist_COUNT
 };
 
-#ifndef HAVE_GETLINE
-ssize_t getline(char **lineptr, size_t *n, FILE *f);
-#endif
-
 void history_load(void);
 void history_save(void);
 void history_reset(void);

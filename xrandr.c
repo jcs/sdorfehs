@@ -19,11 +19,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "ratpoison.h"
-
-#ifdef HAVE_XRANDR
-
 #include <X11/extensions/Xrandr.h>
+
+#include "ratpoison.h"
 
 static int xrandr_evbase;
 
@@ -260,46 +258,3 @@ xrandr_notify(XEvent *ev)
 		break;
 	}
 }
-
-#else	/* HAVE_XRANDR */
-
-void
-init_xrandr(void)
-{
-	/* Nothing */
-}
-
-int
-xrandr_query_screen(int **outputs)
-{
-	(void) outputs;
-	fatal("xrandr_query_screen shouldn't be called.  This is a BUG.");
-	return 0;
-}
-
-int
-xrandr_is_primary(rp_screen * screen)
-{
-	(void) screen;
-	fatal("xrandr_is_primary shouldn't be called.  This is a BUG.");
-	return 0;
-}
-
-void
-xrandr_fill_screen(int rr_output, rp_screen * screen)
-{
-	(void) rr_output;
-	memset(&screen->xrandr, 0, sizeof(screen->xrandr));
-	screen->xrandr.primary = (rr_output == 0);
-	screen->xrandr.output = rr_output;
-	screen->xrandr.name = xstrdup("N/A");
-}
-
-void
-xrandr_notify(XEvent * ev)
-{
-	(void) ev;
-	fatal("xrandr_notify shouldn't be called.  This is a BUG.");
-}
-
-#endif	/* HAVE_XRANDR */

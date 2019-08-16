@@ -219,7 +219,6 @@ get_wmname(Window w)
 	else
 		PRINT_DEBUG(("unknown (%d)\n", (int) text_prop.encoding));
 
-#ifdef X_HAVE_UTF8_STRING
 	/*
 	 * It seems that most applications supporting UTF8_STRING and
 	 * _NET_WM_NAME don't bother making their WM_NAME available as
@@ -230,9 +229,7 @@ get_wmname(Window w)
 		ret = Xutf8TextPropertyToTextList(dpy, &text_prop, &cl, &n);
 		PRINT_DEBUG(("Xutf8TextPropertyToTextList: %s\n",
 			ret == Success ? "success" : "error"));
-	} else
-#endif
-	{
+	} else {
 		/*
 		 * XmbTextPropertyToTextList should be fine for all cases, even
 		 * UTF8_STRING encoded WM_NAME
