@@ -26,7 +26,7 @@
 void
 fatal(const char *msg)
 {
-	fprintf(stderr, "ratpoison: %s", msg);
+	fprintf(stderr, PROGNAME ": %s", msg);
 	abort();
 }
 

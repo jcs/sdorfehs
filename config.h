@@ -25,7 +25,7 @@
 #include "data.h"
 #include "actions.h"
 
-#define PACKAGE		"ratpoison"
+#define PROGNAME	"ratpoison"
 #define VERSION		"20190816"
 
 /* Enter command mode with Control+T by default. */

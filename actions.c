@@ -1610,7 +1610,7 @@ cmd_kill(int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_version(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-	return cmdret_new(RET_SUCCESS, "%s", PACKAGE " " VERSION);
+	return cmdret_new(RET_SUCCESS, "%s", PROGNAME " " VERSION);
 }
 
 static char *
@@ -3433,8 +3433,7 @@ cmd_help(int interactive, struct cmdarg **args)
 		XMapRaised(dpy, s->help_window);
 
 		rp_draw_string(s, s->help_window, STYLE_NORMAL,
-		    10, y + FONT_ASCENT(s),
-		    "ratpoison key bindings", -1);
+		    10, y + FONT_ASCENT(s), PROGNAME " key bindings", -1);
 
 		y += FONT_HEIGHT(s) * 2;
 

@@ -467,7 +467,7 @@ activate_screen(rp_screen *s)
 	/* set window manager name */
 	XChangeProperty(dpy, RootWindow(dpy, s->screen_num),
 	    _net_wm_name, xa_utf8_string, 8, PropModeReplace,
-	    (unsigned char *) "ratpoison", 9);
+	    (unsigned char *)PROGNAME, strlen(PROGNAME));
 	XMapWindow(dpy, s->key_window);
 }
 

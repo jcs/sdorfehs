@@ -76,7 +76,7 @@ handler(Display *d, XErrorEvent *e)
 
 	if (e->request_code == X_ChangeWindowAttributes &&
 	    e->error_code == BadAccess) {
-		fprintf(stderr, "ratpoison: There can be only ONE.\n");
+		fprintf(stderr, PROGNAME ": There can be only ONE.\n");
 		exit(EXIT_FAILURE);
 	}
 #ifdef IGNORE_BADWINDOW
@@ -87,7 +87,7 @@ handler(Display *d, XErrorEvent *e)
 #endif
 
 	XGetErrorText(d, e->error_code, error_msg, sizeof(error_msg));
-	fprintf(stderr, "ratpoison: ERROR: %s!\n", error_msg);
+	fprintf(stderr, PROGNAME ": ERROR: %s!\n", error_msg);
 
 	/*
 	 * If there is already an error to report, replace it with this new one.
@@ -101,7 +101,7 @@ handler(Display *d, XErrorEvent *e)
 static void
 print_version(void)
 {
-	printf("%s %s\n", PACKAGE, VERSION);
+	printf("%s %s\n", PROGNAME, VERSION);
 	printf("Copyright (C) 2000-2008 Shawn Betts\n\n");
 
 	exit(EXIT_SUCCESS);
@@ -110,11 +110,11 @@ print_version(void)
 static void
 print_help(void)
 {
-	printf("Help for %s %s\n\n", PACKAGE, VERSION);
+	printf("Help for %s %s\n\n", PROGNAME, VERSION);
 	printf("-h, --help            Display this help screen\n");
 	printf("-v, --version         Display the version\n");
 	printf("-d, --display <dpy>   Set the X display to use\n");
-	printf("-c, --command <cmd>   Send ratpoison a colon-command\n");
+	printf("-c, --command <cmd>   Send " PROGNAME " a colon-command\n");
 	printf("-i, --interactive     Execute commands in interactive mode\n");
 	printf("-f, --file <file>     Specify an alternative configuration file\n\n");
 
@@ -128,7 +128,7 @@ read_startup_files(const char *alt_rcfile)
 
 	if (alt_rcfile) {
 		if ((fileptr = fopen(alt_rcfile, "r")) == NULL) {
-			PRINT_ERROR(("ratpoison: could not open %s (%s)\n",
+			PRINT_ERROR((PROGNAME ": could not open %s (%s)\n",
 			    alt_rcfile, strerror(errno)));
 			return -1;
 		}
@@ -139,12 +139,12 @@ read_startup_files(const char *alt_rcfile)
 		/* first check $HOME/.ratpoisonrc */
 		homedir = get_homedir();
 		if (!homedir)
-			PRINT_ERROR(("ratpoison: no home directory!?\n"));
+			PRINT_ERROR((PROGNAME ": no home directory!?\n"));
 		else {
 			filename = xsprintf("%s/.ratpoisonrc", homedir);
 			fileptr = fopen(filename, "r");
 			if (fileptr == NULL && errno != ENOENT)
-				PRINT_ERROR(("ratpoison: could not open %s (%s)\n",
+				PRINT_ERROR((PROGNAME ": could not open %s (%s)\n",
 					filename, strerror(errno)));
 			free(filename);
 		}
@@ -156,7 +156,7 @@ read_startup_files(const char *alt_rcfile)
 
 			fileptr = fopen(filename, "r");
 			if (fileptr == NULL && errno != ENOENT)
-				PRINT_ERROR(("ratpoison: could not open %s (%s)\n",
+				PRINT_ERROR((PROGNAME ": could not open %s (%s)\n",
 					filename, strerror(errno)));
 			free(filename);
 		}

@@ -46,7 +46,7 @@
 #define MESSAGE_PROMPT_SELECT_VAR	"Variable: "
 #define MESSAGE_PROMPT_VAR_VALUE	"Value: "
 
-#define MESSAGE_WELCOME			"Welcome to ratpoison! Hit `%s %s' for help."
+#define MESSAGE_WELCOME			PROGNAME " " VERSION " - press \"%s %s\" for help"
 
 #define EMPTY_FRAME_MESSAGE		"Current Frame"
 

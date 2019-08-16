@@ -140,7 +140,7 @@ history_load(void)
 
 	f = fopen(filename, "r");
 	if (!f) {
-		PRINT_DEBUG(("ratpoison: could not read %s - %s\n", filename,
+		PRINT_DEBUG((PROGNAME ": could not read %s - %s\n", filename,
 		    strerror(errno)));
 		free(filename);
 		return;
@@ -157,14 +157,14 @@ history_load(void)
 	}
 	free(line);
 	if (ferror(f)) {
-		PRINT_DEBUG(("ratpoison: error reading %s - %s\n", filename,
+		PRINT_DEBUG((PROGNAME ": error reading %s - %s\n", filename,
 		    strerror(errno)));
 		fclose(f);
 		free(filename);
 		return;
 	}
 	if (fclose(f))
-		PRINT_DEBUG(("ratpoison: error reading %s - %s\n", filename,
+		PRINT_DEBUG((PROGNAME ": error reading %s - %s\n", filename,
 		    strerror(errno)));
 	free(filename);
 }
@@ -185,13 +185,13 @@ history_save(void)
 
 	f = fopen(filename, "w");
 	if (!f) {
-		PRINT_DEBUG(("ratpoison: could not write %s - %s\n", filename,
+		PRINT_DEBUG((PROGNAME ": could not write %s - %s\n", filename,
 		    strerror(errno)));
 		free(filename);
 		return;
 	}
 	if (fchmod(fileno(f), 0600) == -1)
-		PRINT_ERROR(("ratpoison: could not change mode to 0600 on %s - %s\n",
+		PRINT_ERROR((PROGNAME ": could not change mode to 0600 on %s - %s\n",
 			filename, strerror(errno)));
 
 	list_for_each_entry(item, &histories[hist_COMMAND].head, node) {
@@ -200,14 +200,14 @@ history_save(void)
 	}
 
 	if (ferror(f)) {
-		PRINT_DEBUG(("ratpoison: error writing %s - %s\n", filename,
+		PRINT_DEBUG((PROGNAME ": error writing %s - %s\n", filename,
 		    strerror(errno)));
 		fclose(f);
 		free(filename);
 		return;
 	}
 	if (fclose(f))
-		PRINT_DEBUG(("ratpoison: error writing %s - %s\n", filename, 
+		PRINT_DEBUG((PROGNAME ": error writing %s - %s\n", filename, 
 		    strerror(errno)));
 	free(filename);
 }

@@ -577,7 +577,7 @@ property_notify(XEvent *ev)
 	if (ev->xproperty.atom == rp_command_request
 	    && is_a_root_window(ev->xproperty.window)
 	    && ev->xproperty.state == PropertyNewValue) {
-		PRINT_DEBUG(("ratpoison command\n"));
+		PRINT_DEBUG((PROGNAME " command\n"));
 		receive_command(ev->xproperty.window);
 	}
 	win = find_window(ev->xproperty.window);
