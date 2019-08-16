@@ -31,14 +31,12 @@
 #define HAVE_GETLINE 1
 #define HAVE_GETOPT_LONG 1
 #define HAVE_GETPWUID 1
-/* #undef HAVE_HISTORY */
 #define HAVE_INTTYPES_H 1
 #define HAVE_LANGINFO_CODESET 1
 /* #undef HAVE_LIBEFENCE */
 #define HAVE_LIBXTST 1
 #define HAVE_MEMORY_H 1
 #define HAVE_PWD_H 1
-/* #undef HAVE_READLINE_HISTORY_H */
 #define HAVE_SETENV 1
 #define HAVE_SETPGID 1
 #define HAVE_SETPGRP 1

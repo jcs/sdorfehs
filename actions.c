@@ -164,8 +164,6 @@ static cmdret *set_maxundos(struct cmdarg **args);
 static cmdret *set_infofmt(struct cmdarg **args);
 static cmdret *set_topkmap(struct cmdarg **args);
 static cmdret *set_historysize(struct cmdarg **args);
-static cmdret *set_historycompaction(struct cmdarg **args);
-static cmdret *set_historyexpansion(struct cmdarg **args);
 static cmdret *set_msgwait(struct cmdarg **args);
 static cmdret *set_framemsgwait(struct cmdarg **args);
 static cmdret *set_startupmessage(struct cmdarg **args);
@@ -342,10 +340,6 @@ init_set_vars(void)
 	add_set_var("framemsgwait", set_framemsgwait, 1, "", arg_NUMBER);
 	add_set_var("framesels", set_framesels, 1, "", arg_STRING);
 	add_set_var("fwcolor", set_fwcolor, 1, "", arg_STRING);
-	add_set_var("historycompaction", set_historycompaction, 1, "",
-	    arg_NUMBER);
-	add_set_var("historyexpansion", set_historyexpansion, 1, "",
-	    arg_NUMBER);
 	add_set_var("historysize", set_historysize, 1, "", arg_NUMBER);
 	add_set_var("infofmt", set_infofmt, 1, "", arg_REST);
 	add_set_var("inputwidth", set_inputwidth, 1, "", arg_NUMBER);
@@ -3936,40 +3930,6 @@ set_historysize(struct cmdarg **args)
 		    invalid_negative_arg);
 
 	defaults.history_size = ARG(0, number);
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-static cmdret *
-set_historycompaction(struct cmdarg **args)
-{
-	if (args[0] == NULL)
-		return cmdret_new(RET_SUCCESS, "%d",
-		    defaults.history_compaction);
-
-	if (ARG(0, number) != 0 && ARG(0, number) != 1)
-		return cmdret_new(RET_FAILURE,
-		    "set historycompaction: invalid argument");
-
-	defaults.history_compaction = ARG(0, number);
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-static cmdret *
-set_historyexpansion(struct cmdarg **args)
-{
-	if (args[0] == NULL)
-		return cmdret_new(RET_SUCCESS, "%d", defaults.history_expansion);
-#ifndef HAVE_HISTORY
-	if (ARG(0, number)) {
-		return cmdret_new(RET_FAILURE, "Not compiled with libhistory");
-	}
-#endif
-
-	if (ARG(0, number) != 0 && ARG(0, number) != 1)
-		return cmdret_new(RET_SUCCESS,
-		    "set historyexpansion: invalid argument");
-
-	defaults.history_expansion = ARG(0, number);
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 

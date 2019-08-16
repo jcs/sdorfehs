@@ -478,30 +478,8 @@ editor_insert(rp_input_line *line, char *keysym_buf)
 static edit_status
 editor_enter(rp_input_line *line)
 {
-	int result;
-	char *expansion;
-
 	line->buffer[line->length] = '\0';
-
-	if (!defaults.history_expansion) {
-		history_add(line->history_id, line->buffer);
-		return EDIT_DONE;
-	}
-	result = history_expand_line(line->history_id, line->buffer, &expansion);
-
-	PRINT_DEBUG(("History Expansion - result: %d\n", result));
-	PRINT_DEBUG(("History Expansion - expansion: \'%s\'\n", expansion));
-
-	if (result == -1 || result == 2) {
-		marked_message_printf(0, 0, "%s", expansion);
-		free(expansion);
-		return EDIT_ABORT;
-	} else {	/* result == 0 || result == 1 */
-		history_add(line->history_id, expansion);
-		free(line->buffer);
-		line->buffer = expansion;
-	}
-
+	history_add(line->history_id, line->buffer);
 	return EDIT_DONE;
 }
 

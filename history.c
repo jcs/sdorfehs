@@ -29,10 +29,6 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef HAVE_HISTORY
-#include "readline/history.h"
-#endif
-
 static char *
 get_history_filename(void)
 {
@@ -139,18 +135,6 @@ history_add_upto(int history_id, const char *item, size_t max)
 		const char *p = extract_shell_part(item);
 		if (p)
 			history_add_upto(hist_SHELLCMD, p, max);
-	}
-	if (defaults.history_compaction && max != INT_MAX) {
-		struct list_head *l;
-
-		for (l = h->head.prev; l && l != &h->head; l = l->prev) {
-			if (!strcmp(list_entry(l, struct history_item, node)->line,
-			    item)) {
-				list_del(l);
-				list_add_tail(l, &h->head);
-				return;
-			}
-		}
 	}
 	while (h->count >= max) {
 		list_first(i, &h->head, node);
@@ -309,23 +293,4 @@ history_next(int history_id)
 		return NULL;
 	return list_entry(histories[history_id].current, struct history_item,
 	    node)->line;
-}
-
-int
-history_expand_line(int history_id UNUSED, char *string, char **output)
-{
-#ifdef HAVE_HISTORY
-	struct history_item *item;
-
-	if (strchr(string, '!')) {
-		clear_history();
-		list_for_each_entry(item, &histories[history_id].head, node) {
-			add_history(item->line);
-		}
-		using_history();
-		return history_expand(string, output);
-	}
-#endif
-	*output = xstrdup(string);
-	return 0;
 }
