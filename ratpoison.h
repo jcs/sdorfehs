@@ -22,8 +22,6 @@
 #ifndef _RATPOISON_H
 #define _RATPOISON_H 1
 
-#include "config.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -68,7 +66,7 @@ do {                                            \
 #define PRINT_DEBUG(fmt) do {} while (0)
 #endif	/* DEBUG */
 
-#include "conf.h"
+#include "config.h"
 
 #include "data.h"
 #include "globals.h"
