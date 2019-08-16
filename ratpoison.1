@@ -893,76 +893,6 @@ variables can be shown and set with
 .Ic set .
 The following variables are supported:
 .Bl -tag -width Ds
-.It Cm resizeunit Ar pixels
-Set the amount of pixels interactive
-.Ic resize
-will add/subtract in each step.
-.Pp
-Default is 5.
-.It Cm maxundos Ar number
-The maximal amount of step
-.Nm
-can undo with the
-.Ic undo
-command.
-.Pp
-Default is 20.
-.It Cm wingravity Li nw | w | sw | n | c | s | ne | e | se
-Set the default gravity new normal windows will get.
-Possible values are the same as in the
-.Ic gravity
-command, which changes the gravity of an existing window: cardinal
-points or numbers 1 to 9.
-.Pp
-Default is
-.Li nw .
-.It Cm maxsizegravity Li nw | w | sw | n | c | s | ne | e | se
-Set the default gravity new self-maximized windows will get.
-Possible values are the same as in the
-.Ic gravity
-command, which changes the gravity of an existing window: cardinal
-points or numbers 1 to 9.
-.Pp
-Default is
-.Li c .
-.It Cm transgravity Li nw | w | sw | n | c | s | ne | e | se
-Set the default gravity new transient windows will get.
-Possible values are the same as in the
-.Ic gravity
-command, which changes the gravity of an existing window: cardinal
-points or numbers 1 to 9.
-.Pp
-Default is
-.Li c .
-.It Cm bargravity Li nw | w | sw | n | c | s | ne | e | se
-Select the location where message and prompt bars appear.
-.Pp
-Default is
-.Li ne .
-.It Cm font Ar font
-Make
-.Nm
-use font
-.Ar font .
-.It Cm padding Ar left top right bottom
-Set how much space at the borders of the screen will not be used.
-.Pp
-Default is
-.Li 0 0 0 0 .
-.It Cm border Ar pixels
-Selects how thick the frame around windows is.
-.Pp
-Default is
-.Li 1 .
-.It Cm onlyborder Li 0 | 1
-Determine whether to show borders
-.Pq Li 1
-or not
-.Pq Li 0
-when there is only one frame on the screen.
-.Pp
-Default is
-.Li 1 .
 .It Cm barborder Ar pixels
 Selects how thick the frame around
 .Nm Ap
@@ -971,11 +901,11 @@ prompt or message windows is.
 .Pp
 Default is
 .Li 1 .
-.It Cm inputwidth Ar pixels
-Determine the width of the input window.
+.It Cm bargravity Li nw | w | sw | n | c | s | ne | e | se
+Select the location where message and prompt bars appear.
 .Pp
 Default is
-.Li 200 .
+.Li ne .
 .It Cm barinpadding Li 0 | 1
 If there is padding, determines whether the bar appears at the edge of
 the screen
@@ -985,73 +915,6 @@ or at the edge of the window area
 .Pp
 Default is
 .Li 0 .
-.It Cm topkmap Ar kmap
-Make
-.Ar kmap
-the top keymap
-.Nm
-grabs directly.
-.Pp
-The default value is
-.Li top .
-.It Cm waitcursor Li 0 | 1
-Determine whether to change the rat cursor when waiting for a key
-.Pq Li 1
-or not
-.Pq Li 0
-See
-.Ic readkey
-and
-.Ic describekey .
-.Pp
-Default is
-.Li 1 .
-.It Cm winfmt Ar format
-Choose the default format for the the
-.Ic windows
-command.
-.Pp
-Default is
-.Li %n%s%t .
-.It Cm winname Li title | name | class
-Choose what is considered the "name" of the window by
-.Nm :
-.Pp
-.Bl -tag -width Ds -compact
-.It title
-The title of the window.
-.It name
-The resource name of the window.
-.It class
-The resource class i.e. the name of the application.
-.El
-.Pp
-Default is
-.Li title .
-.It Cm fgcolor Ar color
-The foreground color of the windows
-.Nm
-creates.
-.Pp
-Default is
-.Li black .
-.It Cm bgcolor Ar color
-The background color of the windows
-.Nm
-creates.
-.Pp
-Default is
-.Li white .
-.It Cm fwcolor Ar color
-The border color of the focused window.
-.Pp
-Default is
-.Li black .
-.It Cm bwcolor Ar color
-The border color of unfocused windows.
-.Pp
-Default is
-.Li black .
 .It Cm barpadding Ar x y
 Set horizontal padding of
 .Nm
@@ -1062,40 +925,35 @@ and vertical padding to
 .Pp
 Default is
 .Li 4 0 .
-.It Cm winliststyle Li row | column
-Determines whether windows are shown in rows or in columns.
-.Pp
-Default is column.
-.It Cm framesels Ar selectors
-Override the frame selectors
-.Ic fselect
-uses.
-The first character is the selector for the first frame,
-the second character is the selector for the second frame and so on.
-.Pp
-Using this variable, one can directly access more than 10 frames.
-.Pp
-Default is an empty string, which is equivalent to "0123456789".
-.It Cm historysize Ar number
-Specify maximum number of values kept in input history.
+.It Cm bgcolor Ar color
+The background color of the windows
+.Nm
+creates.
 .Pp
 Default is
-.Li 20 .
-.It Cm historycompaction Li 0 | 1
-Decide if new input lines added to history delete
-older equal lines from history.
+.Li white .
+.It Cm border Ar pixels
+Selects how thick the frame around windows is.
 .Pp
 Default is
-.Li 1
-(on).
-.It Cm historyexpansion Li 0 | 1
-Decide if history expansion using ! is available.
-(Can only be activated when compiled with readline's libhistory.)
-.It Cm msgwait Ar seconds
-The duration the message window is shown.
-If
-.Ar seconds
-is zero, wait infinitely.
+.Li 1 .
+.It Cm bwcolor Ar color
+The border color of unfocused windows.
+.Pp
+Default is
+.Li black .
+.It Cm fgcolor Ar color
+The foreground color of the windows
+.Nm
+creates.
+.Pp
+Default is
+.Li black .
+.It Cm font Ar font
+Make
+.Nm
+use font
+.Ar font .
 .It Cm framemsgwait Ar seconds
 The duration the
 .Ql Current frame
@@ -1108,15 +966,73 @@ If
 is
 .Li -1 ,
 don't show any message.
-.It Cm startupmessage Li 0 | 1
-Decide whether to show a greeting message at startup.
-.It Cm warp Li 0 | 1
-Decide if focusing a window moves the rat cursor to the place it had
-been last time this window was focused, or not.
+.It Cm framesels Ar selectors
+Override the frame selectors
+.Ic fselect
+uses.
+The first character is the selector for the first frame,
+the second character is the selector for the second frame and so on.
+.Pp
+Using this variable, one can directly access more than 10 frames.
+.Pp
+Default is an empty string, which is equivalent to "0123456789".
+.It Cm fwcolor Ar color
+The border color of the focused window.
 .Pp
 Default is
-.Li 0
-(off).
+.Li black .
+.It Cm historysize Ar number
+Specify maximum number of values kept in input history.
+.Pp
+Default is
+.Li 20 .
+.It Cm inputwidth Ar pixels
+Determine the width of the input window.
+.Pp
+Default is
+.Li 200 .
+.It Cm maxsizegravity Li nw | w | sw | n | c | s | ne | e | se
+Set the default gravity new self-maximized windows will get.
+Possible values are the same as in the
+.Ic gravity
+command, which changes the gravity of an existing window: cardinal
+points or numbers 1 to 9.
+.Pp
+Default is
+.Li c .
+.It Cm maxundos Ar number
+The maximal amount of step
+.Nm
+can undo with the
+.Ic undo
+command.
+.Pp
+Default is 20.
+.It Cm msgwait Ar seconds
+The duration the message window is shown.
+If
+.Ar seconds
+is zero, wait infinitely.
+.It Cm onlyborder Li 0 | 1
+Determine whether to show borders
+.Pq Li 1
+or not
+.Pq Li 0
+when there is only one frame on the screen.
+.Pp
+Default is
+.Li 1 .
+.It Cm padding Ar left top right bottom
+Set how much space at the borders of the screen will not be used.
+.Pp
+Default is
+.Li 0 0 0 0 .
+.It Cm resizeunit Ar pixels
+Set the amount of pixels interactive
+.Ic resize
+will add/subtract in each step.
+.Pp
+Default is 5.
 .It Cm rudeness Ar number
 Show or set what kind of windows are allowed to jostle into the
 foreground.
@@ -1136,6 +1052,80 @@ New normal windows end up in the foreground.
 .El
 .Pp
 Default is all allowed i.e.\& 15.
+.It Cm startupmessage Li 0 | 1
+Decide whether to show a greeting message at startup.
+.It Cm topkmap Ar kmap
+Make
+.Ar kmap
+the top keymap
+.Nm
+grabs directly.
+.Pp
+The default value is
+.Li top .
+.It Cm transgravity Li nw | w | sw | n | c | s | ne | e | se
+Set the default gravity new transient windows will get.
+Possible values are the same as in the
+.Ic gravity
+command, which changes the gravity of an existing window: cardinal
+points or numbers 1 to 9.
+.Pp
+Default is
+.Li c .
+.It Cm warp Li 0 | 1
+Decide if focusing a window moves the rat cursor to the place it had
+been last time this window was focused, or not.
+.Pp
+Default is
+.Li 0
+(off).
+.It Cm wingravity Li nw | w | sw | n | c | s | ne | e | se
+Set the default gravity new normal windows will get.
+Possible values are the same as in the
+.Ic gravity
+command, which changes the gravity of an existing window: cardinal
+points or numbers 1 to 9.
+.Pp
+Default is
+.Li nw .
+.It Cm waitcursor Li 0 | 1
+Determine whether to change the rat cursor when waiting for a key
+.Pq Li 1
+or not
+.Pq Li 0
+See
+.Ic readkey
+and
+.Ic describekey .
+.Pp
+Default is
+.Li 1 .
+.It Cm winfmt Ar format
+Choose the default format for the the
+.Ic windows
+command.
+.Pp
+Default is
+.Li %n%s%t .
+.It Cm winliststyle Li row | column
+Determines whether windows are shown in rows or in columns.
+.Pp
+Default is column.
+.It Cm winname Li title | name | class
+Choose what is considered the "name" of the window by
+.Nm :
+.Pp
+.Bl -tag -width Ds -compact
+.It title
+The title of the window.
+.It name
+The resource name of the window.
+.It class
+The resource class i.e. the name of the application.
+.El
+.Pp
+Default is
+.Li title .
 .El
 .Sh FILES
 .Bl -tag -width "%%sysconfdir%%/ratpoisonrc" -compact
@@ -1150,21 +1140,6 @@ is not found.
 .Ex -std
 .Sh AUTHORS
 .An -nosplit
-Upstream author is
+.Nm
+was originally written by
 .An Shawn Betts Aq Mt sabetts@gmail.com .
-.Pp
-See the
-.Pa %%docdir%%/AUTHORS
-file for other contributors.
-.Pp
-This manual page was written by
-.An Bernhard R. Link Aq Mt brlink@debian.org .
-The conversion to the
-.Xr mdoc 7
-language
-.Pq Lk http://mdocml.bsd.lv
-was done by
-.An Jeremie Courreges-Anglas Aq Mt jca@wxcvbn.org .
-.Sh BUGS
-Please report any bug you find to the ratpoison mailing-list,
-.Aq Mt ratpoison-devel@nongnu.org .
