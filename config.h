@@ -22,14 +22,11 @@
 #ifndef _RATPOISON_CONF_H
 #define _RATPOISON_CONF_H 1
 
-/* Whether to draw text with Xft */
-#define USE_XFT_FONT	1
+#include "data.h"
+#include "actions.h"
 
 #define PACKAGE		"ratpoison"
 #define VERSION		"20190816"
-
-#include "data.h"
-#include "actions.h"
 
 /* Enter command mode with Control+T by default. */
 #define KEY_PREFIX      XK_t
@@ -141,9 +138,6 @@
 #define TOP_KEYMAP "top"
 
 /* The default font */
-#define DEFAULT_FONT "-*-fixed-bold-r-normal-*-15-*-*-*-c-*-*-*"
-#define BACKUP_FONT "*"
-
-#define DEFAULT_XFT_FONT "Mono-11"
+#define DEFAULT_XFT_FONT "monospace:size=12"
 
 #endif	/* !_ _RATPOISON_CONF_H */

@@ -174,37 +174,34 @@ get_wmname(Window w)
 {
 	char *name = NULL;
 	XTextProperty text_prop;
+	Atom type = None;
 	int ret = None, n;
+	unsigned long nitems, bytes_after;
+	int format;
 	char **cl;
+	unsigned char *val = NULL;
 
 	/*
-	 * If current encoding is UTF-8, try to use the window's _NET_WM_NAME
-	 * ewmh property
+	 * Try to use the window's _NET_WM_NAME ewmh property
 	 */
-	if (utf8_locale) {
-		Atom type = None;
-		unsigned long nitems, bytes_after;
-		int format;
-		unsigned char *val = NULL;
-
-		ret = XGetWindowProperty(dpy, w, _net_wm_name, 0, 40, False,
-		    xa_utf8_string, &type, &format, &nitems,
-		    &bytes_after, &val);
-		/* We have a valid UTF-8 string */
-		if (ret == Success && type == xa_utf8_string
-		    && format == 8 && nitems > 0) {
-			name = xstrdup((char *) val);
-			XFree(val);
-			PRINT_DEBUG(("Fetching window name using "
-			    "_NET_WM_NAME succeeded\n"));
-			PRINT_DEBUG(("WM_NAME: %s\n", name));
-			return name;
-		}
-		/* Something went wrong for whatever reason */
-		if (ret == Success && val)
-			XFree(val);
-		PRINT_DEBUG(("Could not fetch window name using _NET_WM_NAME\n"));
+	ret = XGetWindowProperty(dpy, w, _net_wm_name, 0, 40, False,
+	    xa_utf8_string, &type, &format, &nitems,
+	    &bytes_after, &val);
+	/* We have a valid UTF-8 string */
+	if (ret == Success && type == xa_utf8_string && format == 8 &&
+	    nitems > 0) {
+		name = xstrdup((char *) val);
+		XFree(val);
+		PRINT_DEBUG(("Fetching window name using "
+		    "_NET_WM_NAME succeeded\n"));
+		PRINT_DEBUG(("WM_NAME: %s\n", name));
+		return name;
 	}
+	/* Something went wrong for whatever reason */
+	if (ret == Success && val)
+		XFree(val);
+	PRINT_DEBUG(("Could not fetch window name using _NET_WM_NAME\n"));
+
 	if (XGetWMName(dpy, w, &text_prop) == 0) {
 		PRINT_DEBUG(("XGetWMName failed\n"));
 		return NULL;
@@ -225,7 +222,7 @@ get_wmname(Window w)
 	 * UTF8_STRING (but only as either STRING or COMPOUND_TEXT). Let's try
 	 * anyway.
 	 */
-	if (utf8_locale && text_prop.encoding == xa_utf8_string) {
+	if (text_prop.encoding == xa_utf8_string) {
 		ret = Xutf8TextPropertyToTextList(dpy, &text_prop, &cl, &n);
 		PRINT_DEBUG(("Xutf8TextPropertyToTextList: %s\n",
 			ret == Success ? "success" : "error"));

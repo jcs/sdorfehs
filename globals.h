@@ -27,18 +27,8 @@
 #define RET_SUCCESS 1
 #define RET_FAILURE 0
 
-#ifdef USE_XFT_FONT
-#include <X11/Xft/Xft.h>
-
 #define FONT_HEIGHT(s) ((s)->xft_font->ascent + (s)->xft_font->descent)
 #define FONT_ASCENT(s) ((s)->xft_font->ascent)
-
-#else
-
-#define FONT_HEIGHT(f) (rp_font_ascent + rp_font_descent)
-#define FONT_ASCENT(f) (rp_font_ascent)
-
-#endif
 
 #define MAX_FONT_WIDTH(f) (rp_font_width)
 

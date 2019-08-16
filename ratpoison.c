@@ -237,23 +237,7 @@ init_defaults(void)
 	defaults.padding_top = 0;
 	defaults.padding_bottom = 0;
 
-#ifdef USE_XFT_FONT
 	defaults.font_string = xstrdup(DEFAULT_XFT_FONT);
-#else
-	/* Attempt to load a font */
-	defaults.font = load_query_font_set(dpy, DEFAULT_FONT);
-	if (defaults.font == NULL) {
-		PRINT_ERROR(("ratpoison: Cannot load font %s.\n", DEFAULT_FONT));
-		defaults.font = load_query_font_set(dpy, BACKUP_FONT);
-		if (defaults.font == NULL) {
-			PRINT_ERROR(("ratpoison: Cannot load backup font %s. "
-			    "You lose.\n", BACKUP_FONT));
-			exit(EXIT_FAILURE);
-		}
-	}
-	defaults.font_string = xstrdup(DEFAULT_FONT);
-	set_extents_of_fontset(defaults.font);
-#endif
 
 	defaults.fgcolor_string = xstrdup("black");
 	defaults.bgcolor_string = xstrdup("white");
@@ -287,7 +271,6 @@ main(int argc, char *argv[])
 	char *alt_rcfile = NULL;
 
 	setlocale(LC_CTYPE, "");
-	utf8_check_locale();
 
 	if (XSupportsLocale()) {
 		if (!XSetLocaleModifiers(""))
@@ -426,33 +409,4 @@ main(int argc, char *argv[])
 	listen_for_events();
 
 	return EXIT_SUCCESS;
-}
-
-void
-set_extents_of_fontset(XFontSet font)
-{
-	XFontSetExtents *extent;
-	extent = XExtentsOfFontSet(font);
-	rp_font_ascent = extent->max_logical_extent.height * 9 / 10;
-	rp_font_descent = extent->max_logical_extent.height / 5;
-	rp_font_width = extent->max_logical_extent.width;
-}
-
-XFontSet
-load_query_font_set(Display *disp, const char *fontset_name)
-{
-	XFontSet fontset;
-	int missing_charset_count;
-	char **missing_charset_list;
-	char *def_string;
-
-	fontset = XCreateFontSet(disp, fontset_name,
-	    &missing_charset_list, &missing_charset_count,
-	    &def_string);
-	if (missing_charset_count) {
-		PRINT_DEBUG(("Missing charsets in FontSet(%s) creation.\n",
-		    fontset_name));
-		XFreeStringList(missing_charset_list);
-	}
-	return fontset;
 }

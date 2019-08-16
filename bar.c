@@ -23,10 +23,7 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-
-#ifdef USE_XFT_FONT
 #include <X11/Xft/Xft.h>
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>

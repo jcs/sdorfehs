@@ -21,29 +21,20 @@
 
 #include <langinfo.h>
 
-int utf8_locale;
-
-int
-utf8_check_locale(void)
-{
-	utf8_locale = !strcmp(nl_langinfo(CODESET), "UTF-8");
-	return utf8_locale;
-}
-
 int
 isu8char(char c)
 {
-	return utf8_locale && (c) & 0xC0;
+	return (c) & 0xC0;
 }
 
 int
 isu8start(char c)
 {
-	return utf8_locale && ((c) & 0xC0) == 0xC0;
+	return ((c) & 0xC0) == 0xC0;
 }
 
 int
 isu8cont(char c)
 {
-	return utf8_locale && ((c) & 0xC0) == 0x80;
+	return ((c) & 0xC0) == 0x80;
 }

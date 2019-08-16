@@ -294,66 +294,47 @@ set_window_focus(Window window)
 	    RevertToPointerRoot, CurrentTime);
 }
 
-
-/* Wrapper font functions to support Xft */
-
 void
 rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
     int length)
 {
+	XftDraw *draw;
+
 	if (length < 0)
 		length = strlen(string);
 
-#ifdef USE_XFT_FONT
-	if (s->xft_font) {
-		XftDraw *draw;
-		draw = XftDrawCreate(dpy, d, DefaultVisual(dpy, s->screen_num),
-		    DefaultColormap(dpy, s->screen_num));
-		if (!draw) {
-			PRINT_ERROR(("Failed to allocate XftDraw object\n"));
-			return;
-		}
-		if (utf8_locale) {
-			XftDrawStringUtf8(draw, style == STYLE_NORMAL ?
-			    &s->xft_fg_color : &s->xft_bg_color, s->xft_font,
-			    x, y, (FcChar8 *) string, length);
-		} else {
-			XftDrawString8(draw, style == STYLE_NORMAL ?
-			    &s->xft_fg_color : &s->xft_bg_color, s->xft_font,
-			    x, y, (FcChar8 *) string, length);
-		}
-		XftDrawDestroy(draw);
-	} else
+	if (!s->xft_font) {
 		PRINT_ERROR(("No Xft font available.\n"));
-#else
-	XmbDrawString(dpy, d, defaults.font, style == STYLE_NORMAL ? s->normal_gc :
-	    s->inverse_gc, x, y, string, length);
-#endif
+		return;
+	}
+
+	draw = XftDrawCreate(dpy, d, DefaultVisual(dpy, s->screen_num),
+	    DefaultColormap(dpy, s->screen_num));
+	if (!draw) {
+		PRINT_ERROR(("Failed to allocate XftDraw object\n"));
+		return;
+	}
+	XftDrawStringUtf8(draw, style == STYLE_NORMAL ? &s->xft_fg_color :
+	    &s->xft_bg_color, s->xft_font, x, y, (FcChar8 *) string, length);
+	XftDrawDestroy(draw);
 }
 
 int
 rp_text_width(rp_screen *s, char *string, int count)
 {
-	(void)s;	/* avoid "unused" warning */
+	XGlyphInfo extents;
+
+	if (!s->xft_font) {
+		PRINT_ERROR(("No Xft font available.\n"));
+		return 0;
+	}
+
 	if (count < 0)
 		count = strlen(string);
 
-#ifdef USE_XFT_FONT
-	if (s->xft_font) {
-		XGlyphInfo extents;
-		if (utf8_locale)
-			XftTextExtentsUtf8(dpy, s->xft_font, (FcChar8 *)string,
-			    count, &extents);
-		else
-			XftTextExtents8(dpy, s->xft_font, (FcChar8 *)string,
-			    count, &extents);
-		return extents.xOff;
-	}
-	PRINT_ERROR(("No Xft font available.\n"));
-	return 0;
-#else
-	return XmbTextEscapement(defaults.font, string, count);
-#endif
+	XftTextExtentsUtf8(dpy, s->xft_font, (FcChar8 *)string,
+	    count, &extents);
+	return extents.xOff;
 }
 
 /* A case insensitive strncmp. */
@@ -508,9 +489,6 @@ clean_up(void)
 	/* Free the global frame numset shared by all screens. */
 	numset_free(rp_frame_numset);
 
-#ifndef USE_XFT_FONT
-	XFreeFontSet(dpy, defaults.font);
-#endif
 	free(defaults.window_fmt);
 
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);

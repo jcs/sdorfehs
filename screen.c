@@ -435,29 +435,25 @@ init_screen(rp_screen *s)
 
 	XSync(dpy, 0);
 
-#ifdef USE_XFT_FONT
-	{
-		s->xft_font = XftFontOpenName(dpy, screen_num, DEFAULT_XFT_FONT);
-		if (!s->xft_font) {
-			PRINT_ERROR(("Failed to open font\n"));
-		} else {
-			if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
-			    DefaultColormap(dpy, screen_num),
-			    defaults.fgcolor_string, &s->xft_fg_color)) {
-				PRINT_ERROR(("Failed to allocate font fg color\n"));
-				XftFontClose(dpy, s->xft_font);
-				s->xft_font = NULL;
-			}
-			if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
-			    DefaultColormap(dpy, screen_num),
-			    defaults.bgcolor_string, &s->xft_bg_color)) {
-				PRINT_ERROR(("Failed to allocate font fg color\n"));
-				XftFontClose(dpy, s->xft_font);
-				s->xft_font = NULL;
-			}
+	s->xft_font = XftFontOpenName(dpy, screen_num, DEFAULT_XFT_FONT);
+	if (s->xft_font) {
+		if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
+		    DefaultColormap(dpy, screen_num),
+		    defaults.fgcolor_string, &s->xft_fg_color)) {
+			PRINT_ERROR(("Failed to allocate font fg color\n"));
+			XftFontClose(dpy, s->xft_font);
+			s->xft_font = NULL;
 		}
+		if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
+		    DefaultColormap(dpy, screen_num),
+		    defaults.bgcolor_string, &s->xft_bg_color)) {
+			PRINT_ERROR(("Failed to allocate font fg color\n"));
+			XftFontClose(dpy, s->xft_font);
+			s->xft_font = NULL;
+		}
+	} else {
+		PRINT_ERROR(("Failed to open font\n"));
 	}
-#endif
 }
 
 void
@@ -680,7 +676,6 @@ screen_free(rp_screen *s)
 	XDestroyWindow(dpy, s->frame_window);
 	XDestroyWindow(dpy, s->help_window);
 
-#ifdef USE_XFT_FONT
 	if (s->xft_font) {
 		XftColorFree(dpy, DefaultVisual(dpy, s->screen_num),
 		    DefaultColormap(dpy, s->screen_num), &s->xft_fg_color);
@@ -688,7 +683,6 @@ screen_free(rp_screen *s)
 		    DefaultColormap(dpy, s->screen_num), &s->xft_bg_color);
 		XftFontClose(dpy, s->xft_font);
 	}
-#endif
 
 	XFreeCursor(dpy, s->rat);
 	XFreeColormap(dpy, s->def_cmap);

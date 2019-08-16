@@ -28,10 +28,7 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-
-#ifdef USE_XFT_FONT
 #include <X11/Xft/Xft.h>
-#endif
 
 typedef struct rp_window rp_window;
 typedef struct rp_screen rp_screen;
@@ -215,10 +212,8 @@ struct rp_screen {
 	/* Used by sfrestore */
 	struct sbuf *scratch_buffer;
 
-#ifdef USE_XFT_FONT
 	XftFont *xft_font;
 	XftColor xft_fg_color, xft_bg_color;
-#endif
 };
 
 struct rp_action {
@@ -271,7 +266,6 @@ struct rp_defaults {
 	int padding_top;
 	int padding_bottom;
 
-	XFontSet font;
 	char *font_string;
 
 	char *fgcolor_string;

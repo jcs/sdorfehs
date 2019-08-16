@@ -3882,18 +3882,6 @@ update_gc(rp_screen * s)
 	    GCSubwindowMode, &gcv);
 }
 
-#ifndef USE_XFT_FONT
-static void
-update_all_gcs(void)
-{
-	rp_screen *cur;
-
-	list_for_each_entry(cur, &rp_screens, node) {
-		update_gc(cur);
-	}
-}
-#endif
-
 static cmdret *
 set_historysize(struct cmdarg **args)
 {
@@ -3911,7 +3899,6 @@ set_historysize(struct cmdarg **args)
 static cmdret *
 set_font(struct cmdarg **args)
 {
-#ifdef USE_XFT_FONT
 	XftFont *font;
 	rp_screen *s;
 
@@ -3926,22 +3913,6 @@ set_font(struct cmdarg **args)
 		XftFontClose(dpy, s->xft_font);
 		s->xft_font = font;
 	}
-#else
-	XFontSet font;
-
-	if (args[0] == NULL)
-		return cmdret_new(RET_SUCCESS, "%s", defaults.font_string);
-
-	font = load_query_font_set(dpy, ARG_STRING(0));
-	if (font == NULL)
-		return cmdret_new(RET_FAILURE, "set font: unknown font");
-
-	/* Save the font as the default. */
-	XFreeFontSet(dpy, defaults.font);
-	defaults.font = font;
-	set_extents_of_fontset(font);
-	update_all_gcs();
-#endif
 
 	free(defaults.font_string);
 	defaults.font_string = xstrdup(ARG_STRING(0));
@@ -4248,13 +4219,11 @@ set_fgcolor(struct cmdarg **args)
 		XSetWindowBorder(dpy, cur->frame_window, color.pixel);
 		XSetWindowBorder(dpy, cur->help_window, color.pixel);
 
-#ifdef USE_XFT_FONT
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, cur->screen_num),
-			DefaultColormap(dpy, cur->screen_num),
-			ARG_STRING(0), &cur->xft_fg_color))
+		    DefaultColormap(dpy, cur->screen_num), ARG_STRING(0),
+		    &cur->xft_fg_color))
 			return cmdret_new(RET_FAILURE,
 			    "set fgcolor: unknown color");
-#endif
 
 		free(defaults.fgcolor_string);
 		defaults.fgcolor_string = xstrdup(ARG_STRING(0));
@@ -4285,13 +4254,11 @@ set_bgcolor(struct cmdarg **args)
 		XSetWindowBackground(dpy, cur->frame_window, color.pixel);
 		XSetWindowBackground(dpy, cur->help_window, color.pixel);
 
-#ifdef USE_XFT_FONT
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, cur->screen_num),
-			DefaultColormap(dpy, cur->screen_num),
-			ARG_STRING(0), &cur->xft_bg_color))
+		    DefaultColormap(dpy, cur->screen_num), ARG_STRING(0),
+		    &cur->xft_bg_color))
 			return cmdret_new(RET_FAILURE,
 			    "set fgcolor: unknown color");
-#endif
 
 		free(defaults.bgcolor_string);
 		defaults.bgcolor_string = xstrdup(ARG_STRING(0));
