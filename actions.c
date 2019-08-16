@@ -3417,8 +3417,8 @@ cmd_help(int interactive, struct cmdarg **args)
 	if (interactive) {
 		rp_screen *s = rp_current_screen;
 		int i, old_i;
-		int x = 10;
-		int y = 0;
+		int x = 20;
+		int y = 20;
 		int header_offset;
 		int width, max_width = 0;
 		/* 1 if we are drawing keys, 0 if we are drawing commands */
@@ -3433,20 +3433,20 @@ cmd_help(int interactive, struct cmdarg **args)
 		XMapRaised(dpy, s->help_window);
 
 		rp_draw_string(s, s->help_window, STYLE_NORMAL,
-		    10, y + FONT_ASCENT(s), PROGNAME " key bindings", -1);
+		    x, y + FONT_ASCENT(s), PROGNAME " key bindings", -1);
 
 		y += FONT_HEIGHT(s) * 2;
 
 		/* Only print the "Command key" for the root keymap */
 		if (map == find_keymap(ROOT_KEYMAP)) {
 			rp_draw_string(s, s->help_window, STYLE_NORMAL,
-			    10, y + FONT_ASCENT(s),
+			    x, y + FONT_ASCENT(s),
 			    "Command key: ", -1);
 
 			keysym_name = keysym_to_string(prefix_key.sym,
 			    prefix_key.state);
 			rp_draw_string(s, s->help_window, STYLE_NORMAL,
-			    10 + rp_text_width(s, "Command key: ", -1),
+			    x + rp_text_width(s, "Command key: ", -1),
 			    y + FONT_ASCENT(s),
 			    keysym_name, -1);
 			free(keysym_name);
