@@ -214,7 +214,7 @@ frame_read(char *str, rp_screen *screen)
 	tmp = strtok_ws(d);
 
 	/* Verify it starts with '(frame ' */
-	if (strcmp(tmp, "(frame")) {
+	if (tmp == NULL || strcmp(tmp, "(frame")) {
 		PRINT_DEBUG(("Doesn't start with '(frame '\n"));
 		free(d);
 		free(f);
