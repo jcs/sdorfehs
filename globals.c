@@ -76,6 +76,7 @@ Atom _net_wm_window_type_dialog;
 Atom _net_wm_name;
 Atom _net_current_desktop;
 Atom _net_number_of_desktops;
+Atom _net_active_window;
 
 LIST_HEAD(rp_screens);
 rp_screen *rp_current_screen;
@@ -281,6 +282,8 @@ set_rp_window_focus(rp_window *win)
 	PRINT_DEBUG(("Giving focus to '%s'\n", window_name(win)));
 	XSetInputFocus(dpy, win->w,
 	    RevertToPointerRoot, CurrentTime);
+	set_atom(win->vscr->screen->root, _net_active_window, XA_WINDOW,
+	    &win->w, 1);
 }
 
 void
@@ -493,6 +496,13 @@ clean_up(void)
 
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XCloseDisplay(dpy);
+}
+
+int
+set_atom(Window w, Atom a, Atom type, unsigned long *val, unsigned long nitems)
+{
+	return (XChangeProperty(dpy, w, a, type, 32, PropModeReplace,
+	    (unsigned char *)val, nitems) == Success);
 }
 
 int

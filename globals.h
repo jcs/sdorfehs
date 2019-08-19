@@ -138,6 +138,7 @@ extern Atom _net_wm_window_type_dialog;
 extern Atom _net_wm_name;
 extern Atom _net_current_desktop;
 extern Atom _net_number_of_desktops;
+extern Atom _net_active_window;
 
 /* mouse properties */
 extern int rat_x;
@@ -215,6 +216,8 @@ void read_rc_file(FILE *file);
 const char *get_homedir(void);
 void clean_up(void);
 
+int set_atom(Window w, Atom a, Atom type, unsigned long *val,
+    unsigned long nitems);
 int append_atom(Window w, Atom a, Atom type, unsigned long *val,
     unsigned long nitems);
 unsigned long get_atom(Window w, Atom a, Atom type, unsigned long off,

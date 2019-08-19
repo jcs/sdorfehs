@@ -376,6 +376,7 @@ main(int argc, char *argv[])
 	PRINT_DEBUG(("_NET_WM_PID = %ld\n", _net_wm_pid));
 	_net_supported = XInternAtom(dpy, "_NET_SUPPORTED", False);
 	PRINT_DEBUG(("_NET_SUPPORTED = %ld\n", _net_supported));
+	_net_active_window = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
 	_net_wm_window_type = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	_net_wm_window_type_dialog = XInternAtom(dpy,
 	    "_NET_WM_WINDOW_TYPE_DIALOG", False);
