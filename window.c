@@ -515,6 +515,25 @@ goto_window(rp_window *win)
 	}
 }
 
+void
+get_current_window_in_fmt(char *fmt, struct sbuf *buffer)
+{
+	rp_window_elem *we;
+
+	if (buffer == NULL)
+		return;
+
+	sbuf_clear(buffer);
+	find_window_other(rp_current_vscreen);
+
+	list_for_each_entry(we, &rp_current_group->mapped_windows, node) {
+		if (we->win != current_window())
+			continue;
+
+		format_string(fmt, we, buffer);
+	}
+}
+
 /*
  * get the window list and store it in buffer delimiting each window with
  * delim.  mark_start and mark_end will be filled with the text positions for

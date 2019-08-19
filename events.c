@@ -424,8 +424,8 @@ handle_key(KeySym ks, unsigned int mod, rp_screen *s)
 	PRINT_DEBUG(("handling key...\n"));
 
 	/* All functions hide the program bar and the frame indicator. */
-	if (defaults.bar_timeout > 0)
-		hide_bar(s);
+	if (defaults.bar_timeout > 0 && !defaults.bar_sticky)
+		hide_bar(s, 1);
 	hide_frame_indicator();
 
 	/* Disable any alarm that was going to go off. */
@@ -446,6 +446,9 @@ handle_key(KeySym ks, unsigned int mod, rp_screen *s)
 
 		PRINT_DEBUG(("%s\n", key_action->data));
 
+		if (defaults.bar_sticky)
+			hide_bar(s, 0);
+
 		result = command(1, key_action->data);
 
 		if (result) {
@@ -454,6 +457,9 @@ handle_key(KeySym ks, unsigned int mod, rp_screen *s)
 			cmdret_free(result);
 		}
 	} else {
+		if (defaults.bar_sticky)
+			hide_bar(s, 0);
+
 		PRINT_DEBUG(("Impossible: No matching key"));
 	}
 }
@@ -931,7 +937,7 @@ handle_signals(void)
 		/* Only hide the bar if it times out. */
 		if (defaults.bar_timeout > 0) {
 			list_for_each_entry(cur, &rp_screens, node) {
-				hide_bar(cur);
+				hide_bar(cur, 0);
 			}
 		}
 		hide_frame_indicator();

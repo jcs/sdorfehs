@@ -931,6 +931,16 @@ and vertical padding to
 .Pp
 Default is
 .Li 4 0 .
+.It Cm barsticky Li 0 | 1
+When set to
+.Li 1 ,
+the bar remains on screen at all times and when messages or lists are not
+being shown, it displays the output of the current window information
+formatted with
+.Ic stickyfmt .
+.Pp
+Default is
+.Li 0 .
 .It Cm bgcolor Ar color
 The background color of the windows
 .Nm
@@ -1060,6 +1070,17 @@ New normal windows end up in the foreground.
 Default is all allowed i.e.\& 15.
 .It Cm startupmessage Li 0 | 1
 Decide whether to show a greeting message at startup.
+.Pp
+The default is
+.Li 1 .
+.It Cm stickyfmt Ar format
+Choose the default format for current window information shown in the
+bar when the
+.Ic barsticky
+setting is enabled.
+.Pp
+Default is
+.Li %t .
 .It Cm topkmap Ar kmap
 Make
 .Ar kmap
@@ -1112,7 +1133,7 @@ and
 Default is
 .Li 1 .
 .It Cm winfmt Ar format
-Choose the default format for the the
+Choose the default format for the
 .Ic windows
 command.
 .Pp

@@ -280,6 +280,7 @@ struct rp_defaults {
 	int bar_timeout;
 	int bar_border_width;
 	int bar_in_padding;
+	int bar_sticky;
 
 	int frame_indicator_timeout;
 	int frame_resize_unit;
@@ -300,6 +301,7 @@ struct rp_defaults {
 
 	char *window_fmt;
 	char *info_fmt;
+	char *sticky_fmt;
 
 	/* Which name to use: wm_name, res_name, res_class. */
 	int win_name;

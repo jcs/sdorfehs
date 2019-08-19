@@ -45,6 +45,7 @@ rp_window *find_window_number(int n);
 
 void insert_into_list(rp_window *win, struct list_head *list);
 
+void get_current_window_in_fmt(char *fmt, struct sbuf *buffer);
 void get_window_list(char *fmt, char *delim, struct sbuf *buffer,
     int *mark_start, int *mark_end);
 void init_window_stuff(void);

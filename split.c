@@ -124,13 +124,13 @@ maximize_all_windows_in_frame(rp_frame *frame)
 }
 
 /* Make the frame occupy the entire screen */
-static void
+void
 maximize_frame(rp_frame *frame)
 {
 	rp_vscreen *v = frames_vscreen(frame);
 
-	frame->x = defaults.padding_left;
-	frame->y = defaults.padding_top;
+	frame->x = screen_left(v->screen);
+	frame->y = screen_top(v->screen);
 
 	frame->width = screen_width(v->screen);
 	frame->height = screen_height(v->screen);

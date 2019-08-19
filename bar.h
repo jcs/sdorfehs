@@ -25,14 +25,15 @@
 void update_window_names(rp_screen *s, char *fmt);
 void update_group_names(rp_screen *s);
 void update_bar(rp_screen *s);
-int show_bar(rp_screen *s, char *fmt);
-int show_group_bar(rp_screen *s);
-int hide_bar(rp_screen *s);
+void show_bar(rp_screen *s, char *fmt);
+void show_group_bar(rp_screen *s);
+void hide_bar(rp_screen *s, int force);
 int bar_y(rp_screen *s, int height);
 int bar_x(rp_screen *s, int width);
+int sticky_bar_height(rp_screen *s);
 
 void message(char *s);
-void marked_message(char *s, int mark_start, int mark_end);
+void marked_message(char *s, int mark_start, int mark_end, int bar_type);
 void marked_message_printf(int mark_start, int mark_end, char *fmt,...);
 void redraw_last_message(void);
 void show_last_message(void);

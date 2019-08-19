@@ -34,7 +34,22 @@ screen_width(rp_screen *s)
 int
 screen_height(rp_screen *s)
 {
-	return s->height - defaults.padding_bottom - defaults.padding_top;
+	int ret = s->height - defaults.padding_bottom - defaults.padding_top;
+
+	if (defaults.bar_sticky) {
+		switch (defaults.bar_location) {
+		case NorthEastGravity:
+		case NorthGravity:
+		case NorthWestGravity:
+		case SouthEastGravity:
+		case SouthGravity:
+		case SouthWestGravity:
+			ret -= sticky_bar_height(s);
+			break;
+		}
+	}
+
+	return ret;
 }
 
 int
@@ -52,7 +67,19 @@ screen_right(rp_screen *s)
 int
 screen_top(rp_screen *s)
 {
-	return s->top + defaults.padding_top;
+	int ret = s->top + defaults.padding_top;
+
+	if (defaults.bar_sticky) {
+		switch (defaults.bar_location) {
+		case NorthEastGravity:
+		case NorthGravity:
+		case NorthWestGravity:
+			ret += sticky_bar_height(s);
+			break;
+		}
+	}
+
+	return ret;
 }
 
 int
@@ -503,13 +530,6 @@ screen_update(rp_screen *s, int left, int top, int width, int height)
 	PRINT_DEBUG(("screen_update (left=%d, top=%d, width=%d, height=%d)\n",
 		left, top, width, height));
 
-	if (s->width == width &&
-	    s->height == height &&
-	    s->left == left &&
-	    s->top == top)
-		/* nothing to do */
-		return;
-
 	oldwidth = s->width;
 	oldheight = s->height;
 
@@ -517,6 +537,9 @@ screen_update(rp_screen *s, int left, int top, int width, int height)
 	s->top = top;
 	s->width = width;
 	s->height = height;
+
+	if (defaults.bar_sticky)
+		hide_bar(s, 0);
 
 	XMoveResizeWindow(dpy, s->help_window, s->left, s->top, s->width,
 	    s->height);

@@ -132,6 +132,7 @@ static cmdret *set_barborder(struct cmdarg **args);
 static cmdret *set_bargravity(struct cmdarg **args);
 static cmdret *set_barinpadding(struct cmdarg **args);
 static cmdret *set_barpadding(struct cmdarg **args);
+static cmdret *set_barsticky(struct cmdarg **args);
 static cmdret *set_bgcolor(struct cmdarg **args);
 static cmdret *set_border(struct cmdarg **args);
 static cmdret *set_bwcolor(struct cmdarg **args);
@@ -152,6 +153,7 @@ static cmdret *set_padding(struct cmdarg **args);
 static cmdret *set_resizeunit(struct cmdarg **args);
 static cmdret *set_rudeness(struct cmdarg **args);
 static cmdret *set_startupmessage(struct cmdarg **args);
+static cmdret *set_stickyfmt(struct cmdarg **args);
 static cmdret *set_topkmap(struct cmdarg **args);
 static cmdret *set_transgravity(struct cmdarg **args);
 static cmdret *set_vscreens(struct cmdarg **args);
@@ -316,6 +318,7 @@ init_set_vars(void)
 	add_set_var("barinpadding", set_barinpadding, 1, "", arg_NUMBER);
 	add_set_var("barpadding", set_barpadding, 2, "", arg_NUMBER, "",
 	    arg_NUMBER);
+	add_set_var("barsticky", set_barsticky, 1, "", arg_NUMBER);
 	add_set_var("bgcolor", set_bgcolor, 1, "", arg_STRING);
 	add_set_var("border", set_border, 1, "", arg_NUMBER);
 	add_set_var("onlyborder", set_onlyborder, 1, "", arg_NUMBER);
@@ -337,6 +340,7 @@ init_set_vars(void)
 	add_set_var("resizeunit", set_resizeunit, 1, "", arg_NUMBER);
 	add_set_var("rudeness", set_rudeness, 1, "", arg_NUMBER);
 	add_set_var("startupmessage", set_startupmessage, 1, "", arg_NUMBER);
+	add_set_var("stickyfmt", set_stickyfmt, 1, "", arg_REST);
 	add_set_var("topkmap", set_topkmap, 1, "", arg_STRING);
 	add_set_var("transgravity", set_transgravity, 1, "", arg_GRAVITY);
 	add_set_var("vsceens", set_vscreens, 1, "", arg_NUMBER);
@@ -2899,7 +2903,6 @@ cmd_windows(int interactive, struct cmdarg **args)
 {
 	struct sbuf *window_list = NULL;
 	int dummy;
-	rp_screen *s;
 	char *fmt;
 
 	if (args[0] == NULL)
@@ -2908,18 +2911,7 @@ cmd_windows(int interactive, struct cmdarg **args)
 		fmt = ARG_STRING(0);
 
 	if (interactive) {
-		s = rp_current_screen;
-		/*
-		 * This is a yukky hack. If the bar already hidden then show
-		 * the bar.  This handles the case when msgwait is 0 (the bar
-		 * sticks) and the user uses this command to toggle the bar on
-		 * and off. OR the timeout is >0 then show the bar. Which
-		 * means, always show the bar if msgwait is >0 which fixes the
-		 * case when a command in the prefix hook displays the bar.
-		 */
-		if (!hide_bar(s) || defaults.bar_timeout > 0)
-			show_bar(s, fmt);
-
+		show_bar(rp_current_screen, fmt);
 		return cmdret_new(RET_SUCCESS, NULL);
 	} else {
 		cmdret *ret;
@@ -3785,6 +3777,8 @@ set_font(struct cmdarg **args)
 static cmdret *
 set_padding(struct cmdarg **args)
 {
+	rp_screen *s;
+	rp_vscreen *v;
 	rp_frame *frame;
 	int l, t, r, b;
 
@@ -3804,41 +3798,39 @@ set_padding(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE, "set padding: %s",
 		    invalid_negative_arg);
 
-	/*
-	 * Resize the frames to make sure they are not too big and not too small.
-	 */
-	list_for_each_entry(frame, &(rp_current_vscreen->frames), node) {
-		int bk_pos, bk_len;
+	s = rp_current_screen;
 
-		/* Resize horizontally. */
-		bk_pos = frame->x;
-		bk_len = frame->width;
+	list_for_each_entry(v, &(s->vscreens), node) {
+		list_for_each_entry(frame, &(v->frames), node) {
+			int bk_pos, bk_len;
 
-		if (frame->x == defaults.padding_left) {
-			frame->x = l;
-			frame->width += bk_pos - l;
+			/* Resize horizontally. */
+			bk_pos = frame->x;
+			bk_len = frame->width;
+
+			if (frame->x == defaults.padding_left) {
+				frame->x = l;
+				frame->width += bk_pos - l;
+			}
+			if ((bk_pos + bk_len) ==
+			    (s->left + s->width - defaults.padding_right))
+				frame->width = s->left + s->width - r - frame->x;
+
+			/* Resize vertically. */
+			bk_pos = frame->y;
+			bk_len = frame->height;
+
+			if (frame->y == defaults.padding_top) {
+				frame->y = t;
+				frame->height += bk_pos - t;
+			}
+			if ((bk_pos + bk_len) ==
+			    (s->top + s->height - defaults.padding_bottom))
+				frame->height = s->top + s->height - b -
+				    frame->y;
+
+			maximize_all_windows_in_frame(frame);
 		}
-		if ((bk_pos + bk_len) ==
-		    (rp_current_screen->left + rp_current_screen->width -
-		    defaults.padding_right))
-			frame->width = rp_current_screen->left +
-			    rp_current_screen->width - r - frame->x;
-
-		/* Resize vertically. */
-		bk_pos = frame->y;
-		bk_len = frame->height;
-
-		if (frame->y == defaults.padding_top) {
-			frame->y = t;
-			frame->height += bk_pos - t;
-		}
-		if ((bk_pos + bk_len) ==
-		    (rp_current_screen->top + rp_current_screen->height -
-		    defaults.padding_bottom))
-			frame->height = rp_current_screen->top +
-			    rp_current_screen->height - b - frame->y;
-
-		maximize_all_windows_in_frame(frame);
 	}
 
 	defaults.padding_left = l;
@@ -4504,6 +4496,8 @@ cmd_link(int interactive, struct cmdarg **args)
 static cmdret *
 set_barpadding(struct cmdarg **args)
 {
+	rp_frame *cur;
+	rp_window *win;
 	int x, y;
 
 	if (args[0] == NULL)
@@ -4519,6 +4513,53 @@ set_barpadding(struct cmdarg **args)
 
 	defaults.bar_x_padding = x;
 	defaults.bar_y_padding = y;
+
+	list_for_each_entry(cur, &rp_current_vscreen->frames, node)
+		if ((win = find_window_number(cur->win_number)))
+			maximize(win);
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_barsticky(struct cmdarg **args)
+{
+	rp_frame *f;
+	rp_vscreen *v;
+
+	if (args[0] == NULL)
+		return cmdret_new(RET_SUCCESS, "%d", defaults.bar_sticky);
+
+	if (ARG(0, number) != 0 && ARG(0, number) != 1)
+		return cmdret_new(RET_FAILURE,
+		    "set barsticky: invalid argument");
+
+	defaults.bar_sticky = ARG(0, number);
+
+	/* force an update of frames */
+	list_for_each_entry(v, &rp_current_screen->vscreens, node) {
+		list_for_each_entry(f, &v->frames, node) {
+			maximize_frame(f);
+			maximize_all_windows_in_frame(f);
+		}
+	}
+
+	hide_bar(rp_current_screen, 0);
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_stickyfmt(struct cmdarg **args)
+{
+	if (args[0] == NULL)
+		return cmdret_new(RET_SUCCESS, "%s", defaults.sticky_fmt);
+
+	free(defaults.sticky_fmt);
+	defaults.sticky_fmt = xstrdup(ARG_STRING(0));
+
+	hide_bar(rp_current_screen, 0);
+
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
@@ -4945,21 +4986,9 @@ cmd_groups(int interactive, struct cmdarg **args UNUSED)
 {
 	struct sbuf *group_list = NULL;
 	int dummy;
-	rp_screen *s;
 
 	if (interactive) {
-		s = rp_current_screen;
-		/*
-		 * This is a yukky hack. If the bar already hidden then show
-		 * the bar.  This handles the case when msgwait is 0 (the bar
-		 * sticks) and the user uses this command to toggle the bar on
-		 * and off. OR the timeout is >0 then show the bar. Which
-		 * means, always show the bar if msgwait is >0 which fixes the
-		 * case when a command in the prefix hook displays the bar.
-		 */
-		if (!hide_bar(s) || defaults.bar_timeout > 0)
-			show_group_bar(s);
-
+		show_group_bar(rp_current_screen);
 		return cmdret_new(RET_SUCCESS, NULL);
 	} else {
 		cmdret *ret;

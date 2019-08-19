@@ -230,6 +230,7 @@ init_defaults(void)
 	defaults.bar_timeout = 5;
 	defaults.bar_border_width = 1;
 	defaults.bar_in_padding = 0;
+	defaults.bar_sticky = 0;
 
 	defaults.frame_indicator_timeout = 1;
 	defaults.frame_resize_unit = 10;
@@ -251,6 +252,7 @@ init_defaults(void)
 	defaults.window_fmt = xstrdup("%n%s%t");
 	defaults.info_fmt = xstrdup("(%H, %W) %n(%t)");
 	defaults.frame_fmt = xstrdup("Current Frame");
+	defaults.sticky_fmt = xstrdup("%t");
 
 	defaults.win_name = WIN_NAME_TITLE;
 	defaults.startup_message = 1;

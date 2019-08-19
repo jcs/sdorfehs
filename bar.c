@@ -33,90 +33,101 @@
 #include "ratpoison.h"
 
 /* Possible values for bar_is_raised status. */
-#define BAR_IS_HIDDEN  0
-#define BAR_IS_WINDOW_LIST 1
-#define BAR_IS_GROUP_LIST  2
-#define BAR_IS_MESSAGE     3
+#define BAR_IS_HIDDEN		0
+#define BAR_IS_WINDOW_LIST	1
+#define BAR_IS_GROUP_LIST	2
+#define BAR_IS_MESSAGE		3
+#define BAR_IS_STICKY		4
+
+#define BAR_IS_RAISED(s)	(s->bar_is_raised != BAR_IS_HIDDEN && \
+				s->bar_is_raised != BAR_IS_STICKY)
 
 /* A copy of the last message displayed in the message bar. */
 static char *last_msg = NULL;
 static int last_mark_start = 0;
 static int last_mark_end = 0;
 
-static void marked_message_internal(char *msg, int mark_start, int mark_end);
+static void marked_message_internal(char *msg, int mark_start, int mark_end,
+    int bar_type);
 
 /* Reset the alarm to auto-hide the bar in BAR_TIMEOUT seconds. */
 static void
 reset_alarm(void)
 {
-	alarm(defaults.bar_timeout);
+	struct timeval timeout;
+	struct itimerval alarmtimer;
+
+	memset(&timeout, 0, sizeof(timeout));
+	memset(&alarmtimer, 0, sizeof(alarmtimer));
+
+	timeout.tv_sec = (time_t)(defaults.bar_timeout);
+	alarmtimer.it_value = timeout;
+	setitimer(ITIMER_REAL, &alarmtimer, NULL);
+
 	alarm_signalled = 0;
 }
 
-/* Hide the bar from sight. */
-int
-hide_bar(rp_screen *s)
+static void
+reset_alarm_if_needed(void)
 {
-	if (s->bar_is_raised) {
-		s->bar_is_raised = 0;
-		XUnmapWindow(dpy, s->bar_window);
+	struct itimerval left;
 
-		/* Possibly restore colormap. */
-		if (current_window()) {
-			XUninstallColormap(dpy, s->def_cmap);
-			XInstallColormap(dpy, current_window()->colormap);
-		}
-		return 1;
+	getitimer(ITIMER_REAL, &left);
+	if (left.it_value.tv_sec == 0)
+		reset_alarm();
+}
+
+/* Hide the bar from sight. */
+void
+hide_bar(rp_screen *s, int force)
+{
+	if (defaults.bar_sticky && !force) {
+		s->bar_is_raised = BAR_IS_STICKY;
+		XMapRaised(dpy, s->bar_window);
+		update_window_names(s, defaults.sticky_fmt);
+		return;
 	}
-	return 0;
+
+	s->bar_is_raised = BAR_IS_HIDDEN;
+	XUnmapWindow(dpy, s->bar_window);
+
+	/* Possibly restore colormap. */
+	if (current_window()) {
+		XUninstallColormap(dpy, s->def_cmap);
+		XInstallColormap(dpy, current_window()->colormap);
+	}
 }
 
 /* Show window listing in bar. */
-int
+void
 show_bar(rp_screen *s, char *fmt)
 {
-	if (!s->bar_is_raised) {
-		s->bar_is_raised = BAR_IS_WINDOW_LIST;
-		XMapRaised(dpy, s->bar_window);
-		update_window_names(s, fmt);
-
-		/* Switch to the default colormap */
-		if (current_window())
-			XUninstallColormap(dpy, current_window()->colormap);
-		XInstallColormap(dpy, s->def_cmap);
-
-		reset_alarm();
-		return 1;
-	}
-	/*
-	 * If the bar is raised we still need to display the window names.
-	 */
+	s->bar_is_raised = BAR_IS_WINDOW_LIST;
+	XMapRaised(dpy, s->bar_window);
 	update_window_names(s, fmt);
-	return 0;
+
+	/* Switch to the default colormap */
+	if (current_window())
+		XUninstallColormap(dpy, current_window()->colormap);
+	XInstallColormap(dpy, s->def_cmap);
+
+	reset_alarm();
 }
 
 /* Show group listing in bar. */
-int
+void
 show_group_bar(rp_screen *s)
 {
-	if (!s->bar_is_raised) {
-		s->bar_is_raised = BAR_IS_GROUP_LIST;
-		XMapRaised(dpy, s->bar_window);
-		update_group_names(s);
-
-		/* Switch to the default colormap */
-		if (current_window())
-			XUninstallColormap(dpy, current_window()->colormap);
-		XInstallColormap(dpy, s->def_cmap);
-
-		reset_alarm();
-		return 1;
-	}
-	/*
-	 * If the bar is raised we still need to display the window names.
-	 */
+	s->bar_is_raised = BAR_IS_GROUP_LIST;
+	XMapRaised(dpy, s->bar_window);
 	update_group_names(s);
-	return 0;
+
+	/* Switch to the default colormap */
+	if (current_window())
+		XUninstallColormap(dpy, current_window()->colormap);
+	XInstallColormap(dpy, s->def_cmap);
+
+	reset_alarm();
 }
 
 int
@@ -129,21 +140,24 @@ bar_x(rp_screen *s, int width)
 	case WestGravity:
 	case SouthWestGravity:
 		x = s->left +
-		    (defaults.bar_in_padding ? 0 : defaults.padding_left);
+		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
+		    defaults.padding_left);
 		break;
 	case NorthGravity:
 	case CenterGravity:
 	case SouthGravity:
 		x = s->left +
 		    (s->width - width - defaults.bar_border_width * 2) / 2 -
-		    (defaults.bar_in_padding ? 0 : defaults.padding_left);
+		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
+		    defaults.padding_left);
 		break;
 	case NorthEastGravity:
 	case EastGravity:
 	case SouthEastGravity:
 		x = s->left + s->width - width -
 		    (defaults.bar_border_width * 2) -
-		    (defaults.bar_in_padding ? 0 : defaults.padding_right);
+		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
+		    defaults.padding_right);
 		break;
 	}
 
@@ -160,42 +174,55 @@ bar_y(rp_screen *s, int height)
 	case NorthGravity:
 	case NorthWestGravity:
 		y = s->top +
-		    (defaults.bar_in_padding ? 0 : defaults.padding_top);
+		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
+		    defaults.padding_top);
 		break;
 	case EastGravity:
 	case CenterGravity:
 	case WestGravity:
 		y = s->top + (s->height - height -
 		    defaults.bar_border_width * 2) / 2 -
-		    (defaults.bar_in_padding ? 0 : defaults.padding_top);
+		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
+		    defaults.padding_top);
 		break;
 	case SouthEastGravity:
 	case SouthGravity:
 	case SouthWestGravity:
 		y = s->top + (s->height - height -
 		    defaults.bar_border_width * 2) -
-		    (defaults.bar_in_padding ? 0 : defaults.padding_top);
+		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
+		    defaults.padding_top);
 		break;
 	}
 
 	return y;
 }
 
+int
+sticky_bar_height(rp_screen *s)
+{
+	if (defaults.bar_sticky)
+		return FONT_HEIGHT(s) +
+		    (defaults.bar_border_width * 2) +
+		    (defaults.bar_y_padding * 2);
+
+	return 0;
+}
+
 void
 update_bar(rp_screen *s)
 {
-	if (s->bar_is_raised == BAR_IS_WINDOW_LIST) {
+	switch (s->bar_is_raised) {
+	case BAR_IS_WINDOW_LIST:
 		update_window_names(s, defaults.window_fmt);
-		return;
-	}
-	if (s->bar_is_raised == BAR_IS_GROUP_LIST) {
+		break;
+	case BAR_IS_GROUP_LIST:
 		update_group_names(s);
-		return;
+		break;
+	case BAR_IS_STICKY:
+		hide_bar(s, 0);
+		break;
 	}
-	if (s->bar_is_raised == BAR_IS_HIDDEN)
-		return;
-
-	redraw_last_message();
 }
 
 /*
@@ -209,15 +236,21 @@ update_window_names(rp_screen *s, char *fmt)
 	int mark_end = 0;
 	char *delimiter;
 
-	if (s->bar_is_raised != BAR_IS_WINDOW_LIST)
-		return;
-
-	delimiter = (defaults.window_list_style == STYLE_ROW) ? " " : "\n";
-
 	bar_buffer = sbuf_new(0);
 
-	get_window_list(fmt, delimiter, bar_buffer, &mark_start, &mark_end);
-	marked_message(sbuf_get(bar_buffer), mark_start, mark_end);
+	if (s->bar_is_raised == BAR_IS_STICKY) {
+		get_current_window_in_fmt(defaults.sticky_fmt, bar_buffer);
+		marked_message_internal(sbuf_get(bar_buffer), 0, 0,
+		    BAR_IS_STICKY);
+	} else if (s->bar_is_raised == BAR_IS_WINDOW_LIST) {
+		delimiter = (defaults.window_list_style == STYLE_ROW) ?
+		    " " : "\n";
+
+		get_window_list(fmt, delimiter, bar_buffer, &mark_start,
+		    &mark_end);
+		marked_message(sbuf_get(bar_buffer), mark_start, mark_end,
+		    BAR_IS_WINDOW_LIST);
+	}
 
 	sbuf_free(bar_buffer);
 }
@@ -242,7 +275,8 @@ update_group_names(rp_screen *s)
 
 	get_group_list(s->current_vscreen, delimiter, bar_buffer, &mark_start,
 	    &mark_end);
-	marked_message_internal(sbuf_get(bar_buffer), mark_start, mark_end);
+	marked_message_internal(sbuf_get(bar_buffer), mark_start, mark_end,
+	    BAR_IS_GROUP_LIST);
 
 	sbuf_free(bar_buffer);
 }
@@ -250,7 +284,7 @@ update_group_names(rp_screen *s)
 void
 message(char *s)
 {
-	marked_message(s, 0, 0);
+	marked_message(s, 0, 0, BAR_IS_MESSAGE);
 }
 
 void
@@ -263,7 +297,7 @@ marked_message_printf(int mark_start, int mark_end, char *fmt,...)
 	buffer = xvsprintf(fmt, ap);
 	va_end(ap);
 
-	marked_message(buffer, mark_start, mark_end);
+	marked_message(buffer, mark_start, mark_end, BAR_IS_MESSAGE);
 	free(buffer);
 }
 
@@ -466,16 +500,19 @@ correct_mark(int msg_len, int *mark_start, int *mark_end)
 
 /* Raise the bar and put it in the right spot */
 static void
-prepare_bar(rp_screen *s, int width, int height)
+prepare_bar(rp_screen *s, int width, int height, int bar_type)
 {
-	width = width < s->width ? width : s->width;
+	if (defaults.bar_sticky)
+		width = s->width;
+	else
+		width = width < s->width ? width : s->width;
 	height = height < s->height ? height : s->height;
 	XMoveResizeWindow(dpy, s->bar_window, bar_x(s, width), bar_y(s, height),
 	    width, height);
 
 	/* Map the bar if needed */
-	if (!s->bar_is_raised) {
-		s->bar_is_raised = BAR_IS_MESSAGE;
+	if (!BAR_IS_RAISED(s)) {
+		s->bar_is_raised = bar_type;
 		XMapRaised(dpy, s->bar_window);
 
 		/* Switch to the default colormap */
@@ -590,15 +627,15 @@ update_last_message(char *msg, int mark_start, int mark_end)
 }
 
 void
-marked_message(char *msg, int mark_start, int mark_end)
+marked_message(char *msg, int mark_start, int mark_end, int bar_type)
 {
 	/* Schedule the bar to be hidden after some amount of time. */
 	reset_alarm();
-	marked_message_internal(msg, mark_start, mark_end);
+	marked_message_internal(msg, mark_start, mark_end, bar_type);
 }
 
 static void
-marked_message_internal(char *msg, int mark_start, int mark_end)
+marked_message_internal(char *msg, int mark_start, int mark_end, int bar_type)
 {
 	rp_screen *s = rp_current_screen;
 	int num_lines;
@@ -613,7 +650,7 @@ marked_message_internal(char *msg, int mark_start, int mark_end)
 	width = defaults.bar_x_padding * 2 + max_line_length(msg);
 	height = FONT_HEIGHT(s) * num_lines + defaults.bar_y_padding * 2;
 
-	prepare_bar(s, width, height);
+	prepare_bar(s, width, height, bar_type);
 
 	/* Draw the mark over the designated part of the string. */
 	correct_mark(strlen(msg), &mark_start, &mark_end);
@@ -623,6 +660,9 @@ marked_message_internal(char *msg, int mark_start, int mark_end)
 
 	/* Keep a record of the message. */
 	update_last_message(msg, mark_start, mark_end);
+
+	if (bar_type != BAR_IS_STICKY)
+		reset_alarm_if_needed();
 }
 
 /*
@@ -643,7 +683,8 @@ redraw_last_message(void)
 	 * marked_message's msg arg would have been the same as last_msg.
 	 */
 	msg = xstrdup(last_msg);
-	marked_message_internal(msg, last_mark_start, last_mark_end);
+	marked_message_internal(msg, last_mark_start, last_mark_end,
+	    BAR_IS_MESSAGE);
 	free(msg);
 }
 
