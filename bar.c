@@ -240,7 +240,8 @@ update_group_names(rp_screen *s)
 
 	bar_buffer = sbuf_new(0);
 
-	get_group_list(delimiter, bar_buffer, &mark_start, &mark_end);
+	get_group_list(s->current_vscreen, delimiter, bar_buffer, &mark_start,
+	    &mark_end);
 	marked_message_internal(sbuf_get(bar_buffer), mark_start, mark_end);
 
 	sbuf_free(bar_buffer);

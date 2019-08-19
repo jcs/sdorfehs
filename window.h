@@ -38,7 +38,7 @@ void update_window_gravity(rp_window *win);
 char *window_name(rp_window *win);
 
 /* int goto_window_name (char *name); */
-rp_window *find_window_other(rp_screen *screen);
+rp_window *find_window_other(rp_vscreen *vscreen);
 rp_window *find_window_by_number(int n);
 rp_window *find_window_name(char *name, int exact_match);
 rp_window *find_window_number(int n);
@@ -52,7 +52,7 @@ void free_window_stuff(void);
 
 rp_frame *win_get_frame(rp_window *win);
 
-struct rp_child_info *get_child_info(Window w);
-void change_windows_screen(rp_screen *s, rp_screen *new_screen);
+struct rp_child_info *get_child_info(Window w, int add);
+void change_windows_vscreen(rp_vscreen *v, rp_vscreen *new_vscreen);
 
 #endif	/* ! _RATPOISON_LIST_H */

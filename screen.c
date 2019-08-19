@@ -61,94 +61,6 @@ screen_bottom(rp_screen *s)
 	return screen_top(s) + screen_height(s);
 }
 
-/* Returns a pointer to a list of frames. */
-struct list_head *
-screen_copy_frameset(rp_screen *s)
-{
-	struct list_head *head;
-	rp_frame *cur;
-
-	/* Init our new list. */
-	head = xmalloc(sizeof(struct list_head));
-	INIT_LIST_HEAD(head);
-
-	/* Copy each frame to our new list. */
-	list_for_each_entry(cur, &s->frames, node) {
-		list_add_tail(&(frame_copy(cur))->node, head);
-	}
-
-	return head;
-}
-
-/* Set head as the frameset, deleting the existing one. */
-void
-screen_restore_frameset(rp_screen *s, struct list_head *head)
-{
-	frameset_free(&s->frames);
-	INIT_LIST_HEAD(&s->frames);
-
-	/* Hook in our new frameset. */
-	list_splice(head, &s->frames);
-}
-
-
-/* Given a screen, free the frames' numbers from the numset. */
-void
-screen_free_nums(rp_screen *s)
-{
-	rp_frame *cur;
-
-	list_for_each_entry(cur, &s->frames, node) {
-		numset_release(s->frames_numset, cur->number);
-	}
-}
-
-/*
- * Given a list of frames, free them, but don't remove their numbers from the
- * numset.
- */
-void
-frameset_free(struct list_head *head)
-{
-	rp_frame *frame;
-	struct list_head *iter, *tmp;
-
-	list_for_each_safe_entry(frame, iter, tmp, head, node) {
-		/*
-		 * FIXME: what if frames has memory inside its struct that
-		 * needs to be freed?
-		 */
-		free(frame);
-	}
-}
-
-rp_frame *
-screen_get_frame(rp_screen *s, int frame_num)
-{
-	rp_frame *cur;
-
-	list_for_each_entry(cur, &s->frames, node) {
-		if (cur->number == frame_num)
-			return cur;
-	}
-
-	return NULL;
-}
-
-rp_frame *
-screen_find_frame_by_frame(rp_screen *s, rp_frame *f)
-{
-	rp_frame *cur;
-
-	list_for_each_entry(cur, &s->frames, node) {
-		PRINT_DEBUG(("cur=%p f=%p\n", cur, f));
-		if (cur == f)
-			return cur;
-	}
-
-	return NULL;
-}
-
 /* Given a root window, return the rp_screen struct */
 rp_screen *
 find_screen(Window w)
@@ -329,8 +241,9 @@ init_screen(rp_screen *s)
 {
 	XGCValues gcv;
 	struct sbuf *buf;
+	rp_vscreen *vscreen;
 	char *colon;
-	int screen_num;
+	int screen_num, x;
 
 	screen_num = DefaultScreen(dpy);
 
@@ -351,8 +264,17 @@ init_screen(rp_screen *s)
 	    | StructureNotifyMask);
 	XSync(dpy, False);
 
-	/* Set the numset for the frames to our global numset. */
-	s->frames_numset = rp_frame_numset;
+	INIT_LIST_HEAD(&s->vscreens);
+	s->vscreens_numset = numset_new();
+
+	for (x = 0; x < defaults.vscreens; x++) {
+		vscreen = xmalloc(sizeof(rp_vscreen));
+		init_vscreen(vscreen, s);
+		list_add_tail(&vscreen->node, &s->vscreens);
+
+		if (x == 0)
+			s->current_vscreen = vscreen;
+	}
 
 	s->scratch_buffer = NULL;
 
@@ -563,8 +485,8 @@ screen_remove_current(void)
 	cur_win = current_window();
 	new_screen = screen_next();
 
-	cur_frame = new_screen->current_frame;
-	new_frame = screen_get_frame(new_screen, cur_frame);
+	cur_frame = new_screen->current_vscreen->current_frame;
+	new_frame = vscreen_get_frame(new_screen->current_vscreen, cur_frame);
 
 	set_active_frame(new_frame, 1);
 
@@ -575,6 +497,7 @@ void
 screen_update(rp_screen *s, int left, int top, int width, int height)
 {
 	rp_frame *f;
+	rp_vscreen *v;
 	int oldwidth, oldheight;
 
 	PRINT_DEBUG(("screen_update (left=%d, top=%d, width=%d, height=%d)\n",
@@ -598,12 +521,14 @@ screen_update(rp_screen *s, int left, int top, int width, int height)
 	XMoveResizeWindow(dpy, s->help_window, s->left, s->top, s->width,
 	    s->height);
 
-	list_for_each_entry(f, &s->frames, node) {
-		f->x = (f->x * width) / oldwidth;
-		f->width = (f->width * width) / oldwidth;
-		f->y = (f->y * height) / oldheight;
-		f->height = (f->height * height) / oldheight;
-		maximize_all_windows_in_frame(f);
+	list_for_each_entry(v, &s->vscreens, node) {
+		list_for_each_entry(f, &v->frames, node) {
+			f->x = (f->x * width) / oldwidth;
+			f->width = (f->width * width) / oldwidth;
+			f->y = (f->y * height) / oldheight;
+			f->height = (f->height * height) / oldheight;
+			maximize_all_windows_in_frame(f);
+		}
 	}
 }
 
@@ -619,11 +544,11 @@ screen_add(int rr_output)
 
 	xrandr_fill_screen(rr_output, screen);
 	init_screen(screen);
-	init_frame_list(screen);
+	init_frame_list(screen->current_vscreen);
 
 	if (screen_count() == 1) {
 		rp_current_screen = screen;
-		change_windows_screen(NULL, rp_current_screen);
+		change_windows_vscreen(NULL, rp_current_vscreen);
 		set_window_focus(rp_current_screen->key_window);
 	}
 	return screen;
@@ -632,9 +557,15 @@ screen_add(int rr_output)
 void
 screen_del(rp_screen *s)
 {
+	rp_vscreen *v;
+	struct list_head *iter, *tmp;
+
 	if (s == rp_current_screen) {
 		if (screen_count() == 1) {
-			hide_screen_windows(s);
+			list_for_each_safe_entry(v, iter, tmp, &s->vscreens,
+			    node)
+				hide_vscreen_windows(v);
+
 			rp_current_screen = NULL;
 		} else {
 			/*
@@ -644,13 +575,14 @@ screen_del(rp_screen *s)
 			screen_remove_current();
 		}
 	} else {
-		hide_screen_windows(s);
+		list_for_each_safe_entry(v, iter, tmp, &s->vscreens, node)
+			hide_vscreen_windows(v);
 	}
 
-	/* Affect window's screen backpointer to the new current screen */
-	change_windows_screen(s, rp_current_screen);
-
 	numset_release(rp_glob_screen.numset, s->number);
+
+	list_for_each_safe_entry(v, iter, tmp, &s->vscreens, node)
+		vscreen_del(v);
 
 	screen_free(s);
 
@@ -661,13 +593,6 @@ screen_del(rp_screen *s)
 void
 screen_free(rp_screen *s)
 {
-	rp_frame *frame;
-	struct list_head *iter, *tmp;
-
-	list_for_each_safe_entry(frame, iter, tmp, &s->frames, node) {
-		frame_free(s, frame);
-	}
-
 	deactivate_screen(s);
 
 	XDestroyWindow(dpy, s->bar_window);

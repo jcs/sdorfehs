@@ -50,15 +50,15 @@ frame_bottom(rp_frame *frame)
 int
 frame_left_abs(rp_frame *frame)
 {
-	rp_screen *s = frames_screen(frame);
-	return s->left + frame->x;
+	rp_vscreen *v = frames_vscreen(frame);
+	return v->screen->left + frame->x;
 }
 
 int
 frame_top_abs(rp_frame *frame)
 {
-	rp_screen *s = frames_screen(frame);
-	return s->top + frame->y;
+	rp_vscreen *v = frames_vscreen(frame);
+	return v->screen->top + frame->y;
 }
 
 int
@@ -122,24 +122,25 @@ init_frame(rp_frame *f)
 	f->win_number = 0;
 	f->last_access = 0;
 	f->dedicated = 0;
+	f->restore_win_number = EMPTY;
 }
 
 rp_frame *
-frame_new(rp_screen *s)
+frame_new(rp_vscreen *v)
 {
 	rp_frame *f;
 
 	f = xmalloc(sizeof(rp_frame));
 	init_frame(f);
-	f->number = numset_request(s->frames_numset);
+	f->number = numset_request(v->frames_numset);
 
 	return f;
 }
 
 void
-frame_free(rp_screen *s, rp_frame *f)
+frame_free(rp_vscreen *v, rp_frame *f)
 {
-	numset_release(s->frames_numset, f->number);
+	numset_release(v->frames_numset, f->number);
 	free(f);
 }
 
@@ -162,7 +163,7 @@ frame_copy(rp_frame *frame)
 }
 
 char *
-frame_dump(rp_frame *frame, rp_screen *screen)
+frame_dump(rp_frame *frame, rp_vscreen *vscreen)
 {
 	rp_window *win;
 	char *tmp;
@@ -179,8 +180,8 @@ frame_dump(rp_frame *frame, rp_screen *screen)
 	    frame->y,
 	    frame->width,
 	    frame->height,
-	    screen->width,
-	    screen->height,
+	    vscreen->screen->width,
+	    vscreen->screen->height,
 	    win ? win->w : 0,
 	    frame->last_access,
 	    frame->dedicated);
@@ -195,7 +196,7 @@ frame_dump(rp_frame *frame, rp_screen *screen)
 #define read_slot(x) do { tmp = strtok_ws (NULL); x = strtol(tmp,NULL,10); } while(0)
 
 rp_frame *
-frame_read(char *str, rp_screen *screen)
+frame_read(char *str, rp_vscreen *vscreen)
 {
 	Window w = 0L;
 	rp_window *win;
@@ -263,12 +264,12 @@ frame_read(char *str, rp_screen *screen)
 
 	/* adjust x, y, width and height to a possible screen size change */
 	if (s_width > 0) {
-		f->x = (f->x * screen->width) / s_width;
-		f->width = (f->width * screen->width) / s_width;
+		f->x = (f->x * vscreen->screen->width) / s_width;
+		f->width = (f->width * vscreen->screen->width) / s_width;
 	}
 	if (s_height > 0) {
-		f->y = (f->y * screen->height) / s_height;
-		f->height = (f->height * screen->height) / s_height;
+		f->y = (f->y * vscreen->screen->height) / s_height;
+		f->height = (f->height * vscreen->screen->height) / s_height;
 	}
 	/*
 	 * Perform some integrity checks on what we got and fix any problems.

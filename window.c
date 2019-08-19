@@ -40,8 +40,8 @@ get_mouse_position(rp_window *win, int *mouse_x, int *mouse_y)
 	int root_x, root_y;
 	unsigned int mask;
 
-	XQueryPointer(dpy, win->scr->root, &root_win, &child_win, mouse_x,
-	    mouse_y, &root_x, &root_y, &mask);
+	XQueryPointer(dpy, win->vscr->screen->root, &root_win, &child_win,
+	    mouse_x, mouse_y, &root_x, &root_y, &mask);
 }
 
 void
@@ -112,50 +112,44 @@ window_name(rp_window *win)
  * something.  otherwise there could be overlapping PIDs.
  */
 struct rp_child_info *
-get_child_info(Window w)
+get_child_info(Window w, int add)
 {
 	rp_child_info *cur;
-	int status;
-	int pid;
-	Atom type_ret;
-	int format_ret;
-	unsigned long nitems;
-	unsigned long bytes_after;
-	unsigned char *req;
+	unsigned long pid;
 
-	status = XGetWindowProperty(dpy, w, _net_wm_pid,
-	    0, 0, False, XA_CARDINAL,
-	    &type_ret, &format_ret, &nitems, &bytes_after, &req);
-
-	if (status != Success || req == NULL) {
+	if (!get_atom(w, _net_wm_pid, XA_CARDINAL, 0, &pid, 1, NULL)) {
 		PRINT_DEBUG(("Couldn't get _NET_WM_PID Property\n"));
-		return NULL;
+		pid = 0;
 	}
+
+	PRINT_DEBUG(("pid: %ld\n", pid));
+
+	if (pid) {
+		list_for_each_entry(cur, &rp_children, node)
+			if (pid == cur->pid)
+				return cur;
+	}
+
+	if (!add)
+		return NULL;
+
 	/*
-	 * XGetWindowProperty always allocates one extra byte even if the
-	 * property is zero length.
+	 * A new process is creating windows that we didn't directly spawn
+	 * (otherwise it would be in rp_children via spawn())
 	 */
-	XFree(req);
+	cur = xmalloc(sizeof(rp_child_info));
+	cur->cmd = NULL;
+	cur->pid = pid;
+	cur->terminated = 0;
+	cur->frame = current_frame(rp_current_vscreen);
+	cur->group = rp_current_group;
+	cur->vscreen = rp_current_vscreen;
+	cur->screen = rp_current_screen;
+	cur->window_mapped = 0;
 
-	status = XGetWindowProperty(dpy, w, _net_wm_pid,
-	    0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-	    False, XA_CARDINAL, &type_ret, &format_ret, &nitems,
-	    &bytes_after, &req);
+	list_add(&cur->node, &rp_children);
 
-	if (status != Success || req == NULL) {
-		PRINT_DEBUG(("Couldn't get _NET_WM_PID Property\n"));
-		return NULL;
-	}
-	pid = *((int *) req);
-	XFree(req);
-
-	PRINT_DEBUG(("pid: %d\n", pid));
-
-	list_for_each_entry(cur, &rp_children, node)
-	    if (pid == cur->pid)
-		return cur;
-
-	return NULL;
+	return cur;
 }
 
 /* Allocate a new window and add it to the list of managed windows */
@@ -170,7 +164,7 @@ add_to_window_list(rp_screen *s, Window w)
 	new_window = xmalloc(sizeof(rp_window));
 
 	new_window->w = w;
-	new_window->scr = s;
+	new_window->vscr = s->current_vscreen;
 	new_window->last_access = 0;
 	new_window->state = WithdrawnState;
 	new_window->number = -1;
@@ -199,28 +193,32 @@ add_to_window_list(rp_screen *s, Window w)
 	/* Add the window to the end of the unmapped list. */
 	list_add_tail(&new_window->node, &rp_unmapped_window);
 
-	child_info = get_child_info(w);
+	child_info = get_child_info(w, 1);
+	if (child_info) {
+		if (child_info->vscreen != new_window->vscr)
+			new_window->vscr = child_info->vscreen;
 
-	if (child_info && !child_info->window_mapped) {
-		rp_frame *frame = screen_find_frame_by_frame(child_info->screen,
-		    child_info->frame);
+		if (!child_info->window_mapped) {
+			rp_frame *frame = vscreen_find_frame_by_frame(
+			    child_info->vscreen, child_info->frame);
 
-		PRINT_DEBUG(("frame=%p\n", frame));
-		group = groups_find_group_by_group(child_info->group);
-		if (frame)
-			frame_num = frame->number;
-		/* Only map the first window in the launch frame. */
-		child_info->window_mapped = 1;
+			PRINT_DEBUG(("frame=%p\n", frame));
+			group = groups_find_group_by_group(child_info->group);
+			if (frame)
+				frame_num = frame->number;
+			/* Only map the first window in the launch frame. */
+			child_info->window_mapped = 1;
+		}
 	}
 
 	/*
-	 * Add the window to the group it's pid was launched in or the current
+	 * Add the window to the group its pid was launched in or the current
 	 * one.
 	 */
 	if (group)
 		group_add_window(group, new_window);
 	else
-		group_add_window(rp_current_group, new_window);
+		group_add_window(new_window->vscr->current_group, new_window);
 
 	PRINT_DEBUG(("frame_num: %d\n", frame_num));
 	if (frame_num >= 0)
@@ -303,9 +301,9 @@ find_window_name(char *name, int exact_match)
 }
 
 rp_window *
-find_window_other(rp_screen *screen)
+find_window_other(rp_vscreen *vscreen)
 {
-	return group_last_window(rp_current_group, screen);
+	return group_last_window(vscreen->current_group);
 }
 
 /*
@@ -386,7 +384,8 @@ give_window_focus(rp_window *win, rp_window *last_win)
 	XSetWindowBorder(dpy, win->w, rp_glob_screen.fw_color);
 
 	/* Finally, give the window focus */
-	rp_current_screen = win->scr;
+	rp_current_screen = win->vscr->screen;
+	rp_current_screen->current_vscreen = win->vscr;
 	set_rp_window_focus(win);
 
 	XSync(dpy, False);
@@ -406,16 +405,17 @@ set_active_window_force(rp_window *win)
 }
 
 static rp_frame *
-find_frame_non_dedicated(rp_screen *current_screen)
+find_frame_non_dedicated(rp_vscreen *current_vscreen)
 {
 	rp_frame *cur;
 	rp_screen *screen;
 
 	list_for_each_entry(screen, &rp_screens, node) {
-		if (current_screen == screen)
+		if (current_vscreen == screen->current_vscreen)
 			continue;
 
-		list_for_each_entry(cur, &screen->frames, node) {
+		list_for_each_entry(cur, &screen->current_vscreen->frames,
+		    node) {
 			if (!cur->dedicated)
 				return cur;
 		}
@@ -438,25 +438,25 @@ set_active_window_body(rp_window *win, int force)
 
 	/* use the intended frame if we can. */
 	if (win->intended_frame_number >= 0) {
-		frame = screen_get_frame(rp_current_screen,
+		frame = vscreen_get_frame(win->vscr,
 		    win->intended_frame_number);
 		win->intended_frame_number = -1;
-		if (frame != current_frame())
-			last_frame = current_frame();
+		if (frame != current_frame(win->vscr))
+			last_frame = current_frame(win->vscr);
 	}
 	if (frame == NULL)
-		frame = screen_get_frame(rp_current_screen,
-		    rp_current_screen->current_frame);
+		frame = vscreen_get_frame(win->vscr, win->vscr->current_frame);
 
 	if (frame->dedicated && !force) {
 		/* Try to find a non-dedicated frame. */
 		rp_frame *non_dedicated;
 
-		non_dedicated = find_frame_non_dedicated(rp_current_screen);
+		non_dedicated = find_frame_non_dedicated(win->vscr);
 		if (non_dedicated != NULL) {
 			last_frame = frame;
 			frame = non_dedicated;
-			set_active_frame(frame, 0);
+			if (win->vscr == rp_current_vscreen)
+				set_active_frame(frame, 0);
 		}
 	}
 	last_win = set_frames_window(frame, win);
@@ -468,8 +468,9 @@ set_active_window_body(rp_window *win, int force)
 	/* Make sure the window comes up full screen */
 	maximize(win);
 
-	/* Focus the window. */
-	give_window_focus(win, last_win);
+	if (win->vscr == rp_current_vscreen)
+		/* Focus the window. */
+		give_window_focus(win, last_win);
 
 	/*
 	 * The other windows in the frame will be hidden if this window doesn't
@@ -478,17 +479,20 @@ set_active_window_body(rp_window *win, int force)
 	if (!window_is_transient(win))
 		hide_others(win);
 
-	/* Make sure the program bar is always on the top */
-	update_window_names(win->scr, defaults.window_fmt);
+	if (win->vscr == rp_current_vscreen)
+		/* Make sure the program bar is always on the top */
+		update_window_names(win->vscr->screen, defaults.window_fmt);
 
 	XSync(dpy, False);
 
 	/* If we switched frame, go back to the old one. */
-	if (last_frame != NULL)
-		set_active_frame(last_frame, 0);
+	if (win->vscr == rp_current_vscreen) {
+		if (last_frame != NULL)
+			set_active_frame(last_frame, 0);
 
-	/* Call the switch window hook */
-	hook_run(&rp_switch_win_hook);
+		/* Call the switch window hook */
+		hook_run(&rp_switch_win_hook);
+	}
 }
 
 /*
@@ -526,7 +530,7 @@ get_window_list(char *fmt, char *delim, struct sbuf *buffer,
 		return;
 
 	sbuf_clear(buffer);
-	find_window_other(rp_current_screen);
+	find_window_other(rp_current_vscreen);
 
 	/* We only loop through the current group to look for windows. */
 	list_for_each_entry(we, &rp_current_group->mapped_windows, node) {
@@ -600,18 +604,18 @@ rp_frame *
 win_get_frame(rp_window *win)
 {
 	if (win->frame_number != EMPTY)
-		return screen_get_frame(win->scr, win->frame_number);
+		return vscreen_get_frame(win->vscr, win->frame_number);
 
 	return NULL;
 }
 
 void
-change_windows_screen(rp_screen *old_screen, rp_screen *new_screen)
+change_windows_vscreen(rp_vscreen *old_vscreen, rp_vscreen *new_vscreen)
 {
 	rp_window *win;
 
 	list_for_each_entry(win, &rp_mapped_window, node) {
-		if (win->scr == old_screen)
-			win->scr = new_screen;
+		if (win->vscr == old_vscreen)
+			win->vscr = new_vscreen;
 	}
 }

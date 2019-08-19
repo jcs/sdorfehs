@@ -315,8 +315,8 @@ window_is_transient(rp_window *win)
 #endif
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
 	|| (win->hints->flags & PMaxSize
-	    && (win->hints->max_width < win->scr->width
-		|| win->hints->max_height < win->scr->height))
+	    && (win->hints->max_width < win->vscr->screen->width
+		|| win->hints->max_height < win->vscr->screen->height))
 #endif
 	;
 }
@@ -401,7 +401,6 @@ scanwins(void)
 		    || attr.override_redirect == True
 		    || unmanaged_window(wins[i]))
 			continue;
-
 
 		screen = find_screen_by_attr(attr);
 		if (!screen)
@@ -622,7 +621,7 @@ maximize_normal(rp_window *win)
 		return;
 
 	/* Set the window's border */
-	if (defaults.only_border == 0 && num_frames(win->scr) <= 1) {
+	if (defaults.only_border == 0 && num_frames(win->vscr) <= 1) {
 		win->border = 0;
 	} else {
 		win->border = defaults.window_border_width;
@@ -721,8 +720,8 @@ maximize(rp_window *win)
 
 
 	/* Actually do the maximizing. */
-	XMoveResizeWindow(dpy, win->w, win->scr->left + win->x, win->scr->top +
-	    win->y, win->width, win->height);
+	XMoveResizeWindow(dpy, win->w, win->vscr->screen->left + win->x,
+	    win->vscr->screen->top + win->y, win->width, win->height);
 	XSetWindowBorderWidth(dpy, win->w, win->border);
 
 	XSync(dpy, False);
@@ -750,8 +749,9 @@ force_maximize(rp_window *win)
 	 * geometry changes were made. This initial resize solves the problem.
 	 */
 	if (win->hints->flags & PResizeInc) {
-		XMoveResizeWindow(dpy, win->w, win->scr->left + win->x,
-		    win->scr->top + win->y, win->width + win->hints->width_inc,
+		XMoveResizeWindow(dpy, win->w, win->vscr->screen->left + win->x,
+		    win->vscr->screen->top + win->y,
+		    win->width + win->hints->width_inc,
 		    win->height + win->hints->height_inc);
 	} else {
 		XResizeWindow(dpy, win->w, win->width + 1, win->height + 1);
@@ -760,8 +760,8 @@ force_maximize(rp_window *win)
 	XSync(dpy, False);
 
 	/* Resize the window to its proper maximum size. */
-	XMoveResizeWindow(dpy, win->w, win->scr->left + win->x,
-	    win->scr->top + win->y, win->width, win->height);
+	XMoveResizeWindow(dpy, win->w, win->vscr->screen->left + win->x,
+	    win->vscr->screen->top + win->y, win->width, win->height);
 	XSetWindowBorderWidth(dpy, win->w, win->border);
 
 	XSync(dpy, False);
@@ -783,7 +783,7 @@ map_window(rp_window *win)
 	insert_into_list(win, &rp_mapped_window);
 
 	/* Update all groups. */
-	groups_map_window(win);
+	groups_map_window(win->vscr, win);
 
 	/*
 	 * The window has never been accessed since it was brought back from the
@@ -913,13 +913,11 @@ hide_others(rp_window *win)
 
 /* Hide any window displayed on the given screen */
 void
-hide_screen_windows(rp_screen *s)
+hide_vscreen_windows(rp_vscreen *v)
 {
-	rp_frame *cur_frame;
-	rp_window *cur_win;
+	rp_window *cur;
 
-	list_for_each_entry(cur_frame, &s->frames, node) {
-		cur_win = find_window_number(cur_frame->win_number);
-		hide_window(cur_win);
-	}
+	list_for_each_entry(cur, &rp_mapped_window, node)
+		if (cur->vscr == v)
+			hide_window(cur);
 }

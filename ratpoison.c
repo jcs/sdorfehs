@@ -213,6 +213,8 @@ show_welcome_message(void)
 static void
 init_defaults(void)
 {
+	unsigned long atom = 0;
+
 	defaults.top_kmap = xstrdup(TOP_KEYMAP);
 
 	defaults.win_gravity = NorthWestGravity;
@@ -258,6 +260,13 @@ init_defaults(void)
 	defaults.history_size = 20;
 	defaults.frame_selectors = xstrdup("");
 	defaults.maxundos = 20;
+
+	defaults.vscreens = 5;
+
+	get_atom(DefaultRootWindow(dpy), _net_number_of_desktops, XA_CARDINAL,
+	    0, &atom, 1, NULL);
+	if (atom > 0)
+		defaults.vscreens = (int)atom;
 }
 
 int
@@ -350,6 +359,7 @@ main(int argc, char *argv[])
 		XCloseDisplay(dpy);
 		return exit_status;
 	}
+
 	/* Set our Atoms */
 	wm_name = XInternAtom(dpy, "WM_NAME", False);
 	wm_state = XInternAtom(dpy, "WM_STATE", False);
@@ -368,6 +378,20 @@ main(int argc, char *argv[])
 	_net_wm_window_type_dialog = XInternAtom(dpy,
 	    "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	_net_wm_name = XInternAtom(dpy, "_NET_WM_NAME", False);
+	_net_current_desktop = XInternAtom(dpy, "_NET_CURRENT_DESKTOP", False);
+	_net_number_of_desktops = XInternAtom(dpy, "_NET_NUMBER_OF_DESKTOPS",
+	    False);
+
+	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
+	    &_net_wm_window_type, 1);
+	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
+	    &_net_wm_window_type_dialog, 1);
+	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
+	    &_net_wm_name, 1);
+	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
+	    &_net_current_desktop, 1);
+	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
+	    &_net_number_of_desktops, 1);
 
 	/* Setup signal handlers. */
 	XSetErrorHandler(handler);
@@ -382,10 +406,12 @@ main(int argc, char *argv[])
 
 	/* Setup ratpoison's internal structures */
 	init_defaults();
-	init_groups();
 	init_window_stuff();
 	init_xrandr();
 	init_screens();
+
+	set_atom(rp_glob_screen.root, _net_number_of_desktops, XA_CARDINAL,
+	    (unsigned long *)&defaults.vscreens, 1);
 
 	init_frame_lists();
 	update_modifier_map();

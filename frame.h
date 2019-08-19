@@ -36,12 +36,12 @@ int frame_right_abs(rp_frame *frame);
 int frame_top_abs(rp_frame *frame);
 int frame_left_abs(rp_frame *frame);
 
-rp_frame *frame_new(rp_screen *s);
-void frame_free(rp_screen *s, rp_frame *f);
+rp_frame *frame_new(rp_vscreen *v);
+void frame_free(rp_vscreen *v, rp_frame *f);
 rp_frame *frame_copy(rp_frame *frame);
-char *frame_dump(rp_frame *frame, rp_screen *screen);
-rp_frame *frame_read(char *str, rp_screen *screen);
+char *frame_dump(rp_frame *frame, rp_vscreen *vscreen);
+rp_frame *frame_read(char *str, rp_vscreen *vscreen);
 
-rp_screen *frames_screen(rp_frame *);
+rp_vscreen *frames_vscreen(rp_frame *);
 
 #endif

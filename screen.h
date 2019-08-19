@@ -28,13 +28,6 @@ int screen_left(rp_screen *s);
 int screen_height(rp_screen *s);
 int screen_width(rp_screen *s);
 
-struct list_head *screen_copy_frameset(rp_screen *s);
-void screen_restore_frameset(rp_screen *s, struct list_head *head);
-void screen_free_nums(rp_screen *s);
-void frameset_free(struct list_head *head);
-rp_frame *screen_get_frame(rp_screen *s, int frame_num);
-rp_frame *screen_find_frame_by_frame(rp_screen *s, rp_frame *f);
-
 rp_screen *find_screen(Window w);
 rp_screen *find_screen_by_attr(XWindowAttributes w);
 

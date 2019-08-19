@@ -31,6 +31,8 @@ typedef struct cmdret {
 } cmdret;
 
 void clear_frame_undos(void);
+cmdret *frestore(char *data, rp_vscreen *v);
+char *fdump(rp_vscreen *vscreen);
 rp_keymap *find_keymap(char *name);
 void init_user_commands(void);
 void initialize_default_keybindings(void);

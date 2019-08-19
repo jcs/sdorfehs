@@ -91,9 +91,9 @@ Show version of program.
 .El
 .Sh KEY BINDINGS
 To avoid conflicts with other programs, all default ratpoison key
-bindings start with an escape key, per default
+bindings start with an escape key which, by default, is
 .Ic C\-t
-(read Control\-t).
+(Control\-t).
 Some important default key bindings:
 .Bl -tag -width Ds
 .It Ic C\-t \&?
@@ -779,6 +779,12 @@ Spawn a shell executing
 after showing a message with the command.
 .It Ic version Pq Ic C\-t v
 Output version and compile time information.
+.It Ic vselect Oo Ar vscreenno Oc
+Switch to the virtual screen numbered
+.Ar vscreenno .
+.It Ic vmove Oo Ar vscreenno Oc
+Move the current window to the virtual screen numbered
+.Ar vscreenno .
 .It Ic vsplit Oo Ar l Ns Li / Ns Ar p | Ar "pixels-from-top" | Li \- Ns Ar "pixels-from-bottom" Oc Pq Ic C\-t s
 Split the current frame into upper frame and a lower frame.
 If no parameter is given, split in halves.
@@ -1072,6 +1078,11 @@ points or numbers 1 to 9.
 .Pp
 Default is
 .Li c .
+.It Cm vscreens Ar number
+Set the number of virtual screens.
+.Pp
+Default is
+.Li 5 .
 .It Cm warp Li 0 | 1
 Decide if focusing a window moves the rat cursor to the place it had
 been last time this window was focused, or not.

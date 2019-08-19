@@ -22,48 +22,45 @@
 
 #include <string.h>
 
-static struct numset *group_numset;
-
 static void
 set_current_group_1(rp_group *g)
 {
 	static int counter = 1;
-	rp_current_group = g;
-	if (g)
-		g->last_access = counter++;
+	g->vscreen->current_group = g;
+	g->last_access = counter++;
 }
 
 void
-init_groups(void)
+init_groups(rp_vscreen *v)
 {
 	rp_group *g;
 
-	group_numset = numset_new();
-	INIT_LIST_HEAD(&rp_groups);
+	v->group_numset = numset_new();
+	INIT_LIST_HEAD(&v->groups);
 
 	/*
 	 * Create the first group in the list (We always need at least one).
 	 */
-	g = group_new(numset_request(group_numset), DEFAULT_GROUP_NAME);
+	g = group_new(v, numset_request(v->group_numset), DEFAULT_GROUP_NAME);
 	set_current_group_1(g);
-	list_add_tail(&g->node, &rp_groups);
+	list_add_tail(&g->node, &v->groups);
 }
 
 void
-free_groups(void)
+free_groups(rp_vscreen *v)
 {
 	rp_group *cur;
 	struct list_head *iter, *tmp;
 
-	list_for_each_safe_entry(cur, iter, tmp, &rp_groups, node) {
+	list_for_each_safe_entry(cur, iter, tmp, &v->groups, node) {
 		group_free(cur);
 	}
 }
 
 struct numset *
-group_get_numset(void)
+group_get_numset(rp_vscreen *v)
 {
-	return group_numset;
+	return v->group_numset;
 }
 
 /*
@@ -72,7 +69,8 @@ group_get_numset(void)
  * and end of the current window.
  */
 void
-get_group_list(char *delim, struct sbuf *buffer, int *mark_start, int *mark_end)
+get_group_list(rp_vscreen *vscreen, char *delim, struct sbuf *buffer,
+    int *mark_start, int *mark_end)
 {
 	rp_group *cur, *last;
 
@@ -81,17 +79,17 @@ get_group_list(char *delim, struct sbuf *buffer, int *mark_start, int *mark_end)
 
 	sbuf_clear(buffer);
 
-	last = group_last_group();
+	last = group_last_group(vscreen);
 
 	/* Generate the string. */
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &vscreen->groups, node) {
 		char *fmt;
 		char separator;
 
-		if (cur == rp_current_group)
+		if (cur == vscreen->current_group)
 			*mark_start = strlen(sbuf_get(buffer));
 
-		if (cur == rp_current_group)
+		if (cur == vscreen->current_group)
 			separator = '*';
 		else if (cur == last)
 			separator = '+';
@@ -120,21 +118,22 @@ get_group_list(char *delim, struct sbuf *buffer, int *mark_start, int *mark_end)
 		 * Only put the delimiter between the group, and not after the
 		 * the last group.
 		 */
-		if (delim && cur->node.next != &rp_groups)
+		if (delim && cur->node.next != &vscreen->groups)
 			sbuf_concat(buffer, delim);
 
-		if (cur == rp_current_group)
+		if (cur == vscreen->current_group)
 			*mark_end = strlen(sbuf_get(buffer));
 	}
 }
 
 rp_group *
-group_new(int number, char *name)
+group_new(rp_vscreen *vscreen, int number, char *name)
 {
 	rp_group *g;
 
 	g = xmalloc(sizeof(rp_group));
 
+	g->vscreen = vscreen;
 	if (name)
 		g->name = xstrdup(name);
 	else
@@ -153,26 +152,26 @@ group_free(rp_group *g)
 {
 	free(g->name);
 	numset_free(g->numset);
-	numset_release(group_numset, g->number);
+	numset_release(g->vscreen->group_numset, g->number);
 	free(g);
 }
 
 rp_group *
-group_add_new_group(char *name)
+group_add_new_group(rp_vscreen *vscreen, char *name)
 {
 	rp_group *g;
 	rp_group *cur;
 
-	g = group_new(numset_request(group_numset), name);
+	g = group_new(vscreen, numset_request(vscreen->group_numset), name);
 
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &vscreen->groups, node) {
 		if (cur->number > g->number) {
 			list_add_tail(&g->node, &cur->node);
 			return g;
 		}
 	}
 
-	list_add_tail(&g->node, &rp_groups);
+	list_add_tail(&g->node, &vscreen->groups);
 
 	return g;
 }
@@ -181,10 +180,10 @@ void
 group_resort_group(rp_group *g)
 {
 	rp_group *cur;
-	struct list_head *last = &rp_groups;
+	struct list_head *last = &g->vscreen->groups;
 
 	list_del(&g->node);
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &g->vscreen->groups, node) {
 		if (cur->number > g->number) {
 			list_add(&g->node, last);
 			return;
@@ -202,26 +201,27 @@ group_rename(rp_group *g, char *name)
 }
 
 rp_group *
-group_next_group(void)
+group_next_group(rp_vscreen *vscreen)
 {
-	return list_next_entry(rp_current_group, &rp_groups, node);
+	return list_next_entry(vscreen->current_group, &vscreen->groups, node);
 }
 
 rp_group *
-group_prev_group(void)
+group_prev_group(rp_vscreen *vscreen)
 {
-	return list_prev_entry(rp_current_group, &rp_groups, node);
+	return list_prev_entry(vscreen->current_group, &vscreen->groups, node);
 }
 
 rp_group *
-group_last_group(void)
+group_last_group(rp_vscreen *vscreen)
 {
 	int last_access = 0;
 	rp_group *most_recent = NULL;
 	rp_group *cur;
 
-	list_for_each_entry(cur, &rp_groups, node) {
-		if (cur != rp_current_group && cur->last_access > last_access) {
+	list_for_each_entry(cur, &vscreen->groups, node) {
+		if (cur != vscreen->current_group &&
+		    cur->last_access > last_access) {
 			most_recent = cur;
 			last_access = cur->last_access;
 		}
@@ -230,17 +230,17 @@ group_last_group(void)
 }
 
 rp_group *
-groups_find_group_by_name(char *s, int exact_match)
+groups_find_group_by_name(rp_vscreen *v, char *s, int exact_match)
 {
 	rp_group *cur;
 
 	if (!exact_match) {
-		list_for_each_entry(cur, &rp_groups, node) {
+		list_for_each_entry(cur, &v->groups, node) {
 			if (cur->name && str_comp(s, cur->name, strlen(s)))
 				return cur;
 		}
 	} else {
-		list_for_each_entry(cur, &rp_groups, node) {
+		list_for_each_entry(cur, &v->groups, node) {
 			if (cur->name && !strcmp(cur->name, s))
 				return cur;
 		}
@@ -250,11 +250,11 @@ groups_find_group_by_name(char *s, int exact_match)
 }
 
 rp_group *
-groups_find_group_by_number(int n)
+groups_find_group_by_number(rp_vscreen *v, int n)
 {
 	rp_group *cur;
 
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &v->groups, node) {
 		if (cur->number == n)
 			return cur;
 	}
@@ -269,7 +269,7 @@ groups_find_group_by_window(rp_window *win)
 	rp_group *cur;
 	rp_window_elem *elem;
 
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &win->vscr->groups, node) {
 		elem = group_find_window(&cur->mapped_windows, win);
 		if (elem)
 			return cur;
@@ -285,7 +285,7 @@ groups_find_group_by_group(rp_group *g)
 {
 	rp_group *cur;
 
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &g->vscreen->groups, node) {
 		if (cur == g)
 			return cur;
 	}
@@ -324,7 +324,7 @@ group_find_window_by_number(rp_group *g, int num)
  * Insert a window_elem into the correct spot in the group's window list to
  * preserve window number ordering.
  */
-static void
+void
 group_insert_window(struct list_head *h, rp_window_elem *w)
 {
 	rp_window_elem *cur;
@@ -396,11 +396,11 @@ group_map_window(rp_group *g, rp_window *win)
 }
 
 void
-groups_map_window(rp_window *win)
+groups_map_window(rp_vscreen *vscreen, rp_window *win)
 {
 	rp_group *cur;
 
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &vscreen->groups, node) {
 		group_map_window(cur, win);
 	}
 }
@@ -423,7 +423,7 @@ groups_unmap_window(rp_window *win)
 {
 	rp_group *cur;
 
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &win->vscr->groups, node) {
 		group_unmap_window(cur, win);
 	}
 }
@@ -461,13 +461,13 @@ groups_del_window(rp_window *win)
 {
 	rp_group *cur;
 
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &win->vscr->groups, node) {
 		group_del_window(cur, win);
 	}
 }
 
 rp_window *
-group_last_window(rp_group *g, rp_screen *s)
+group_last_window(rp_group *g)
 {
 	int last_access = 0;
 	rp_window_elem *most_recent = NULL;
@@ -477,7 +477,7 @@ group_last_window(rp_group *g, rp_screen *s)
 		if (cur->win->last_access >= last_access
 		    && cur->win != current_window()
 		    && !find_windows_frame(cur->win)
-		    && (cur->win->scr == s || rp_have_xrandr)) {
+		    && (cur->win->vscr == g->vscreen || rp_have_xrandr)) {
 			most_recent = cur;
 			last_access = cur->win->last_access;
 		}
@@ -496,7 +496,7 @@ group_next_window(rp_group *g, rp_window *win)
 
 	/* If there is no window, then get the last accessed one. */
 	if (win == NULL)
-		return group_last_window(g, rp_current_screen);
+		return group_last_window(g);
 
 	/*
 	 * If we can't find the window, then it's in a different group, so get
@@ -504,7 +504,7 @@ group_next_window(rp_group *g, rp_window *win)
 	 */
 	we = group_find_window(&g->mapped_windows, win);
 	if (we == NULL)
-		return group_last_window(g, win->scr);
+		return group_last_window(g);
 
 	/*
 	 * The window is in this group, so find the next one in the list that
@@ -513,8 +513,8 @@ group_next_window(rp_group *g, rp_window *win)
 	for (cur = list_next_entry(we, &g->mapped_windows, node);
 	    cur != we;
 	    cur = list_next_entry(cur, &g->mapped_windows, node)) {
-		if (!find_windows_frame(cur->win) && (cur->win->scr == win->scr ||
-		    rp_have_xrandr)) {
+		if (!find_windows_frame(cur->win) &&
+		    (cur->win->vscr == win->vscr || rp_have_xrandr)) {
 			return cur->win;
 		}
 	}
@@ -529,7 +529,7 @@ group_prev_window(rp_group *g, rp_window *win)
 
 	/* If there is no window, then get the last accessed one. */
 	if (win == NULL)
-		return group_last_window(g, rp_current_screen);
+		return group_last_window(g);
 
 	/*
 	 * If we can't find the window, then it's in a different group, so get
@@ -537,7 +537,7 @@ group_prev_window(rp_group *g, rp_window *win)
 	 */
 	we = group_find_window(&g->mapped_windows, win);
 	if (we == NULL)
-		return group_last_window(g, win->scr);
+		return group_last_window(g);
 
 	/*
 	 * The window is in this group, so find the previous one in the list
@@ -547,7 +547,7 @@ group_prev_window(rp_group *g, rp_window *win)
 	    cur != we;
 	    cur = list_prev_entry(cur, &g->mapped_windows, node)) {
 		if (!find_windows_frame(cur->win) &&
-		    (cur->win->scr == win->scr || rp_have_xrandr)) {
+		    (cur->win->vscr == win->vscr || rp_have_xrandr)) {
 			return cur->win;
 		}
 	}
@@ -567,7 +567,7 @@ group_move_window(rp_group *to, rp_window *win)
 	 * exists in multiple groups, then we're going to find the first group
 	 * with this window in it.
 	 */
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &win->vscr->groups, node) {
 		we = group_find_window(&cur->mapped_windows, win);
 		if (we) {
 			from = cur;
@@ -617,7 +617,7 @@ groups_merge(rp_group *from, rp_group *to)
 void
 set_current_group(rp_group *g)
 {
-	if (rp_current_group == g || g == NULL)
+	if (g == NULL || g->vscreen->current_group == g)
 		return;
 
 	set_current_group_1(g);
@@ -632,13 +632,14 @@ group_delete_group(rp_group *g)
 	if (list_empty(&(g->mapped_windows))
 	    && list_empty(&(g->unmapped_windows))) {
 		/* don't delete the last group */
-		if (list_size(&rp_groups) == 1)
+		if (list_size(&g->vscreen->groups) == 1)
 			return GROUP_DELETE_LAST_GROUP;
 
 		/* we can safely delete the group */
-		if (g == rp_current_group) {
-			rp_group *next = group_last_group();
-			set_current_group(next ? next : group_next_group());
+		if (g == g->vscreen->current_group) {
+			rp_group *next = group_last_group(g->vscreen);
+			set_current_group(next ? next :
+			    group_next_group(g->vscreen));
 		}
 		list_del(&(g->node));
 		group_free(g);
@@ -655,13 +656,13 @@ group_last_window_by_class(rp_group *g, char *class)
 	int last_access = 0;
 	rp_window_elem *most_recent = NULL;
 	rp_window_elem *cur;
-	rp_screen *s = rp_current_screen;
+	rp_vscreen *v = rp_current_vscreen;
 
 	list_for_each_entry(cur, &g->mapped_windows, node) {
 		if (cur->win->last_access >= last_access
 		    && cur->win != current_window()
 		    && !find_windows_frame(cur->win)
-		    && (cur->win->scr == s || rp_have_xrandr)
+		    && (cur->win->vscr == v || rp_have_xrandr)
 		    && strcmp(class, cur->win->res_class)) {
 			most_recent = cur;
 			last_access = cur->win->last_access;
@@ -681,13 +682,13 @@ group_last_window_by_class_complement(rp_group *g, char *class)
 	int last_access = 0;
 	rp_window_elem *most_recent = NULL;
 	rp_window_elem *cur;
-	rp_screen *s = rp_current_screen;
+	rp_vscreen *v = rp_current_vscreen;
 
 	list_for_each_entry(cur, &g->mapped_windows, node) {
 		if (cur->win->last_access >= last_access
 		    && cur->win != current_window()
 		    && !find_windows_frame(cur->win)
-		    && (cur->win->scr == s || rp_have_xrandr)
+		    && (cur->win->vscr == v || rp_have_xrandr)
 		    && !strcmp(class, cur->win->res_class)) {
 			most_recent = cur;
 			last_access = cur->win->last_access;

@@ -33,6 +33,7 @@
 typedef struct rp_window rp_window;
 typedef struct rp_screen rp_screen;
 typedef struct rp_global_screen rp_global_screen;
+typedef struct rp_vscreen rp_vscreen;
 typedef struct rp_action rp_action;
 typedef struct rp_keymap rp_keymap;
 typedef struct rp_frame rp_frame;
@@ -49,6 +50,9 @@ struct rp_frame {
 	/* The number of the window that is focused in this frame. */
 	int win_number;
 
+	/* The number of the window to focus when restoring this frame. */
+	int restore_win_number;
+
 	/* For determining the last frame. */
 	int last_access;
 
@@ -62,7 +66,7 @@ struct rp_frame {
 };
 
 struct rp_window {
-	rp_screen *scr;
+	rp_vscreen *vscr;
 	Window w;
 	int state;
 	int last_access;
@@ -134,6 +138,8 @@ struct rp_window_elem {
  * navigate the current group.
  */
 struct rp_group {
+	rp_vscreen *vscreen;
+
 	/*
 	 * The name and number of this group. This is to allow the user to
 	 * quickly jump to the desired group.
@@ -172,6 +178,34 @@ struct xrandr_info {
 	char *name;
 };
 
+struct rp_vscreen {
+	rp_screen *screen;
+
+	/* Virtual screen number, handled by rp_screen's vscreens_numset */
+	int number;
+
+	/*
+	 * A list of frames that may or may not contain windows. There should
+	 * always be one in the list.
+	 */
+	struct list_head frames;
+
+	/* Keep track of which numbers have been given to frames. */
+	struct numset *frames_numset;
+
+	/*
+	 * The number of the currently focused frame. One for each vscreen so
+	 * when you switch vscreens the focus doesn't get frobbed.
+	 */
+	int current_frame;
+
+	struct numset *group_numset;
+	struct list_head groups;
+	rp_group *current_group;
+
+	struct list_head node;
+};
+
 struct rp_screen {
 	GC normal_gc, inverse_gc;
 	Window root, bar_window, key_window, input_window, frame_window,
@@ -191,29 +225,18 @@ struct rp_screen {
 
 	char *display_string;
 
-	/*
-	 * A list of frames that may or may not contain windows. There should
-	 * always be one in the list.
-	 */
-	struct list_head frames;
-
-	/* Keep track of which numbers have been given to frames. */
-	struct numset *frames_numset;
-
-	/*
-	 * The number of the currently focused frame. One for each screen so
-	 * when you switch screens the focus doesn't get frobbed.
-	 */
-	int current_frame;
-
-	/* This structure can exist in a list. */
-	struct list_head node;
-
 	/* Used by sfrestore */
 	struct sbuf *scratch_buffer;
 
 	XftFont *xft_font;
 	XftColor xft_fg_color, xft_bg_color;
+
+	struct list_head vscreens;
+	struct numset *vscreens_numset;
+	rp_vscreen *current_vscreen;
+
+	/* This structure can exist in a list. */
+	struct list_head node;
 };
 
 struct rp_action {
@@ -307,6 +330,9 @@ struct rp_defaults {
 
 	/* Frame indicator format */
 	char *frame_fmt;
+
+	/* Number of virtual screens */
+	int vscreens;
 };
 
 /* Information about a child process. */
@@ -327,6 +353,7 @@ struct rp_child_info {
 	rp_group *group;
 	rp_frame *frame;
 	rp_screen *screen;
+	rp_vscreen *vscreen;
 
 	/*
 	 * Non-zero when the pid has mapped a window. This is to prevent every

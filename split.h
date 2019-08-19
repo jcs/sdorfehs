@@ -33,12 +33,12 @@ void resize_frame_vertically(rp_frame *frame, int diff);
 void remove_frame(rp_frame *frame);
 rp_window *find_window_for_frame(rp_frame *frame);
 rp_frame *find_windows_frame(rp_window *win);
-int num_frames(rp_screen *s);
+int num_frames(rp_vscreen *v);
 rp_frame *find_frame_next(rp_frame *frame);
 rp_frame *find_frame_prev(rp_frame *frame);
 rp_window *current_window(void);
 void init_frame_lists(void);
-void init_frame_list(rp_screen *screen);
+void init_frame_list(rp_vscreen *vscreen);
 void set_active_frame(rp_frame *frame, int force_indicator);
 void exchange_with_frame(rp_frame *cur, rp_frame *frame);
 void blank_frame(rp_frame *frame);
@@ -54,6 +54,6 @@ rp_frame *find_frame_up(rp_frame *frame);
 rp_frame *find_last_frame(void);
 rp_frame *find_frame_number(int num);
 
-rp_frame *current_frame(void);
+rp_frame *current_frame(rp_vscreen *v);
 
 #endif

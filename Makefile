@@ -38,6 +38,7 @@ OBJ=		actions.o \
 		split.o \
 		utf8.o \
 		util.o \
+		vscreen.o \
 		window.o \
 		xrandr.o
 
@@ -66,6 +67,7 @@ DEPS=		actions.h \
 		split.h \
 		utf8.h \
 		util.h \
+		vscreen.h \
 		window.h \
 		xrandr.h
 

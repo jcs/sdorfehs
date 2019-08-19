@@ -76,8 +76,6 @@ extern struct list_head rp_groups;
 /* Whether or not we support xrandr */
 extern int rp_have_xrandr;
 
-extern rp_group *rp_current_group;
-
 /*
  * Each child process is stored in this list. spawn, creates a new entry in
  * this list, the SIGCHLD handler sets child.terminated to be true and
@@ -138,6 +136,8 @@ extern Atom _net_supported;
 extern Atom _net_wm_window_type;
 extern Atom _net_wm_window_type_dialog;
 extern Atom _net_wm_name;
+extern Atom _net_current_desktop;
+extern Atom _net_number_of_desktops;
 
 /* mouse properties */
 extern int rat_x;
@@ -214,5 +214,10 @@ void set_close_on_exec(int fd);
 void read_rc_file(FILE *file);
 const char *get_homedir(void);
 void clean_up(void);
+
+int append_atom(Window w, Atom a, Atom type, unsigned long *val,
+    unsigned long nitems);
+unsigned long get_atom(Window w, Atom a, Atom type, unsigned long off,
+    unsigned long *ret, unsigned long nitems, unsigned long *left);
 
 #endif

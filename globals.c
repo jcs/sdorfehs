@@ -74,6 +74,8 @@ Atom _net_supported;
 Atom _net_wm_window_type;
 Atom _net_wm_window_type_dialog;
 Atom _net_wm_name;
+Atom _net_current_desktop;
+Atom _net_number_of_desktops;
 
 LIST_HEAD(rp_screens);
 rp_screen *rp_current_screen;
@@ -83,8 +85,6 @@ Display *dpy;
 
 int rp_have_xrandr;
 
-rp_group *rp_current_group;
-LIST_HEAD(rp_groups);
 LIST_HEAD(rp_children);
 struct rp_defaults defaults;
 
@@ -461,6 +461,7 @@ void
 clean_up(void)
 {
 	rp_screen *cur;
+	rp_vscreen *vcur;
 	struct list_head *iter, *tmp;
 
 	history_save();
@@ -470,9 +471,11 @@ clean_up(void)
 	free_user_commands();
 	free_bar();
 	free_window_stuff();
-	free_groups();
 
 	list_for_each_safe_entry(cur, iter, tmp, &rp_screens, node) {
+		list_for_each_entry(vcur, &cur->vscreens, node)
+			free_groups(vcur);
+
 		list_del(&cur->node);
 		screen_free(cur);
 		free(cur);
@@ -490,4 +493,39 @@ clean_up(void)
 
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XCloseDisplay(dpy);
+}
+
+int
+append_atom(Window w, Atom a, Atom type, unsigned long *val,
+    unsigned long nitems)
+{
+	return (XChangeProperty(dpy, w, a, type, 32, PropModeAppend,
+	    (unsigned char *)val, nitems) == Success);
+}
+
+unsigned long
+get_atom(Window w, Atom a, Atom type, unsigned long off, unsigned long *ret,
+    unsigned long nitems, unsigned long *left)
+{
+	Atom real_type;
+	int i, real_format = 0;
+	unsigned long items_read = 0;
+	unsigned long bytes_left = 0;
+	unsigned long *p;
+	unsigned char *data;
+
+	XGetWindowProperty(dpy, w, a, off, nitems, False, type, &real_type,
+	    &real_format, &items_read, &bytes_left, &data);
+
+	if (real_format == 32 && items_read) {
+		p = (unsigned long *)data;
+		for (i = 0; i < items_read; i++)
+			*ret++ = *p++;
+		XFree(data);
+		if (left)
+			*left = bytes_left;
+		return items_read;
+	}
+
+	return 0;
 }

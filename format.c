@@ -190,7 +190,7 @@ fmt_status(rp_window_elem *win_elem, struct sbuf *buf)
 {
 	rp_window *other_window;
 
-	other_window = find_window_other(rp_current_screen);
+	other_window = find_window_other(rp_current_vscreen);
 	if (win_elem->win == other_window)
 		sbuf_copy(buf, "+");
 	else if (win_elem->win == current_window())
@@ -250,13 +250,13 @@ fmt_gravity(rp_window_elem *elem, struct sbuf *buf)
 static void
 fmt_screen(rp_window_elem *elem, struct sbuf *buf)
 {
-	sbuf_printf_concat(buf, "%d", elem->win->scr->screen_num);
+	sbuf_printf_concat(buf, "%d", elem->win->vscr->screen->screen_num);
 }
 
 static void
 fmt_xrandrscreen(rp_window_elem *elem, struct sbuf *buf)
 {
-	sbuf_printf_concat(buf, "%d", elem->win->scr->xrandr.output);
+	sbuf_printf_concat(buf, "%d", elem->win->vscr->screen->xrandr.output);
 }
 
 static void
@@ -278,7 +278,7 @@ fmt_pid(rp_window_elem *elem, struct sbuf *buf)
 {
 	struct rp_child_info *info;
 
-	info = get_child_info(elem->win->w);
+	info = get_child_info(elem->win->w, 0);
 	if (info)
 		sbuf_printf_concat(buf, "%d", info->pid);
 	else

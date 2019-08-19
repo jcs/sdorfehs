@@ -109,7 +109,7 @@ typedef struct {
 
 typedef struct rp_frame_undo {
 	char *frames;
-	rp_screen *screen;
+	rp_vscreen *vscreen;
 	struct list_head node;
 } rp_frame_undo;
 
@@ -125,8 +125,6 @@ static int alias_list_last;
 
 static const char invalid_negative_arg[] = "invalid negative argument";
 
-static cmdret *frestore(char *data, rp_screen *s);
-static char *fdump(rp_screen *screen);
 static int spawn(char *data, int raw, rp_frame *frame);
 
 /* setter function prototypes */
@@ -156,6 +154,7 @@ static cmdret *set_rudeness(struct cmdarg **args);
 static cmdret *set_startupmessage(struct cmdarg **args);
 static cmdret *set_topkmap(struct cmdarg **args);
 static cmdret *set_transgravity(struct cmdarg **args);
+static cmdret *set_vscreens(struct cmdarg **args);
 static cmdret *set_waitcursor(struct cmdarg **args);
 static cmdret *set_warp(struct cmdarg **args);
 static cmdret *set_winfmt(struct cmdarg **args);
@@ -270,6 +269,8 @@ static cmdret *cmd_unsetenv(int interactive, struct cmdarg **args);
 static cmdret *cmd_v_split(int interactive, struct cmdarg **args);
 static cmdret *cmd_verbexec(int interactive, struct cmdarg **args);
 static cmdret *cmd_version(int interactive, struct cmdarg **args);
+static cmdret *cmd_vmove(int interactive, struct cmdarg **args);
+static cmdret *cmd_vselect(int interactive, struct cmdarg **args);
 static cmdret *cmd_windows(int interactive, struct cmdarg **args);
 
 static void
@@ -338,6 +339,7 @@ init_set_vars(void)
 	add_set_var("startupmessage", set_startupmessage, 1, "", arg_NUMBER);
 	add_set_var("topkmap", set_topkmap, 1, "", arg_STRING);
 	add_set_var("transgravity", set_transgravity, 1, "", arg_GRAVITY);
+	add_set_var("vsceens", set_vscreens, 1, "", arg_NUMBER);
 	add_set_var("waitcursor", set_waitcursor, 1, "", arg_NUMBER);
 	add_set_var("warp", set_warp, 1, "", arg_NUMBER);
 	add_set_var("winfmt", set_winfmt, 1, "", arg_REST);
@@ -569,6 +571,10 @@ init_user_commands(void)
 	add_command("verbexec",		cmd_verbexec,	1, 1, 1,
                     "/bin/sh -c ", arg_SHELLCMD);
 	add_command("version",		cmd_version,	0, 0, 0);
+	add_command("vmove",		cmd_vmove,	1, 1, 1,
+	            "Virtual Screen: ", arg_NUMBER);
+	add_command("vselect",		cmd_vselect,	1, 1, 1,
+	            "Virtual Screen: ", arg_NUMBER);
 	add_command("vsplit",		cmd_v_split,	1, 0, 0,
                     "Split: ", arg_STRING);
 	add_command("windows",		cmd_windows,	1, 0, 0,
@@ -614,7 +620,7 @@ clear_frame_undos(void)
 }
 
 static void
-push_frame_undo(rp_screen * screen)
+push_frame_undo(rp_vscreen *vscreen)
 {
 	rp_frame_undo *cur;
 
@@ -624,8 +630,8 @@ push_frame_undo(rp_screen * screen)
 		del_frame_undo(cur);
 	}
 	cur = xmalloc(sizeof(rp_frame_undo));
-	cur->frames = fdump(screen);
-	cur->screen = screen;
+	cur->frames = fdump(vscreen);
+	cur->vscreen = vscreen;
 	list_add(&cur->node, &rp_frame_undos);
 	/*
 	 * Since we're creating new frames the redo list is now invalid, so
@@ -637,7 +643,7 @@ push_frame_undo(rp_screen * screen)
 static rp_frame_undo *
 pop_frame_list(struct list_head *undo_list, struct list_head *redo_list)
 {
-	rp_screen *screen = rp_current_screen;
+	rp_vscreen *vscreen = rp_current_vscreen;
 	rp_frame_undo *first, *new;
 
 	/* Is there something to restore? */
@@ -647,8 +653,8 @@ pop_frame_list(struct list_head *undo_list, struct list_head *redo_list)
 
 	/* First save the current layout into undo */
 	new = xmalloc(sizeof(rp_frame_undo));
-	new->frames = fdump(screen);
-	new->screen = screen;
+	new->frames = fdump(vscreen);
+	new->vscreen = vscreen;
 	list_add(&new->node, redo_list);
 
 	list_del(&(first->node));
@@ -1354,7 +1360,7 @@ cmd_prev_frame(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	frame = find_frame_prev(current_frame());
+	frame = find_frame_prev(current_frame(rp_current_vscreen));
 	if (!frame)
 		return cmdret_new(RET_FAILURE, "%s", MESSAGE_NO_OTHER_FRAME);
 
@@ -1386,7 +1392,7 @@ cmd_next_frame(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	frame = find_frame_next(current_frame());
+	frame = find_frame_next(current_frame(rp_current_vscreen));
 	if (!frame)
 		return cmdret_new(RET_FAILURE, "%s", MESSAGE_NO_OTHER_FRAME);
 
@@ -1401,8 +1407,7 @@ cmd_other(int interactive UNUSED, struct cmdarg **args UNUSED)
 	rp_window *w;
 
 	/* w = find_window_other (); */
-	w = group_last_window(rp_current_group, rp_current_screen);
-
+	w = group_last_window(rp_current_vscreen->current_group);
 	if (!w)
 		return cmdret_new(RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
 
@@ -1509,7 +1514,7 @@ cmd_select(int interactive, struct cmdarg **args)
 	/* Only search if the string contains something to search for. */
 	if (strlen(str) > 0) {
 		if (strlen(str) == 1 && str[0] == '-') {
-			blank_frame(current_frame());
+			blank_frame(current_frame(rp_current_vscreen));
 			ret = cmdret_new(RET_SUCCESS, NULL);
 		} else if ((n = string_to_positive_int(str)) >= 0) {
 			/* try by number */
@@ -1744,7 +1749,8 @@ group_completions(char *str UNUSED)
 	INIT_LIST_HEAD(list);
 
 	/* Grab all the group names. */
-	list_for_each_entry(cur, &rp_groups, node) {
+	list_for_each_entry(cur, &(rp_current_screen->current_vscreen->groups),
+	    node) {
 		struct sbuf *s;
 
 		s = sbuf_new(0);
@@ -1908,7 +1914,7 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 		frames = 0;
 
 		list_for_each_entry(cur_screen, &rp_screens, node) {
-			frames += num_frames(cur_screen);
+			frames += num_frames(cur_screen->current_vscreen);
 		}
 
 		wins = xmalloc(sizeof(Window) * frames);
@@ -1928,7 +1934,8 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 			attr.background_pixel = rp_glob_screen.bg_color;
 			attr.override_redirect = True;
 
-			list_for_each_entry(cur_frame, &cur_screen->frames, node) {
+			list_for_each_entry(cur_frame,
+			    &cur_screen->current_vscreen->frames, node) {
 				int width, height;
 				char *num;
 
@@ -2131,16 +2138,16 @@ find_group(char *str)
 	/* Check if the user typed a group number. */
 	n = string_to_positive_int(str);
 	if (n >= 0) {
-		group = groups_find_group_by_number(n);
+		group = groups_find_group_by_number(rp_current_vscreen, n);
 		if (group)
 			return group;
 	}
 
 	/* Exact matches are special cases. */
-	if ((group = groups_find_group_by_name(str, 1)))
+	if ((group = groups_find_group_by_name(rp_current_vscreen, str, 1)))
 		return group;
 
-	group = groups_find_group_by_name(str, 0);
+	group = groups_find_group_by_name(rp_current_vscreen, str, 0);
 	return group;
 }
 
@@ -2763,7 +2770,7 @@ cmd_colon(int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_exec(int interactive UNUSED, struct cmdarg **args)
 {
-	spawn(ARG_STRING(0), 0, current_frame());
+	spawn(ARG_STRING(0), 0, current_frame(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
@@ -2824,6 +2831,7 @@ spawn(char *cmd, int raw, rp_frame *frame)
 	child->terminated = 0;
 	child->frame = frame;
 	child->group = rp_current_group;
+	child->vscreen = rp_current_vscreen;
 	child->screen = rp_current_screen;
 	child->window_mapped = 0;
 
@@ -2851,9 +2859,10 @@ cmd_number(int interactive UNUSED, struct cmdarg **args)
 	if (args[1])
 		win = group_find_window_by_number(rp_current_group,
 		    ARG(1, number));
-	else
-		win = group_find_window(&rp_current_group->mapped_windows,
-		    current_window());
+	else {
+		rp_group *g = rp_current_group;
+		win = group_find_window(&g->mapped_windows, current_window());
+	}
 
 	/* Make the switch. */
 	if (new_number >= 0 && win) {
@@ -2877,7 +2886,8 @@ cmd_number(int interactive UNUSED, struct cmdarg **args)
 		group_resort_window(rp_current_group, win);
 
 		/* Update the window list. */
-		update_window_names(win->win->scr, defaults.window_fmt);
+		update_window_names(win->win->vscr->screen,
+		    defaults.window_fmt);
 	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -3019,8 +3029,8 @@ cmd_v_split(int interactive UNUSED, struct cmdarg **args)
 	rp_frame *frame;
 	int pixels;
 
-	push_frame_undo(rp_current_screen);	/* fdump to stack */
-	frame = current_frame();
+	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
+	frame = current_frame(rp_current_vscreen);
 
 	/* Default to dividing the frame in half. */
 	if (args[0] == NULL)
@@ -3047,8 +3057,8 @@ cmd_h_split(int interactive UNUSED, struct cmdarg **args)
 	rp_frame *frame;
 	int pixels;
 
-	push_frame_undo(rp_current_screen);	/* fdump to stack */
-	frame = current_frame();
+	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
+	frame = current_frame(rp_current_vscreen);
 
 	/* Default to dividing the frame in half. */
 	if (args[0] == NULL)
@@ -3071,7 +3081,7 @@ cmd_h_split(int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_only(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-	push_frame_undo(rp_current_screen);	/* fdump to stack */
+	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
 	remove_all_splits();
 	maximize(current_window());
 
@@ -3081,18 +3091,17 @@ cmd_only(int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_remove(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-	rp_screen *s = rp_current_screen;
 	rp_frame *frame;
 
-	push_frame_undo(rp_current_screen);	/* fdump to stack */
+	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
 
-	if (num_frames(s) <= 1)
+	if (num_frames(rp_current_vscreen) <= 1)
 		return cmdret_new(RET_FAILURE,
 		    "remove: cannot remove only frame");
 
-	frame = find_frame_next(current_frame());
+	frame = find_frame_next(current_frame(rp_current_vscreen));
 	if (frame) {
-		remove_frame(current_frame());
+		remove_frame(current_frame(rp_current_vscreen));
 		set_active_frame(frame, 0);
 		show_frame_indicator(0);
 	}
@@ -3103,8 +3112,8 @@ cmd_remove(int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_shrink(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-	push_frame_undo(rp_current_screen);	/* fdump to stack */
-	resize_shrink_to_window(current_frame());
+	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
+	resize_shrink_to_window(current_frame(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
@@ -3171,11 +3180,11 @@ cmd_resize(int interactive, struct cmdarg **args)
 		 * If we haven't got at least 2 frames, there isn't anything to
 		 * scale.
 		 */
-		if (num_frames(s) < 2)
+		if (num_frames(rp_current_vscreen) < 2)
 			return cmdret_new(RET_FAILURE, NULL);
 
 		/* Save the frameset in case the user aborts. */
-		bk = screen_copy_frameset(s);
+		bk = vscreen_copy_frameset(rp_current_vscreen);
 
 		/* Get ready to read keys. */
 		grab_rat();
@@ -3198,24 +3207,30 @@ cmd_resize(int interactive, struct cmdarg **args)
 			}
 
 			if (binding->action == RESIZE_VGROW)
-				resize_frame_vertically(current_frame(),
+				resize_frame_vertically(
+				    current_frame(rp_current_vscreen),
 				    defaults.frame_resize_unit);
 			else if (binding->action == RESIZE_VSHRINK)
-				resize_frame_vertically(current_frame(),
+				resize_frame_vertically(
+				    current_frame(rp_current_vscreen),
 				    -defaults.frame_resize_unit);
 			else if (binding->action == RESIZE_HGROW)
-				resize_frame_horizontally(current_frame(),
+				resize_frame_horizontally(
+				    current_frame(rp_current_vscreen),
 				    defaults.frame_resize_unit);
 			else if (binding->action == RESIZE_HSHRINK)
-				resize_frame_horizontally(current_frame(),
+				resize_frame_horizontally(
+				    current_frame(rp_current_vscreen),
 				    -defaults.frame_resize_unit);
 			else if (binding->action == RESIZE_TO_WINDOW)
-				resize_shrink_to_window(current_frame());
+				resize_shrink_to_window(
+				    current_frame(rp_current_vscreen));
 			else if (binding->action == RESIZE_ABORT) {
 				rp_frame *cur;
 
-				screen_restore_frameset(s, bk);
-				list_for_each_entry(cur, &s->frames, node) {
+				vscreen_restore_frameset(rp_current_vscreen, bk);
+				list_for_each_entry(cur,
+				    &(rp_current_vscreen->frames), node) {
 					maximize_all_windows_in_frame(cur);
 				}
 				break;
@@ -3233,9 +3248,11 @@ cmd_resize(int interactive, struct cmdarg **args)
 		XUngrabKeyboard(dpy, CurrentTime);
 	} else {
 		if (args[0] && args[1]) {
-			resize_frame_horizontally(current_frame(),
+			resize_frame_horizontally(
+			    current_frame(rp_current_vscreen),
 			    ARG(0, number));
-			resize_frame_vertically(current_frame(),
+			resize_frame_vertically(
+			    current_frame(rp_current_vscreen),
 			    ARG(1, number));
 		} else
 			return cmdret_new(RET_FAILURE,
@@ -3280,7 +3297,7 @@ cmd_banishrel(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_screen *s = rp_current_screen;
 	rp_window *w = current_window();
-	rp_frame *f = current_frame();
+	rp_frame *f = current_frame(rp_current_vscreen);
 
 	if (w)
 		XWarpPointer(dpy, None, w->w, 0, 0, 0, 0, w->x + w->width - 2,
@@ -3319,7 +3336,7 @@ cmd_ratrelinfo(int interactive UNUSED, struct cmdarg **args UNUSED)
 
 	s = rp_current_screen;
 	rpw = current_window();
-	f = current_frame();
+	f = current_frame(rp_current_vscreen);
 
 	if (rpw)
 		XQueryPointer(dpy, rpw->w, &root_win, &child_win, &mouse_x,
@@ -3401,7 +3418,8 @@ cmd_curframe(int interactive, struct cmdarg **args UNUSED)
 		return cmdret_new(RET_SUCCESS, NULL);
 	}
 
-	return cmdret_new(RET_SUCCESS, "%d", current_frame()->number);
+	return cmdret_new(RET_SUCCESS, "%d",
+	    current_frame(rp_current_vscreen)->number);
 }
 
 cmdret *
@@ -3789,7 +3807,7 @@ set_padding(struct cmdarg **args)
 	/*
 	 * Resize the frames to make sure they are not too big and not too small.
 	 */
-	list_for_each_entry(frame, &(rp_current_screen->frames), node) {
+	list_for_each_entry(frame, &(rp_current_vscreen->frames), node) {
 		int bk_pos, bk_len;
 
 		/* Resize horizontally. */
@@ -4173,6 +4191,21 @@ set_bwcolor(struct cmdarg **args)
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
+static cmdret *
+set_vscreens(struct cmdarg **args)
+{
+	if (args[0] == NULL)
+		return cmdret_new(RET_SUCCESS, "%d", defaults.vscreens);
+
+	if (ARG(0, number) < 1)
+		return cmdret_new(RET_FAILURE, "vscreens: invalid argument");
+
+	if (!vscreens_resize(ARG(0, number)))
+		return cmdret_new(RET_FAILURE, "vscreens: failed resizing");
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
 cmdret *
 cmd_setenv(int interactive UNUSED, struct cmdarg **args)
 {
@@ -4251,11 +4284,11 @@ cmd_info(int interactive UNUSED, struct cmdarg **args)
 	if (current_window() != NULL) {
 		rp_window *win = current_window();
 		rp_window_elem *win_elem;
-		win_elem = group_find_window(&rp_current_group->mapped_windows,
+		win_elem = group_find_window(&(rp_current_group->mapped_windows),
 		    win);
 		if (!win_elem)
 			win_elem = group_find_window(
-			    &rp_current_group->unmapped_windows, win);
+			    &(rp_current_group->unmapped_windows), win);
 
 		if (!win_elem) {
 			rp_group *g = groups_find_group_by_window(win);
@@ -4301,7 +4334,7 @@ cmd_focusup(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	if ((frame = find_frame_up(current_frame())))
+	if ((frame = find_frame_up(current_frame(rp_current_vscreen))))
 		set_active_frame(frame, 0);
 	else
 		show_frame_indicator(0);
@@ -4314,7 +4347,7 @@ cmd_focusdown(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	if ((frame = find_frame_down(current_frame())))
+	if ((frame = find_frame_down(current_frame(rp_current_vscreen))))
 		set_active_frame(frame, 0);
 	else
 		show_frame_indicator(0);
@@ -4327,7 +4360,7 @@ cmd_focusleft(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	if ((frame = find_frame_left(current_frame())))
+	if ((frame = find_frame_left(current_frame(rp_current_vscreen))))
 		set_active_frame(frame, 0);
 	else
 		show_frame_indicator(0);
@@ -4340,7 +4373,7 @@ cmd_focusright(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	if ((frame = find_frame_right(current_frame())))
+	if ((frame = find_frame_right(current_frame(rp_current_vscreen))))
 		set_active_frame(frame, 0);
 	else
 		show_frame_indicator(0);
@@ -4353,8 +4386,8 @@ cmd_exchangeup(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	if ((frame = find_frame_up(current_frame())))
-		exchange_with_frame(current_frame(), frame);
+	if ((frame = find_frame_up(current_frame(rp_current_vscreen))))
+		exchange_with_frame(current_frame(rp_current_vscreen), frame);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4364,8 +4397,8 @@ cmd_exchangedown(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	if ((frame = find_frame_down(current_frame())))
-		exchange_with_frame(current_frame(), frame);
+	if ((frame = find_frame_down(current_frame(rp_current_vscreen))))
+		exchange_with_frame(current_frame(rp_current_vscreen), frame);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4375,8 +4408,8 @@ cmd_exchangeleft(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	if ((frame = find_frame_left(current_frame())))
-		exchange_with_frame(current_frame(), frame);
+	if ((frame = find_frame_left(current_frame(rp_current_vscreen))))
+		exchange_with_frame(current_frame(rp_current_vscreen), frame);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4386,8 +4419,8 @@ cmd_exchangeright(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
 	rp_frame *frame;
 
-	if ((frame = find_frame_right(current_frame())))
-		exchange_with_frame(current_frame(), frame);
+	if ((frame = find_frame_right(current_frame(rp_current_vscreen))))
+		exchange_with_frame(current_frame(rp_current_vscreen), frame);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4395,16 +4428,16 @@ cmd_exchangeright(int interactive UNUSED, struct cmdarg **args UNUSED)
 cmdret *
 cmd_swap(int interactive UNUSED, struct cmdarg **args)
 {
-	rp_screen *s;
+	rp_vscreen *v;
 	rp_frame *dest_frame;
 	rp_frame *src_frame;
 
 	dest_frame = ARG(0, frame);
-	src_frame = args[1] ? ARG(1, frame) : current_frame();
+	src_frame = args[1] ? ARG(1, frame) : current_frame(rp_current_vscreen);
 
 	if (!rp_have_xrandr) {
-		s = frames_screen(src_frame);
-		if (screen_find_frame_by_frame(s, dest_frame) == NULL)
+		v = frames_vscreen(src_frame);
+		if (vscreen_find_frame_by_frame(v, dest_frame) == NULL)
 			return cmdret_new(RET_FAILURE,
 			    "swap: frames on different screens");
 	}
@@ -4542,7 +4575,8 @@ cmd_nextscreen(int interactive UNUSED, struct cmdarg **args UNUSED)
 	if (screen_count() <= 1 || new_screen == rp_current_screen)
 		return cmdret_new(RET_FAILURE, "nextscreen: no other screen");
 
-	new_frame = screen_get_frame(new_screen, new_screen->current_frame);
+	new_frame = vscreen_get_frame(new_screen->current_vscreen,
+	    new_screen->current_vscreen->current_frame);
 
 	set_active_frame(new_frame, 1);
 
@@ -4561,7 +4595,8 @@ cmd_prevscreen(int interactive UNUSED, struct cmdarg **args UNUSED)
 	if (screen_count() <= 1 || new_screen == rp_current_screen)
 		return cmdret_new(RET_SUCCESS, "prevscreen: no other screen");
 
-	new_frame = screen_get_frame(new_screen, new_screen->current_frame);
+	new_frame = vscreen_get_frame(new_screen->current_vscreen,
+	    new_screen->current_vscreen->current_frame);
 
 	set_active_frame(new_frame, 1);
 
@@ -4584,7 +4619,11 @@ cmd_sselect(int interactive UNUSED, struct cmdarg **args)
 		return cmdret_new(RET_FAILURE, "sselect: screen %d not found",
 		    new_screen);
 
-	new_frame = screen_get_frame(screen, screen->current_frame);
+	if (screen == rp_current_screen)
+		return cmdret_new(RET_SUCCESS, NULL);
+
+	new_frame = vscreen_get_frame(screen->current_vscreen,
+	    screen->current_vscreen->current_frame);
 	set_active_frame(new_frame, 1);
 
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -4619,18 +4658,18 @@ cmd_fselect(int interactive, struct cmdarg **args)
 		return cmdret_new(RET_SUCCESS, "%d", ARG(0, frame)->number);
 }
 
-static char *
-fdump(rp_screen * screen)
+char *
+fdump(rp_vscreen *vscreen)
 {
 	struct sbuf *dump;
 	rp_frame *cur;
 
 	dump = sbuf_new(0);
 
-	list_for_each_entry(cur, &(screen->frames), node) {
+	list_for_each_entry(cur, &(vscreen->frames), node) {
 		char *frameset;
 
-		frameset = frame_dump(cur, screen);
+		frameset = frame_dump(cur, vscreen);
 		sbuf_concat(dump, frameset);
 		sbuf_concat(dump, ",");
 		free(frameset);
@@ -4664,15 +4703,15 @@ cmd_fdump(int interactively UNUSED, struct cmdarg **args)
 		}
 	}
 
-	dump = fdump(screen);
+	dump = fdump(screen->current_vscreen);
 	ret = cmdret_new(RET_SUCCESS, "%s", dump);
 	free(dump);
 
 	return ret;
 }
 
-static cmdret *
-frestore(char *data, rp_screen * s)
+cmdret *
+frestore(char *data, rp_vscreen *v)
 {
 	char *token;
 	char *d;
@@ -4688,12 +4727,13 @@ frestore(char *data, rp_screen * s)
 	token = strtok_r(d, ",", &nexttok);
 	if (token == NULL) {
 		free(d);
-		return cmdret_new(RET_FAILURE, "frestore: invalid frame format");
+		return cmdret_new(RET_FAILURE,
+		    "frestore: invalid frame format");
 	}
 
 	/* Build the new frame set. */
 	while (token != NULL) {
-		new = frame_read(token, s);
+		new = frame_read(token, v);
 		if (new == NULL) {
 			free(d);
 			return cmdret_new(RET_FAILURE,
@@ -4706,31 +4746,31 @@ frestore(char *data, rp_screen * s)
 	free(d);
 
 	/* Clear all the frames. */
-	list_for_each_entry(cur, &s->frames, node) {
+	list_for_each_entry(cur, &v->frames, node) {
 		PRINT_DEBUG(("blank %d\n", cur->number));
 		blank_frame(cur);
 	}
 
 	/* Get rid of the frames' numbers */
-	screen_free_nums(s);
+	vscreen_free_nums(v);
 
 	/* Splice in our new frameset. */
-	screen_restore_frameset(s, &fset);
+	vscreen_restore_frameset(v, &fset);
 
 	/* Process the frames a bit to make sure everything lines up. */
-	list_for_each_entry(cur, &s->frames, node) {
+	list_for_each_entry(cur, &v->frames, node) {
 		PRINT_DEBUG(("restore %d %d\n", cur->number, cur->win_number));
 
 		/*
 		 * Grab the frame's number, but if it already exists request a
 		 * new one.
 		 */
-		if (!numset_add_num(s->frames_numset, cur->number)) {
-			cur->number = numset_request(s->frames_numset);
+		if (!numset_add_num(v->frames_numset, cur->number)) {
+			cur->number = numset_request(v->frames_numset);
 		}
 		/* Find the current frame based on last_access. */
 		if (cur->last_access > max) {
-			s->current_frame = cur->number;
+			v->current_frame = cur->number;
 			max = cur->last_access;
 		}
 		/* Update the window the frame points to. */
@@ -4748,8 +4788,8 @@ frestore(char *data, rp_screen * s)
 		}
 	}
 
-	set_active_frame(current_frame(), 0);
-	update_bar(s);
+	set_active_frame(current_frame(v), 0);
+	update_bar(v->screen);
 	show_frame_indicator(0);
 
 	PRINT_DEBUG(("Done.\n"));
@@ -4759,15 +4799,15 @@ frestore(char *data, rp_screen * s)
 cmdret *
 cmd_frestore(int interactively UNUSED, struct cmdarg **args)
 {
-	push_frame_undo(rp_current_screen);	/* fdump to stack */
-	return frestore(ARG_STRING(0), rp_current_screen);
+	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
+	return frestore(ARG_STRING(0), rp_current_vscreen);
 }
 
 cmdret *
 cmd_verbexec(int interactive UNUSED, struct cmdarg **args)
 {
 	marked_message_printf(0, 0, "Running %s", ARG_STRING(0));
-	spawn(ARG_STRING(0), 0, current_frame());
+	spawn(ARG_STRING(0), 0, current_frame(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
@@ -4792,39 +4832,39 @@ set_winliststyle(struct cmdarg **args)
 cmdret *
 cmd_gnext(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-	set_current_group(group_next_group());
+	set_current_group(group_next_group(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
 cmd_gprev(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-	set_current_group(group_prev_group());
+	set_current_group(group_prev_group(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
 cmd_gother(int interactive UNUSED, struct cmdarg **args UNUSED)
 {
-	set_current_group(group_last_group());
+	set_current_group(group_last_group(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
 cmd_gnew(int interactive UNUSED, struct cmdarg **args)
 {
-	if (groups_find_group_by_name(ARG_STRING(0), 1))
+	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
 		return cmdret_new(RET_FAILURE, "gnew: group already exists");
-	set_current_group(group_add_new_group(ARG_STRING(0)));
+	set_current_group(group_add_new_group(rp_current_vscreen, ARG_STRING(0)));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
 cmd_gnewbg(int interactive UNUSED, struct cmdarg **args)
 {
-	if (groups_find_group_by_name(ARG_STRING(0), 1))
+	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
 		return cmdret_new(RET_FAILURE, "gnewbg: group already exists");
-	group_add_new_group(ARG_STRING(0));
+	group_add_new_group(rp_current_vscreen, ARG_STRING(0));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
@@ -4834,19 +4874,21 @@ cmd_gnumber(int interactive UNUSED, struct cmdarg **args)
 	int old_number, new_number;
 	rp_group *other_g, *g;
 
-	struct numset *g_numset = group_get_numset();
+	struct numset *g_numset = group_get_numset(rp_current_vscreen);
 
 	/* Gather the args. */
 	new_number = ARG(0, number);
 	if (args[1])
-		g = groups_find_group_by_number(ARG(1, number));
+		g = groups_find_group_by_number(rp_current_vscreen,
+		    ARG(1, number));
 	else
 		g = rp_current_group;
 
 	/* Make the switch. */
 	if (new_number >= 0 && g) {
 		/* Find other window with same number and give it old number. */
-		other_g = groups_find_group_by_number(new_number);
+		other_g = groups_find_group_by_number(rp_current_vscreen,
+		    new_number);
 		if (other_g != NULL) {
 			old_number = g->number;
 			other_g->number = old_number;
@@ -4872,7 +4914,7 @@ cmd_gnumber(int interactive UNUSED, struct cmdarg **args)
 cmdret *
 cmd_grename(int interactive UNUSED, struct cmdarg **args)
 {
-	if (groups_find_group_by_name(ARG_STRING(0), 1))
+	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
 		return cmdret_new(RET_FAILURE, "grename: duplicate group name");
 	group_rename(rp_current_group, ARG_STRING(0));
 
@@ -4923,7 +4965,8 @@ cmd_groups(int interactive, struct cmdarg **args UNUSED)
 		cmdret *ret;
 
 		group_list = sbuf_new(0);
-		get_group_list("\n", group_list, &dummy, &dummy);
+		get_group_list(rp_current_vscreen, "\n", group_list, &dummy,
+		    &dummy);
 		ret = cmdret_new(RET_SUCCESS, "%s", sbuf_get(group_list));
 		sbuf_free(group_list);
 		return ret;
@@ -5230,10 +5273,12 @@ cmd_sfdump(int interactively UNUSED, struct cmdarg **args UNUSED)
 		snprintf(screen_suffix, sizeof(screen_suffix), " %d,",
 		    cur_screen->number);
 
-		list_for_each_entry(cur_frame, &(cur_screen->frames), node) {
+		list_for_each_entry(cur_frame,
+		    &(cur_screen->current_vscreen->frames), node) {
 			char *frameset;
 
-			frameset = frame_dump(cur_frame, cur_screen);
+			frameset = frame_dump(cur_frame,
+			    cur_screen->current_vscreen);
 			sbuf_concat(dump, frameset);
 			sbuf_concat(dump, screen_suffix);
 			free(frameset);
@@ -5302,13 +5347,14 @@ cmd_sfrestore(int interactively UNUSED, struct cmdarg **args)
 		if (strlen(sbuf_get(screen->scratch_buffer)) == 0)
 			continue;
 
-		push_frame_undo(screen);	/* fdump to stack */
+		push_frame_undo(screen->current_vscreen); /* fdump to stack */
 
 		/*
 		 * XXX save the failure of each frestore and display it in case
 		 * of error
 		 */
-		ret = frestore(sbuf_get(screen->scratch_buffer), screen);
+		ret = frestore(sbuf_get(screen->scratch_buffer),
+		    screen->current_vscreen);
 		if (ret->success)
 			restored++;
 		cmdret_free(ret);
@@ -5530,7 +5576,7 @@ cmd_undo(int interactive UNUSED, struct cmdarg **args UNUSED)
 	else {
 		cmdret *ret;
 
-		ret = frestore(cur->frames, cur->screen);
+		ret = frestore(cur->frames, cur->vscreen);
 		return ret;
 	}
 }
@@ -5547,7 +5593,7 @@ cmd_redo(int interactive UNUSED, struct cmdarg **args UNUSED)
 		return cmdret_new(RET_FAILURE,
 		    "No more redo information available");
 
-	ret = frestore(cur->frames, cur->screen);
+	ret = frestore(cur->frames, cur->vscreen);
 	return ret;
 }
 
@@ -5641,7 +5687,7 @@ cmd_dedicate(int interactive UNUSED, struct cmdarg **args)
 {
 	rp_frame *f;
 
-	f = current_frame();
+	f = current_frame(rp_current_vscreen);
 	if (f == NULL)
 		return cmdret_new(RET_SUCCESS, NULL);
 
@@ -5681,6 +5727,45 @@ cmd_getsel(int interactive UNUSED, struct cmdarg **args UNUSED)
 	}
 
 	return cmdret_new(RET_FAILURE, "getsel: no X11 selection");
+}
+
+cmdret *
+cmd_vmove(int interactive, struct cmdarg **args)
+{
+	rp_vscreen *v;
+	int n;
+
+	if (current_window() == NULL)
+		return cmdret_new(RET_FAILURE, "vmove: no focused window");
+
+	n = string_to_positive_int(ARG_STRING(0));
+	if (n >= 0) {
+		v = vscreens_find_vscreen_by_number(rp_current_screen, n);
+		if (v) {
+			vscreen_move_window(v, current_window());
+			return cmdret_new(RET_SUCCESS, NULL);
+		}
+	}
+
+	return cmdret_new(RET_FAILURE, "vmove: invalid virtual screen");
+}
+
+cmdret *
+cmd_vselect(int interactive, struct cmdarg **args)
+{
+	rp_vscreen *v;
+	int n;
+
+	n = string_to_positive_int(ARG_STRING(0));
+	if (n >= 0) {
+		v = vscreens_find_vscreen_by_number(rp_current_screen, n);
+		if (v) {
+			set_current_vscreen(v);
+			return cmdret_new(RET_SUCCESS, NULL);
+		}
+	}
+
+	return cmdret_new(RET_FAILURE, "vselect: invalid virtual screen");
 }
 
 cmdret *
