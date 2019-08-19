@@ -503,7 +503,7 @@ static void
 prepare_bar(rp_screen *s, int width, int height, int bar_type)
 {
 	if (defaults.bar_sticky)
-		width = s->width;
+		width = s->width - (defaults.bar_border_width * 2);
 	else
 		width = width < s->width ? width : s->width;
 	height = height < s->height ? height : s->height;

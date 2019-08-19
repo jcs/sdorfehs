@@ -30,9 +30,23 @@ frame_left(rp_frame *frame)
 }
 
 int
+frame_left_screen_edge(rp_frame *frame)
+{
+	rp_vscreen *v = frames_vscreen(frame);
+	return (frame->x <= screen_left(v->screen));
+}
+
+int
 frame_top(rp_frame *frame)
 {
 	return frame->y;
+}
+
+int
+frame_top_screen_edge(rp_frame *frame)
+{
+	rp_vscreen *v = frames_vscreen(frame);
+	return (frame->y <= screen_top(v->screen));
 }
 
 int
@@ -42,9 +56,23 @@ frame_right(rp_frame *frame)
 }
 
 int
+frame_right_screen_edge(rp_frame *frame)
+{
+	rp_vscreen *v = frames_vscreen(frame);
+	return (frame->x + frame->width >= screen_width(v->screen));
+}
+
+int
 frame_bottom(rp_frame *frame)
 {
 	return frame->y + frame->height;
+}
+
+int
+frame_bottom_screen_edge(rp_frame *frame)
+{
+	rp_vscreen *v = frames_vscreen(frame);
+	return (frame->y + frame->height >= screen_bottom(v->screen));
 }
 
 int
@@ -280,10 +308,13 @@ frame_read(char *str, rp_vscreen *vscreen)
 		f->x = 0;
 	if (f->y <= 0)
 		f->y = 0;
-	if (f->width <= defaults.window_border_width * 2)
-		f->width = defaults.window_border_width * 2 + 1;
-	if (f->height <= defaults.window_border_width * 2)
-		f->height = defaults.window_border_width * 2 + 1;
+	if (f->width <= (defaults.window_border_width * 2) + (defaults.gap * 2))
+		f->width = (defaults.window_border_width * 2) +
+		    (defaults.gap * 2) + 1;
+	if (f->height <= (defaults.window_border_width * 2) +
+	    (defaults.gap * 2))
+		f->height = (defaults.window_border_width * 2) +
+		    (defaults.gap * 2) + 1;
 	if (f->last_access < 0)
 		f->last_access = 0;
 

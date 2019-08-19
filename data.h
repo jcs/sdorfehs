@@ -335,6 +335,9 @@ struct rp_defaults {
 
 	/* Number of virtual screens */
 	int vscreens;
+
+	/* Window gap */
+	int gap;
 };
 
 /* Information about a child process. */

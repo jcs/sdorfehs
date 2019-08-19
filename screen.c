@@ -61,7 +61,7 @@ screen_left(rp_screen *s)
 int
 screen_right(rp_screen *s)
 {
-	return screen_left(s) + screen_width(s);
+	return screen_left(s) + s->width - defaults.padding_right;
 }
 
 int
@@ -85,7 +85,19 @@ screen_top(rp_screen *s)
 int
 screen_bottom(rp_screen *s)
 {
-	return screen_top(s) + screen_height(s);
+	int ret = s->height - defaults.padding_bottom;
+
+	if (defaults.bar_sticky) {
+		switch (defaults.bar_location) {
+		case SouthEastGravity:
+		case SouthGravity:
+		case SouthWestGravity:
+			ret -= sticky_bar_height(s);
+			break;
+		}
+	}
+
+	return ret;
 }
 
 /* Given a root window, return the rp_screen struct */
@@ -550,6 +562,31 @@ screen_update(rp_screen *s, int left, int top, int width, int height)
 			f->width = (f->width * width) / oldwidth;
 			f->y = (f->y * height) / oldheight;
 			f->height = (f->height * height) / oldheight;
+			maximize_all_windows_in_frame(f);
+		}
+	}
+}
+
+void
+screen_update_frames(rp_screen *s)
+{
+	rp_vscreen *v;
+	rp_frame *f;
+
+	list_for_each_entry(v, &s->vscreens, node) {
+		list_for_each_entry(f, &v->frames, node) {
+			if (f->x < screen_left(v->screen))
+				f->x = screen_left(v->screen);
+
+			if (f->y < screen_top(v->screen))
+				f->y = screen_top(v->screen);
+
+			if (f->x + f->width > screen_right(v->screen))
+				f->width = screen_right(v->screen) - f->x;
+
+			if (f->y + f->height > screen_bottom(v->screen))
+				f->height = screen_bottom(v->screen) - f->y;
+
 			maximize_all_windows_in_frame(f);
 		}
 	}

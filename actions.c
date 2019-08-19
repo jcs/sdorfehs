@@ -142,6 +142,7 @@ static cmdret *set_framefmt(struct cmdarg **args);
 static cmdret *set_framemsgwait(struct cmdarg **args);
 static cmdret *set_framesels(struct cmdarg **args);
 static cmdret *set_fwcolor(struct cmdarg **args);
+static cmdret *set_gap(struct cmdarg **args);
 static cmdret *set_historysize(struct cmdarg **args);
 static cmdret *set_infofmt(struct cmdarg **args);
 static cmdret *set_inputwidth(struct cmdarg **args);
@@ -329,6 +330,7 @@ init_set_vars(void)
 	add_set_var("framemsgwait", set_framemsgwait, 1, "", arg_NUMBER);
 	add_set_var("framesels", set_framesels, 1, "", arg_STRING);
 	add_set_var("fwcolor", set_fwcolor, 1, "", arg_STRING);
+	add_set_var("gap", set_gap, 1, "", arg_NUMBER);
 	add_set_var("historysize", set_historysize, 1, "", arg_NUMBER);
 	add_set_var("infofmt", set_infofmt, 1, "", arg_REST);
 	add_set_var("inputwidth", set_inputwidth, 1, "", arg_NUMBER);
@@ -3771,6 +3773,8 @@ set_font(struct cmdarg **args)
 	free(defaults.font_string);
 	defaults.font_string = xstrdup(ARG_STRING(0));
 
+	screen_update_frames(rp_current_screen);
+
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
@@ -3838,14 +3842,14 @@ set_padding(struct cmdarg **args)
 	defaults.padding_top = t;
 	defaults.padding_bottom = b;
 
+	screen_update_frames(s);
+
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 static cmdret *
 set_border(struct cmdarg **args)
 {
-	rp_window *win;
-
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%d",
 		    defaults.window_border_width);
@@ -3856,11 +3860,7 @@ set_border(struct cmdarg **args)
 
 	defaults.window_border_width = ARG(0, number);
 
-	/* Update all the visible windows. */
-	list_for_each_entry(win, &rp_mapped_window, node) {
-		if (win_get_frame(win))
-			maximize(win);
-	}
+	screen_update_frames(rp_current_screen);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -3909,6 +3909,8 @@ set_barborder(struct cmdarg **args)
 		    defaults.bar_border_width);
 		XSetWindowBorderWidth(dpy, cur->input_window,
 		    defaults.bar_border_width);
+
+		screen_update_frames(cur);
 	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -4194,6 +4196,22 @@ set_vscreens(struct cmdarg **args)
 
 	if (!vscreens_resize(ARG(0, number)))
 		return cmdret_new(RET_FAILURE, "vscreens: failed resizing");
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_gap(struct cmdarg **args)
+{
+	if (args[0] == NULL)
+		return cmdret_new(RET_SUCCESS, "%d", defaults.gap);
+
+	if (ARG(0, number) < 0)
+		return cmdret_new(RET_FAILURE, "gap: invalid argument");
+
+	defaults.gap = ARG(0, number);
+
+	screen_update_frames(rp_current_screen);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4496,8 +4514,6 @@ cmd_link(int interactive, struct cmdarg **args)
 static cmdret *
 set_barpadding(struct cmdarg **args)
 {
-	rp_frame *cur;
-	rp_window *win;
 	int x, y;
 
 	if (args[0] == NULL)
@@ -4514,9 +4530,7 @@ set_barpadding(struct cmdarg **args)
 	defaults.bar_x_padding = x;
 	defaults.bar_y_padding = y;
 
-	list_for_each_entry(cur, &rp_current_vscreen->frames, node)
-		if ((win = find_window_number(cur->win_number)))
-			maximize(win);
+	screen_update_frames(rp_current_screen);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4524,9 +4538,6 @@ set_barpadding(struct cmdarg **args)
 static cmdret *
 set_barsticky(struct cmdarg **args)
 {
-	rp_frame *f;
-	rp_vscreen *v;
-
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%d", defaults.bar_sticky);
 
@@ -4536,15 +4547,8 @@ set_barsticky(struct cmdarg **args)
 
 	defaults.bar_sticky = ARG(0, number);
 
-	/* force an update of frames */
-	list_for_each_entry(v, &rp_current_screen->vscreens, node) {
-		list_for_each_entry(f, &v->frames, node) {
-			maximize_frame(f);
-			maximize_all_windows_in_frame(f);
-		}
-	}
-
 	hide_bar(rp_current_screen, 0);
+	screen_update_frames(rp_current_screen);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }

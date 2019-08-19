@@ -492,29 +492,41 @@ static void
 move_window(rp_window *win)
 {
 	rp_frame *frame;
+	int t;
 
 	if (win->frame_number == EMPTY)
 		return;
 
 	frame = win_get_frame(win);
 
+	if (!win->transient && defaults.only_border == 0 &&
+	    num_frames(win->vscr) <= 1) {
+		win->x = frame->x;
+		win->y = frame->y;
+		return;
+	}
+
 	/* X coord. */
 	switch (win->gravity) {
 	case NorthWestGravity:
 	case WestGravity:
 	case SouthWestGravity:
-		win->x = frame->x;
+		win->x = frame->x +
+		    (defaults.gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
 		break;
 	case NorthGravity:
 	case CenterGravity:
 	case SouthGravity:
-		win->x = frame->x + (frame->width - win->border * 2) / 2 -
-		    win->width / 2;
+		t = (frame->width / 2);
+		t -= (defaults.gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
+		t -= (defaults.gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
+		win->x = frame->x + t - (win->width / 2);
 		break;
 	case NorthEastGravity:
 	case EastGravity:
 	case SouthEastGravity:
-		win->x = frame->x + frame->width - win->width - win->border;
+		win->x = frame->x + frame->width - win->width -
+		    (defaults.gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
 		break;
 	}
 
@@ -523,96 +535,35 @@ move_window(rp_window *win)
 	case NorthEastGravity:
 	case NorthGravity:
 	case NorthWestGravity:
-		win->y = frame->y;
+		win->y = frame->y +
+		    (defaults.gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
 		break;
 	case EastGravity:
 	case CenterGravity:
 	case WestGravity:
-		win->y = frame->y + (frame->height - win->border * 2) / 2 -
-		    win->height / 2;
+		t = (frame->height / 2);
+		t -= (defaults.gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
+		t -= (defaults.gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
+		win->y = frame->y + t - (win->height / 2);
 		break;
 	case SouthEastGravity:
 	case SouthGravity:
 	case SouthWestGravity:
-		win->y = frame->y + frame->height - win->height - win->border;
+		win->y = frame->y + frame->height - win->height -
+		    (defaults.gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
 		break;
 	}
-}
-
-/*
- * Set a transient window's x,y,width,height fields to maximize the window.
- */
-static void
-maximize_transient(rp_window *win)
-{
-	rp_frame *frame;
-	int maxx, maxy;
-
-	frame = win_get_frame(win);
-
-	/* We can't maximize a window if it has no frame. */
-	if (frame == NULL)
-		return;
-
-	/* Set the window's border */
-	win->border = defaults.window_border_width;
-
-	/*
-	 * Always use the window's current width and height for transients.
-	 */
-	maxx = win->width;
-	maxy = win->height;
-
-	/* Fit the window inside its frame (if it has one) */
-	if (frame) {
-		PRINT_DEBUG(("frame width=%d height=%d\n",
-			frame->width, frame->height));
-
-		if (maxx + win->border * 2 > frame->width)
-			maxx = frame->width - win->border * 2;
-		if (maxy + win->border * 2 > frame->height)
-			maxy = frame->height - win->border * 2;
-	}
-	/*
-	 * Make sure we maximize to the nearest Resize Increment specified by
-	 * the window
-	 */
-	if (win->hints->flags & PResizeInc) {
-		int amount;
-		int delta;
-
-		/* Avoid a divide by zero if width/height_inc is 0. */
-		if (win->hints->width_inc) {
-			amount = maxx - win->width;
-			delta = amount % win->hints->width_inc;
-			amount -= delta;
-			if (amount < 0 && delta)
-				amount -= win->hints->width_inc;
-			maxx = amount + win->width;
-		}
-		if (win->hints->height_inc) {
-			amount = maxy - win->height;
-			delta = amount % win->hints->height_inc;
-			amount -= delta;
-			if (amount < 0 && delta)
-				amount -= win->hints->height_inc;
-			maxy = amount + win->height;
-		}
-	}
-	PRINT_DEBUG(("maxsize: %d %d\n", maxx, maxy));
-
-	win->width = maxx;
-	win->height = maxy;
 }
 
 /*
  * set a good standard window's x,y,width,height fields to maximize the window.
  */
 static void
-maximize_normal(rp_window *win)
+maximize_window(rp_window *win, int transient)
 {
 	rp_frame *frame;
-	int maxx, maxy;
+	int maxw, maxh;
+	float gap;
 
 	frame = win_get_frame(win);
 
@@ -621,26 +572,48 @@ maximize_normal(rp_window *win)
 		return;
 
 	/* Set the window's border */
-	if (defaults.only_border == 0 && num_frames(win->vscr) <= 1) {
+	if (defaults.only_border == 0 && num_frames(win->vscr) <= 1)
 		win->border = 0;
-	} else {
+	else
 		win->border = defaults.window_border_width;
+
+	if (win->hints->flags & PMaxSize) {
+		maxw = win->hints->max_width;
+		maxh = win->hints->max_height;
+	} else if (transient) {
+		maxw = win->width;
+		maxh = win->height;
+	} else {
+		maxw = frame->width;
+		maxh = frame->height;
 	}
 
+	if (maxw > frame->width)
+		maxw = frame->width;
+	if (maxh > frame->height)
+		maxh = frame->height;
 
-	/* Honour the window's maximum size */
-	if (win->hints->flags & PMaxSize) {
-		maxx = win->hints->max_width;
-		maxy = win->hints->max_height;
-	} else {
-		maxx = frame->width - win->border * 2;
-		maxy = frame->height - win->border * 2;
+	if (!transient) {
+		maxw = frame->width;
+		maxh = frame->height;
+		gap = (frame_right_screen_edge(frame) ? 1 : 0.5);
+		gap += (frame_left_screen_edge(frame) ? 1 : 0.5);
+		maxw -= gap * defaults.gap;
+
+		gap = (frame_top_screen_edge(frame) ? 1 : 0.5);
+		gap += (frame_bottom_screen_edge(frame) ? 1 : 0.5);
+		maxh -= gap * defaults.gap;
+	}
+
+	if (defaults.only_border == 0 && num_frames(win->vscr) <= 1) {
+		maxw -= win->border * 2;
+		maxh -= win->border * 2;
 	}
 
 	/* Honour the window's aspect ratio. */
 	PRINT_DEBUG(("aspect: %ld\n", win->hints->flags & PAspect));
 	if (win->hints->flags & PAspect) {
-		float ratio = (float) maxx / maxy;
+		float ratio = (float) maxw / maxh;
 		float min_ratio = (float) win->hints->min_aspect.x /
 		    win->hints->min_aspect.y;
 		float max_ratio = (float) win->hints->max_aspect.x /
@@ -648,20 +621,10 @@ maximize_normal(rp_window *win)
 		PRINT_DEBUG(("ratio=%f min_ratio=%f max_ratio=%f\n",
 			ratio, min_ratio, max_ratio));
 		if (ratio < min_ratio) {
-			maxy = (int) (maxx / min_ratio);
+			maxh = (int) (maxw / min_ratio);
 		} else if (ratio > max_ratio) {
-			maxx = (int) (maxy * max_ratio);
+			maxw = (int) (maxh * max_ratio);
 		}
-	}
-	/* Fit the window inside its frame (if it has one) */
-	if (frame) {
-		PRINT_DEBUG(("frame width=%d height=%d\n",
-			frame->width, frame->height));
-
-		if (maxx > frame->width)
-			maxx = frame->width - win->border * 2;
-		if (maxy > frame->height)
-			maxy = frame->height - win->border * 2;
 	}
 	/*
 	 * Make sure we maximize to the nearest Resize Increment specified by
@@ -672,26 +635,26 @@ maximize_normal(rp_window *win)
 		int delta;
 
 		if (win->hints->width_inc) {
-			amount = maxx - win->width;
+			amount = maxw - win->width;
 			delta = amount % win->hints->width_inc;
 			if (amount < 0 && delta)
 				amount -= win->hints->width_inc;
 			amount -= delta;
-			maxx = amount + win->width;
+			maxw = amount + win->width;
 		}
 		if (win->hints->height_inc) {
-			amount = maxy - win->height;
+			amount = maxh - win->height;
 			delta = amount % win->hints->height_inc;
 			if (amount < 0 && delta)
 				amount -= win->hints->height_inc;
 			amount -= delta;
-			maxy = amount + win->height;
+			maxh = amount + win->height;
 		}
 	}
-	PRINT_DEBUG(("maxsize: %d %d\n", maxx, maxy));
+	PRINT_DEBUG(("maxsize: %d %d\n", maxw, maxh));
 
-	win->width = maxx;
-	win->height = maxy;
+	win->width = maxw;
+	win->height = maxh;
 }
 
 /*
@@ -707,17 +670,13 @@ maximize(rp_window *win)
 		return;
 
 	/* Handle maximizing transient windows differently. */
-	if (win->transient)
-		maximize_transient(win);
-	else
-		maximize_normal(win);
+	maximize_window(win, win->transient);
 
 	/* Reposition the window. */
 	move_window(win);
 
 	PRINT_DEBUG(("Resizing window '%s' to x:%d y:%d w:%d h:%d\n",
 	    window_name(win), win->x, win->y, win->width, win->height));
-
 
 	/* Actually do the maximizing. */
 	XMoveResizeWindow(dpy, win->w, win->vscr->screen->left + win->x,
@@ -738,7 +697,7 @@ force_maximize(rp_window *win)
 	if (!win)
 		return;
 
-	maximize_normal(win);
+	maximize_window(win, 0);
 
 	/* Reposition the window. */
 	move_window(win);

@@ -263,12 +263,14 @@ init_defaults(void)
 	defaults.frame_selectors = xstrdup("");
 	defaults.maxundos = 20;
 
-	defaults.vscreens = 5;
-
 	get_atom(DefaultRootWindow(dpy), _net_number_of_desktops, XA_CARDINAL,
 	    0, &atom, 1, NULL);
 	if (atom > 0)
 		defaults.vscreens = (int)atom;
+	else
+		defaults.vscreens = 5;
+
+	defaults.gap = 0;
 }
 
 int

@@ -41,6 +41,7 @@ int is_a_root_window(unsigned int w);
 char *screen_dump(rp_screen *screen);
 
 void screen_update(rp_screen *s, int left, int top, int width, int height);
+void screen_update_frames(rp_screen *s);
 
 int screen_count(void);
 
