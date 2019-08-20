@@ -330,7 +330,6 @@ split_frame(rp_frame *frame, int way, int pixels)
 
 		maximize(win);
 		unhide_window(win);
-		XRaiseWindow(dpy, win->w);
 	} else {
 		PRINT_DEBUG(("No window fits the frame.\n"));
 
