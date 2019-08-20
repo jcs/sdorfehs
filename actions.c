@@ -152,6 +152,7 @@ static cmdret *set_maxundos(struct cmdarg **args);
 static cmdret *set_msgwait(struct cmdarg **args);
 static cmdret *set_onlyborder(struct cmdarg **args);
 static cmdret *set_padding(struct cmdarg **args);
+static cmdret *set_resizefmt(struct cmdarg **args);
 static cmdret *set_resizeunit(struct cmdarg **args);
 static cmdret *set_rudeness(struct cmdarg **args);
 static cmdret *set_startupmessage(struct cmdarg **args);
@@ -342,6 +343,7 @@ init_set_vars(void)
 	add_set_var("msgwait", set_msgwait, 1, "", arg_NUMBER);
 	add_set_var("padding", set_padding, 4, "", arg_NUMBER, "", arg_NUMBER,
 	    "", arg_NUMBER, "", arg_NUMBER);
+	add_set_var("resizefmt", set_resizefmt, 1, "", arg_REST);
 	add_set_var("resizeunit", set_resizeunit, 1, "", arg_NUMBER);
 	add_set_var("rudeness", set_rudeness, 1, "", arg_NUMBER);
 	add_set_var("startupmessage", set_startupmessage, 1, "", arg_NUMBER);
@@ -3191,7 +3193,7 @@ cmd_resize(int interactive, struct cmdarg **args)
 		while (1) {
 			struct resize_binding *binding;
 
-			show_frame_message("Resize frame");
+			show_frame_message(defaults.resize_fmt);
 			read_key(&c, &mod, buffer, sizeof(buffer));
 
 			/* Convert the mask to be compatible with ratpoison. */
@@ -4233,6 +4235,18 @@ set_ignoreresizehints(struct cmdarg **args)
 	defaults.ignore_resize_hints = ARG(0, number);
 
 	screen_update_frames(rp_current_screen);
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_resizefmt(struct cmdarg **args)
+{
+	if (args[0] == NULL)
+		return cmdret_new(RET_SUCCESS, "%s", defaults.resize_fmt);
+
+	free(defaults.resize_fmt);
+	defaults.resize_fmt = xstrdup(ARG_STRING(0));
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }

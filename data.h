@@ -302,6 +302,7 @@ struct rp_defaults {
 	char *window_fmt;
 	char *info_fmt;
 	char *sticky_fmt;
+	char *resize_fmt;
 
 	/* Which name to use: wm_name, res_name, res_class. */
 	int win_name;

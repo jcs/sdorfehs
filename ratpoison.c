@@ -251,8 +251,9 @@ init_defaults(void)
 
 	defaults.window_fmt = xstrdup("%n%s%t");
 	defaults.info_fmt = xstrdup("(%H, %W) %n(%t)");
-	defaults.frame_fmt = xstrdup("Current Frame");
+	defaults.frame_fmt = xstrdup(EMPTY_FRAME_MESSAGE);
 	defaults.sticky_fmt = xstrdup("%t");
+	defaults.resize_fmt = xstrdup("Resize frame (%Wx%H)");
 
 	defaults.win_name = WIN_NAME_TITLE;
 	defaults.startup_message = 1;

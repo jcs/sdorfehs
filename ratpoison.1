@@ -1057,6 +1057,15 @@ Set how much space at the borders of the screen will not be used.
 .Pp
 Default is
 .Li 0 0 0 0 .
+.It Cm resizefmt Ar format
+Choose the default format for the window label shown when interactively
+resizing a window.
+.Pp
+Default is
+.Li Resize frame (%Wx%H)
+which shows the window width and height divided by any
+.Li PResizeInc
+hints, which for terminals will show the number of columns and lines.
 .It Cm resizeunit Ar pixels
 Set the amount of pixels interactive
 .Ic resize
