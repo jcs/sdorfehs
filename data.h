@@ -338,6 +338,9 @@ struct rp_defaults {
 
 	/* Window gap */
 	int gap;
+
+	/* Whether to ignore window size hints */
+	int ignore_resize_hints;
 };
 
 /* Information about a child process. */

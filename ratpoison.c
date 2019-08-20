@@ -271,6 +271,8 @@ init_defaults(void)
 		defaults.vscreens = 5;
 
 	defaults.gap = 0;
+
+	defaults.ignore_resize_hints = 0;
 }
 
 int

@@ -630,7 +630,7 @@ maximize_window(rp_window *win, int transient)
 	 * Make sure we maximize to the nearest Resize Increment specified by
 	 * the window
 	 */
-	if (win->hints->flags & PResizeInc) {
+	if (!defaults.ignore_resize_hints && (win->hints->flags & PResizeInc)) {
 		int amount;
 		int delta;
 
@@ -707,7 +707,7 @@ force_maximize(rp_window *win)
 	 * already "maximized" X11 will optimize away the event since to
 	 * geometry changes were made. This initial resize solves the problem.
 	 */
-	if (win->hints->flags & PResizeInc) {
+	if (!defaults.ignore_resize_hints && (win->hints->flags & PResizeInc)) {
 		XMoveResizeWindow(dpy, win->w, win->vscr->screen->left + win->x,
 		    win->vscr->screen->top + win->y,
 		    win->width + win->hints->width_inc,

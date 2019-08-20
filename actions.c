@@ -144,6 +144,7 @@ static cmdret *set_framesels(struct cmdarg **args);
 static cmdret *set_fwcolor(struct cmdarg **args);
 static cmdret *set_gap(struct cmdarg **args);
 static cmdret *set_historysize(struct cmdarg **args);
+static cmdret *set_ignoreresizehints(struct cmdarg **args);
 static cmdret *set_infofmt(struct cmdarg **args);
 static cmdret *set_inputwidth(struct cmdarg **args);
 static cmdret *set_maxsizegravity(struct cmdarg **args);
@@ -332,6 +333,8 @@ init_set_vars(void)
 	add_set_var("fwcolor", set_fwcolor, 1, "", arg_STRING);
 	add_set_var("gap", set_gap, 1, "", arg_NUMBER);
 	add_set_var("historysize", set_historysize, 1, "", arg_NUMBER);
+	add_set_var("ignoreresizehints", set_ignoreresizehints, 1, "",
+	    arg_NUMBER);
 	add_set_var("infofmt", set_infofmt, 1, "", arg_REST);
 	add_set_var("inputwidth", set_inputwidth, 1, "", arg_NUMBER);
 	add_set_var("maxsizegravity", set_maxsizegravity, 1, "", arg_GRAVITY);
@@ -4210,6 +4213,24 @@ set_gap(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE, "gap: invalid argument");
 
 	defaults.gap = ARG(0, number);
+
+	screen_update_frames(rp_current_screen);
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_ignoreresizehints(struct cmdarg **args)
+{
+	if (args[0] == NULL)
+		return cmdret_new(RET_SUCCESS, "%d",
+		    defaults.ignore_resize_hints);
+
+	if (ARG(0, number) < 0 || ARG(0, number) > 1)
+		return cmdret_new(RET_FAILURE,
+		    "ignoreresizehints: invalid argument");
+
+	defaults.ignore_resize_hints = ARG(0, number);
 
 	screen_update_frames(rp_current_screen);
 
