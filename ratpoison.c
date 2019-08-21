@@ -367,39 +367,28 @@ main(int argc, char *argv[])
 		return exit_status;
 	}
 
-	/* Set our Atoms */
-	wm_name = XInternAtom(dpy, "WM_NAME", False);
-	wm_state = XInternAtom(dpy, "WM_STATE", False);
-	wm_change_state = XInternAtom(dpy, "WM_CHANGE_STATE", False);
-	wm_protocols = XInternAtom(dpy, "WM_PROTOCOLS", False);
-	wm_delete = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
-	wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
-	wm_colormaps = XInternAtom(dpy, "WM_COLORMAP_WINDOWS", False);
+	/* must be first */
+	register_atom(&_net_supported, "_NET_SUPPORTED");
 
-	/* netwm atoms */
-	_net_wm_pid = XInternAtom(dpy, "_NET_WM_PID", False);
-	PRINT_DEBUG(("_NET_WM_PID = %ld\n", _net_wm_pid));
-	_net_supported = XInternAtom(dpy, "_NET_SUPPORTED", False);
-	PRINT_DEBUG(("_NET_SUPPORTED = %ld\n", _net_supported));
-	_net_active_window = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
-	_net_wm_window_type = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
-	_net_wm_window_type_dialog = XInternAtom(dpy,
-	    "_NET_WM_WINDOW_TYPE_DIALOG", False);
-	_net_wm_name = XInternAtom(dpy, "_NET_WM_NAME", False);
-	_net_current_desktop = XInternAtom(dpy, "_NET_CURRENT_DESKTOP", False);
-	_net_number_of_desktops = XInternAtom(dpy, "_NET_NUMBER_OF_DESKTOPS",
-	    False);
+	register_atom(&wm_change_state, "WM_CHANGE_STATE");
+	register_atom(&wm_colormaps, "WM_COLORMAP_WINDOWS");
+	register_atom(&wm_delete, "WM_DELETE_WINDOW");
+	register_atom(&wm_name, "WM_NAME");
+	register_atom(&wm_protocols, "WM_PROTOCOLS");
+	register_atom(&wm_state, "WM_STATE");
+	register_atom(&wm_take_focus, "WM_TAKE_FOCUS");
 
-	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
-	    &_net_wm_window_type, 1);
-	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
-	    &_net_wm_window_type_dialog, 1);
-	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
-	    &_net_wm_name, 1);
-	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
-	    &_net_current_desktop, 1);
-	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM,
-	    &_net_number_of_desktops, 1);
+	register_atom(&_net_active_window, "_NET_ACTIVE_WINDOW");
+	register_atom(&_net_client_list, "_NET_CLIENT_LIST");
+	register_atom(&_net_client_list_stacking, "_NET_CLIENT_LIST_STACKING");
+	register_atom(&_net_current_desktop, "_NET_CURRENT_DESKTOP");
+	register_atom(&_net_number_of_desktops, "_NET_NUMBER_OF_DESKTOPS");
+	register_atom(&_net_wm_name, "_NET_WM_NAME");
+	register_atom(&_net_wm_pid, "_NET_WM_PID");
+	register_atom(&_net_wm_state, "_NET_WM_STATE");
+	register_atom(&_net_wm_state_fullscreen, "_NET_WM_STATE_FULLSCREEN");
+	register_atom(&_net_wm_window_type, "_NET_WM_WINDOW_TYPE");
+	register_atom(&_net_wm_window_type_dialog, "_NET_WM_WINDOW_TYPE_DIALOG");
 
 	/* Setup signal handlers. */
 	XSetErrorHandler(handler);

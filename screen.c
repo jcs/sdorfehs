@@ -439,10 +439,8 @@ deactivate_screen(rp_screen *s)
 	XUnmapWindow(dpy, s->key_window);
 
 	/* delete everything so noone sees them while we are not there */
-	XDeleteProperty(dpy, RootWindow(dpy, s->screen_num),
-	    _net_supported);
-	XDeleteProperty(dpy, RootWindow(dpy, s->screen_num),
-	    _net_wm_name);
+	XDeleteProperty(dpy, RootWindow(dpy, s->screen_num), _net_supported);
+	XDeleteProperty(dpy, RootWindow(dpy, s->screen_num), _net_wm_name);
 }
 
 static int

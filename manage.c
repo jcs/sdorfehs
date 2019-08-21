@@ -378,6 +378,10 @@ unmanage(rp_window *w)
 	list_del(&w->node);
 	groups_del_window(w);
 
+	remove_atom(rp_glob_screen.root, _net_client_list, XA_WINDOW, w->w);
+	remove_atom(rp_glob_screen.root, _net_client_list_stacking, XA_WINDOW,
+	    w->w);
+
 	free_window(w);
 }
 
@@ -454,15 +458,14 @@ unmanaged_window(Window w)
 void
 set_state(rp_window *win, int state)
 {
-	long data[2];
+	unsigned long data[2];
 
 	win->state = state;
 
 	data[0] = (long) win->state;
 	data[1] = (long) None;
 
-	XChangeProperty(dpy, win->w, wm_state, wm_state, 32,
-	    PropModeReplace, (unsigned char *) data, 2);
+	set_atom(win->w, wm_state, wm_state, data, 2);
 }
 
 /* Get the WM state of the window. */
@@ -760,6 +763,11 @@ map_window(rp_window *win)
 		set_active_window(win);
 	else
 		show_rudeness_msg(win, 0);
+
+	append_atom(rp_glob_screen.root, _net_client_list, XA_WINDOW, &win->w,
+	    1);
+	append_atom(rp_glob_screen.root, _net_client_list_stacking, XA_WINDOW,
+	    &win->w, 1);
 
 	hook_run(&rp_new_window_hook);
 }

@@ -69,14 +69,18 @@ Atom xa_compound_text;
 Atom xa_utf8_string;
 
 /* netwm atoms */
-Atom _net_wm_pid;
-Atom _net_supported;
-Atom _net_wm_window_type;
-Atom _net_wm_window_type_dialog;
-Atom _net_wm_name;
+Atom _net_active_window;
+Atom _net_client_list;
+Atom _net_client_list_stacking;
 Atom _net_current_desktop;
 Atom _net_number_of_desktops;
-Atom _net_active_window;
+Atom _net_supported;
+Atom _net_wm_name;
+Atom _net_wm_pid;
+Atom _net_wm_state;
+Atom _net_wm_state_fullscreen;
+Atom _net_wm_window_type;
+Atom _net_wm_window_type_dialog;
 
 LIST_HEAD(rp_screens);
 rp_screen *rp_current_screen;
@@ -498,6 +502,13 @@ clean_up(void)
 	XCloseDisplay(dpy);
 }
 
+void
+register_atom(Atom *a, char *name)
+{
+	*a = XInternAtom(dpy, name, False);
+	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM, a, 1);
+}
+
 int
 set_atom(Window w, Atom a, Atom type, unsigned long *val, unsigned long nitems)
 {
@@ -538,4 +549,33 @@ get_atom(Window w, Atom a, Atom type, unsigned long off, unsigned long *ret,
 	}
 
 	return 0;
+}
+
+void
+remove_atom(Window w, Atom a, Atom type, unsigned long remove)
+{
+	unsigned long tmp, read, left, *new;
+	int i, j = 0;
+
+	read = get_atom(w, a, type, 0, &tmp, 1, &left);
+	if (!read)
+		return;
+
+	new = malloc((read + left) * sizeof(*new));
+	if (read && tmp != remove)
+		new[j++] = tmp;
+
+	for (i = 1, read = left = 1; read && left; i += read) {
+		read = get_atom(w, a, type, i, &tmp, 1, &left);
+		if (!read)
+			break;
+		if (tmp != remove)
+			new[j++] = tmp;
+	}
+
+	if (j)
+		XChangeProperty(dpy, w, a, type, 32, PropModeReplace,
+		    (unsigned char *)new, j);
+	else
+		XDeleteProperty(dpy, w, a);
 }
