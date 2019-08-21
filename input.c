@@ -454,34 +454,6 @@ update_input_window(rp_screen *s, rp_input_line *line)
 	XFreeGC(dpy, lgc);
 }
 
-void
-ring_bell(void)
-{
-#ifdef VISUAL_BELL
-	GC lgc;
-	XGCValues gcv;
-	XWindowAttributes attr;
-	rp_screen *s = rp_current_screen;
-
-	XGetWindowAttributes(dpy, s->input_window, &attr);
-
-	gcv.function = GXxor;
-	gcv.foreground = rp_glob_screen.fg_color ^ rp_glob_screen.bg_color;
-	lgc = XCreateGC(dpy, s->input_window, GCFunction | GCForeground, &gcv);
-
-	XFillRectangle(dpy, s->input_window, lgc, 0, 0, attr.width, attr.height);
-	XFlush(dpy);
-
-	usleep(15000);
-
-	XFillRectangle(dpy, s->input_window, lgc, 0, 0, attr.width, attr.height);
-	XFlush(dpy);
-	XFreeGC(dpy, lgc);
-#else
-	XBell(dpy, 0);
-#endif
-}
-
 char *
 get_input(char *prompt, int history_id, completion_fn fn)
 {
@@ -529,7 +501,7 @@ get_more_input(char *prompt, char *preinput, int history_id,
 	while (!done) {
 		read_key(&ch, &modifier, keysym_buf, sizeof(keysym_buf));
 		modifier = x11_mask_to_rp_mask(modifier);
-		PRINT_DEBUG(("ch = %ld, modifier = %d, keysym_buf = %s",
+		PRINT_DEBUG(("ch = %ld, modifier = %d, keysym_buf = %s\n",
 			ch, modifier, keysym_buf));
 		status = execute_edit_action(line, ch, modifier, keysym_buf);
 
@@ -548,7 +520,6 @@ get_more_input(char *prompt, char *preinput, int history_id,
 			update_input_window(s, line);
 			break;
 		case EDIT_NO_OP:
-			ring_bell();
 			break;
 		case EDIT_ABORT:
 			final_input = NULL;

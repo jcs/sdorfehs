@@ -111,9 +111,6 @@
 /* The default filename in which to store the history */
 #define HISTORY_FILE ".ratpoison_history"
 
-/* Use a visual bell in the input window */
-#define VISUAL_BELL 1
-
 /* The name of the root keymap */
 #define ROOT_KEYMAP "root"
 

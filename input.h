@@ -37,8 +37,6 @@ unsigned int rp_mask_to_x11_mask(unsigned int mask);
 void update_modifier_map(void);
 void grab_key(KeySym keysym, unsigned int modifiers, Window grab_window);
 
-void ring_bell(void);
-
 void init_xkb(void);
 
 #endif	/* ! _RATPOISON_INPUT_H */
