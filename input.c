@@ -489,9 +489,6 @@ get_more_input(char *prompt, char *preinput, int history_id,
 	/* Create our line structure */
 	line = input_line_new(prompt, preinput, history_id, style, compl_fn);
 
-	/* We don't want to draw overtop of the program bar. */
-	hide_bar(s, 1);
-
 	/* Switch to the default colormap. */
 	if (current_window())
 		XUninstallColormap(dpy, current_window()->colormap);
@@ -499,6 +496,9 @@ get_more_input(char *prompt, char *preinput, int history_id,
 
 	XMapWindow(dpy, s->input_window);
 	XRaiseWindow(dpy, s->input_window);
+
+	hide_bar(s, 1);
+
 	XClearWindow(dpy, s->input_window);
 	/* Switch focus to our input window to read the next key events. */
 	XGetInputFocus(dpy, &focus, &revert);
