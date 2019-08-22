@@ -148,7 +148,7 @@ execute_edit_action(rp_input_line *line, KeySym ch, unsigned int modifier,
 
 	if (found_binding)
 		status = binding->func(line);
-	else if (modifier)
+	else if (modifier && modifier != RP_SHIFT_MASK)
 		status = editor_no_action(line);
 	else
 		status = editor_insert(line, keysym_buf);
