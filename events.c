@@ -162,6 +162,14 @@ map_request(XEvent *ev)
 		XMapWindow(dpy, ev->xmap.window);
 		return;
 	}
+
+	if (unmanaged_window(ev->xmap.window)) {
+		PRINT_DEBUG(("Map request from an unmanaged window\n"));
+		unmanage(win);
+		XMapRaised(dpy, ev->xmap.window);
+		return;
+	}
+
 	PRINT_DEBUG(("Map request from a managed window\n"));
 
 	switch (win->state) {

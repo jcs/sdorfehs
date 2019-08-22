@@ -81,6 +81,9 @@ Atom _net_wm_state;
 Atom _net_wm_state_fullscreen;
 Atom _net_wm_window_type;
 Atom _net_wm_window_type_dialog;
+Atom _net_wm_window_type_dock;
+Atom _net_wm_window_type_splash;
+Atom _net_wm_window_type_tooltip;
 
 LIST_HEAD(rp_screens);
 rp_screen *rp_current_screen;

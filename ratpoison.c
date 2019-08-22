@@ -389,6 +389,10 @@ main(int argc, char *argv[])
 	register_atom(&_net_wm_state_fullscreen, "_NET_WM_STATE_FULLSCREEN");
 	register_atom(&_net_wm_window_type, "_NET_WM_WINDOW_TYPE");
 	register_atom(&_net_wm_window_type_dialog, "_NET_WM_WINDOW_TYPE_DIALOG");
+	register_atom(&_net_wm_window_type_dock, "_NET_WM_WINDOW_TYPE_DOCK");
+	register_atom(&_net_wm_window_type_splash, "_NET_WM_WINDOW_TYPE_SPLASH");
+	register_atom(&_net_wm_window_type_tooltip,
+	    "_NET_WM_WINDOW_TYPE_TOOLTIP");
 
 	/* Setup signal handlers. */
 	XSetErrorHandler(handler);

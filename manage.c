@@ -321,7 +321,7 @@ window_is_transient(rp_window *win)
 	;
 }
 
-static Atom
+Atom
 get_net_wm_window_type(rp_window *win)
 {
 	Atom type, window_type = None;
@@ -338,7 +338,8 @@ get_net_wm_window_type(rp_window *win)
 	    &data) == Success && nitems > 0) {
 		window_type = *(Atom *)data;
 		XFree(data);
-		PRINT_DEBUG(("_NET_WM_WINDOW_TYPE = %ld\n", window_type));
+		PRINT_DEBUG(("_NET_WM_WINDOW_TYPE = %ld (%s)\n", window_type,
+		    XGetAtomName(dpy, window_type)));
 	}
 	return window_type;
 }
@@ -432,6 +433,8 @@ scanwins(void)
 int
 unmanaged_window(Window w)
 {
+	rp_window tmp;
+	Atom win_type;
 	char *wname;
 	int i;
 
@@ -450,6 +453,14 @@ unmanaged_window(Window w)
 	}
 
 	free(wname);
+
+	tmp.w = w;
+	win_type = get_net_wm_window_type(&tmp);
+	if (win_type == _net_wm_window_type_dock ||
+	    win_type == _net_wm_window_type_splash ||
+	    win_type == _net_wm_window_type_tooltip)
+		return 1;
+
 	return 0;
 }
 

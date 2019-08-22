@@ -38,6 +38,7 @@ long get_state(rp_window *win);
 void check_state(rp_window *win);
 
 int window_is_transient(rp_window *win);
+Atom get_net_wm_window_type(rp_window *win);
 void update_window_information(rp_window *win);
 void map_window(rp_window *win);
 
