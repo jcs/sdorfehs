@@ -105,9 +105,9 @@ grab_top_level_keys(Window w)
 		    defaults.top_kmap));
 		return;
 	}
-	PRINT_DEBUG(("grabbing top level key\n"));
+	PRINT_INPUT_DEBUG(("grabbing top level key\n"));
 	for (i = 0; i < map->actions_last; i++) {
-		PRINT_DEBUG(("%d\n", i));
+		PRINT_INPUT_DEBUG(("%d\n", i));
 		grab_key(map->actions[i].key, map->actions[i].state, w);
 	}
 }

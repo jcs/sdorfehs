@@ -39,7 +39,7 @@ x11_mask_to_rp_mask(unsigned int mask)
 {
 	unsigned int result = 0;
 
-	PRINT_DEBUG(("x11 mask = %x\n", mask));
+	PRINT_INPUT_DEBUG(("x11 mask = %x\n", mask));
 
 	result |= mask & ShiftMask ? RP_SHIFT_MASK : 0;
 	result |= mask & ControlMask ? RP_CONTROL_MASK : 0;
@@ -48,7 +48,7 @@ x11_mask_to_rp_mask(unsigned int mask)
 	result |= mask & rp_modifier_info.hyper_mod_mask ? RP_HYPER_MASK : 0;
 	result |= mask & rp_modifier_info.super_mod_mask ? RP_SUPER_MASK : 0;
 
-	PRINT_DEBUG(("rp mask = %x\n", mask));
+	PRINT_INPUT_DEBUG(("rp mask = %x\n", mask));
 
 	return result;
 }
@@ -62,7 +62,7 @@ rp_mask_to_x11_mask(unsigned int mask)
 {
 	unsigned int result = 0;
 
-	PRINT_DEBUG(("rp mask = %x\n", mask));
+	PRINT_INPUT_DEBUG(("rp mask = %x\n", mask));
 
 	result |= mask & RP_SHIFT_MASK ? ShiftMask : 0;
 	result |= mask & RP_CONTROL_MASK ? ControlMask : 0;
@@ -71,7 +71,7 @@ rp_mask_to_x11_mask(unsigned int mask)
 	result |= mask & RP_HYPER_MASK ? rp_modifier_info.hyper_mod_mask : 0;
 	result |= mask & RP_SUPER_MASK ? rp_modifier_info.super_mod_mask : 0;
 
-	PRINT_DEBUG(("x11 mask = %x\n", result));
+	PRINT_INPUT_DEBUG(("x11 mask = %x\n", result));
 
 	return result;
 }
@@ -109,38 +109,44 @@ update_modifier_map(void)
 			    mods->modifiermap[(row * mods->max_keypermod) + col];
 			int code_col;
 
-			PRINT_DEBUG(("row: %d col: %d code: %d\n", row, col, code));
+			PRINT_INPUT_DEBUG(("row: %d col: %d code: %d\n", row,
+			    col, code));
 
 			if (code == 0)
 				continue;
 
 			/* Are any of this keycode's keysyms a meta key?  */
 			for (code_col = 0; code_col < syms_per_code; code_col++) {
-				int sym = syms[((code - min_code) * syms_per_code) + code_col];
+				int sym = syms[((code - min_code) *
+				    syms_per_code) + code_col];
 
 				switch (sym) {
 				case XK_Meta_L:
 				case XK_Meta_R:
 					found_alt_or_meta = 1;
-					rp_modifier_info.meta_mod_mask |= modmasks[row - 3];
-					PRINT_DEBUG(("Found Meta on %d\n",
-						rp_modifier_info.meta_mod_mask));
+					rp_modifier_info.meta_mod_mask |=
+					    modmasks[row - 3];
+					PRINT_INPUT_DEBUG(("Found Meta on %d\n",
+					    rp_modifier_info.meta_mod_mask));
 					break;
 
 				case XK_Alt_L:
 				case XK_Alt_R:
 					found_alt_or_meta = 1;
-					rp_modifier_info.alt_mod_mask |= modmasks[row - 3];
-					PRINT_DEBUG(("Found Alt on %d\n",
-						rp_modifier_info.alt_mod_mask));
+					rp_modifier_info.alt_mod_mask |=
+					    modmasks[row - 3];
+					PRINT_INPUT_DEBUG(("Found Alt on %d\n",
+					    rp_modifier_info.alt_mod_mask));
 					break;
 
 				case XK_Super_L:
 				case XK_Super_R:
 					if (!found_alt_or_meta) {
-						rp_modifier_info.super_mod_mask |= modmasks[row - 3];
-						PRINT_DEBUG(("Found Super on %d\n",
-							rp_modifier_info.super_mod_mask));
+						rp_modifier_info.super_mod_mask |=
+						    modmasks[row - 3];
+						PRINT_INPUT_DEBUG(("Found "
+						    "Super on %d\n",
+						    rp_modifier_info.super_mod_mask));
 					}
 					code_col = syms_per_code;
 					col = mods->max_keypermod;
@@ -149,9 +155,11 @@ update_modifier_map(void)
 				case XK_Hyper_L:
 				case XK_Hyper_R:
 					if (!found_alt_or_meta) {
-						rp_modifier_info.hyper_mod_mask |= modmasks[row - 3];
-						PRINT_DEBUG(("Found Hyper on %d\n",
-							rp_modifier_info.hyper_mod_mask));
+						rp_modifier_info.hyper_mod_mask |=
+						    modmasks[row - 3];
+						PRINT_INPUT_DEBUG(("Found "
+						    "Hyper on %d\n",
+						    rp_modifier_info.hyper_mod_mask));
 					}
 					code_col = syms_per_code;
 					col = mods->max_keypermod;
@@ -159,15 +167,17 @@ update_modifier_map(void)
 					break;
 
 				case XK_Num_Lock:
-					rp_modifier_info.num_lock_mask |= modmasks[row - 3];
-					PRINT_DEBUG(("Found NumLock on %d\n",
+					rp_modifier_info.num_lock_mask |=
+					    modmasks[row - 3];
+					PRINT_INPUT_DEBUG(("Found NumLock on %d\n",
 						rp_modifier_info.num_lock_mask));
 					break;
 
 				case XK_Scroll_Lock:
-					rp_modifier_info.scroll_lock_mask |= modmasks[row - 3];
-					PRINT_DEBUG(("Found ScrollLock on %d\n",
-						rp_modifier_info.scroll_lock_mask));
+					rp_modifier_info.scroll_lock_mask |=
+					    modmasks[row - 3];
+					PRINT_INPUT_DEBUG(("Found ScrollLock on %d\n",
+					    rp_modifier_info.scroll_lock_mask));
 					break;
 				default:
 					break;
@@ -231,7 +241,7 @@ grab_key(KeySym keysym, unsigned int modifiers, Window grab_window)
 	modifiers = rp_mask_to_x11_mask(modifiers);
 	if (!keysym_to_keycode_mod(keysym, &keycode, &mod))
 		return;
-	PRINT_DEBUG(("keycode_mod: %ld %d %d\n", keysym, keycode, mod));
+	PRINT_INPUT_DEBUG(("keycode_mod: %ld %d %d\n", keysym, keycode, mod));
 	modifiers |= mod;
 
 	/*
@@ -400,16 +410,15 @@ update_input_window(rp_screen *s, rp_input_line *line)
 	    MAX_FONT_WIDTH(defaults.font);
 	height = (FONT_HEIGHT(s) + defaults.bar_y_padding * 2);
 
-	if (isu8start(line->buffer[line->position]))
-		do
+	if (isu8start(line->buffer[line->position])) {
+		do {
 			char_len++;
-		while (isu8cont(line->buffer[line->position + char_len]));
-	else
-	char_len = 1;
+		} while (isu8cont(line->buffer[line->position + char_len]));
+	} else
+		char_len = 1;
 
-	if (total_width < defaults.input_window_size + prompt_width) {
+	if (total_width < defaults.input_window_size + prompt_width)
 		total_width = defaults.input_window_size + prompt_width;
-	}
 
 	if (defaults.bar_sticky) {
 		XWindowAttributes attr;
@@ -501,7 +510,7 @@ get_more_input(char *prompt, char *preinput, int history_id,
 	while (!done) {
 		read_key(&ch, &modifier, keysym_buf, sizeof(keysym_buf));
 		modifier = x11_mask_to_rp_mask(modifier);
-		PRINT_DEBUG(("ch = %ld, modifier = %d, keysym_buf = %s\n",
+		PRINT_INPUT_DEBUG(("ch = %ld, modifier = %d, keysym_buf = %s\n",
 			ch, modifier, keysym_buf));
 		status = execute_edit_action(line, ch, modifier, keysym_buf);
 
@@ -530,7 +539,8 @@ get_more_input(char *prompt, char *preinput, int history_id,
 			done = 1;
 			break;
 		default:
-			PRINT_ERROR(("Unhandled status %d; this is a *BUG*\n", status));
+			PRINT_ERROR(("Unhandled status %d; this is a *BUG*\n",
+			    status));
 			exit(EXIT_FAILURE);
 		}
 	}

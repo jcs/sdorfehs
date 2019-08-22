@@ -66,6 +66,17 @@ do {                                            \
 #define PRINT_DEBUG(fmt) do {} while (0)
 #endif	/* DEBUG */
 
+#ifdef INPUT_DEBUG
+#define PRINT_INPUT_DEBUG(fmt)                  \
+do {                                            \
+  PRINT_LINE (debug);                           \
+  printf fmt;                                   \
+  fflush (stdout);                              \
+} while (0)
+#else
+#define PRINT_INPUT_DEBUG(fmt) do {} while (0)
+#endif	/* INPUT_DEBUG */
+
 #include "config.h"
 
 #include "data.h"
