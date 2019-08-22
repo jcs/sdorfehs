@@ -99,8 +99,8 @@ new_window(XCreateWindowEvent *e)
 	if (win == NULL) {
 		/* We'll figure out which vscreen to put this window in later */
 		win = add_to_window_list(rp_current_screen, e->window);
-		update_window_information(win);
 	}
+	update_window_information(win);
 }
 
 static void
@@ -350,12 +350,19 @@ static void
 client_msg(XClientMessageEvent *ev)
 {
 	rp_screen *s = find_screen(ev->window);
+	rp_window *win = NULL;
 
-	PRINT_DEBUG(("Received client message.\n"));
+	PRINT_DEBUG(("Received client message for window 0x%lx.\n", ev->window));
 
 	if (s == NULL) {
-		PRINT_DEBUG(("can't find screen for XClientMessageEvent\n"));
-		return;
+		win = find_window_in_list(ev->window, &rp_mapped_window);
+		if (!win) {
+			PRINT_DEBUG(("can't find screen or window for "
+			    "XClientMessageEvent\n"));
+			return;
+		}
+
+		s = win->vscr->screen;
 	}
 
 	if (ev->window == s->root) {
@@ -408,6 +415,21 @@ client_msg(XClientMessageEvent *ev)
 		} else {
 			PRINT_ERROR(("Non-standard WM_CHANGE_STATE format\n"));
 		}
+	} else if (win && ev->message_type == _net_wm_state) {
+		PRINT_DEBUG(("_NET_WM_STATE for window 0x%lx, action %ld, "
+		    "property 0x%lx\n", win->w, ev->data.l[0], ev->data.l[1]));
+
+		if (ev->data.l[1] == _net_wm_state_fullscreen) {
+			if (ev->data.l[0] == _NET_WM_STATE_ADD ||
+			    (ev->data.l[0] == _NET_WM_STATE_TOGGLE &&
+			    win->full_screen == 0))
+				window_full_screen(win);
+			else
+				window_full_screen(NULL);
+		}
+	} else {
+		PRINT_DEBUG(("unknown client message type 0x%lx\n",
+		    ev->message_type));
 	}
 }
 
@@ -621,65 +643,59 @@ property_notify(XEvent *ev)
 {
 	rp_window *win;
 
-	PRINT_DEBUG(("atom: %ld\n", ev->xproperty.atom));
+	PRINT_DEBUG(("atom: %ld (%s)\n", ev->xproperty.atom,
+	    XGetAtomName(dpy, ev->xproperty.atom)));
 
-	if (ev->xproperty.atom == rp_command_request
-	    && is_a_root_window(ev->xproperty.window)
-	    && ev->xproperty.state == PropertyNewValue) {
+	if (ev->xproperty.atom == rp_command_request &&
+	    is_a_root_window(ev->xproperty.window) &&
+	    ev->xproperty.state == PropertyNewValue) {
 		PRINT_DEBUG((PROGNAME " command\n"));
 		receive_command(ev->xproperty.window);
 	}
+
 	win = find_window(ev->xproperty.window);
+	if (!win)
+		return;
 
-	if (win) {
-		if (ev->xproperty.atom == _net_wm_pid) {
-			struct rp_child_info *child_info;
+	if (ev->xproperty.atom == _net_wm_pid) {
+		struct rp_child_info *child_info;
 
-			PRINT_DEBUG(("updating _NET_WM_PID\n"));
-			child_info = get_child_info(win->w, 1);
-			if (child_info && !child_info->window_mapped) {
-				if (child_info->frame) {
-					PRINT_DEBUG(("frame=%p\n",
-					    child_info->frame));
-					win->intended_frame_number =
-					    child_info->frame->number;
-					/*
-					 * Only map the first window in the
-					 * launch frame.
-					 */
-					child_info->window_mapped = 1;
-				}
-				/* TODO: also adopt group information? */
+		PRINT_DEBUG(("updating _NET_WM_PID\n"));
+		child_info = get_child_info(win->w, 1);
+		if (child_info && !child_info->window_mapped) {
+			if (child_info->frame) {
+				PRINT_DEBUG(("frame=%p\n", child_info->frame));
+				win->intended_frame_number =
+				    child_info->frame->number;
+				/*
+				 * Only map the first window in the launch
+				 * frame.
+				 */
+				child_info->window_mapped = 1;
 			}
-		} else
-			switch (ev->xproperty.atom) {
-			case XA_WM_NAME:
-				PRINT_DEBUG(("updating window name\n"));
-				if (update_window_name(win)) {
-					update_window_names(win->vscr->screen,
-					    defaults.window_fmt);
-					hook_run(&rp_title_changed_hook);
-				}
-				break;
-
-			case XA_WM_NORMAL_HINTS:
-				PRINT_DEBUG(("updating window normal hints\n"));
-				update_normal_hints(win);
-				if (win->state == NormalState)
-					maximize(win);
-				break;
-
-			case XA_WM_TRANSIENT_FOR:
-				PRINT_DEBUG(("Transient for\n"));
-				win->transient = XGetTransientForHint(dpy,
-				    win->w, &win->transient_for);
-				break;
-
-			default:
-				PRINT_DEBUG(("Unhandled property notify event: %ld\n",
-				    ev->xproperty.atom));
-				break;
-			}
+			/* TODO: also adopt group information? */
+		}
+	} else if (ev->xproperty.atom == XA_WM_NAME) {
+		PRINT_DEBUG(("updating window name\n"));
+		if (update_window_name(win)) {
+			update_window_names(win->vscr->screen,
+			    defaults.window_fmt);
+			hook_run(&rp_title_changed_hook);
+		}
+	} else if (ev->xproperty.atom == XA_WM_NORMAL_HINTS) {
+		PRINT_DEBUG(("updating window normal hints\n"));
+		update_normal_hints(win);
+		if (win->state == NormalState)
+			maximize(win);
+	} else if (ev->xproperty.atom == XA_WM_TRANSIENT_FOR) {
+		PRINT_DEBUG(("Transient for\n"));
+		win->transient = XGetTransientForHint(dpy, win->w,
+		    &win->transient_for);
+	} else if (ev->xproperty.atom == _net_wm_state) {
+		check_state(win);
+	} else {
+		PRINT_DEBUG(("Unhandled property notify event: %ld\n",
+		    ev->xproperty.atom));
 	}
 }
 

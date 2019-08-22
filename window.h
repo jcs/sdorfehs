@@ -56,4 +56,6 @@ rp_frame *win_get_frame(rp_window *win);
 struct rp_child_info *get_child_info(Window w, int add);
 void change_windows_vscreen(rp_vscreen *v, rp_vscreen *new_vscreen);
 
+void window_full_screen(rp_window *win);
+
 #endif	/* ! _RATPOISON_LIST_H */

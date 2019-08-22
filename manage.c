@@ -338,8 +338,7 @@ get_net_wm_window_type(rp_window *win)
 	    &data) == Success && nitems > 0) {
 		window_type = *(Atom *)data;
 		XFree(data);
-		PRINT_DEBUG(("hey ya %ld %ld\n", window_type,
-		    _net_wm_window_type_dialog));
+		PRINT_DEBUG(("_NET_WM_WINDOW_TYPE = %ld\n", window_type));
 	}
 	return window_type;
 }
@@ -485,10 +484,36 @@ get_state(rp_window *win)
 	if (XGetWindowProperty(dpy, win->w, wm_state, 0L, 2L, False, wm_state,
 	    &type, &format, &nitems, &bytes_left, &data) == Success &&
 	    nitems > 0) {
-		state = *(long *) data;
+		state = *(long *)data;
 		XFree(data);
 	}
 	return state;
+}
+
+void
+check_state(rp_window *win)
+{
+	Atom state;
+	unsigned long read, left;
+	int i, fs;
+
+	for (i = 0, left = 1; left; i += read) {
+		read = get_atom(win->w, _net_wm_state, XA_ATOM, i, &state, 1,
+		    &left);
+		if (!read)
+			break;
+
+		if (state == _net_wm_state_fullscreen) {
+			fs = 1;
+			window_full_screen(win);
+		} else {
+			PRINT_DEBUG(("unhandled window state %ld (%s)\n",
+			    state, XGetAtomName(dpy, state)));
+		}
+	}
+
+	if (win->full_screen && !fs)
+		window_full_screen(NULL);
 }
 
 static void
@@ -501,6 +526,12 @@ move_window(rp_window *win)
 		return;
 
 	frame = win_get_frame(win);
+
+	if (win->full_screen) {
+		win->x = win->vscr->screen->left;
+		win->y = win->vscr->screen->top;
+		return;
+	}
 
 	if (!win->transient && defaults.only_border == 0 &&
 	    num_frames(win->vscr) <= 1) {
@@ -575,47 +606,53 @@ maximize_window(rp_window *win, int transient)
 		return;
 
 	/* Set the window's border */
-	if (defaults.only_border == 0 && num_frames(win->vscr) <= 1)
+	if ((defaults.only_border == 0 && num_frames(win->vscr) <= 1) ||
+	    win->full_screen)
 		win->border = 0;
 	else
 		win->border = defaults.window_border_width;
 
-	if (win->hints->flags & PMaxSize) {
-		maxw = win->hints->max_width;
-		maxh = win->hints->max_height;
-	} else if (transient) {
-		maxw = win->width;
-		maxh = win->height;
+	if (win->full_screen) {
+		maxw = win->vscr->screen->width;
+		maxh = win->vscr->screen->height;
 	} else {
-		maxw = frame->width;
-		maxh = frame->height;
-	}
+		if (win->hints->flags & PMaxSize) {
+			maxw = win->hints->max_width;
+			maxh = win->hints->max_height;
+		} else if (transient) {
+			maxw = win->width;
+			maxh = win->height;
+		} else {
+			maxw = frame->width;
+			maxh = frame->height;
+		}
 
-	if (maxw > frame->width)
-		maxw = frame->width;
-	if (maxh > frame->height)
-		maxh = frame->height;
+		if (maxw > frame->width)
+			maxw = frame->width;
+		if (maxh > frame->height)
+			maxh = frame->height;
 
-	if (!transient) {
-		maxw = frame->width;
-		maxh = frame->height;
-		gap = (frame_right_screen_edge(frame) ? 1 : 0.5);
-		gap += (frame_left_screen_edge(frame) ? 1 : 0.5);
-		maxw -= gap * defaults.gap;
+		if (!transient) {
+			maxw = frame->width;
+			maxh = frame->height;
+			gap = (frame_right_screen_edge(frame) ? 1 : 0.5);
+			gap += (frame_left_screen_edge(frame) ? 1 : 0.5);
+			maxw -= gap * defaults.gap;
 
-		gap = (frame_top_screen_edge(frame) ? 1 : 0.5);
-		gap += (frame_bottom_screen_edge(frame) ? 1 : 0.5);
-		maxh -= gap * defaults.gap;
-	}
+			gap = (frame_top_screen_edge(frame) ? 1 : 0.5);
+			gap += (frame_bottom_screen_edge(frame) ? 1 : 0.5);
+			maxh -= gap * defaults.gap;
+		}
 
-	if (defaults.only_border == 0 && num_frames(win->vscr) <= 1) {
-		maxw -= win->border * 2;
-		maxh -= win->border * 2;
+		if (defaults.only_border == 0 && num_frames(win->vscr) <= 1) {
+			maxw -= win->border * 2;
+			maxh -= win->border * 2;
+		}
 	}
 
 	/* Honour the window's aspect ratio. */
 	PRINT_DEBUG(("aspect: %ld\n", win->hints->flags & PAspect));
-	if (win->hints->flags & PAspect) {
+	if (!win->full_screen && (win->hints->flags & PAspect)) {
 		float ratio = (float) maxw / maxh;
 		float min_ratio = (float) win->hints->min_aspect.x /
 		    win->hints->min_aspect.y;
@@ -633,7 +670,8 @@ maximize_window(rp_window *win, int transient)
 	 * Make sure we maximize to the nearest Resize Increment specified by
 	 * the window
 	 */
-	if (!defaults.ignore_resize_hints && (win->hints->flags & PResizeInc)) {
+	if (!defaults.ignore_resize_hints && !win->full_screen &&
+	    (win->hints->flags & PResizeInc)) {
 		int amount;
 		int delta;
 
@@ -826,6 +864,9 @@ withdraw_window(rp_window *win)
 		return;
 
 	PRINT_DEBUG(("withdraw_window on '%s'\n", window_name(win)));
+
+	if (win->full_screen)
+		window_full_screen(NULL);
 
 	/*
 	 * Give back the window number. the window will get another one, if it is

@@ -176,6 +176,7 @@ add_to_window_list(rp_screen *s, Window w)
 	new_window->transient = XGetTransientForHint(dpy, new_window->w,
 	    &new_window->transient_for);
 	PRINT_DEBUG(("transient %d\n", new_window->transient));
+	new_window->full_screen = 0;
 
 	update_window_gravity(new_window);
 
@@ -361,6 +362,8 @@ give_window_focus(rp_window *win, rp_window *last_win)
 	 * are different windows.
 	 */
 	if (last_win != NULL && win != last_win) {
+		if (last_win->full_screen)
+			window_full_screen(NULL);
 		save_mouse_position(last_win);
 		XSetWindowBorder(dpy, last_win->w, rp_glob_screen.bw_color);
 	}
@@ -637,4 +640,34 @@ change_windows_vscreen(rp_vscreen *old_vscreen, rp_vscreen *new_vscreen)
 		if (win->vscr == old_vscreen)
 			win->vscr = new_vscreen;
 	}
+}
+
+void
+window_full_screen(rp_window *win)
+{
+	rp_window *oldfs;
+
+	if (!win) {
+		oldfs = rp_current_screen->full_screen_win;
+		rp_current_screen->full_screen_win = NULL;
+		if (oldfs) {
+			PRINT_DEBUG(("making window 0x%lx no longer "
+			    "full-screen\n", oldfs->w));
+
+			oldfs->full_screen = 0;
+			remove_atom(oldfs->w, _net_wm_state, XA_ATOM,
+			    _net_wm_state_fullscreen);
+			maximize(oldfs);
+		}
+
+		hide_bar(rp_current_screen, 0);
+		return;
+	}
+
+	PRINT_DEBUG(("making window 0x%lx full-screen\n", win->w));
+	hide_bar(rp_current_screen, 1);
+
+	rp_current_screen->full_screen_win = win;
+	win->full_screen = 1;
+	maximize(win);
 }

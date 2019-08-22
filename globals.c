@@ -506,6 +506,7 @@ void
 register_atom(Atom *a, char *name)
 {
 	*a = XInternAtom(dpy, name, False);
+	PRINT_DEBUG(("Registered Atom %ld = %s\n", (unsigned long)*a, name));
 	append_atom(DefaultRootWindow(dpy), _net_supported, XA_ATOM, a, 1);
 }
 

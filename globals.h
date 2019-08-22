@@ -140,6 +140,9 @@ extern Atom _net_supported;
 extern Atom _net_wm_name;
 extern Atom _net_wm_pid;
 extern Atom _net_wm_state;
+#define _NET_WM_STATE_REMOVE	0    /* remove/unset property */
+#define _NET_WM_STATE_ADD	1    /* add/set property */
+#define _NET_WM_STATE_TOGGLE	2    /* toggle property  */
 extern Atom _net_wm_state_fullscreen;
 extern Atom _net_wm_window_type;
 extern Atom _net_wm_window_type_dialog;

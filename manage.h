@@ -35,6 +35,7 @@ void update_normal_hints(rp_window *win);
 void rename_current_window(void);
 void set_state(rp_window *win, int state);
 long get_state(rp_window *win);
+void check_state(rp_window *win);
 
 int window_is_transient(rp_window *win);
 void update_window_information(rp_window *win);

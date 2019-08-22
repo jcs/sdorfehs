@@ -87,7 +87,7 @@ struct rp_window {
 	char *res_class;
 
 	/* Dimensions */
-	int x, y, width, height, border;
+	int x, y, width, height, border, full_screen;
 
 	/* WM Hints */
 	XSizeHints *hints;
@@ -234,6 +234,8 @@ struct rp_screen {
 	struct list_head vscreens;
 	struct numset *vscreens_numset;
 	rp_vscreen *current_vscreen;
+
+	rp_window *full_screen_win;
 
 	/* This structure can exist in a list. */
 	struct list_head node;

@@ -340,6 +340,7 @@ init_screen(rp_screen *s)
 	s->root = RootWindow(dpy, screen_num);
 	s->screen_num = screen_num;
 	s->def_cmap = DefaultColormap(dpy, screen_num);
+	s->full_screen_win = NULL;
 
 	init_rat_cursor(s);
 

@@ -246,6 +246,8 @@ set_current_vscreen(rp_vscreen *v)
 	    v->screen->current_vscreen == v))
 		return;
 
+	window_full_screen(NULL);
+
 	list_for_each_entry(frame, &rp_current_vscreen->frames, node)
 		frame->restore_win_number = frame->win_number;
 

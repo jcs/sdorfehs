@@ -81,7 +81,7 @@ reset_alarm_if_needed(void)
 void
 hide_bar(rp_screen *s, int force)
 {
-	if (defaults.bar_sticky && !force) {
+	if (!s->full_screen_win && defaults.bar_sticky && !force) {
 		s->bar_is_raised = BAR_IS_STICKY;
 		XMapRaised(dpy, s->bar_window);
 		update_window_names(s, defaults.sticky_fmt);
