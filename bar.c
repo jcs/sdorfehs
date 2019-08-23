@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "ratpoison.h"
 
@@ -47,6 +48,11 @@ static char *last_msg = NULL;
 static int last_mark_start = 0;
 static int last_mark_end = 0;
 
+static struct sbuf *bar_buf = NULL;
+static struct sbuf *bar_line = NULL;
+
+static void draw_partial_string(rp_screen *s, char *msg, int len, int x_offset,
+    int y_offset, int style);
 static void marked_message_internal(char *msg, int mark_start, int mark_end,
     int bar_type);
 
@@ -83,8 +89,7 @@ hide_bar(rp_screen *s, int force)
 {
 	if (!s->full_screen_win && defaults.bar_sticky && !force) {
 		s->bar_is_raised = BAR_IS_STICKY;
-		XMapRaised(dpy, s->bar_window);
-		update_window_names(s, defaults.sticky_fmt);
+		redraw_sticky_bar_text(s);
 		return;
 	}
 
@@ -225,6 +230,40 @@ update_bar(rp_screen *s)
 	}
 }
 
+void
+redraw_sticky_bar_text(rp_screen *s)
+{
+	struct sbuf *tbuf;
+	char *line;
+	size_t len;
+	int twidth, z;
+
+	if (s->full_screen_win || !defaults.bar_sticky)
+		return;
+
+	tbuf = sbuf_new(0);
+
+	get_current_window_in_fmt(defaults.sticky_fmt, tbuf);
+
+	/* This will raise the bar, clear it, and draw the window title. */
+	marked_message_internal(sbuf_get(tbuf), 0, 0, BAR_IS_STICKY);
+
+	if (bar_line == NULL)
+		return;
+
+	line = sbuf_get(bar_line);
+	len = strlen(line);
+	twidth = rp_text_width(s, line, len);
+
+	/* limit bar text to half of the screen */
+	if (twidth > (z = (s->width - (defaults.bar_x_padding * 2)) / 2))
+		twidth = z;
+
+	/* Why does draw_partial_string need a length - 1? */
+	draw_partial_string(s, line, len - 1, s->width -
+	    (defaults.bar_x_padding * 2) - twidth, 0, STYLE_NORMAL);
+}
+
 /*
  * Note that we use marked_message_internal to avoid resetting the alarm.
  */
@@ -239,9 +278,7 @@ update_window_names(rp_screen *s, char *fmt)
 	bar_buffer = sbuf_new(0);
 
 	if (s->bar_is_raised == BAR_IS_STICKY) {
-		get_current_window_in_fmt(defaults.sticky_fmt, bar_buffer);
-		marked_message_internal(sbuf_get(bar_buffer), 0, 0,
-		    BAR_IS_STICKY);
+		redraw_sticky_bar_text(s);
 	} else if (s->bar_is_raised == BAR_IS_WINDOW_LIST) {
 		delimiter = (defaults.window_list_style == STYLE_ROW) ?
 		    " " : "\n";
@@ -598,8 +635,7 @@ draw_box(rp_screen *s, int x, int y, int width, int height)
 	mask = GCForeground;
 	lgc = XCreateGC(dpy, s->root, mask, &lgv);
 
-	XFillRectangle(dpy, s->bar_window, lgc,
-	    x, y, width, height);
+	XFillRectangle(dpy, s->bar_window, lgc, x, y, width, height);
 	XFreeGC(dpy, lgc);
 }
 
@@ -701,4 +737,68 @@ free_bar(void)
 {
 	free(last_msg);
 	last_msg = NULL;
+}
+
+int
+bar_open_fifo(void)
+{
+	rp_glob_screen.bar_fifo_fd = open(rp_glob_screen.bar_fifo_path,
+	    O_RDONLY|O_NONBLOCK|O_CLOEXEC);
+	if (rp_glob_screen.bar_fifo_fd == -1) {
+		PRINT_ERROR(("failed opening newly-created bar FIFO at %s: %s\n",
+		    rp_glob_screen.bar_fifo_path, strerror(errno)));
+		rp_glob_screen.bar_fifo_fd = -1;
+		return 0;
+	}
+
+	return 1;
+}
+
+void
+bar_read_fifo(void)
+{
+	ssize_t ret;
+	int x, start;
+	char line[256];
+
+	PRINT_DEBUG(("bar FIFO data to read\n"));
+
+	if (bar_buf == NULL)
+		bar_buf = sbuf_new(sizeof(line));
+	if (bar_line == NULL)
+		bar_line = sbuf_new(sizeof(line));
+
+	for (;;) {
+		memset(line, 0, sizeof(line));
+		ret = read(rp_glob_screen.bar_fifo_fd, &line, sizeof(line));
+		if (ret < 1) {
+			if (ret == 0)
+				PRINT_DEBUG(("FIFO %d closed, re-opening\n",
+				    rp_glob_screen.bar_fifo_fd));
+			else if (ret == -1 && errno != EAGAIN)
+				PRINT_DEBUG(("error reading bar FIFO: %s\n",
+				    strerror(errno)));
+
+			close(rp_glob_screen.bar_fifo_fd);
+			bar_open_fifo();
+			break;
+		}
+
+		for (x = 0, start = 0; x < ret; x++) {
+			if (line[x] == '\0') {
+				sbuf_nconcat(bar_buf, line + start, x - start);
+				start = x + 1;
+				break;
+			} else if (line[x] == '\n') {
+				sbuf_nconcat(bar_buf, line + start, x - start);
+				sbuf_copy(bar_line, sbuf_get(bar_buf));
+				redraw_sticky_bar_text(rp_current_screen);
+				sbuf_clear(bar_buf);
+				start = x + 1;
+			}
+		}
+
+		if (x == ret)
+			sbuf_nconcat(bar_buf, line + start, x - start);
+	}
 }

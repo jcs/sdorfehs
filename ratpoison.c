@@ -25,6 +25,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xproto.h>
 #include <X11/cursorfont.h>
+#include <sys/stat.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -168,6 +169,29 @@ read_startup_files(const char *alt_rcfile)
 		fclose(fileptr);
 	}
 	return 0;
+}
+
+static int
+bar_mkfifo(void)
+{
+	const char *homedir;
+
+	homedir = get_homedir();
+	if (!homedir) {
+		PRINT_ERROR((PROGNAME ": no home directory!?\n"));
+		return 0;
+	}
+
+	rp_glob_screen.bar_fifo_path = xsprintf("%s/.ratpoison_bar", homedir);
+	unlink(rp_glob_screen.bar_fifo_path);
+
+	if (mkfifo(rp_glob_screen.bar_fifo_path, S_IRUSR|S_IWUSR) == -1) {
+		PRINT_ERROR(("failed creating bar FIFO at %s: %s\n",
+		    rp_glob_screen.bar_fifo_path, strerror(errno)));
+		return 0;
+	}
+
+	return bar_open_fifo();
 }
 
 /*
@@ -404,6 +428,9 @@ main(int argc, char *argv[])
 
 	/* Add RATPOISON to the environment */
 	putenv(xsprintf("RATPOISON=%s", argv[0]));
+
+	if (!bar_mkfifo())
+		return EXIT_FAILURE;
 
 	/* Setup ratpoison's internal structures */
 	init_defaults();

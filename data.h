@@ -169,6 +169,10 @@ struct rp_global_screen {
 
 	/* This numset is responsible for giving out numbers for each screen */
 	struct numset *numset;
+
+	/* The path to and open fd of our bar FIFO */
+	char *bar_fifo_path;
+	int bar_fifo_fd;
 };
 
 struct xrandr_info {
@@ -236,6 +240,8 @@ struct rp_screen {
 	rp_vscreen *current_vscreen;
 
 	rp_window *full_screen_win;
+
+	struct sbuf *bar_text;
 
 	/* This structure can exist in a list. */
 	struct list_head node;

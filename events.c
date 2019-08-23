@@ -33,6 +33,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <unistd.h>
+#include <poll.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 
@@ -1011,25 +1012,42 @@ handle_signals(void)
 void
 listen_for_events(void)
 {
-	int x_fd;
-	fd_set fds;
+	struct pollfd pfd[2];
+	int pollfifo = 1;
 
-	x_fd = ConnectionNumber(dpy);
-	FD_ZERO(&fds);
+	memset(&pfd, 0, sizeof(pfd));
+	pfd[0].fd = ConnectionNumber(dpy);
+	pfd[0].events = POLLIN;
+	pfd[1].fd = rp_glob_screen.bar_fifo_fd;
+	pfd[1].events = POLLIN;
 
 	/* Loop forever. */
 	for (;;) {
 		handle_signals();
 
-		/* Handle the next event. */
-		FD_SET(x_fd, &fds);
-		XFlush(dpy);
+		if (!XPending(dpy)) {
+			if (pollfifo && rp_glob_screen.bar_fifo_fd == -1)
+				pollfifo = 0;
+			else if (pollfifo)
+				pfd[1].fd = rp_glob_screen.bar_fifo_fd;
 
-		if (QLength(dpy) > 0
-		    || select(x_fd + 1, &fds, NULL, NULL, NULL) == 1) {
-			XNextEvent(dpy, &rp_current_event);
-			delegate_event(&rp_current_event);
-			XSync(dpy, False);
+			poll(pfd, pollfifo ? 2 : 1, INFTIM);
+
+			if (pollfifo && (pfd[1].revents & (POLLERR|POLLNVAL))) {
+				PRINT_ERROR(("error polling on FIFO\n"));
+				pollfifo = 0;
+				continue;
+			}
+
+			if (pollfifo && (pfd[1].revents & (POLLHUP|POLLIN)))
+				bar_read_fifo();
+
+			if (!XPending(dpy))
+				continue;
 		}
+
+		XNextEvent(dpy, &rp_current_event);
+		delegate_event(&rp_current_event);
+		XSync(dpy, False);
 	}
 }
