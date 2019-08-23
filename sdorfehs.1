@@ -82,7 +82,7 @@ or
 .Fl \-command
 in interactive mode.
 That means it will behave exactly as if called with
-.Ic C\-t \&:
+.Ic C\-a \&:
 like prompting for missing arguments and things like that.
 .It Fl s , Fl \-screen Ar number
 Only use the specified screen.
@@ -91,31 +91,33 @@ Only use the specified screen.
 To avoid conflicts with other programs, all default
 .Nm
 key bindings start with an escape key which, by default, is
-.Ic C\-t
-(Control\-t).
+.Ic C\-a
+(Control\-a).
 Some important default key bindings:
 .Bl -tag -width Ds
-.It Ic C\-t \&?
+.It Ic C\-a \&?
 Show key bindings
-.It Ic C\-t c
+.It Ic C\-a a
+Send a Control\-a to the current window
+.It Ic C\-a c
 Start an X terminal
-.It Ic C\-t n
+.It Ic C\-a n
 Switch to next window
-.It Ic C\-t p
+.It Ic C\-a p
 Switch to previous window
-.It Ic C\-t 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+.It Ic C\-a 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 Switch to window number 1 | 2 | ...
-.It Ic C\-t k
+.It Ic C\-a k
 Close the current window
-.It Ic C\-t K
+.It Ic C\-a K
 XKill the current application
-.It Ic C\-t s | S
+.It Ic C\-a s | S
 Split the current frame into two vertical | horizontal ones
-.It Ic C\-t Tab | Left | Up | Right | Down
+.It Ic C\-a Tab | Left | Up | Right | Down
 Switch to the next | left | top | right | bottom frame.
-.It Ic C\-t Q
+.It Ic C\-a Q
 Make the current frame the only one
-.It Ic C\-t \&:
+.It Ic C\-a \&:
 Execute a
 .Nm
 command
@@ -126,11 +128,11 @@ commands in the next section.
 .Sh COMMANDS AND DEFAULT ALIASES
 .Bl -tag -width Ds
 .It Ic abort
-.Pq Ic C\-t C\-g
+.Pq Ic C\-a C\-g
 Do nothing and that successfully.
 .Po
 Useful if you pressed
-.Ic C\-t
+.Ic C\-a
 in error
 .Pc .
 .It Ic addhook Ar event command
@@ -147,7 +149,7 @@ Run after a window is withdrawn.
 Run after a new window is mapped.
 .It Cm key
 Run whenever a top level key is pressed (by default
-.Ic C\-t ) .
+.Ic C\-a ) .
 .It Cm quit
 Run before exiting
 .Nm .
@@ -175,7 +177,7 @@ as new way to call
 alias for
 .Qq Ic definekey Li root Ar key command
 .It Ic banish
-.Pq Ic C\-t b
+.Pq Ic C\-a b
 Banish the rat cursor to the lower right corner of the screen.
 .It Ic banishrel
 Banish the rat cursor to the lower right corner of the current window.
@@ -204,7 +206,7 @@ but switch to the previous window with another resource class than the
 current one.
 (That means the previous window belonging to another type of application
 than the current one.)
-.It Ic colon Ar sdorfehs\-command Pq Ic C\-t \&:
+.It Ic colon Ar sdorfehs\-command Pq Ic C\-a \&:
 Execute
 .Ar sdorfehs\-command
 interactively.
@@ -214,7 +216,7 @@ Like
 .Ic other
 but switch to the window of the current group that was last accessed and
 has another resource class but is not currently visible.
-.It Ic curframe Pq Ic C\-t F
+.It Ic curframe Pq Ic C\-a F
 Show a bar marking the current frame.
 .It Ic definekey Ar keymap key command
 Add a new key binding in
@@ -226,14 +228,14 @@ to execute
 Default keymaps are
 .Li top
 normally only containing
-.Ic C\-t ,
+.Ic C\-a ,
 which reads a key from
 .Li root ,
 containing all the normal commands.
 .Pp
 Note that you have to describe ":" by "colon", "!" by "exclam" and so on.
 If you cannot guess a name of a key, try either
-.Ic C\-t Ar key
+.Ic C\-a Ar key
 and look at the error message, or try
 .Ic :describekey Li root
 and pressing the key.
@@ -249,7 +251,7 @@ frame instead.
 .Pp
 If no argument is given, toggle the current dedicateness.
 By default no windows are dedicated.
-.It Ic delete Pq Ic C\-t k
+.It Ic delete Pq Ic C\-a k
 Close the current window.
 .It Ic delkmap Ar keymap
 Deletes the keymap named
@@ -312,19 +314,19 @@ was called with an argument other than
 .Ar top
 that will be used instead of
 .Ar top . )
-.It Ic exchangedown Pq Ic C\-t C\-Down
+.It Ic exchangedown Pq Ic C\-a C\-Down
 Exchange the window in the current frame with the window in the frame
 below the current frame.
-.It Ic exchangeleft Pq Ic C\-t C\-Left
+.It Ic exchangeleft Pq Ic C\-a C\-Left
 Exchange the window in the current frame with the window in the frame
 left of the current frame.
-.It Ic exchangeright Pq Ic C\-t C\-Right
+.It Ic exchangeright Pq Ic C\-a C\-Right
 Exchange the window in the current frame with the window in the frame
 right of the current frame.
-.It Ic exchangeup Pq Ic C\-t C\-Up
+.It Ic exchangeup Pq Ic C\-a C\-Up
 Exchange the window in the current frame with the window in the frame
 above the current frame.
-.It Ic exec Ar shell\-command Pq Ic C\-t \&!
+.It Ic exec Ar shell\-command Pq Ic C\-a \&!
 Spawn a shell executing
 .Ar shell\-command .
 .It Ic execa Ar shell\-command
@@ -345,26 +347,26 @@ Output the defining data for all frames of the current screen, or
 for screen number
 .Ar screenno
 if this is specified.
-.It Ic focus Pq Ic C\-t Tab
+.It Ic focus Pq Ic C\-a Tab
 Focus the next frame.
 .It Ic focuslast
 Switch to the last selected focus.
-.It Ic focusleft Pq Ic C\-t Left
+.It Ic focusleft Pq Ic C\-a Left
 Switch to the frame to the left of the current one.
-.It Ic focusdown Pq Ic C\-t Down
+.It Ic focusdown Pq Ic C\-a Down
 Switch to the frame beneath the current one.
-.It Ic focusright Pq Ic C\-t Right
+.It Ic focusright Pq Ic C\-a Right
 Switch to the frame to the right of the current one.
 .It Ic focusprev
 Focus the previous frame.
-.It Ic focusup Pq Ic C\-t Up
+.It Ic focusup Pq Ic C\-a Up
 Switch to the frame above the current one.
 .It Ic frestore Ar frames
 Replace the current frames with the ones specified in
 .Ar frames
 in the format as generated by
 .Ic fdump .
-.It Ic fselect Oo Ar frameno Oc Pq Ic C\-t f
+.It Ic fselect Oo Ar frameno Oc Pq Ic C\-a f
 If an argument is supplied, switch to a frame given by number
 .Ar frameno .
 .Pp
@@ -440,7 +442,7 @@ If the optional parameter
 is given, list all keybindings in this keymap, otherwise list all key
 bindings in keymap
 .Li root .
-.It Ic hsplit Oo Ar l Ns Li / Ns Ar p | Oo Li \- Oc Ns Ar pixels Oc Pq Ic C\-t S
+.It Ic hsplit Oo Ar l Ns Li / Ns Ar p | Oo Li \- Oc Ns Ar pixels Oc Pq Ic C\-a S
 Split the current frame into left frame and a right frame.
 If no parameter is given, split in halves.
 If two numbers separated by a slash
@@ -470,7 +472,7 @@ but switch to the next window with the same resource class as the
 current one.
 (That means the next window belonging to the same application
 as the current one.)
-.It Ic info Pq Ic C\-t i
+.It Ic info Pq Ic C\-a i
 Output the current the width, height, window number and window name of
 the current window.
 .Po
@@ -489,9 +491,9 @@ Like
 .Ic other
 but switch to the window of the current group that was last accessed and
 has the same resource class but is not currently visible.
-.It Ic kill Pq Ic C\-t K
+.It Ic kill Pq Ic C\-a K
 Close the X-connection of the X-client responsible for the current window.
-.It Ic lastmsg Pq Ic C\-t m
+.It Ic lastmsg Pq Ic C\-a m
 Reshow the last message.
 .It Ic link Ar key Op Ar keymap
 Do what
@@ -509,9 +511,9 @@ List all commands specified with
 to be executed when even
 .Ar event
 occurs.
-.It Ic meta Oo Ar key Oc Pq Ic C\-t t
+.It Ic meta Oo Ar key Oc Pq Ic C\-a t
 Send the escape key (that which normally is
-.Ic C\-t )
+.Ic C\-a )
 to the current window.
 If a
 .Ar key
@@ -526,9 +528,9 @@ This keymap can be used to add new key-command mappings to it with
 .Ic definekey
 and can be called with
 .Ic readkey .
-.It Ic next Pq Ic C\-t Return | C\-t n | C\-t space
+.It Ic next Pq Ic C\-a Return | C\-a n | C\-a space
 Switch to the next window in the current group.
-.It Ic nextscreen Pq Ic C\-t N
+.It Ic nextscreen Pq Ic C\-a N
 Switch to the next screen. (If you have multiple physical ones.)
 .It Ic number Ar new Op Ar old
 Give the number
@@ -536,15 +538,15 @@ Give the number
 to the window with the number
 .Ar old
 or the current window.
-.It Ic only Pq Ic C\-t Q
+.It Ic only Pq Ic C\-a Q
 Remove all frames on the current screen except the current frame and
 maximize this one to the size of the whole screen.
-.It Ic other Pq Ic C\-t C\-t
+.It Ic other Pq Ic C\-a C\-a
 Switch to the window of the current group that was last
 accessed but is not currently visible.
-.It Ic prev Pq Ic C\-t p
+.It Ic prev Pq Ic C\-a p
 Switch to the previous window in the current group.
-.It Ic prevscreen Pq Ic C\-t P
+.It Ic prevscreen Pq Ic C\-a P
 Switch to the previous screen. (If you have multiple physical ones.)
 .It Ic prompt Op Ar prompt
 .Nm
@@ -593,7 +595,7 @@ will change the rat cursor to a square if
 is set.
 This command is perhaps best described with its usage in the default
 configuration: by pressing
-.Ic C\-t ,
+.Ic C\-a ,
 which is the only key in the keymap
 top ,
 the command
@@ -603,13 +605,13 @@ The next key then executes the command in keymap
 .Li root
 belonging to
 this command.
-.It Ic redisplay Pq Ic C\-t l
+.It Ic redisplay Pq Ic C\-a l
 Extend the current window to the whole size of its current frame and
 redisplay it.
 (Useful to redisplay normal windows or bring transient windows to the
 full size of the frame as only normal windows are maximized by
 .Nm )
-.It Ic redo Pq Ic C\-t U
+.It Ic redo Pq Ic C\-a U
 Revert the last
 .Ic undo
 of frame changes.
@@ -624,10 +626,10 @@ attached to it.)
 Use
 .Qq Ic listhook Ar hook
 to get a list of all attached commands.
-.It Ic remove Pq Ic C\-t R
+.It Ic remove Pq Ic C\-a R
 Remove the current frame and extend some frames around to fill the
 remaining gap.
-.It Ic resize Oo Ar deltax deltay Oc Pq Ic C\-t r
+.It Ic resize Oo Ar deltax deltay Oc Pq Ic C\-a r
 If
 .Ar deltax
 and
@@ -669,7 +671,7 @@ The screens are separated by commas.
 Each screen is shown as 6 values: its number, its x-coordinate, its
 y-coordinate, its width, its height and if it is currently selected
 (1=true, 0=false).
-.It Ic select ( Cm \- | Ar name | Ar number ) Pq Ic C\-t \&'
+.It Ic select ( Cm \- | Ar name | Ar number ) Pq Ic C\-a \&'
 If a number is given, switch to the window with number
 .Ar number .
 If a name is given, switch to the window in the current group with
@@ -716,7 +718,7 @@ in the format as generated by
 .Ic sfdump .
 .It Ic shrink
 Shrink the current frame to the size of the current window with in.
-.It Ic split Oo Ar split Oc Pq Ic C\-t s
+.It Ic split Oo Ar split Oc Pq Ic C\-a s
 alias for
 .Ic vsplit
 .It Ic source Ar file
@@ -729,13 +731,13 @@ command.
 Switch to the screen
 .Ar screennumber .
 (If you have multiple physical ones.)
-.It Ic swap Ar dest-frame Oo Ar src-frame Oc Pq Ic C\-t x
+.It Ic swap Ar dest-frame Oo Ar src-frame Oc Pq Ic C\-a x
 Exchange the window in
 .Ar src\-frame
 (or the current frame if there is no second argument) with the window
 .Ar dest\-frame
 (or ask interactively which frame to swap with if there is no argument).
-.It Ic title Ar newname Pq Ic C\-t A
+.It Ic title Ar newname Pq Ic C\-a A
 Overwrite the title of the current window with
 .Ar newname .
 All following
@@ -752,7 +754,7 @@ Remove the binding for
 .Ar key
 from
 .Ar keymap .
-.It Ic undo Pq Ic C\-t _ , C\-t u
+.It Ic undo Pq Ic C\-a _ , C\-a u
 Un\-do the last change to the frameset.
 (Like splitting, resizing, deleting, ...)
 .Pp
@@ -777,7 +779,7 @@ from the list of environment variables.
 Spawn a shell executing
 .Ar cmdline
 after showing a message with the command.
-.It Ic version Pq Ic C\-t v
+.It Ic version Pq Ic C\-a v
 Output version and compile time information.
 .It Ic vselect Oo Ar vscreenno Oc
 Switch to the virtual screen numbered
@@ -785,7 +787,7 @@ Switch to the virtual screen numbered
 .It Ic vmove Oo Ar vscreenno Oc
 Move the current window to the virtual screen numbered
 .Ar vscreenno .
-.It Ic vsplit Oo Ar l Ns Li / Ns Ar p | Ar "pixels-from-top" | Li \- Ns Ar "pixels-from-bottom" Oc Pq Ic C\-t s
+.It Ic vsplit Oo Ar l Ns Li / Ns Ar p | Ar "pixels-from-top" | Li \- Ns Ar "pixels-from-bottom" Oc Pq Ic C\-a s
 Split the current frame into upper frame and a lower frame.
 If no parameter is given, split in halves.
 If two numbers separated by a slash
@@ -807,7 +809,7 @@ wide or the upper one
 high, depending whether there is a
 .Dq Li \-
 in front of the number or not.
-.It Ic windows Oo Ar format Oc Pq Ic C\-t w
+.It Ic windows Oo Ar format Oc Pq Ic C\-a w
 In interactive mode,
 show the list of all windows in the current group for the duration
 specified by the variable
@@ -911,7 +913,7 @@ Default is
 Select the location where message and prompt bars appear.
 .Pp
 Default is
-.Li ne .
+.Li nw .
 .It Cm barinpadding Li 0 | 1
 If there is padding, determines whether the bar appears at the edge of
 the screen
@@ -930,7 +932,7 @@ and vertical padding to
 .Ar y .
 .Pp
 Default is
-.Li 4 0 .
+.Li 14 10 .
 .It Cm barsticky Li 0 | 1
 When set to
 .Li 1 ,
@@ -940,14 +942,14 @@ formatted with
 .Ic stickyfmt .
 .Pp
 Default is
-.Li 0 .
+.Li 1 .
 .It Cm bgcolor Ar color
 The background color of the windows
 .Nm
 creates.
 .Pp
 Default is
-.Li white .
+.Li black .
 .It Cm border Ar pixels
 Selects how thick the frame around windows is.
 .Pp
@@ -964,7 +966,7 @@ The foreground color of the windows
 creates.
 .Pp
 Default is
-.Li black .
+.Li #eeeee .
 .It Cm font Ar font
 Make
 .Nm
@@ -1008,7 +1010,7 @@ Specify the number of pixels surrounding each frame, except for the outer
 edges which border the screen.
 .Pp
 Default is
-.Li 0 .
+.Li 20 .
 .It Cm historysize Ar number
 Specify maximum number of values kept in input history.
 .Pp
@@ -1049,6 +1051,8 @@ The duration the message window is shown.
 If
 .Ar seconds
 is zero, wait infinitely.
+.Pp
+Default is 3.
 .It Cm onlyborder Li 0 | 1
 Determine whether to show borders
 .Pq Li 1

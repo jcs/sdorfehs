@@ -134,7 +134,9 @@ read_startup_files(const char *alt_rcfile)
 		set_close_on_exec(fileno(fileptr));
 		read_rc_file(fileptr);
 		fclose(fileptr);
+		return 1;
 	}
+
 	return 0;
 }
 
@@ -212,13 +214,13 @@ init_defaults(void)
 	defaults.input_window_size = 200;
 	defaults.window_border_width = 1;
 	defaults.only_border = 1;
-	defaults.bar_x_padding = 4;
-	defaults.bar_y_padding = 0;
-	defaults.bar_location = NorthEastGravity;
-	defaults.bar_timeout = 5;
-	defaults.bar_border_width = 1;
+	defaults.bar_x_padding = 14;
+	defaults.bar_y_padding = 10;
+	defaults.bar_location = NorthWestGravity;
+	defaults.bar_timeout = 3;
+	defaults.bar_border_width = 0;
 	defaults.bar_in_padding = 0;
-	defaults.bar_sticky = 0;
+	defaults.bar_sticky = 1;
 
 	defaults.frame_indicator_timeout = 1;
 	defaults.frame_resize_unit = 10;
@@ -230,8 +232,8 @@ init_defaults(void)
 
 	defaults.font_string = xstrdup(DEFAULT_XFT_FONT);
 
-	defaults.fgcolor_string = xstrdup("black");
-	defaults.bgcolor_string = xstrdup("white");
+	defaults.fgcolor_string = xstrdup("#eeeeee");
+	defaults.bgcolor_string = xstrdup("black");
 	defaults.fwcolor_string = xstrdup("black");
 	defaults.bwcolor_string = xstrdup("black");
 
@@ -259,7 +261,7 @@ init_defaults(void)
 	else
 		defaults.vscreens = 5;
 
-	defaults.gap = 0;
+	defaults.gap = 20;
 
 	defaults.ignore_resize_hints = 0;
 }
@@ -407,8 +409,15 @@ main(int argc, char *argv[])
 
 	scanwins();
 
-	if (read_startup_files(alt_rcfile) == -1)
+	c = read_startup_files(alt_rcfile);
+	if (c == -1)
 		return EXIT_FAILURE;
+	else if (c == 0) {
+		/* No config file, just do something basic. */
+		cmdret *result;
+		if ((result = command(0, "hsplit")))
+			cmdret_free(result);
+	}
 
 	/* Indicate to the user that we have booted. */
 	if (defaults.startup_message)
