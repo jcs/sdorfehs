@@ -386,7 +386,7 @@ check_child_procs(void)
 }
 
 void
-chld_handler(int signum UNUSED)
+chld_handler(int signum)
 {
 	int serrno;
 

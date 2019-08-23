@@ -37,19 +37,19 @@
 #include "sdorfehs.h"
 
 static void
-sighandler(int signum UNUSED)
+sighandler(int signum)
 {
 	kill_signalled++;
 }
 
 static void
-hup_handler(int signum UNUSED)
+hup_handler(int signum)
 {
 	hup_signalled++;
 }
 
 static void
-alrm_handler(int signum UNUSED)
+alrm_handler(int signum)
 {
 	alarm_signalled++;
 }

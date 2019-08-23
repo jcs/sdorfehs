@@ -157,7 +157,7 @@ screen_number(int number)
 }
 
 static int
-screen_cmp(void *priv UNUSED, struct list_head *a, struct list_head *b)
+screen_cmp(void *priv, struct list_head *a, struct list_head *b)
 {
 	rp_screen *sc_a = container_of(a, typeof(*sc_a), node);
 	rp_screen *sc_b = container_of(b, typeof(*sc_b), node);

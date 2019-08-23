@@ -1224,14 +1224,14 @@ cmd_unmanage(int interactive, struct cmdarg **args)
 
 /* Clear the unmanaged window list */
 cmdret *
-cmd_clrunmanaged(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_clrunmanaged(int interactive, struct cmdarg **args)
 {
 	clear_unmanaged_list();
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_undefinekey(int interactive UNUSED, struct cmdarg **args)
+cmd_undefinekey(int interactive, struct cmdarg **args)
 {
 	cmdret *ret = NULL;
 	rp_keymap *map;
@@ -1264,7 +1264,7 @@ cmd_undefinekey(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_definekey(int interactive UNUSED, struct cmdarg **args)
+cmd_definekey(int interactive, struct cmdarg **args)
 {
 	cmdret *ret = NULL;
 	rp_keymap *map;
@@ -1300,7 +1300,7 @@ cmd_definekey(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_source(int interactive UNUSED, struct cmdarg **args)
+cmd_source(int interactive, struct cmdarg **args)
 {
 	FILE *fileptr;
 
@@ -1316,7 +1316,7 @@ cmd_source(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_meta(int interactive UNUSED, struct cmdarg **args)
+cmd_meta(int interactive, struct cmdarg **args)
 {
 	XEvent ev;
 
@@ -1359,7 +1359,7 @@ cmd_meta(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_prev(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_prev(int interactive, struct cmdarg **args)
 {
 	rp_window *cur, *win;
 	cur = current_window();
@@ -1377,7 +1377,7 @@ cmd_prev(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_prev_frame(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_prev_frame(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -1391,7 +1391,7 @@ cmd_prev_frame(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_next(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_next(int interactive, struct cmdarg **args)
 {
 	rp_window *cur, *win;
 	cur = current_window();
@@ -1409,7 +1409,7 @@ cmd_next(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_next_frame(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_next_frame(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -1423,7 +1423,7 @@ cmd_next_frame(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_other(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_other(int interactive, struct cmdarg **args)
 {
 	rp_window *w;
 
@@ -1456,7 +1456,7 @@ string_to_positive_int(char *str)
 }
 
 static struct list_head *
-trivial_completions(char *str UNUSED)
+trivial_completions(char *str)
 {
 	struct list_head *list;
 
@@ -1468,7 +1468,7 @@ trivial_completions(char *str UNUSED)
 }
 
 static struct list_head *
-keymap_completions(char *str UNUSED)
+keymap_completions(char *str)
 {
 	rp_keymap *cur;
 	struct list_head *list;
@@ -1489,7 +1489,7 @@ keymap_completions(char *str UNUSED)
 }
 
 static struct list_head *
-window_completions(char *str UNUSED)
+window_completions(char *str)
 {
 	rp_window_elem *cur;
 	struct list_head *list;
@@ -1581,7 +1581,7 @@ cmd_select(int interactive, struct cmdarg **args)
 }
 
 cmdret *
-cmd_rename(int interactive UNUSED, struct cmdarg **args)
+cmd_rename(int interactive, struct cmdarg **args)
 {
 	if (current_window() == NULL)
 		return cmdret_new(RET_FAILURE, NULL);
@@ -1598,7 +1598,7 @@ cmd_rename(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_delete(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_delete(int interactive, struct cmdarg **args)
 {
 	XEvent ev;
 	int status;
@@ -1621,7 +1621,7 @@ cmd_delete(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_kill(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_kill(int interactive, struct cmdarg **args)
 {
 	if (current_window() == NULL)
 		return cmdret_new(RET_FAILURE, NULL);
@@ -1634,7 +1634,7 @@ cmd_kill(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_version(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_version(int interactive, struct cmdarg **args)
 {
 	return cmdret_new(RET_SUCCESS, "%s", PROGNAME " " VERSION);
 }
@@ -1760,7 +1760,7 @@ read_keydesc(struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
 }
 
 static struct list_head *
-group_completions(char *str UNUSED)
+group_completions(char *str)
 {
 	struct list_head *list;
 	rp_group *cur;
@@ -1792,7 +1792,7 @@ group_completions(char *str UNUSED)
 }
 
 static struct list_head *
-colon_completions(char *str UNUSED)
+colon_completions(char *str)
 {
 	int i;
 	struct user_command *uc;
@@ -2204,7 +2204,7 @@ read_group(struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
 }
 
 static struct list_head *
-hook_completions(char *str UNUSED)
+hook_completions(char *str)
 {
 	struct list_head *list;
 	struct rp_hook_db_entry *entry;
@@ -2269,7 +2269,7 @@ find_variable(char *str)
 }
 
 static struct list_head *
-var_completions(char *str UNUSED)
+var_completions(char *str)
 {
 	struct list_head *list;
 	struct set_var *cur;
@@ -2767,7 +2767,7 @@ done:
 }
 
 cmdret *
-cmd_colon(int interactive UNUSED, struct cmdarg **args)
+cmd_colon(int interactive, struct cmdarg **args)
 {
 	cmdret *result;
 	char *input;
@@ -2789,21 +2789,21 @@ cmd_colon(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_exec(int interactive UNUSED, struct cmdarg **args)
+cmd_exec(int interactive, struct cmdarg **args)
 {
 	spawn(ARG_STRING(0), 0, current_frame(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_execa(int interactive UNUSED, struct cmdarg **args)
+cmd_execa(int interactive, struct cmdarg **args)
 {
 	spawn(ARG_STRING(0), 0, NULL);
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_execf(int interactive UNUSED, struct cmdarg **args)
+cmd_execf(int interactive, struct cmdarg **args)
 {
 	spawn(ARG_STRING(1), 0, ARG(0, frame));
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -2862,7 +2862,7 @@ spawn(char *cmd, int raw, rp_frame *frame)
 }
 
 cmdret *
-cmd_quit(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_quit(int interactive, struct cmdarg **args)
 {
 	kill_signalled = 1;
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -2870,7 +2870,7 @@ cmd_quit(int interactive UNUSED, struct cmdarg **args UNUSED)
 
 /* Assign a new number to a window ala screen's number command. */
 cmdret *
-cmd_number(int interactive UNUSED, struct cmdarg **args)
+cmd_number(int interactive, struct cmdarg **args)
 {
 	int old_number, new_number;
 	rp_window_elem *other_win, *win;
@@ -2942,14 +2942,14 @@ cmd_windows(int interactive, struct cmdarg **args)
 }
 
 cmdret *
-cmd_abort(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_abort(int interactive, struct cmdarg **args)
 {
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 /* Redisplay the current window by sending 2 resize events. */
 cmdret *
-cmd_redisplay(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_redisplay(int interactive, struct cmdarg **args)
 {
 	force_maximize(current_window());
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -2957,7 +2957,7 @@ cmd_redisplay(int interactive UNUSED, struct cmdarg **args UNUSED)
 
 /* Reassign the prefix key. */
 cmdret *
-cmd_escape(int interactive UNUSED, struct cmdarg **args)
+cmd_escape(int interactive, struct cmdarg **args)
 {
 	struct rp_key *key;
 	rp_action *action;
@@ -3005,7 +3005,7 @@ cmd_escape(int interactive UNUSED, struct cmdarg **args)
 
 /* User accessible call to display the passed in string. */
 cmdret *
-cmd_echo(int interactive UNUSED, struct cmdarg **args)
+cmd_echo(int interactive, struct cmdarg **args)
 {
 	marked_message_printf(0, 0, "%s", ARG_STRING(0));
 
@@ -3032,7 +3032,7 @@ read_split(char *str, int max, int *p)
 }
 
 cmdret *
-cmd_v_split(int interactive UNUSED, struct cmdarg **args)
+cmd_v_split(int interactive, struct cmdarg **args)
 {
 	cmdret *ret;
 	rp_frame *frame;
@@ -3060,7 +3060,7 @@ cmd_v_split(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_h_split(int interactive UNUSED, struct cmdarg **args)
+cmd_h_split(int interactive, struct cmdarg **args)
 {
 	cmdret *ret;
 	rp_frame *frame;
@@ -3088,7 +3088,7 @@ cmd_h_split(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_only(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_only(int interactive, struct cmdarg **args)
 {
 	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
 	remove_all_splits();
@@ -3098,7 +3098,7 @@ cmd_only(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_remove(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_remove(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -3119,7 +3119,7 @@ cmd_remove(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_shrink(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_shrink(int interactive, struct cmdarg **args)
 {
 	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
 	resize_shrink_to_window(current_frame(rp_current_vscreen));
@@ -3289,7 +3289,7 @@ set_resizeunit(struct cmdarg **args)
 
 /* banish the rat pointer */
 cmdret *
-cmd_banish(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_banish(int interactive, struct cmdarg **args)
 {
 	rp_screen *s;
 
@@ -3302,7 +3302,7 @@ cmd_banish(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_banishrel(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_banishrel(int interactive, struct cmdarg **args)
 {
 	rp_screen *s = rp_current_screen;
 	rp_window *w = current_window();
@@ -3319,7 +3319,7 @@ cmd_banishrel(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_ratinfo(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_ratinfo(int interactive, struct cmdarg **args)
 {
 	rp_screen *s;
 	Window root_win, child_win;
@@ -3334,7 +3334,7 @@ cmd_ratinfo(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_ratrelinfo(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_ratrelinfo(int interactive, struct cmdarg **args)
 {
 	rp_screen *s;
 	rp_window *rpw;
@@ -3361,7 +3361,7 @@ cmd_ratrelinfo(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_ratwarp(int interactive UNUSED, struct cmdarg **args)
+cmd_ratwarp(int interactive, struct cmdarg **args)
 {
 	rp_screen *s;
 
@@ -3372,7 +3372,7 @@ cmd_ratwarp(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_ratrelwarp(int interactive UNUSED, struct cmdarg **args)
+cmd_ratrelwarp(int interactive, struct cmdarg **args)
 {
 	XWarpPointer(dpy, None, None, 0, 0, 0, 0, ARG(0, number),
 	    ARG(1, number));
@@ -3380,7 +3380,7 @@ cmd_ratrelwarp(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_ratclick(int interactive UNUSED, struct cmdarg **args)
+cmd_ratclick(int interactive, struct cmdarg **args)
 {
 	int button = 1;
 
@@ -3397,7 +3397,7 @@ cmd_ratclick(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_rathold(int interactive UNUSED, struct cmdarg **args)
+cmd_rathold(int interactive, struct cmdarg **args)
 {
 	int button = 1;
 
@@ -3420,7 +3420,7 @@ cmd_rathold(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_curframe(int interactive, struct cmdarg **args UNUSED)
+cmd_curframe(int interactive, struct cmdarg **args)
 {
 	if (interactive) {
 		show_frame_indicator(1);
@@ -3629,7 +3629,7 @@ wingravity_to_string(int g)
 }
 
 cmdret *
-cmd_gravity(int interactive UNUSED, struct cmdarg **args)
+cmd_gravity(int interactive, struct cmdarg **args)
 {
 	int gravity;
 	rp_window *win;
@@ -4262,7 +4262,7 @@ set_resizefmt(struct cmdarg **args)
 }
 
 cmdret *
-cmd_setenv(int interactive UNUSED, struct cmdarg **args)
+cmd_setenv(int interactive, struct cmdarg **args)
 {
 	const char *var = ARG_STRING(0), *val = ARG_STRING(1);
 
@@ -4275,7 +4275,7 @@ cmd_setenv(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_getenv(int interactive UNUSED, struct cmdarg **args)
+cmd_getenv(int interactive, struct cmdarg **args)
 {
 	char *value;
 
@@ -4290,7 +4290,7 @@ cmd_getenv(int interactive UNUSED, struct cmdarg **args)
  * Thanks to Gergely Nagy <algernon@debian.org> for the original patch.
  */
 cmdret *
-cmd_chdir(int interactive UNUSED, struct cmdarg **args)
+cmd_chdir(int interactive, struct cmdarg **args)
 {
 	const char *dir;
 
@@ -4314,7 +4314,7 @@ cmd_chdir(int interactive UNUSED, struct cmdarg **args)
  * Thanks to Gergely Nagy <algernon@debian.org> for the original patch.
  */
 cmdret *
-cmd_unsetenv(int interactive UNUSED, struct cmdarg **args)
+cmd_unsetenv(int interactive, struct cmdarg **args)
 {
 	const char *var = ARG_STRING(0);
 
@@ -4333,7 +4333,7 @@ cmd_unsetenv(int interactive UNUSED, struct cmdarg **args)
  * Thanks to Gergely Nagy <algernon@debian.org> for the original patch.
  */
 cmdret *
-cmd_info(int interactive UNUSED, struct cmdarg **args)
+cmd_info(int interactive, struct cmdarg **args)
 {
 	struct sbuf *buf;
 	if (current_window() != NULL) {
@@ -4378,14 +4378,14 @@ cmd_info(int interactive UNUSED, struct cmdarg **args)
  * Thanks to Gergely Nagy <algernon@debian.org> for the original patch.
  */
 cmdret *
-cmd_lastmsg(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_lastmsg(int interactive, struct cmdarg **args)
 {
 	show_last_message();
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_focusup(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_focusup(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -4398,7 +4398,7 @@ cmd_focusup(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_focusdown(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_focusdown(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -4411,7 +4411,7 @@ cmd_focusdown(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_focusleft(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_focusleft(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -4424,7 +4424,7 @@ cmd_focusleft(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_focusright(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_focusright(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -4437,7 +4437,7 @@ cmd_focusright(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_exchangeup(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_exchangeup(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -4448,7 +4448,7 @@ cmd_exchangeup(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_exchangedown(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_exchangedown(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -4459,7 +4459,7 @@ cmd_exchangedown(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_exchangeleft(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_exchangeleft(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -4470,7 +4470,7 @@ cmd_exchangeleft(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_exchangeright(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_exchangeright(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -4481,7 +4481,7 @@ cmd_exchangeright(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_swap(int interactive UNUSED, struct cmdarg **args)
+cmd_swap(int interactive, struct cmdarg **args)
 {
 	rp_vscreen *v;
 	rp_frame *dest_frame;
@@ -4502,7 +4502,7 @@ cmd_swap(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_restart(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_restart(int interactive, struct cmdarg **args)
 {
 	hup_signalled = 1;
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -4523,7 +4523,7 @@ set_startupmessage(struct cmdarg **args)
 }
 
 cmdret *
-cmd_focuslast(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_focuslast(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame = find_last_frame();
 
@@ -4613,7 +4613,7 @@ set_stickyfmt(struct cmdarg **args)
 }
 
 cmdret *
-cmd_alias(int interactive UNUSED, struct cmdarg **args)
+cmd_alias(int interactive, struct cmdarg **args)
 {
 	/* Add or update the alias. */
 	add_alias(ARG_STRING(0), ARG_STRING(1));
@@ -4621,7 +4621,7 @@ cmd_alias(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_unalias(int interactive UNUSED, struct cmdarg **args)
+cmd_unalias(int interactive, struct cmdarg **args)
 {
 	char *tmp;
 	int i;
@@ -4654,7 +4654,7 @@ cmd_unalias(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_nextscreen(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_nextscreen(int interactive, struct cmdarg **args)
 {
 	rp_screen *new_screen;
 	rp_frame *new_frame;
@@ -4674,7 +4674,7 @@ cmd_nextscreen(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_prevscreen(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_prevscreen(int interactive, struct cmdarg **args)
 {
 	rp_screen *new_screen;
 	rp_frame *new_frame;
@@ -4694,7 +4694,7 @@ cmd_prevscreen(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_sselect(int interactive UNUSED, struct cmdarg **args)
+cmd_sselect(int interactive, struct cmdarg **args)
 {
 	int new_screen;
 	rp_frame *new_frame;
@@ -4770,7 +4770,7 @@ fdump(rp_vscreen *vscreen)
 }
 
 cmdret *
-cmd_fdump(int interactively UNUSED, struct cmdarg **args)
+cmd_fdump(int interactively, struct cmdarg **args)
 {
 	rp_screen *screen;
 	cmdret *ret;
@@ -4887,14 +4887,14 @@ frestore(char *data, rp_vscreen *v)
 }
 
 cmdret *
-cmd_frestore(int interactively UNUSED, struct cmdarg **args)
+cmd_frestore(int interactively, struct cmdarg **args)
 {
 	push_frame_undo(rp_current_vscreen);	/* fdump to stack */
 	return frestore(ARG_STRING(0), rp_current_vscreen);
 }
 
 cmdret *
-cmd_verbexec(int interactive UNUSED, struct cmdarg **args)
+cmd_verbexec(int interactive, struct cmdarg **args)
 {
 	marked_message_printf(0, 0, "Running %s", ARG_STRING(0));
 	spawn(ARG_STRING(0), 0, current_frame(rp_current_vscreen));
@@ -4920,28 +4920,28 @@ set_winliststyle(struct cmdarg **args)
 }
 
 cmdret *
-cmd_gnext(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_gnext(int interactive, struct cmdarg **args)
 {
 	set_current_group(group_next_group(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_gprev(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_gprev(int interactive, struct cmdarg **args)
 {
 	set_current_group(group_prev_group(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_gother(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_gother(int interactive, struct cmdarg **args)
 {
 	set_current_group(group_last_group(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_gnew(int interactive UNUSED, struct cmdarg **args)
+cmd_gnew(int interactive, struct cmdarg **args)
 {
 	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
 		return cmdret_new(RET_FAILURE, "gnew: group already exists");
@@ -4950,7 +4950,7 @@ cmd_gnew(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_gnewbg(int interactive UNUSED, struct cmdarg **args)
+cmd_gnewbg(int interactive, struct cmdarg **args)
 {
 	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
 		return cmdret_new(RET_FAILURE, "gnewbg: group already exists");
@@ -4959,7 +4959,7 @@ cmd_gnewbg(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_gnumber(int interactive UNUSED, struct cmdarg **args)
+cmd_gnumber(int interactive, struct cmdarg **args)
 {
 	int old_number, new_number;
 	rp_group *other_g, *g;
@@ -5002,7 +5002,7 @@ cmd_gnumber(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_grename(int interactive UNUSED, struct cmdarg **args)
+cmd_grename(int interactive, struct cmdarg **args)
 {
 	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
 		return cmdret_new(RET_FAILURE, "grename: duplicate group name");
@@ -5031,7 +5031,7 @@ cmd_gselect(int interactive, struct cmdarg **args)
 
 /* Show all the groups, with the current one highlighted. */
 cmdret *
-cmd_groups(int interactive, struct cmdarg **args UNUSED)
+cmd_groups(int interactive, struct cmdarg **args)
 {
 	struct sbuf *group_list = NULL;
 	int dummy;
@@ -5053,7 +5053,7 @@ cmd_groups(int interactive, struct cmdarg **args UNUSED)
 
 /* Move a window to a different group. */
 cmdret *
-cmd_gmove(int interactive UNUSED, struct cmdarg **args)
+cmd_gmove(int interactive, struct cmdarg **args)
 {
 	if (current_window() == NULL)
 		return cmdret_new(RET_FAILURE, "gmove: no focused window");
@@ -5063,14 +5063,14 @@ cmd_gmove(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_gmerge(int interactive UNUSED, struct cmdarg **args)
+cmd_gmerge(int interactive, struct cmdarg **args)
 {
 	groups_merge(ARG(0, group), rp_current_group);
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_addhook(int interactive UNUSED, struct cmdarg **args)
+cmd_addhook(int interactive, struct cmdarg **args)
 {
 	struct list_head *hook;
 	struct sbuf *cmd;
@@ -5089,7 +5089,7 @@ cmd_addhook(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_remhook(int interactive UNUSED, struct cmdarg **args)
+cmd_remhook(int interactive, struct cmdarg **args)
 {
 	struct sbuf *cmd;
 
@@ -5103,7 +5103,7 @@ cmd_remhook(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_listhook(int interactive UNUSED, struct cmdarg **args)
+cmd_listhook(int interactive, struct cmdarg **args)
 {
 	cmdret *ret;
 	struct sbuf *buffer;
@@ -5133,7 +5133,7 @@ cmd_listhook(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_gdelete(int interactive UNUSED, struct cmdarg **args)
+cmd_gdelete(int interactive, struct cmdarg **args)
 {
 	rp_group *g;
 
@@ -5162,7 +5162,7 @@ cmd_gdelete(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_readkey(int interactive UNUSED, struct cmdarg **args)
+cmd_readkey(int interactive, struct cmdarg **args)
 {
 	char *keysym_name;
 	rp_action *key_action;
@@ -5199,7 +5199,7 @@ cmd_readkey(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_newkmap(int interactive UNUSED, struct cmdarg **args)
+cmd_newkmap(int interactive, struct cmdarg **args)
 {
 	rp_keymap *map;
 
@@ -5215,7 +5215,7 @@ cmd_newkmap(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_delkmap(int interactive UNUSED, struct cmdarg **args)
+cmd_delkmap(int interactive, struct cmdarg **args)
 {
 	rp_keymap *map, *top, *root;
 
@@ -5244,7 +5244,7 @@ set_framesels(struct cmdarg **args)
 }
 
 cmdret *
-cmd_set(int interactive UNUSED, struct cmdarg **args)
+cmd_set(int interactive, struct cmdarg **args)
 {
 	struct sbuf *scur;
 	struct cmdarg *acur;
@@ -5337,7 +5337,7 @@ failed:
 }
 
 cmdret *
-cmd_sfdump(int interactively UNUSED, struct cmdarg **args UNUSED)
+cmd_sfdump(int interactively, struct cmdarg **args)
 {
 	char screen_suffix[16];
 	cmdret *ret;
@@ -5370,7 +5370,7 @@ cmd_sfdump(int interactively UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_sfrestore(int interactively UNUSED, struct cmdarg **args)
+cmd_sfrestore(int interactively, struct cmdarg **args)
 {
 	char *copy, *ptr, *token;
 	rp_screen *screen;
@@ -5450,7 +5450,7 @@ cmd_sfrestore(int interactively UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_sdump(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_sdump(int interactive, struct cmdarg **args)
 {
 	cmdret *ret;
 	struct sbuf *s;
@@ -5608,7 +5608,7 @@ cmd_iprev(int interactive, struct cmdarg **args)
 }
 
 cmdret *
-cmd_cother(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_cother(int interactive, struct cmdarg **args)
 {
 	rp_window *cur, *w = NULL;
 
@@ -5625,7 +5625,7 @@ cmd_cother(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_iother(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_iother(int interactive, struct cmdarg **args)
 {
 	rp_window *cur, *w = NULL;
 
@@ -5643,7 +5643,7 @@ cmd_iother(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_undo(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_undo(int interactive, struct cmdarg **args)
 {
 	rp_frame_undo *cur;
 
@@ -5660,7 +5660,7 @@ cmd_undo(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_redo(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_redo(int interactive, struct cmdarg **args)
 {
 	rp_frame_undo *cur;
 	cmdret *ret;
@@ -5676,7 +5676,7 @@ cmd_redo(int interactive UNUSED, struct cmdarg **args UNUSED)
 }
 
 cmdret *
-cmd_prompt(int interactive UNUSED, struct cmdarg **args)
+cmd_prompt(int interactive, struct cmdarg **args)
 {
 	cmdret *ret;
 	char *output;
@@ -5715,7 +5715,7 @@ cmd_prompt(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_describekey(int interactive UNUSED, struct cmdarg **args)
+cmd_describekey(int interactive, struct cmdarg **args)
 {
 	char *keysym_name;
 	rp_action *key_action;
@@ -5761,7 +5761,7 @@ cmd_describekey(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_dedicate(int interactive UNUSED, struct cmdarg **args)
+cmd_dedicate(int interactive, struct cmdarg **args)
 {
 	rp_frame *f;
 
@@ -5786,14 +5786,14 @@ cmd_dedicate(int interactive UNUSED, struct cmdarg **args)
 }
 
 cmdret *
-cmd_putsel(int interactive UNUSED, struct cmdarg **args)
+cmd_putsel(int interactive, struct cmdarg **args)
 {
 	set_selection(ARG_STRING(0));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_getsel(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_getsel(int interactive, struct cmdarg **args)
 {
 	char *sel;
 	cmdret *ret;
@@ -5847,7 +5847,7 @@ cmd_vselect(int interactive, struct cmdarg **args)
 }
 
 cmdret *
-cmd_commands(int interactive UNUSED, struct cmdarg **args UNUSED)
+cmd_commands(int interactive, struct cmdarg **args)
 {
 	struct sbuf *sb;
 	struct user_command *cur;
