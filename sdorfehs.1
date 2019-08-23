@@ -29,7 +29,7 @@
 .Nd window manager without mouse dependency
 .Sh SYNOPSIS
 .Nm
-.Op Fl h
+.Op Fl hv
 .Nm
 .Op Fl d Ar dpy
 .Op Fl s Ar num
@@ -53,7 +53,7 @@ has a prefix map to minimize key clobbering.
 .Pp
 The options are as follows:
 .Bl -tag -width Bs
-.It Fl c , Fl \-command
+.It Fl c Ar command
 Send
 .Nm
 a command.
@@ -63,28 +63,27 @@ instance running as window manager for the given display/screen for this to
 work.
 Do not forget to quote the command if it contains spaces.
 For example:
+.Pp
 .Dl Nm Fl c Qq Ar "echo hello world"
-.It Fl d , Fl \-display Ar display
+.It Fl d Ar display
 Set the X display to use or send commands to.
-.It Fl f , Fl \-file Ar filename
+.It Fl f Ar filename
 Specify an alternate configuration file.
 If this is not given,
 .Nm
 will try
 .Pa $HOME/.config/sdorfehs/config
 and execute each command when starting up.
-.It Fl h , Fl \-help
+.It Fl h
 Show summary of options.
-.It Fl i , Fl \-interactive
+.It Fl i
 Execute commands given with
 .Fl c
-or
-.Fl \-command
 in interactive mode.
 That means it will behave exactly as if called with
 .Ic C\-a \&:
 like prompting for missing arguments and things like that.
-.It Fl s , Fl \-screen Ar number
+.It Fl s Ar number
 Only use the specified screen.
 .El
 .Sh KEY BINDINGS
@@ -1204,5 +1203,5 @@ Configuration file read at startup time, if present.
 .Sh AUTHORS
 .An -nosplit
 .Nm
-is derived from ratpoison originally written by
+is derived from ratpoison which was originally written by
 .An Shawn Betts Aq Mt sabetts@gmail.com .

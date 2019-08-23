@@ -36,19 +36,6 @@
 
 #include "sdorfehs.h"
 
-/* Command line options */
-static struct option sdorfehs_longopts[] =
-	{{"help", no_argument, 0, 'h'},
-	{"interactive", no_argument, 0, 'i'},
-	{"version", no_argument, 0, 'v'},
-	{"command", required_argument, 0, 'c'},
-	{"display", required_argument, 0, 'd'},
-	{"file", required_argument, 0, 'f'},
-	{0, 0, 0, 0},
-};
-
-static char sdorfehs_opts[] = "hvic:d:s:f:";
-
 static void
 sighandler(int signum UNUSED)
 {
@@ -99,13 +86,9 @@ handler(Display *d, XErrorEvent *e)
 static void
 print_help(void)
 {
-	printf("Help for %s %s\n\n", PROGNAME, VERSION);
-	printf("-h, --help            Display this help screen\n");
-	printf("-d, --display <dpy>   Set the X display to use\n");
-	printf("-c, --command <cmd>   Send " PROGNAME " a colon-command\n");
-	printf("-i, --interactive     Execute commands in interactive mode\n");
-	printf("-f, --file <file>     Specify an alternative configuration file\n\n");
-
+	printf("%s %s\n", PROGNAME, VERSION);
+	printf("usage: %s [-h]\n", PROGNAME);
+	printf("       %s [-d dpy] [-c cmd] [-i] [-f file]\n", PROGNAME);
 	exit(EXIT_SUCCESS);
 }
 
@@ -286,16 +269,8 @@ main(int argc, char *argv[])
 
 	/* Parse the arguments */
 	myargv = argv;
-	while (1) {
-		c = getopt_long(argc, argv, sdorfehs_opts, sdorfehs_longopts,
-		    NULL);
-		if (c == -1)
-			break;
-
+	while ((c = getopt(argc, argv, "c:d:hif:")) != -1) {
 		switch (c) {
-		case 'h':
-			print_help();
-			break;
 		case 'c':
 			cmd = xrealloc(cmd, sizeof(char *) * (cmd_count + 1));
 			cmd[cmd_count++] = xstrdup(optarg);
@@ -303,13 +278,15 @@ main(int argc, char *argv[])
 		case 'd':
 			display = optarg;
 			break;
-		case 'i':
-			interactive = 1;
-			break;
 		case 'f':
 			alt_rcfile = optarg;
 			break;
-
+		case 'h':
+			print_help();
+			break;
+		case 'i':
+			interactive = 1;
+			break;
 		default:
 			exit(EXIT_FAILURE);
 		}
