@@ -1,5 +1,5 @@
 /*
- * Ratpoison messages.
+ * Messages.
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -17,13 +17,13 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_MESSAGES_H
-#define _RATPOISON_MESSAGES_H 1
+#ifndef _SDORFEHS_MESSAGES_H
+#define _SDORFEHS_MESSAGES_H 1
 
 #define MESSAGE_NO_OTHER_WINDOW		"No other window"
 #define MESSAGE_NO_OTHER_FRAME		"No other frame"
 #define MESSAGE_NO_MANAGED_WINDOWS	"No managed windows"
-#define MESSAGE_UNKNOWN_COMMAND		"unknown command '%s'"
+#define MESSAGE_UNKNOWN_COMMAND		"Unknown command '%s'"
 #define MESSAGE_WINDOW_INFORMATION	"This is window %d (%s)"
 
 #define MESSAGE_RAISE_TRANSIENT		"Raise request from transient window %d (%s)"
@@ -48,8 +48,8 @@
 #define MESSAGE_PROMPT_SELECT_VAR	"Variable: "
 #define MESSAGE_PROMPT_VAR_VALUE	"Value: "
 
-#define MESSAGE_WELCOME			PROGNAME " " VERSION " - press \"%s %s\" for help"
+#define MESSAGE_WELCOME			"Welcome to " PROGNAME " - press \"%s %s\" for help"
 
 #define EMPTY_FRAME_MESSAGE		"Current Frame"
 
-#endif	/* ! _RATPOISON_MESSAGES_H */
+#endif	/* ! _SDORFEHS_MESSAGES_H */

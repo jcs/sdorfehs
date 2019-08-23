@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 #define VERTICALLY 0
 #define HORIZONTALLY 1

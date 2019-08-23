@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_NUMBER_H
-#define _RATPOISON_NUMBER_H 1
+#ifndef _SDORFEHS_NUMBER_H
+#define _SDORFEHS_NUMBER_H 1
 
 struct numset;
 
@@ -28,4 +28,4 @@ void numset_release(struct numset *ns, int n);
 int numset_request(struct numset *ns);
 int numset_add_num(struct numset *ns, int n);
 
-#endif	/* ! _RATPOISON_NUMBER_H */
+#endif	/* ! _SDORFEHS_NUMBER_H */

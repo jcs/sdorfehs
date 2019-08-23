@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_BAR_H
-#define _RATPOISON_BAR_H 1
+#ifndef _SDORFEHS_BAR_H
+#define _SDORFEHS_BAR_H 1
 
 void redraw_sticky_bar_text(rp_screen *s);
 void update_window_names(rp_screen *s, char *fmt);
@@ -41,4 +41,4 @@ void free_bar(void);
 int bar_open_fifo(void);
 void bar_read_fifo(void);
 
-#endif	/* ! _RATPOISON_BAR_H */
+#endif	/* ! _SDORFEHS_BAR_H */

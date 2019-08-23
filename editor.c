@@ -26,7 +26,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 /* bind functions */
 static edit_status editor_forward_char(rp_input_line *line);

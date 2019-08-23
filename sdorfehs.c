@@ -34,10 +34,10 @@
 #include <sys/wait.h>
 #include <ctype.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 /* Command line options */
-static struct option ratpoison_longopts[] =
+static struct option sdorfehs_longopts[] =
 	{{"help", no_argument, 0, 'h'},
 	{"interactive", no_argument, 0, 'i'},
 	{"version", no_argument, 0, 'v'},
@@ -47,7 +47,7 @@ static struct option ratpoison_longopts[] =
 	{0, 0, 0, 0},
 };
 
-static char ratpoison_opts[] = "hvic:d:s:f:";
+static char sdorfehs_opts[] = "hvic:d:s:f:";
 
 static void
 sighandler(int signum UNUSED)
@@ -97,20 +97,10 @@ handler(Display *d, XErrorEvent *e)
 }
 
 static void
-print_version(void)
-{
-	printf("%s %s\n", PROGNAME, VERSION);
-	printf("Copyright (C) 2000-2008 Shawn Betts\n\n");
-
-	exit(EXIT_SUCCESS);
-}
-
-static void
 print_help(void)
 {
 	printf("Help for %s %s\n\n", PROGNAME, VERSION);
 	printf("-h, --help            Display this help screen\n");
-	printf("-v, --version         Display the version\n");
 	printf("-d, --display <dpy>   Set the X display to use\n");
 	printf("-c, --command <cmd>   Send " PROGNAME " a colon-command\n");
 	printf("-i, --interactive     Execute commands in interactive mode\n");
@@ -123,42 +113,22 @@ static int
 read_startup_files(const char *alt_rcfile)
 {
 	FILE *fileptr = NULL;
+	char *config_dir, *filename;
 
-	if (alt_rcfile) {
-		if ((fileptr = fopen(alt_rcfile, "r")) == NULL) {
-			PRINT_ERROR((PROGNAME ": could not open %s (%s)\n",
-			    alt_rcfile, strerror(errno)));
-			return -1;
-		}
-	} else {
-		const char *homedir;
-		char *filename;
-
-		/* first check $HOME/.ratpoisonrc */
-		homedir = get_homedir();
-		if (!homedir)
-			PRINT_ERROR((PROGNAME ": no home directory!?\n"));
-		else {
-			filename = xsprintf("%s/.ratpoisonrc", homedir);
-			fileptr = fopen(filename, "r");
-			if (fileptr == NULL && errno != ENOENT)
-				PRINT_ERROR((PROGNAME ": could not open %s (%s)\n",
-					filename, strerror(errno)));
-			free(filename);
-		}
-
-		if (fileptr == NULL) {
-			/* couldn't open $HOME/.ratpoisonrc, fall back on
-			 * system config */
-			filename = xsprintf("%s/ratpoisonrc", SYSCONFDIR);
-
-			fileptr = fopen(filename, "r");
-			if (fileptr == NULL && errno != ENOENT)
-				PRINT_ERROR((PROGNAME ": could not open %s (%s)\n",
-					filename, strerror(errno)));
-			free(filename);
-		}
+	if (alt_rcfile && ((fileptr = fopen(alt_rcfile, "r")) == NULL)) {
+		PRINT_ERROR(("could not open %s (%s)\n",
+		    alt_rcfile, strerror(errno)));
+		return -1;
 	}
+
+	config_dir = get_config_dir();
+	filename = xsprintf("%s/config", config_dir);
+	fileptr = fopen(filename, "r");
+	if (fileptr == NULL && errno != ENOENT)
+		PRINT_ERROR(("could not open %s (%s)\n", filename,
+		    strerror(errno)));
+	free(config_dir);
+	free(filename);
 
 	if (fileptr != NULL) {
 		set_close_on_exec(fileno(fileptr));
@@ -171,15 +141,12 @@ read_startup_files(const char *alt_rcfile)
 static int
 bar_mkfifo(void)
 {
-	const char *homedir;
+	char *config_dir;
 
-	homedir = get_homedir();
-	if (!homedir) {
-		PRINT_ERROR((PROGNAME ": no home directory!?\n"));
-		return 0;
-	}
+	config_dir = get_config_dir();
+	rp_glob_screen.bar_fifo_path = xsprintf("%s/bar", config_dir);
+	free(config_dir);
 
-	rp_glob_screen.bar_fifo_path = xsprintf("%s/.ratpoison_bar", homedir);
 	unlink(rp_glob_screen.bar_fifo_path);
 
 	if (mkfifo(rp_glob_screen.bar_fifo_path, S_IRUSR|S_IWUSR) == -1) {
@@ -318,7 +285,7 @@ main(int argc, char *argv[])
 	/* Parse the arguments */
 	myargv = argv;
 	while (1) {
-		c = getopt_long(argc, argv, ratpoison_opts, ratpoison_longopts,
+		c = getopt_long(argc, argv, sdorfehs_opts, sdorfehs_longopts,
 		    NULL);
 		if (c == -1)
 			break;
@@ -326,9 +293,6 @@ main(int argc, char *argv[])
 		switch (c) {
 		case 'h':
 			print_help();
-			break;
-		case 'v':
-			print_version();
 			break;
 		case 'c':
 			cmd = xrealloc(cmd, sizeof(char *) * (cmd_count + 1));
@@ -363,7 +327,7 @@ main(int argc, char *argv[])
 	}
 	set_close_on_exec(ConnectionNumber(dpy));
 
-	/* Set ratpoison specific Atoms. */
+	/* Set our own specific Atoms. */
 	rp_command = XInternAtom(dpy, "RP_COMMAND", False);
 	rp_command_request = XInternAtom(dpy, "RP_COMMAND_REQUEST", False);
 	rp_command_result = XInternAtom(dpy, "RP_COMMAND_RESULT", False);
@@ -423,13 +387,10 @@ main(int argc, char *argv[])
 	set_sig_handler(SIGHUP, hup_handler);
 	set_sig_handler(SIGCHLD, chld_handler);
 
-	/* Add RATPOISON to the environment */
-	putenv(xsprintf("RATPOISON=%s", argv[0]));
-
-	if (!bar_mkfifo())
+	if (bar_mkfifo() == -1)
 		return EXIT_FAILURE;
 
-	/* Setup ratpoison's internal structures */
+	/* Setup our internal structures */
 	init_defaults();
 	init_window_stuff();
 	init_xrandr();
@@ -449,7 +410,7 @@ main(int argc, char *argv[])
 	if (read_startup_files(alt_rcfile) == -1)
 		return EXIT_FAILURE;
 
-	/* Indicate to the user that ratpoison has booted. */
+	/* Indicate to the user that we have booted. */
 	if (defaults.startup_message)
 		show_welcome_message();
 

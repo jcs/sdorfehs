@@ -34,9 +34,9 @@ OBJ=		actions.o \
 		linkedlist.o \
 		manage.o \
 		number.o \
-		ratpoison.o \
 		sbuf.o \
 		screen.o \
+		sdorfehs.o \
 		split.o \
 		utf8.o \
 		util.o \
@@ -63,9 +63,9 @@ DEPS=		actions.h \
 		manage.h \
 		messages.h \
 		number.h \
-		ratpoison.h \
 		sbuf.h \
 		screen.h \
+		sdorfehs.h \
 		split.h \
 		utf8.h \
 		util.h \
@@ -73,28 +73,22 @@ DEPS=		actions.h \
 		window.h \
 		xrandr.h
 
-BIN=		ratpoison
+BIN=		sdorfehs
 
-MAN=		ratpoison.1
+MAN=		sdorfehs.1
 
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-ratpoison: $(OBJ)
+sdorfehs: $(OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-all: ratpoison
+all: sdorfehs
 
 install: all
-	$(eval TMPDIR := $(shell mktemp -d))
 	mkdir -p $(BINDIR) $(MANDIR)
 	install -s $(BIN) $(BINDIR)
-	for i in $(MAN); do \
-		sed 's,%%sysconfdir%%,${SYSCONFDIR},g' $$i > $(TMPDIR)/$$i; \
-		install -m 644 $(TMPDIR)/$$i $(MANDIR); \
-		rm $(TMPDIR)/$$i; \
-	done
-	rmdir $(TMPDIR)
+	install -m 644 $(MAN) $(MANDIR)
 
 clean:
 	rm -f $(BIN) $(OBJ)

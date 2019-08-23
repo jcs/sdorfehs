@@ -19,7 +19,7 @@
 
 #include <X11/extensions/Xrandr.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 static int xrandr_evbase;
 

@@ -19,7 +19,7 @@
 #ifndef XRANDR_H
 #define XRANDR_H
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 void init_xrandr(void);
 int xrandr_query_screen(int **outputs);

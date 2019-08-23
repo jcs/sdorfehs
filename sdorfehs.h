@@ -1,5 +1,5 @@
 /*
- * Standard header for ratpoison.
+ * Standard header
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_H
-#define _RATPOISON_H 1
+#ifndef _SDORFEHS_H
+#define _SDORFEHS_H 1
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -102,4 +102,4 @@ do {                                            \
 #include "utf8.h"
 #include "util.h"
 
-#endif	/* ! _RATPOISON_H */
+#endif	/* ! _SDORFEHS_H */

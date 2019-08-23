@@ -21,15 +21,15 @@
 .\" [2] http://mdocml.bsd.lv/
 .\" [3] http://mdocml.bsd.lv/mdoc.7.html
 .\"
-.Dd Aug 22, 2017
-.Dt RATPOISON 1
+.Dd Aug 22, 2019
+.Dt SDORFEHS 1
 .Os
 .Sh NAME
-.Nm ratpoison
+.Nm sdorfehs
 .Nd window manager without mouse dependency
 .Sh SYNOPSIS
 .Nm
-.Op Fl hv
+.Op Fl h
 .Nm
 .Op Fl d Ar dpy
 .Op Fl s Ar num
@@ -41,23 +41,26 @@
 .Fl c Ar command Op Fl c Ar command ...
 .Sh DESCRIPTION
 .Nm
-is a Window Manager without fat library dependencies, fancy graphics or
-rat dependence.
+is a window manager without fat library dependencies, fancy graphics or
+dependence on a mouse.
 .Pp
 The screen can be split into non-overlapping frames.
 All windows are kept maximized inside their frames.
 .Pp
-All interaction with the window manager is done through
-keystrokes.
+All interaction with the window manager is done through keystrokes.
 .Nm
 has a prefix map to minimize key clobbering.
 .Pp
 The options are as follows:
 .Bl -tag -width Bs
 .It Fl c , Fl \-command
-Send ratpoison a command.
-There must be a ratpoison instance running as window manager for the
-given display/screen for this to work.
+Send
+.Nm
+a command.
+There must be a
+.Nm
+instance running as window manager for the given display/screen for this to
+work.
 Do not forget to quote the command if it contains spaces.
 For example:
 .Dl Nm Fl c Qq Ar "echo hello world"
@@ -68,9 +71,7 @@ Specify an alternate configuration file.
 If this is not given,
 .Nm
 will try
-.Pa $HOME/.ratpoisonrc
-and if that does not exist
-.Pa /etc/ratpoisonrc
+.Pa $HOME/.config/sdorfehs/config
 and execute each command when starting up.
 .It Fl h , Fl \-help
 Show summary of options.
@@ -85,12 +86,11 @@ That means it will behave exactly as if called with
 like prompting for missing arguments and things like that.
 .It Fl s , Fl \-screen Ar number
 Only use the specified screen.
-.It Fl v , Fl \-version
-Show version of program.
 .El
 .Sh KEY BINDINGS
-To avoid conflicts with other programs, all default ratpoison key
-bindings start with an escape key which, by default, is
+To avoid conflicts with other programs, all default
+.Nm
+key bindings start with an escape key which, by default, is
 .Ic C\-t
 (Control\-t).
 Some important default key bindings:
@@ -116,7 +116,9 @@ Switch to the next | left | top | right | bottom frame.
 .It Ic C\-t Q
 Make the current frame the only one
 .It Ic C\-t \&:
-Execute a ratpoison command
+Execute a
+.Nm
+command
 .El
 .Pp
 Further default key bindings can be found in parentheses after the
@@ -180,8 +182,7 @@ Banish the rat cursor to the lower right corner of the current window.
 If there isn't a window in the current frame, it banishes the rat cursor
 to the lower right corner of the frame.
 .It Ic chdir Op Ar directory
-If the optional argument is given, change the current directory
-of
+If the optional argument is given, change the current directory of
 .Nm
 to
 .Ar directory .
@@ -203,9 +204,9 @@ but switch to the previous window with another resource class than the
 current one.
 (That means the previous window belonging to another type of application
 than the current one.)
-.It Ic colon Ar ratpoison\-command Pq Ic C\-t \&:
+.It Ic colon Ar sdorfehs\-command Pq Ic C\-t \&:
 Execute
-.Ar ratpoison\-command
+.Ar sdorfehs\-command
 interactively.
 (i.e. ask for possible missing arguments.)
 .It Ic cother
@@ -1188,18 +1189,14 @@ Default is
 .Li title .
 .El
 .Sh FILES
-.Bl -tag -width "%%sysconfdir%%/ratpoisonrc" -compact
-.It Pa ~/.ratpoisonrc
+.Bl -tag -compact
+.It Pa ~/.config/sdorfehs/config
 Configuration file read at startup time, if present.
-.It Pa %%sysconfdir%%/ratpoisonrc
-Fallback configuration file, if
-.Pa ~/.ratpoisonrc
-is not found.
 .El
 .Sh EXIT STATUS
 .Ex -std
 .Sh AUTHORS
 .An -nosplit
 .Nm
-was originally written by
+is derived from ratpoison originally written by
 .An Shawn Betts Aq Mt sabetts@gmail.com .

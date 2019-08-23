@@ -20,7 +20,7 @@
  * A hook is simply a list of strings that get passed to command() in sequence.
  */
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 #include <string.h>
 

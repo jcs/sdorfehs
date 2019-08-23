@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 /* Keep track of a set of numbers. For frames and windows. */
 struct numset {

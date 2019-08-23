@@ -22,7 +22,7 @@
 #include <limits.h>
 #include <sys/stat.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 static char *
 get_history_filename(void)
@@ -36,7 +36,8 @@ get_history_filename(void)
 		struct sbuf *buf;
 
 		buf = sbuf_new(0);
-		sbuf_printf(buf, "%s/%s", homedir, HISTORY_FILE);
+		sbuf_printf(buf, "%s/.config/sdorfehs/%s", homedir,
+		    HISTORY_FILE);
 		filename = sbuf_free_struct(buf);
 	} else {
 		filename = xstrdup(HISTORY_FILE);
@@ -48,8 +49,7 @@ get_history_filename(void)
 static const char *
 extract_shell_part(const char *p)
 {
-	if (strncmp(p, "exec", 4) &&
-	    strncmp(p, "verbexec", 8))
+	if (strncmp(p, "exec", 4) && strncmp(p, "verbexec", 8))
 		return NULL;
 	while (*p && !isspace((unsigned char) *p))
 		p++;

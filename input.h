@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_INPUT_H
-#define _RATPOISON_INPUT_H 1
+#ifndef _SDORFEHS_INPUT_H
+#define _SDORFEHS_INPUT_H 1
 
 char *keysym_to_string(KeySym keysym, unsigned int modifier);
 int cook_keycode(XKeyEvent *ev, KeySym *keysym, unsigned int *mod,
@@ -37,4 +37,4 @@ void grab_key(KeySym keysym, unsigned int modifiers, Window grab_window);
 
 void init_xkb(void);
 
-#endif	/* ! _RATPOISON_INPUT_H */
+#endif	/* ! _SDORFEHS_INPUT_H */

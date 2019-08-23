@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_LIST_H
-#define _RATPOISON_LIST_H 1
+#ifndef _SDORFEHS_LIST_H
+#define _SDORFEHS_LIST_H 1
 
 #include "sbuf.h"
 
@@ -56,4 +56,4 @@ void change_windows_vscreen(rp_vscreen *v, rp_vscreen *new_vscreen);
 
 void window_full_screen(rp_window *win);
 
-#endif	/* ! _RATPOISON_LIST_H */
+#endif	/* ! _SDORFEHS_LIST_H */

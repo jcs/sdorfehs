@@ -16,8 +16,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_EDITOR_H
-#define _RATPOISON_EDITOR_H 1
+#ifndef _SDORFEHS_EDITOR_H
+#define _SDORFEHS_EDITOR_H 1
 
 #include "utf8.h"
 
@@ -39,4 +39,4 @@ void input_line_free(rp_input_line * line);
 edit_status execute_edit_action(rp_input_line *line, KeySym ch,
     unsigned int modifier, char *keysym_buf);
 
-#endif	/* ! _RATPOISON_EDITOR_H */
+#endif	/* ! _SDORFEHS_EDITOR_H */

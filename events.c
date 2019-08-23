@@ -1,5 +1,5 @@
 /*
- * Ratpoison X events
+ * X events
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -35,7 +35,7 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 /*
  * The event currently being processed. Mostly used in functions from action.c

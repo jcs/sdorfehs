@@ -29,7 +29,7 @@
 #include <X11/extensions/XTest.h>
 #include <sys/ioctl.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 /* arg_REST and arg_SHELLCMD eat the rest of the input. */
 enum argtype {
@@ -3194,7 +3194,7 @@ cmd_resize(int interactive, struct cmdarg **args)
 			show_frame_message(defaults.resize_fmt);
 			read_key(&c, &mod, buffer, sizeof(buffer));
 
-			/* Convert the mask to be compatible with ratpoison. */
+			/* Convert the mask to be compatible with us. */
 			mod = x11_mask_to_rp_mask(mod);
 
 			for (binding = resize_bindings; binding->action; binding++) {

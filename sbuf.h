@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_SBUF_H
-#define _RATPOISON_SBUF_H 1
+#ifndef _SDORFEHS_SBUF_H
+#define _SDORFEHS_SBUF_H 1
 
 #include <stdlib.h>
 
@@ -44,4 +44,4 @@ char *sbuf_printf(struct sbuf *b, char *fmt,...);
 char *sbuf_printf_concat(struct sbuf *b, char *fmt,...);
 void sbuf_chop(struct sbuf *b);
 
-#endif	/* ! _RATPOISON_SBUF_H */
+#endif	/* ! _SDORFEHS_SBUF_H */

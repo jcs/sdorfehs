@@ -20,8 +20,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_LINKLIST_H
-#define _RATPOISON_LINKLIST_H
+#ifndef _SDORFEHS_LINKLIST_H
+#define _SDORFEHS_LINKLIST_H
 
 #include <string.h>
 

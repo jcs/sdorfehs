@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 /* Possible values for bar_is_raised status. */
 #define BAR_IS_HIDDEN		0
@@ -745,10 +745,10 @@ bar_open_fifo(void)
 		PRINT_ERROR(("failed opening newly-created bar FIFO at %s: %s\n",
 		    rp_glob_screen.bar_fifo_path, strerror(errno)));
 		rp_glob_screen.bar_fifo_fd = -1;
-		return 0;
+		return -1;
 	}
 
-	return 1;
+	return 0;
 }
 
 void

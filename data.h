@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_DATA_H
-#define _RATPOISON_DATA_H
+#ifndef _SDORFEHS_DATA_H
+#define _SDORFEHS_DATA_H
 
 #include "linkedlist.h"
 #include "number.h"
@@ -476,4 +476,4 @@ struct rp_xselection {
 	int len;
 };
 
-#endif	/* _RATPOISON_DATA_H */
+#endif	/* _SDORFEHS_DATA_H */

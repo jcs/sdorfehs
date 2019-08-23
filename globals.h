@@ -159,14 +159,14 @@ extern int rat_y;
  */
 extern int ignore_badwindow;
 
-/* Arguments passed to ratpoison. */
+/* Arguments passed at startup. */
 extern char **myargv;
 
 /* Keeps track of which mod mask each modifier is under. */
 extern struct modifier_info rp_modifier_info;
 
 /*
- * nonzero if an alarm signal was raised. This means ratpoison should hide its
+ * nonzero if an alarm signal was raised. This means we should hide our
  * popup windows.
  */
 extern int alarm_signalled;
@@ -222,6 +222,7 @@ void set_sig_handler(int sig, void (*action)(int));
 void set_close_on_exec(int fd);
 void read_rc_file(FILE *file);
 const char *get_homedir(void);
+char *get_config_dir(void);
 void clean_up(void);
 
 void register_atom(Atom *a, char *name);

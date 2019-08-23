@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 /* Function prototypes for format char expanders. */
 #define RP_FMT(fn) static void fmt_ ## fn (rp_window_elem *elem, struct sbuf *buf)

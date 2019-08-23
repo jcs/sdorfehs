@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 static char **unmanaged_window_list = NULL;
 static int num_unmanaged_windows = 0;

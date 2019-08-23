@@ -19,7 +19,7 @@
 
 #include <string.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 #include "sbuf.h"
 
 struct sbuf *

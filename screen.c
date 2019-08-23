@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 #include <string.h>
 #include <X11/cursorfont.h>
 
@@ -293,7 +293,7 @@ init_screen(rp_screen *s)
 	/*
 	 * Select on some events on the root window, if this fails, then there
 	 * is already a WM running and the X Error handler will catch it,
-	 * terminating ratpoison.
+	 * terminating us.
 	 */
 	XSelectInput(dpy, RootWindow(dpy, screen_num),
 	    PropertyChangeMask | ColormapChangeMask

@@ -16,7 +16,7 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -26,6 +26,7 @@
 #include <pwd.h>
 #include <signal.h>
 #include <unistd.h>
+#include <dirent.h>
 
 /*
  * Several systems seem not to have WAIT_ANY defined, so define it if it isn't.
@@ -463,6 +464,57 @@ get_homedir(void)
 	}
 
 	return homedir;
+}
+
+char *
+get_config_dir(void)
+{
+	DIR *d;
+	const char *homedir;
+	char *xdg_config, *home_config;
+
+	homedir = get_homedir();
+	if (!homedir) {
+		PRINT_ERROR(("no home directory\n"));
+		exit(EXIT_FAILURE);
+	}
+
+	xdg_config = getenv("XDG_CONFIG_HOME");
+	if (xdg_config == NULL || !strlen(xdg_config))
+		xdg_config = xsprintf("%s/.config", homedir);
+
+	if (!(d = opendir(xdg_config))) {
+		if (mkdir(xdg_config, 0755) == -1) {
+			PRINT_ERROR(("failed creating %s: %s\n", xdg_config,
+			    strerror(errno)));
+			exit(EXIT_FAILURE);
+		}
+		if (!(d = opendir(xdg_config))) {
+			PRINT_ERROR(("failed opening %s: %s\n", xdg_config,
+			    strerror(errno)));
+			exit(EXIT_FAILURE);
+		}
+	}
+	closedir(d);
+
+	home_config = xsprintf("%s/sdorfehs", xdg_config);
+	if (!(d = opendir(home_config))) {
+		if (mkdir(home_config, 0755) == -1) {
+			PRINT_ERROR(("failed creating %s: %s\n", home_config,
+			    strerror(errno)));
+			exit(EXIT_FAILURE);
+		}
+		if (!(d = opendir(home_config))) {
+			PRINT_ERROR(("failed opening %s: %s\n", home_config,
+			    strerror(errno)));
+			exit(EXIT_FAILURE);
+		}
+	}
+	closedir(d);
+
+	free(xdg_config);
+
+	return home_config;
 }
 
 void

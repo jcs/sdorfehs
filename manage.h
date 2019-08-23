@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_MANAGE_H
-#define _RATPOISON_MANAGE_H 1
+#ifndef _SDORFEHS_MANAGE_H
+#define _SDORFEHS_MANAGE_H 1
 
 #include "data.h"
 
@@ -55,4 +55,4 @@ void withdraw_window(rp_window *win);
 void hide_others(rp_window *win);
 void hide_vscreen_windows(rp_vscreen *v);
 
-#endif	/* ! _RATPOISION_MANAGE_H */
+#endif	/* ! _SDORFEHS_MANAGE_H */

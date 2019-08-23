@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 
 LIST_HEAD(rp_unmapped_window);
 LIST_HEAD(rp_mapped_window);

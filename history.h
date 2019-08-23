@@ -16,8 +16,8 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_HISTORY_H
-#define _RATPOISON_HISTORY_H 1
+#ifndef _SDORFEHS_HISTORY_H
+#define _SDORFEHS_HISTORY_H 1
 
 enum {
 	hist_NONE = 0, hist_COMMAND, hist_SHELLCMD,
@@ -37,4 +37,4 @@ const char *history_next(int);
 const char *history_previous(int);
 int history_expand_line(int, char *string, char **output);
 
-#endif	/* ! _RATPOISON_HISTORY_H */
+#endif	/* ! _SDORFEHS_HISTORY_H */

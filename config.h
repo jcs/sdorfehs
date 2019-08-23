@@ -1,5 +1,5 @@
 /*
- * Config file for ratpoison. Edit these values and recompile.
+ * Config file. Edit these values and recompile.
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Shawn Betts <sabetts@vcn.bc.ca>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -17,14 +17,14 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifndef _RATPOISON_CONF_H
-#define _RATPOISON_CONF_H 1
+#ifndef _SDORFEHS_CONF_H
+#define _SDORFEHS_CONF_H 1
 
 #include "data.h"
 #include "actions.h"
 
-#define PROGNAME	"ratpoison"
-#define VERSION		"20190816"
+#define PROGNAME	"sdorfehs"
+#define VERSION		"20190822"
 
 /* Enter command mode with Control+T by default. */
 #define KEY_PREFIX      XK_t
@@ -94,8 +94,8 @@
 #define MAX_LINK_DEPTH 16
 
 /*
- * Bad window messages can be safely ignored now that ratpoison has become
- * stable enough. Comment this line if you wish to be notified about bad window
+ * Bad window messages can be safely ignored now that we have become stable
+ * enough. Comment this line if you wish to be notified about bad window
  * messages.
  */
 #define IGNORE_BADWINDOW 1
@@ -107,7 +107,7 @@
 #define MAX_HISTORY_SIZE 100
 
 /* The default filename in which to store the history */
-#define HISTORY_FILE ".ratpoison_history"
+#define HISTORY_FILE "history"
 
 /* The name of the root keymap */
 #define ROOT_KEYMAP "root"
@@ -118,4 +118,4 @@
 /* The default font */
 #define DEFAULT_XFT_FONT "monospace:size=12"
 
-#endif	/* !_ _RATPOISON_CONF_H */
+#endif	/* !_ _SDORFEHS_CONF_H */

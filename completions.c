@@ -16,10 +16,9 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#define _GNU_SOURCE
 #include <string.h>
 
-#include "ratpoison.h"
+#include "sdorfehs.h"
 #include "completions.h"
 
 rp_completions *
