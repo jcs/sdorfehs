@@ -217,16 +217,50 @@ screen_select_primary(void)
 static void
 init_global_screen(rp_global_screen *s)
 {
+	XColor color, junk;
 	int screen_num;
 
 	screen_num = DefaultScreen(dpy);
 	s->root = RootWindow(dpy, screen_num);
 
 	s->numset = numset_new();
-	s->fg_color = BlackPixel(dpy, screen_num);
-	s->bg_color = WhitePixel(dpy, screen_num);
-	s->fw_color = BlackPixel(dpy, screen_num);
-	s->bw_color = BlackPixel(dpy, screen_num);
+	s->fg_color = WhitePixel(dpy, screen_num);
+
+	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
+	    defaults.fgcolor_string, &color, &junk))
+		rp_glob_screen.fg_color = color.pixel;
+	else {
+		PRINT_ERROR(("failed allocating fgcolor %s\n",
+		    defaults.fgcolor_string));
+		s->fg_color = WhitePixel(dpy, screen_num);
+	}
+
+	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
+	    defaults.bgcolor_string, &color, &junk))
+		rp_glob_screen.bg_color = color.pixel;
+	else {
+		PRINT_ERROR(("failed allocating bgcolor %s\n",
+		    defaults.bgcolor_string));
+		s->bg_color = BlackPixel(dpy, screen_num);
+	}
+
+	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
+	    defaults.fwcolor_string, &color, &junk))
+		rp_glob_screen.fw_color = color.pixel;
+	else {
+		PRINT_ERROR(("failed allocating fwcolor %s\n",
+		    defaults.fwcolor_string));
+		s->fw_color = BlackPixel(dpy, screen_num);
+	}
+
+	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
+	    defaults.bwcolor_string, &color, &junk))
+		rp_glob_screen.bw_color = color.pixel;
+	else {
+		PRINT_ERROR(("failed allocating bwcolor %s\n",
+		    defaults.bwcolor_string));
+		s->bw_color = BlackPixel(dpy, screen_num);
+	}
 }
 
 void
