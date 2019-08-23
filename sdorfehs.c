@@ -259,7 +259,7 @@ init_defaults(void)
 	if (atom > 0)
 		defaults.vscreens = (int)atom;
 	else
-		defaults.vscreens = 5;
+		defaults.vscreens = 12;
 
 	defaults.gap = 20;
 

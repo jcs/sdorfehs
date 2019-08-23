@@ -971,6 +971,18 @@ initialize_default_keybindings(void)
 	add_keybinding(XK_x, RP_CONTROL_MASK, "swap", map);
 	add_keybinding(XK_N, 0, "nextscreen", map);
 	add_keybinding(XK_P, 0, "prevscreen", map);
+	add_keybinding(XK_F1, 0, "vselect 0", map);
+	add_keybinding(XK_F2, 0, "vselect 1", map);
+	add_keybinding(XK_F3, 0, "vselect 2", map);
+	add_keybinding(XK_F4, 0, "vselect 3", map);
+	add_keybinding(XK_F5, 0, "vselect 4", map);
+	add_keybinding(XK_F6, 0, "vselect 5", map);
+	add_keybinding(XK_F7, 0, "vselect 6", map);
+	add_keybinding(XK_F8, 0, "vselect 7", map);
+	add_keybinding(XK_F9, 0, "vselect 8", map);
+	add_keybinding(XK_F10, 0, "vselect 9", map);
+	add_keybinding(XK_F11, 0, "vselect 10", map);
+	add_keybinding(XK_F12, 0, "vselect 11", map);
 
 	add_alias("unbind", "undefinekey " ROOT_KEYMAP);
 	add_alias("bind", "definekey " ROOT_KEYMAP);

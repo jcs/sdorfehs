@@ -105,8 +105,8 @@ Start an X terminal
 Switch to next window
 .It Ic C\-a p
 Switch to previous window
-.It Ic C\-a 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-Switch to window number 1 | 2 | ...
+.It Ic C\-a 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+Switch to window number 0 | 1 | 2 | ...
 .It Ic C\-a k
 Close the current window
 .It Ic C\-a K
@@ -121,6 +121,8 @@ Make the current frame the only one
 Execute a
 .Nm
 command
+.It Ic C\-a F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 | F9 | F10 | F11 | F12
+Switch to virtual screen number 0 | 1 | 2 | ...
 .El
 .Pp
 Further default key bindings can be found in parentheses after the
@@ -1136,7 +1138,7 @@ Default is
 Set the number of virtual screens.
 .Pp
 Default is
-.Li 5 .
+.Li 12 .
 .It Cm warp Li 0 | 1
 Decide if focusing a window moves the rat cursor to the place it had
 been last time this window was focused, or not.
