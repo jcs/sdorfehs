@@ -38,21 +38,7 @@
 /* Helper macro for error and debug reporting. */
 #define PRINT_LINE(type) printf (PROGNAME ":%s:%d: %s: ",RP_FILE_NAME,  __LINE__, #type)
 
-/* Error and debug reporting macros. */
-#define PRINT_ERROR(fmt)                        \
-do {                                            \
-  PRINT_LINE (error);                           \
-  printf fmt;                                   \
-  fflush (stdout);                              \
-} while (0)
-
-#define PRINT_WARNING(fmt)                      \
-do {                                            \
-  PRINT_LINE (warning);                         \
-  printf fmt;                                   \
-  fflush (stdout);                              \
-} while (0)
-
+/* Debug reporting macros. */
 #ifdef DEBUG
 #define PRINT_DEBUG(fmt)                        \
 do {                                            \

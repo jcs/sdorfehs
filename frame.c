@@ -20,6 +20,7 @@
 #include "sdorfehs.h"
 
 #include <string.h>
+#include <err.h>
 
 int
 frame_left(rp_frame *frame)
@@ -280,12 +281,13 @@ frame_read(char *str, rp_vscreen *vscreen)
 		} else if (!strcmp(tmp, ")"))
 			break;
 		else
-			PRINT_ERROR(("Unknown slot %s\n", tmp));
+			warn("unknown slot reading frame: %s", tmp);
+
 		/* Read the next token. */
 		tmp = strtok_ws(NULL);
 	}
 	if (tmp)
-		PRINT_ERROR(("Frame has trailing garbage\n"));
+		warnx("frame has trailing garbage: %s", tmp);
 	free(d);
 
 	/* adjust x, y, width and height to a possible screen size change */

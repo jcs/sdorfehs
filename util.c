@@ -19,6 +19,7 @@
 #include "sdorfehs.h"
 
 #include <ctype.h>
+#include <err.h>
 
 void
 fatal(const char *msg)
@@ -130,8 +131,7 @@ strtok_ws(char *s)
 	if (s != NULL)
 		last = s;
 	else if (last == NULL) {
-		PRINT_ERROR(("strtok_ws() called but not initalized, "
-		    "this is a *BUG*\n"));
+		warnx("strtok_ws() called but not initalized, this is a *BUG*");
 		abort();
 	}
 	/* skip to first non-whitespace char. */

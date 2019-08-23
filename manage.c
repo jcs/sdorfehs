@@ -19,15 +19,16 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <err.h>
+
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/keysymdef.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "sdorfehs.h"
 
@@ -99,8 +100,7 @@ grab_top_level_keys(Window w)
 	int i;
 
 	if (map == NULL) {
-		PRINT_ERROR(("Unable to find %s level keymap\n",
-		    defaults.top_kmap));
+		warnx("unable to find %s level keymap", defaults.top_kmap);
 		return;
 	}
 	PRINT_INPUT_DEBUG(("grabbing top level key\n"));
@@ -253,10 +253,9 @@ get_class_hints(Window w)
 
 	class = XAllocClassHint();
 
-	if (class == NULL) {
-		PRINT_ERROR(("Not enough memory for WM_CLASS structure.\n"));
-		exit(EXIT_FAILURE);
-	}
+	if (class == NULL)
+		errx(1, "not enough memory for WM_CLASS structure");
+
 	XGetClassHint(dpy, w, class);
 
 	return class;
@@ -882,8 +881,8 @@ withdraw_window(rp_window *win)
 	 * remapped.
 	 */
 	if (win->number == -1)
-		PRINT_ERROR(("Attempting to withdraw '%s' with number -1!\n",
-		    window_name(win)));
+		warnx("attempting to withdraw '%s' with number -1!",
+		    window_name(win));
 
 	numset_release(rp_window_numset, win->number);
 	win->number = -1;

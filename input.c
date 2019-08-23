@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <err.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
@@ -537,9 +538,8 @@ get_more_input(char *prompt, char *preinput, int history_id,
 			done = 1;
 			break;
 		default:
-			PRINT_ERROR(("Unhandled status %d; this is a *BUG*\n",
-			    status));
-			exit(EXIT_FAILURE);
+			errx(1, "unhandled input status %d; this is a *BUG*",
+			    status);
 		}
 	}
 

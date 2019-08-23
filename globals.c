@@ -23,6 +23,7 @@
 
 #include <ctype.h>
 #include <errno.h>
+#include <err.h>
 #include <pwd.h>
 #include <signal.h>
 #include <unistd.h>
@@ -129,7 +130,7 @@ x_export_selection(void)
 	/* Hang the selections off screen 0's key window. */
 	XSetSelectionOwner(dpy, XA_PRIMARY, screen->key_window, CurrentTime);
 	if (XGetSelectionOwner(dpy, XA_PRIMARY) != screen->key_window)
-		PRINT_ERROR(("can't get primary selection"));
+		warnx("can't get primary selection");
 	XChangeProperty(dpy, screen->root, XA_CUT_BUFFER0, xa_string, 8,
 	    PropModeReplace, (unsigned char *) selection.text, selection.len);
 }
@@ -237,7 +238,7 @@ get_selection(void)
 		while (!XCheckTypedWindowEvent(dpy, s->input_window,
 		    SelectionNotify, &ev)) {
 			if (loops == 0) {
-				PRINT_ERROR(("selection request timed out\n"));
+				warnx("selection request timed out");
 				return NULL;
 			}
 			usleep(10000);
@@ -310,14 +311,14 @@ rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
 		length = strlen(string);
 
 	if (!s->xft_font) {
-		PRINT_ERROR(("No Xft font available.\n"));
+		warnx("failed to allocate XftDraw object");
 		return;
 	}
 
 	draw = XftDrawCreate(dpy, d, DefaultVisual(dpy, s->screen_num),
 	    DefaultColormap(dpy, s->screen_num));
 	if (!draw) {
-		PRINT_ERROR(("Failed to allocate XftDraw object\n"));
+		warnx("no Xft font available");
 		return;
 	}
 	XftDrawStringUtf8(draw, style == STYLE_NORMAL ? &s->xft_fg_color :
@@ -331,7 +332,7 @@ rp_text_width(rp_screen *s, char *string, int count)
 	XGlyphInfo extents;
 
 	if (!s->xft_font) {
-		PRINT_ERROR(("No Xft font available.\n"));
+		warnx("no Xft font available");
 		return 0;
 	}
 
@@ -403,10 +404,8 @@ set_sig_handler(int sig, void (*action)(int))
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = action;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(sig, &act, NULL)) {
-		PRINT_ERROR(("Error setting signal handler: %s\n",
-			strerror(errno)));
-	}
+	if (sigaction(sig, &act, NULL))
+		warnx("error setting signal handler");
 }
 
 void
@@ -474,41 +473,29 @@ get_config_dir(void)
 	char *xdg_config, *home_config;
 
 	homedir = get_homedir();
-	if (!homedir) {
-		PRINT_ERROR(("no home directory\n"));
-		exit(EXIT_FAILURE);
-	}
+	if (!homedir)
+		errx(1, "no home directory");
 
 	xdg_config = getenv("XDG_CONFIG_HOME");
 	if (xdg_config == NULL || !strlen(xdg_config))
 		xdg_config = xsprintf("%s/.config", homedir);
 
 	if (!(d = opendir(xdg_config))) {
-		if (mkdir(xdg_config, 0755) == -1) {
-			PRINT_ERROR(("failed creating %s: %s\n", xdg_config,
-			    strerror(errno)));
-			exit(EXIT_FAILURE);
-		}
-		if (!(d = opendir(xdg_config))) {
-			PRINT_ERROR(("failed opening %s: %s\n", xdg_config,
-			    strerror(errno)));
-			exit(EXIT_FAILURE);
-		}
+		if (mkdir(xdg_config, 0755) == -1)
+			err(1, "failed creating %s", xdg_config);
+
+		if (!(d = opendir(xdg_config)))
+			err(1, "failed opening %s", xdg_config);
 	}
 	closedir(d);
 
 	home_config = xsprintf("%s/sdorfehs", xdg_config);
 	if (!(d = opendir(home_config))) {
-		if (mkdir(home_config, 0755) == -1) {
-			PRINT_ERROR(("failed creating %s: %s\n", home_config,
-			    strerror(errno)));
-			exit(EXIT_FAILURE);
-		}
-		if (!(d = opendir(home_config))) {
-			PRINT_ERROR(("failed opening %s: %s\n", home_config,
-			    strerror(errno)));
-			exit(EXIT_FAILURE);
-		}
+		if (mkdir(home_config, 0755) == -1)
+			err(1, "failed creating %s", home_config);
+
+		if (!(d = opendir(home_config)))
+			err(1, "failed opening %s", home_config);
 	}
 	closedir(d);
 

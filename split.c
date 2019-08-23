@@ -18,6 +18,7 @@
  */
 
 #include <unistd.h>
+#include <err.h>
 #include <string.h>
 
 #include "sdorfehs.h"
@@ -932,7 +933,8 @@ show_frame_message(char *msg)
 		if (g)
 			elem = group_find_window(&g->mapped_windows, win);
 		else
-			PRINT_ERROR(("window not in any group\n"));
+			warnx("window 0x%lx not in any group\n",
+			    (unsigned long)win->w);
 	}
 	/* A frame doesn't always contain a window. */
 	msgbuf = sbuf_new(0);

@@ -22,6 +22,7 @@
 #include <X11/keysym.h>
 #include <string.h>
 #include <strings.h>
+#include <err.h>
 #include <errno.h>
 #include <signal.h>
 #include <limits.h>
@@ -1305,7 +1306,7 @@ cmd_source(int interactive, struct cmdarg **args)
 	FILE *fileptr;
 
 	if ((fileptr = fopen(ARG_STRING(0), "r")) == NULL)
-		return cmdret_new(RET_FAILURE, "source: %s : %s", ARG_STRING(0),
+		return cmdret_new(RET_FAILURE, "source: %s: %s", ARG_STRING(0),
 		    strerror(errno));
 
 	set_close_on_exec(fileno(fileptr));
@@ -1855,7 +1856,7 @@ exec_completions(char *str)
 	file = popen(completion_string, "r");
 	free(completion_string);
 	if (!file) {
-		PRINT_ERROR(("popen failed\n"));
+		warn("popen failed");
 		return head;
 	}
 	partial = xmalloc(n);
@@ -2617,7 +2618,7 @@ arg_free(struct cmdarg *arg)
 		/* Do nothing */
 		break;
 	default:
-		PRINT_ERROR(("Missed an arg type.\n"));
+		warnx("unknown arg type %d\n", arg->type);
 		break;
 	}
 
@@ -2758,7 +2759,7 @@ free_lists:
 		}
 	}
 
-	PRINT_WARNING(("command \"%s\" unknown, ignored\n", cmd));
+	warnx("command \"%s\" unknown, ignored", cmd);
 	result = cmdret_new(RET_FAILURE, MESSAGE_UNKNOWN_COMMAND, cmd);
 
 done:
@@ -2839,7 +2840,7 @@ spawn(char *cmd, int raw, rp_frame *frame)
 		if (raw)
 			execl(cmd, cmd, (char *) NULL);
 		execl("/bin/sh", "sh", "-c", cmd, (char *) NULL);
-		_exit(EXIT_FAILURE);
+		_exit(1);
 	}
 
 	/* wait((int *) 0); */

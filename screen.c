@@ -17,9 +17,11 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#include "sdorfehs.h"
 #include <string.h>
+#include <err.h>
 #include <X11/cursorfont.h>
+
+#include "sdorfehs.h"
 
 static void init_screen(rp_screen *s);
 
@@ -230,8 +232,7 @@ init_global_screen(rp_global_screen *s)
 	    defaults.fgcolor_string, &color, &junk))
 		rp_glob_screen.fg_color = color.pixel;
 	else {
-		PRINT_ERROR(("failed allocating fgcolor %s\n",
-		    defaults.fgcolor_string));
+		warnx("failed allocating fgcolor %s", defaults.fgcolor_string);
 		s->fg_color = WhitePixel(dpy, screen_num);
 	}
 
@@ -239,8 +240,7 @@ init_global_screen(rp_global_screen *s)
 	    defaults.bgcolor_string, &color, &junk))
 		rp_glob_screen.bg_color = color.pixel;
 	else {
-		PRINT_ERROR(("failed allocating bgcolor %s\n",
-		    defaults.bgcolor_string));
+		warnx("failed allocating bgcolor %s",defaults.bgcolor_string);
 		s->bg_color = BlackPixel(dpy, screen_num);
 	}
 
@@ -248,8 +248,7 @@ init_global_screen(rp_global_screen *s)
 	    defaults.fwcolor_string, &color, &junk))
 		rp_glob_screen.fw_color = color.pixel;
 	else {
-		PRINT_ERROR(("failed allocating fwcolor %s\n",
-		    defaults.fwcolor_string));
+		warnx("failed allocating fwcolor %s", defaults.fwcolor_string);
 		s->fw_color = BlackPixel(dpy, screen_num);
 	}
 
@@ -257,8 +256,7 @@ init_global_screen(rp_global_screen *s)
 	    defaults.bwcolor_string, &color, &junk))
 		rp_glob_screen.bw_color = color.pixel;
 	else {
-		PRINT_ERROR(("failed allocating bwcolor %s\n",
-		    defaults.bwcolor_string));
+		warnx("failed allocating bwcolor %s", defaults.bwcolor_string);
 		s->bw_color = BlackPixel(dpy, screen_num);
 	}
 }
@@ -434,19 +432,21 @@ init_screen(rp_screen *s)
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
 		    DefaultColormap(dpy, screen_num),
 		    defaults.fgcolor_string, &s->xft_fg_color)) {
-			PRINT_ERROR(("Failed to allocate font fg color\n"));
+			warnx("failed to allocate font fg color %s",
+			    defaults.fgcolor_string);
 			XftFontClose(dpy, s->xft_font);
 			s->xft_font = NULL;
 		}
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
 		    DefaultColormap(dpy, screen_num),
 		    defaults.bgcolor_string, &s->xft_bg_color)) {
-			PRINT_ERROR(("Failed to allocate font fg color\n"));
+			warnx("failed to allocate font bg color %s",
+			    defaults.bgcolor_string);
 			XftFontClose(dpy, s->xft_font);
 			s->xft_font = NULL;
 		}
 	} else {
-		PRINT_ERROR(("Failed to open font\n"));
+		warnx("failed to open font %s", DEFAULT_XFT_FONT);
 	}
 }
 

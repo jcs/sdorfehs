@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <err.h>
 
 #include "sdorfehs.h"
 
@@ -132,7 +133,7 @@ numset_release(struct numset *ns, int n)
 	PRINT_DEBUG(("ns=%p release %d\n", ns, n));
 
 	if (n < 0)
-		PRINT_ERROR(("ns=%p Attempt to release %d!\n", ns, n));
+		warnx("ns=%p attempt to release %d!", ns, n);
 
 	for (i = 0; i < ns->num_taken; i++) {
 		if (ns->numbers_taken[i] == n) {

@@ -16,6 +16,7 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
+#include <err.h>
 #include "sdorfehs.h"
 
 static void vscreen_remove_current(void);
@@ -262,8 +263,8 @@ set_current_vscreen(rp_vscreen *v)
 
 		win = find_window_number(frame->restore_win_number);
 		if (win && win->vscr != v) {
-			PRINT_ERROR(("restore win for frame %d on incorrect "
-			    "vscreen\n", frame->number));
+			warnx("restore win for frame %d on incorrect vscreen\n",
+			    frame->number);
 			win = NULL;
 		}
 

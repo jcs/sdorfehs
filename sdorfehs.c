@@ -24,6 +24,7 @@
 #include <X11/cursorfont.h>
 #include <sys/stat.h>
 
+#include <err.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,10 +61,9 @@ handler(Display *d, XErrorEvent *e)
 	char error_msg[100];
 
 	if (e->request_code == X_ChangeWindowAttributes &&
-	    e->error_code == BadAccess) {
-		fprintf(stderr, PROGNAME ": There can be only ONE.\n");
-		exit(EXIT_FAILURE);
-	}
+	    e->error_code == BadAccess)
+		errx(1, "another window manager is already running");
+
 #ifdef IGNORE_BADWINDOW
 	return 0;
 #else
@@ -72,7 +72,7 @@ handler(Display *d, XErrorEvent *e)
 #endif
 
 	XGetErrorText(d, e->error_code, error_msg, sizeof(error_msg));
-	fprintf(stderr, PROGNAME ": ERROR: %s!\n", error_msg);
+	warnx("X error: %s", error_msg);
 
 	/*
 	 * If there is already an error to report, replace it with this new one.
@@ -89,7 +89,7 @@ print_help(void)
 	printf("%s %s\n", PROGNAME, VERSION);
 	printf("usage: %s [-h]\n", PROGNAME);
 	printf("       %s [-d dpy] [-c cmd] [-i] [-f file]\n", PROGNAME);
-	exit(EXIT_SUCCESS);
+	exit(0);
 }
 
 static int
@@ -99,8 +99,7 @@ read_startup_files(const char *alt_rcfile)
 	char *config_dir, *filename;
 
 	if (alt_rcfile && ((fileptr = fopen(alt_rcfile, "r")) == NULL)) {
-		PRINT_ERROR(("could not open %s (%s)\n",
-		    alt_rcfile, strerror(errno)));
+		warn("could not open %s\n", alt_rcfile);
 		return -1;
 	}
 
@@ -108,8 +107,7 @@ read_startup_files(const char *alt_rcfile)
 	filename = xsprintf("%s/config", config_dir);
 	fileptr = fopen(filename, "r");
 	if (fileptr == NULL && errno != ENOENT)
-		PRINT_ERROR(("could not open %s (%s)\n", filename,
-		    strerror(errno)));
+		warn("could not open %s", filename);
 	free(config_dir);
 	free(filename);
 
@@ -135,8 +133,8 @@ bar_mkfifo(void)
 	unlink(rp_glob_screen.bar_fifo_path);
 
 	if (mkfifo(rp_glob_screen.bar_fifo_path, S_IRUSR|S_IWUSR) == -1) {
-		PRINT_ERROR(("failed creating bar FIFO at %s: %s\n",
-		    rp_glob_screen.bar_fifo_path, strerror(errno)));
+		warn("failed creating bar FIFO at %s",
+		    rp_glob_screen.bar_fifo_path);
 		return 0;
 	}
 
@@ -263,9 +261,9 @@ main(int argc, char *argv[])
 
 	if (XSupportsLocale()) {
 		if (!XSetLocaleModifiers(""))
-			PRINT_ERROR(("Couldn't set X locale modifiers.\n"));
+			warnx("couldn't set X locale modifiers");
 	} else
-		PRINT_ERROR(("X doesn't seem to support your locale.\n"));
+		warnx("X doesn't seem to support your locale");
 
 	/* Parse the arguments */
 	myargv = argv;
@@ -288,22 +286,21 @@ main(int argc, char *argv[])
 			interactive = 1;
 			break;
 		default:
-			exit(EXIT_FAILURE);
+			warnx("unsupported option %c", c);
+			print_help();
 		}
 	}
 
 	/* Report extra unparsed arguments. */
 	if (optind < argc) {
-		fprintf(stderr, "Error: junk arguments: ");
+		warnx("bogus arguments:");
 		while (optind < argc)
 			fprintf(stderr, "%s ", argv[optind++]);
 		fputc('\n', stderr);
-		exit(EXIT_FAILURE);
+		exit(1);
 	}
-	if (!(dpy = XOpenDisplay(display))) {
-		fprintf(stderr, "Can't open display\n");
-		exit(EXIT_FAILURE);
-	}
+	if (!(dpy = XOpenDisplay(display)))
+		errx(1, "can't open display %s", display);
 	set_close_on_exec(ConnectionNumber(dpy));
 
 	/* Set our own specific Atoms. */
@@ -318,11 +315,11 @@ main(int argc, char *argv[])
 	xa_utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
 
 	if (cmd_count > 0) {
-		int j, exit_status = EXIT_SUCCESS;
+		int j, exit_status = 0;
 
 		for (j = 0; j < cmd_count; j++) {
 			if (!send_command(interactive, (unsigned char *) cmd[j]))
-				exit_status = EXIT_FAILURE;
+				exit_status = 1;
 			free(cmd[j]);
 		}
 
@@ -367,7 +364,7 @@ main(int argc, char *argv[])
 	set_sig_handler(SIGCHLD, chld_handler);
 
 	if (bar_mkfifo() == -1)
-		return EXIT_FAILURE;
+		return 1;
 
 	/* Setup our internal structures */
 	init_defaults();
@@ -388,7 +385,7 @@ main(int argc, char *argv[])
 
 	c = read_startup_files(alt_rcfile);
 	if (c == -1)
-		return EXIT_FAILURE;
+		return 1;
 	else if (c == 0) {
 		/* No config file, just do something basic. */
 		cmdret *result;
@@ -406,5 +403,5 @@ main(int argc, char *argv[])
 
 	listen_for_events();
 
-	return EXIT_SUCCESS;
+	return 0;
 }

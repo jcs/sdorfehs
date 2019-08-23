@@ -17,6 +17,7 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
+#include <err.h>
 #include <X11/extensions/Xrandr.h>
 
 #include "sdorfehs.h"
@@ -39,8 +40,7 @@ init_xrandr(void)
 	}
 	if (major != XRANDR_MAJOR ||
 	    (major == XRANDR_MAJOR && minor < XRANDR_MINOR)) {
-		PRINT_ERROR(("Xrandr version %d.%d is not supported\n", major,
-		    minor));
+		warnx("Xrandr version %d.%d is not supported", major, minor);
 		return;
 	}
 	XRRSelectInput(dpy, RootWindow(dpy, DefaultScreen(dpy)),

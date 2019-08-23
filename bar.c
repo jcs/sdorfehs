@@ -27,6 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <err.h>
 
 #include "sdorfehs.h"
 
@@ -742,8 +743,8 @@ bar_open_fifo(void)
 	rp_glob_screen.bar_fifo_fd = open(rp_glob_screen.bar_fifo_path,
 	    O_RDONLY|O_NONBLOCK|O_CLOEXEC);
 	if (rp_glob_screen.bar_fifo_fd == -1) {
-		PRINT_ERROR(("failed opening newly-created bar FIFO at %s: %s\n",
-		    rp_glob_screen.bar_fifo_path, strerror(errno)));
+		warn("failed opening newly-created bar FIFO at %s",
+		    rp_glob_screen.bar_fifo_path);
 		rp_glob_screen.bar_fifo_fd = -1;
 		return -1;
 	}

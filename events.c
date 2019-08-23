@@ -17,23 +17,24 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#include <X11/keysym.h>
-#include <X11/Xmd.h>	/* for CARD32. */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <signal.h>
 #include <errno.h>
+#include <err.h>
 #include <unistd.h>
 #include <poll.h>
 #include <sys/time.h>
 #include <sys/wait.h>
+
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+#include <X11/keysym.h>
+#include <X11/Xmd.h>	/* for CARD32. */
 
 #include "sdorfehs.h"
 
@@ -386,8 +387,8 @@ client_msg(XClientMessageEvent *ev)
 			if (v)
 				set_current_vscreen(v);
 		} else {
-			PRINT_ERROR(("unsupported message type %ld\n",
-			    ev->message_type));
+			warnx("unsupported message type %ld\n",
+			    ev->message_type);
 		}
 
 		return;
@@ -420,7 +421,7 @@ client_msg(XClientMessageEvent *ev)
 					    win->vscr->current_frame));
 			}
 		} else {
-			PRINT_ERROR(("Non-standard WM_CHANGE_STATE format\n"));
+			warnx("non-standard WM_CHANGE_STATE format");
 		}
 	} else if (win && ev->message_type == _net_wm_state) {
 		PRINT_DEBUG(("_NET_WM_STATE for window 0x%lx, action %ld, "
@@ -447,7 +448,7 @@ handle_key(KeySym ks, unsigned int mod, rp_screen *s)
 	rp_keymap *map = find_keymap(defaults.top_kmap);
 
 	if (map == NULL) {
-		PRINT_ERROR(("Unable to find %s keymap\n", defaults.top_kmap));
+		warnx("unable to find %s keymap", defaults.top_kmap);
 		return;
 	}
 	PRINT_DEBUG(("handling key...\n"));
@@ -603,7 +604,7 @@ receive_command(Window root)
 		offset += length;
 
 		if (ret != Success) {
-			PRINT_ERROR(("XGetWindowProperty Failed\n"));
+			warnx("XGetWindowProperty Failed");
 			if (prop_return)
 				XFree(prop_return);
 			break;
@@ -955,7 +956,7 @@ handle_signals(void)
 	if (alarm_signalled > 0) {
 		rp_screen *cur;
 
-		PRINT_DEBUG(("Alarm received.\n"));
+		PRINT_DEBUG(("SIGALRM received\n"));
 
 		/* Only hide the bar if it times out. */
 		if (defaults.bar_timeout > 0) {
@@ -987,20 +988,20 @@ handle_signals(void)
 		chld_signalled = 0;
 	}
 	if (hup_signalled > 0) {
-		PRINT_DEBUG(("Restarting\n"));
+		PRINT_DEBUG(("restarting\n"));
 		hook_run(&rp_restart_hook);
 		clean_up();
 		execvp(myargv[0], myargv);
 	}
 	if (kill_signalled > 0) {
-		PRINT_DEBUG(("Exiting\n"));
+		PRINT_DEBUG(("exiting\n"));
 		hook_run(&rp_quit_hook);
 		clean_up();
-		exit(EXIT_SUCCESS);
+		exit(0);
 	}
 	/* Report any X11 errors that have occurred. */
 	if (rp_error_msg) {
-		marked_message_printf(0, 6, "ERROR: %s", rp_error_msg);
+		marked_message_printf(0, 6, "X error: %s", rp_error_msg);
 		free(rp_error_msg);
 		rp_error_msg = NULL;
 	}
@@ -1032,7 +1033,7 @@ listen_for_events(void)
 			poll(pfd, pollfifo ? 2 : 1, INFTIM);
 
 			if (pollfifo && (pfd[1].revents & (POLLERR|POLLNVAL))) {
-				PRINT_ERROR(("error polling on FIFO\n"));
+				warnx("error polling on FIFO");
 				pollfifo = 0;
 				continue;
 			}
