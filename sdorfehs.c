@@ -380,6 +380,7 @@ main(int argc, char *argv[])
 	init_user_commands();
 	initialize_default_keybindings();
 	history_load();
+	init_bar();
 
 	scanwins();
 

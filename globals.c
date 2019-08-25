@@ -303,9 +303,10 @@ set_window_focus(Window window)
 
 void
 rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
-    int length)
+    int length, char *color)
 {
 	XftDraw *draw;
+	XftColor xftcolor;
 
 	if (length < 0)
 		length = strlen(string);
@@ -321,8 +322,26 @@ rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
 		warnx("no Xft font available");
 		return;
 	}
-	XftDrawStringUtf8(draw, style == STYLE_NORMAL ? &s->xft_fg_color :
-	    &s->xft_bg_color, s->xft_font, x, y, (FcChar8 *) string, length);
+
+	if (color == NULL) {
+		if (style == STYLE_NORMAL)
+			memcpy(&xftcolor, &s->xft_fg_color, sizeof(XftColor));
+		else
+			memcpy(&xftcolor, &s->xft_bg_color, sizeof(XftColor));
+	} else {
+		/*
+		 * This won't actually allocate anything if the color is
+		 * already allocated.
+		 */
+		if (!XftColorAllocName(dpy, DefaultVisual(dpy, s->screen_num),
+		    DefaultColormap(dpy, s->screen_num), color, &xftcolor)) {
+			warnx("couldn't !XftColorAllocName \"%s\"", color);
+			memcpy(&xftcolor, &s->xft_fg_color, sizeof(XftColor));
+		}
+	}
+
+	XftDrawStringUtf8(draw, &xftcolor, s->xft_font, x, y, (FcChar8 *)string,
+	    length);
 	XftDrawDestroy(draw);
 }
 

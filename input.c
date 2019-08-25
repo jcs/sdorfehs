@@ -438,13 +438,13 @@ update_input_window(rp_screen *s, rp_input_line *line)
 	    defaults.bar_x_padding,
 	    defaults.bar_y_padding + FONT_ASCENT(s),
 	    line->prompt,
-	    -1);
+	    -1, NULL);
 
 	rp_draw_string(s, s->input_window, STYLE_NORMAL,
 	    defaults.bar_x_padding + prompt_width,
 	    defaults.bar_y_padding + FONT_ASCENT(s),
 	    line->buffer,
-	    line->length);
+	    line->length, NULL);
 
 	gcv.function = GXxor;
 	gcv.foreground = rp_glob_screen.fg_color ^ rp_glob_screen.bg_color;

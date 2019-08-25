@@ -46,11 +46,25 @@ static char *last_msg = NULL;
 static int last_mark_start = 0;
 static int last_mark_end = 0;
 
+/* Buffers for sticky bar */
 static struct sbuf *bar_buf = NULL;
 static struct sbuf *bar_line = NULL;
+struct list_head bar_chunks;
+static char *last_bar_line;
+static char *last_bar_window_fmt;
+static char bar_tmp_line[256];
+static char bar_cur_color[32];
+static Pixmap bar_pm;
+
+struct bar_chunk {
+	char *text;
+	char *color;
+	int length;
+	struct list_head node;
+};
 
 static void draw_partial_string(rp_screen *s, char *msg, int len, int x_offset,
-    int y_offset, int style);
+    int y_offset, int style, char *color);
 static void marked_message_internal(char *msg, int mark_start, int mark_end,
     int bar_type);
 
@@ -81,13 +95,25 @@ reset_alarm_if_needed(void)
 		reset_alarm();
 }
 
+void
+init_bar(void)
+{
+	bar_buf = sbuf_new(sizeof(bar_tmp_line));
+	bar_line = sbuf_new(sizeof(bar_tmp_line));
+	bar_pm = XCreatePixmap(dpy, rp_current_screen->bar_window,
+	    rp_current_screen->width, FONT_HEIGHT(rp_current_screen) * 2,
+	    DefaultDepth(dpy, DefaultScreen(dpy)));
+
+	INIT_LIST_HEAD(&bar_chunks);
+}
+
 /* Hide the bar from sight. */
 void
 hide_bar(rp_screen *s, int force)
 {
 	if (!s->full_screen_win && defaults.bar_sticky && !force) {
 		s->bar_is_raised = BAR_IS_STICKY;
-		redraw_sticky_bar_text(s);
+		redraw_sticky_bar_text(s, 0);
 		return;
 	}
 
@@ -228,38 +254,159 @@ update_bar(rp_screen *s)
 	}
 }
 
+/*
+ * To avoid having to parse the bar line text and redraw text over and over
+ * again, text is drawn on a pixmap in two lines.  When the window format text
+ * changes (such as when the current window changes) or the bar line text
+ * changes, each line that is different is redrawn.  Then the two lines are
+ * copied into the actual bar window side by side.
+ */
 void
-redraw_sticky_bar_text(rp_screen *s)
+redraw_sticky_bar_text(rp_screen *s, int force)
 {
-	struct sbuf *tbuf;
-	char *line;
-	size_t len;
-	int twidth, z;
+	struct list_head *iter, *tmp;
+	struct bar_chunk *chunk;
+	struct sbuf *tbuf, *curcmd, *curtxt;
+	char *tline;
+	int diff = 0, len, cmd = 0, skip = 0, xftx = 0, x;
+	int width, height;
 
 	if (s->full_screen_win || !defaults.bar_sticky)
 		return;
 
+	width = s->width - (defaults.bar_border_width * 2);
+	height = FONT_HEIGHT(s) + (defaults.bar_y_padding * 2);
+	XMoveResizeWindow(dpy, s->bar_window, bar_x(s, width), bar_y(s, height),
+	    width, height);
+
+	if (force) {
+		XFreePixmap(dpy, bar_pm);
+		XClearWindow(dpy, s->bar_window);
+		bar_pm = XCreatePixmap(dpy, s->bar_window, width,
+		    FONT_HEIGHT(s) * 2, DefaultDepth(dpy, DefaultScreen(dpy)));
+	}
+
+	s->bar_is_raised = BAR_IS_STICKY;
+	XMapRaised(dpy, s->bar_window);
+
+	/* check window title for changes */
 	tbuf = sbuf_new(0);
-
 	get_current_window_in_fmt(defaults.sticky_fmt, tbuf);
+	diff = (last_bar_window_fmt == NULL ||
+	    strcmp(last_bar_window_fmt, sbuf_get(tbuf)) != 0);
 
-	/* This will raise the bar, clear it, and draw the window title. */
-	marked_message_internal(sbuf_get(tbuf), 0, 0, BAR_IS_STICKY);
+	if (diff || force) {
+		PRINT_DEBUG(("redrawing window format in bar\n"));
 
-	if (bar_line == NULL)
-		return;
+		if (last_bar_window_fmt != NULL)
+			free(last_bar_window_fmt);
+		last_bar_window_fmt = xstrdup(sbuf_get(tbuf));
 
-	line = sbuf_get(bar_line);
-	len = strlen(line);
-	twidth = rp_text_width(s, line, len);
+		XFillRectangle(dpy, bar_pm, s->inverse_gc, 0, 0, s->width,
+		    FONT_HEIGHT(s));
 
-	/* limit bar text to half of the screen */
-	if (twidth > (z = (s->width - (defaults.bar_x_padding * 2)) / 2))
-		twidth = z;
+		rp_draw_string(s, bar_pm, STYLE_NORMAL, 0, FONT_ASCENT(s),
+		    last_bar_window_fmt, strlen(last_bar_window_fmt),
+		    defaults.fgcolor_string);
+	}
+	sbuf_free(tbuf);
 
-	/* Why does draw_partial_string need a length - 1? */
-	draw_partial_string(s, line, len - 1, s->width -
-	    (defaults.bar_x_padding * 2) - twidth, 0, STYLE_NORMAL);
+	XCopyArea(dpy, bar_pm, s->bar_window, s->inverse_gc,
+	    0, 0, (s->width / 2) - (defaults.bar_x_padding * 2), FONT_HEIGHT(s),
+	    defaults.bar_x_padding, defaults.bar_y_padding);
+
+	/* Repeat for bar text line */
+
+	diff = (last_bar_line == NULL ||
+	    strcmp(last_bar_line, sbuf_get(bar_line)) != 0);
+	if (!diff && !force)
+		goto redraw_bar_text;
+
+	PRINT_DEBUG(("recalculating bar chunks\n"));
+
+	if (last_bar_line)
+		free(last_bar_line);
+	last_bar_line = xstrdup(sbuf_get(bar_line));
+	len = strlen(last_bar_line);
+
+	curcmd = sbuf_new(0);
+	curtxt = sbuf_new(0);
+	bar_cur_color[0] = '\0';
+
+	list_for_each_safe_entry(chunk, iter, tmp, &bar_chunks, node) {
+		free(chunk->text);
+		free(chunk->color);
+		list_del(&chunk->node);
+		free(chunk);
+	}
+
+	for (x = 0; x < len; x++) {
+		if (last_bar_line[x] == '\\' && !skip) {
+			skip = 1;
+			continue;
+		}
+
+		if (cmd) {
+			if (last_bar_line[x] == ')' && !skip) {
+				tline = sbuf_get(curcmd);
+				if (strncmp(tline, "fg(", 3) == 0) {
+					strlcpy(bar_cur_color, tline + 3,
+					    sizeof(bar_cur_color));
+				} else {
+					PRINT_DEBUG(("unsupported bar command "
+					    "\"%s\", ignoring\n", tline));
+				}
+				sbuf_clear(curcmd);
+				cmd = 0;
+			} else
+				sbuf_nconcat(curcmd, last_bar_line + x, 1);
+		} else if (last_bar_line[x] == '^' && !skip) {
+			cmd = 1;
+			chunk = xmalloc(sizeof(struct bar_chunk));
+			chunk->text = xstrdup(sbuf_get(curtxt));
+			chunk->length = strlen(chunk->text);
+			chunk->color = xstrdup(bar_cur_color);
+			list_add_tail(&chunk->node, &bar_chunks);
+			sbuf_clear(curtxt);
+		} else {
+			sbuf_nconcat(curtxt, last_bar_line + x, 1);
+		}
+
+		skip = 0;
+	}
+	tline = sbuf_get(curtxt);
+	if (strlen(tline)) {
+		chunk = xmalloc(sizeof(struct bar_chunk));
+		chunk->text = xstrdup(sbuf_get(curtxt));
+		chunk->length = strlen(chunk->text);
+		chunk->color = xstrdup(bar_cur_color);
+		list_add_tail(&chunk->node, &bar_chunks);
+	}
+	sbuf_free(curcmd);
+	sbuf_free(curtxt);
+
+redraw_bar_text:
+	XFillRectangle(dpy, bar_pm, s->inverse_gc, 0, FONT_HEIGHT(s),
+	    s->width, FONT_HEIGHT(s));
+	xftx = 0;
+	list_for_each_entry(chunk, &bar_chunks, node) {
+		rp_draw_string(s, bar_pm, STYLE_NORMAL,
+		    (width / 2) + xftx,
+	    	    FONT_HEIGHT(s) + FONT_ASCENT(s),
+		    chunk->text, chunk->length,
+		    strlen(chunk->color) ? chunk->color :
+		    defaults.fgcolor_string);
+
+		xftx += rp_text_width(s, chunk->text, chunk->length);
+	}
+	if (xftx > (width / 2) - (defaults.bar_x_padding * 2))
+		xftx = (width / 2) - (defaults.bar_x_padding * 2);
+
+	XCopyArea(dpy, bar_pm, s->bar_window, s->inverse_gc,
+	    xftx + (defaults.bar_x_padding * 2), FONT_HEIGHT(s),
+	    (width / 2) - (defaults.bar_x_padding * 2), FONT_HEIGHT(s),
+	    (width / 2) + defaults.bar_x_padding,
+	    defaults.bar_y_padding);
 }
 
 /*
@@ -276,7 +423,7 @@ update_window_names(rp_screen *s, char *fmt)
 	bar_buffer = sbuf_new(0);
 
 	if (s->bar_is_raised == BAR_IS_STICKY) {
-		redraw_sticky_bar_text(s);
+		redraw_sticky_bar_text(s, 0);
 	} else if (s->bar_is_raised == BAR_IS_WINDOW_LIST) {
 		delimiter = (defaults.window_list_style == STYLE_ROW) ?
 		    " " : "\n";
@@ -426,12 +573,12 @@ line_beginning(char *msg, int pos)
 
 static void
 draw_partial_string(rp_screen *s, char *msg, int len, int x_offset,
-    int y_offset, int style)
+    int y_offset, int style, char *color)
 {
 	rp_draw_string(s, s->bar_window, style,
 	    defaults.bar_x_padding + x_offset,
 	    defaults.bar_y_padding + FONT_ASCENT(s) + y_offset * FONT_HEIGHT(s),
-	    msg, len + 1);
+	    msg, len + 1, color);
 }
 
 #define REASON_NONE    0x00
@@ -473,7 +620,7 @@ draw_string(rp_screen *s, char *msg, int mark_start, int mark_end)
 			    ((print_reason & REASON_NEWLINE) ? 1 : 0);
 
 			draw_partial_string(s, msg + start, part_len,
-			    x_offset, y_offset, style);
+			    x_offset, y_offset, style, NULL);
 
 			/* Adjust coordinates. */
 			if (print_reason & REASON_NEWLINE) {
@@ -496,7 +643,7 @@ draw_string(rp_screen *s, char *msg, int mark_start, int mark_end)
 
 	/* Print the last line. */
 	draw_partial_string(s, msg + start, part_len, x_offset, y_offset,
-	    style);
+	    style, NULL);
 
 	XSync(dpy, False);
 }
@@ -757,18 +904,13 @@ bar_read_fifo(void)
 {
 	ssize_t ret;
 	int x, start;
-	char line[256];
 
 	PRINT_DEBUG(("bar FIFO data to read\n"));
 
-	if (bar_buf == NULL)
-		bar_buf = sbuf_new(sizeof(line));
-	if (bar_line == NULL)
-		bar_line = sbuf_new(sizeof(line));
-
 	for (;;) {
-		memset(line, 0, sizeof(line));
-		ret = read(rp_glob_screen.bar_fifo_fd, &line, sizeof(line));
+		memset(bar_tmp_line, 0, sizeof(bar_tmp_line));
+		ret = read(rp_glob_screen.bar_fifo_fd, &bar_tmp_line,
+		    sizeof(bar_tmp_line));
 		if (ret < 1) {
 			if (ret == 0)
 				PRINT_DEBUG(("FIFO %d closed, re-opening\n",
@@ -783,20 +925,22 @@ bar_read_fifo(void)
 		}
 
 		for (x = 0, start = 0; x < ret; x++) {
-			if (line[x] == '\0') {
-				sbuf_nconcat(bar_buf, line + start, x - start);
+			if (bar_tmp_line[x] == '\0') {
+				sbuf_nconcat(bar_buf, bar_tmp_line + start,
+				    x - start);
 				start = x + 1;
 				break;
-			} else if (line[x] == '\n') {
-				sbuf_nconcat(bar_buf, line + start, x - start);
+			} else if (bar_tmp_line[x] == '\n') {
+				sbuf_nconcat(bar_buf, bar_tmp_line + start,
+				    x - start);
 				sbuf_copy(bar_line, sbuf_get(bar_buf));
-				redraw_sticky_bar_text(rp_current_screen);
+				redraw_sticky_bar_text(rp_current_screen, 0);
 				sbuf_clear(bar_buf);
 				start = x + 1;
 			}
 		}
 
 		if (x == ret)
-			sbuf_nconcat(bar_buf, line + start, x - start);
+			sbuf_nconcat(bar_buf, bar_tmp_line + start, x - start);
 	}
 }

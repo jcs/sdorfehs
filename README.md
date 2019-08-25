@@ -62,7 +62,7 @@ with the `bargravity` setting) of every virtual screen displaying the
 currently-focused window's title.
 
 When the bar is sticky, it also enables a mechanism to display arbitrary
-text, similar to bar programs for other window managers like `i3bar`, `dzen2`,
+text, similar to bar programs for other window managers like i3bar, dzen2,
 etc.
 sdorfehs creates a 
 [named pipe](https://en.wikipedia.org/wiki/Named_pipe)
@@ -76,6 +76,14 @@ For an extremely simple example, a shell script can just echo the output of
       date > ~/.config/sdorfehs/bar
       sleep 1
     done
+
+Bar input can use the `^fg()` markup command from dzen2 which will color
+the text following it until the next `^fg()` command.
+A line of text such as `hello ^fg(green)world^fg()!` will color `hello` with
+the default foreground color (`set fgcolor`), then `world` in green, and the
+exclamation point with the default color.
+Colors can be specified as their common name (`blue`) or as a hex code
+(`#0000ff`).
 
 ### Gaps
 

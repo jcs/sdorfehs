@@ -1987,7 +1987,7 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 				rp_draw_string(cur_screen, wins[i], STYLE_NORMAL,
 				    defaults.bar_x_padding,
 				    defaults.bar_y_padding +
-				    FONT_ASCENT(cur_screen), num, -1);
+				    FONT_ASCENT(cur_screen), num, -1, NULL);
 
 				free(num);
 				i++;
@@ -3461,7 +3461,8 @@ cmd_help(int interactive, struct cmdarg **args)
 		XMapRaised(dpy, s->help_window);
 
 		rp_draw_string(s, s->help_window, STYLE_NORMAL,
-		    x, y + FONT_ASCENT(s), PROGNAME " key bindings", -1);
+		    x, y + FONT_ASCENT(s), PROGNAME " key bindings", -1,
+		    NULL);
 
 		y += FONT_HEIGHT(s) * 2;
 
@@ -3469,14 +3470,14 @@ cmd_help(int interactive, struct cmdarg **args)
 		if (map == find_keymap(ROOT_KEYMAP)) {
 			rp_draw_string(s, s->help_window, STYLE_NORMAL,
 			    x, y + FONT_ASCENT(s),
-			    "Command key: ", -1);
+			    "Command key: ", -1, NULL);
 
 			keysym_name = keysym_to_string(prefix_key.sym,
 			    prefix_key.state);
 			rp_draw_string(s, s->help_window, STYLE_NORMAL,
 			    x + rp_text_width(s, "Command key: ", -1),
 			    y + FONT_ASCENT(s),
-			    keysym_name, -1);
+			    keysym_name, -1, NULL);
 			free(keysym_name);
 
 			y += FONT_HEIGHT(s) * 2;
@@ -3491,7 +3492,7 @@ cmd_help(int interactive, struct cmdarg **args)
 
 				rp_draw_string(s, s->help_window, STYLE_NORMAL,
 				    x, y + FONT_ASCENT(s),
-				    keysym_name, -1);
+				    keysym_name, -1, NULL);
 
 				width = rp_text_width(s, keysym_name, -1);
 				if (width > max_width)
@@ -3501,7 +3502,7 @@ cmd_help(int interactive, struct cmdarg **args)
 			} else {
 				rp_draw_string(s, s->help_window, STYLE_NORMAL,
 				    x, y + FONT_ASCENT(s),
-				    map->actions[i].data, -1);
+				    map->actions[i].data, -1, NULL);
 
 				width = rp_text_width(s, map->actions[i].data, -1);
 				if (width > max_width)
@@ -4101,6 +4102,8 @@ set_fgcolor(struct cmdarg **args)
 		defaults.fgcolor_string = xstrdup(ARG_STRING(0));
 	}
 
+	redraw_sticky_bar_text(rp_current_screen, 1);
+
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
@@ -4135,6 +4138,8 @@ set_bgcolor(struct cmdarg **args)
 		free(defaults.bgcolor_string);
 		defaults.bgcolor_string = xstrdup(ARG_STRING(0));
 	}
+
+	redraw_sticky_bar_text(rp_current_screen, 1);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }

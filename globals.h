@@ -27,6 +27,7 @@
 
 #define FONT_HEIGHT(s) ((s)->xft_font->ascent + (s)->xft_font->descent)
 #define FONT_ASCENT(s) ((s)->xft_font->ascent)
+#define FONT_DESCENT(s) ((s)->xft_font->descent)
 
 #define MAX_FONT_WIDTH(f) (rp_font_width)
 
@@ -207,7 +208,7 @@ char *get_selection(void);
 /* Wrapper font functions to support Xft */
 
 void rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y,
-    char *string, int length);
+    char *string, int length, char *color);
 int rp_text_width(rp_screen *s, char *string, int count);
 
 void check_child_procs(void);

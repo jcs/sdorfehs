@@ -967,7 +967,7 @@ show_frame_message(char *msg)
 	rp_draw_string(s, s->frame_window, STYLE_NORMAL,
 	    defaults.bar_x_padding,
 	    defaults.bar_y_padding + FONT_ASCENT(s),
-	    msgbuf->data, msgbuf->len);
+	    msgbuf->data, msgbuf->len, NULL);
 
 	sbuf_free(msgbuf);
 }
