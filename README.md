@@ -34,6 +34,8 @@ and `make install` to install to `/usr/local` by default.
 sdorfehs retains most of ratpoison's features while adding some more modern
 touches.
 
+![Screenshot](https://jcs.org/sdorfehs-20190826.png)
+
 ### EWMH
 
 sdorfehs strives to be a bit more
