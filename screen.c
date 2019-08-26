@@ -396,6 +396,8 @@ init_screen(rp_screen *s)
 	s->bar_window = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
 	    defaults.bar_border_width,
 	    rp_glob_screen.fg_color, rp_glob_screen.bg_color);
+	set_atom(s->bar_window, _net_wm_window_type, XA_ATOM,
+	    &_net_wm_window_type_dock, 1);
 
 	/*
 	 * Setup the window that will receive all keystrokes once the prefix
@@ -404,23 +406,31 @@ init_screen(rp_screen *s)
 	s->key_window = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1, 0,
 	    WhitePixel(dpy, screen_num),
 	    BlackPixel(dpy, screen_num));
+	set_atom(s->key_window, _net_wm_window_type, XA_ATOM,
+	    &_net_wm_window_type_dock, 1);
 	XSelectInput(dpy, s->key_window, KeyPressMask | KeyReleaseMask);
 
 	/* Create the input window. */
 	s->input_window = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
 	    defaults.bar_border_width,
 	    rp_glob_screen.fg_color, rp_glob_screen.bg_color);
+	set_atom(s->input_window, _net_wm_window_type, XA_ATOM,
+	    &_net_wm_window_type_dock, 1);
 	XSelectInput(dpy, s->input_window, KeyPressMask | KeyReleaseMask);
 
 	/* Create the frame indicator window */
 	s->frame_window = XCreateSimpleWindow(dpy, s->root, 1, 1, 1, 1,
 	    defaults.bar_border_width, rp_glob_screen.fg_color,
 	    rp_glob_screen.bg_color);
+	set_atom(s->frame_window, _net_wm_window_type, XA_ATOM,
+	    &_net_wm_window_type_tooltip, 1);
 
 	/* Create the help window */
 	s->help_window = XCreateSimpleWindow(dpy, s->root, s->left, s->top,
 	    s->width, s->height, 0, rp_glob_screen.fg_color,
 	    rp_glob_screen.bg_color);
+	set_atom(s->help_window, _net_wm_window_type, XA_ATOM,
+	    &_net_wm_window_type_splash, 1);
 	XSelectInput(dpy, s->help_window, KeyPressMask);
 
 	activate_screen(s);
