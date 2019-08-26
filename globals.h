@@ -207,9 +207,11 @@ char *get_selection(void);
 
 /* Wrapper font functions to support Xft */
 
+XftFont *rp_get_font(rp_screen *s, char *font);
+void rp_clear_cached_fonts(rp_screen *s);
 void rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y,
-    char *string, int length, char *color);
-int rp_text_width(rp_screen *s, char *string, int count);
+    char *string, int length, char *font, char *color);
+int rp_text_width(rp_screen *s, char *string, int count, char *font);
 
 void check_child_procs(void);
 void chld_handler(int signum);

@@ -208,6 +208,11 @@ struct rp_vscreen {
 	struct list_head node;
 };
 
+struct rp_font {
+	char *name;
+	XftFont *font;
+};
+
 struct rp_screen {
 	GC normal_gc, inverse_gc;
 	Window root, bar_window, key_window, input_window, frame_window,
@@ -231,6 +236,7 @@ struct rp_screen {
 	struct sbuf *scratch_buffer;
 
 	XftFont *xft_font;
+	struct rp_font xft_font_cache[5];
 	XftColor xft_fg_color, xft_bg_color;
 
 	struct list_head vscreens;

@@ -301,20 +301,75 @@ set_window_focus(Window window)
 	    RevertToPointerRoot, CurrentTime);
 }
 
+XftFont *
+rp_get_font(rp_screen *s, char *font)
+{
+	XftFont *f;
+	int fslots = sizeof(s->xft_font_cache) / sizeof(struct rp_font);
+	int x;
+
+	if (!font || font[0] == '\0')
+		return s->xft_font;
+
+	for (x = 0; x < fslots; x++) {
+		if (!s->xft_font_cache[x].name)
+			break;
+
+		if (strcmp(s->xft_font_cache[x].name, font) == 0)
+			return s->xft_font_cache[x].font;
+	}
+
+	/* not in the cache, make sure we can open it first */
+
+	f = XftFontOpenName(dpy, DefaultScreen(dpy), font);
+	if (!f) {
+		warnx("failed opening xft font \"%s\"", font);
+		return s->xft_font;
+	}
+
+	PRINT_DEBUG(("font \"%s\" not in font cache\n", font));
+
+	/* free up the last slot if needed */
+	if (x == fslots) {
+		free(s->xft_font_cache[x - 1].name);
+		XftFontClose(dpy, s->xft_font_cache[x - 1].font);
+	}
+
+	/* shift all the cache entries to free up the first slot */
+	for (x = fslots - 1; x >= 1; x--)
+		memcpy(&s->xft_font_cache[x], &s->xft_font_cache[x - 1],
+		    sizeof(struct rp_font));
+
+	s->xft_font_cache[0].name = xstrdup(font);
+	s->xft_font_cache[0].font = f;
+
+	return f;
+}
+
+void
+rp_clear_cached_fonts(rp_screen *s)
+{
+	int x;
+
+	for (x = 0; x < (sizeof(s->xft_font_cache) / sizeof(struct rp_font));
+	    x++) {
+		if (s->xft_font_cache[x].name) {
+			free(s->xft_font_cache[x - 1].name);
+			XftFontClose(dpy, s->xft_font_cache[x].font);
+		}
+	}
+}
+
 void
 rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
-    int length, char *color)
+    int length, char *font, char *color)
 {
 	XftDraw *draw;
 	XftColor xftcolor;
+	XftFont *f = rp_get_font(s, font);
 
 	if (length < 0)
 		length = strlen(string);
-
-	if (!s->xft_font) {
-		warnx("failed to allocate XftDraw object");
-		return;
-	}
 
 	draw = XftDrawCreate(dpy, d, DefaultVisual(dpy, s->screen_num),
 	    DefaultColormap(dpy, s->screen_num));
@@ -340,26 +395,21 @@ rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
 		}
 	}
 
-	XftDrawStringUtf8(draw, &xftcolor, s->xft_font, x, y, (FcChar8 *)string,
-	    length);
+	XftDrawStringUtf8(draw, &xftcolor, f, x, y, (FcChar8 *)string, length);
 	XftDrawDestroy(draw);
 }
 
 int
-rp_text_width(rp_screen *s, char *string, int count)
+rp_text_width(rp_screen *s, char *string, int count, char *font)
 {
 	XGlyphInfo extents;
-
-	if (!s->xft_font) {
-		warnx("no Xft font available");
-		return 0;
-	}
+	XftFont *f = rp_get_font(s, font);
 
 	if (count < 0)
 		count = strlen(string);
 
-	XftTextExtentsUtf8(dpy, s->xft_font, (FcChar8 *)string,
-	    count, &extents);
+	XftTextExtentsUtf8(dpy, f, (FcChar8 *)string, count, &extents);
+
 	return extents.xOff;
 }
 

@@ -945,7 +945,7 @@ show_frame_message(char *msg)
 	}
 
 	width = defaults.bar_x_padding * 2
-	    + rp_text_width(s, msgbuf->data, msgbuf->len);
+	    + rp_text_width(s, msgbuf->data, msgbuf->len, NULL);
 	height = (FONT_HEIGHT(s) + defaults.bar_y_padding * 2);
 
 	/*
@@ -967,7 +967,7 @@ show_frame_message(char *msg)
 	rp_draw_string(s, s->frame_window, STYLE_NORMAL,
 	    defaults.bar_x_padding,
 	    defaults.bar_y_padding + FONT_ASCENT(s),
-	    msgbuf->data, msgbuf->len, NULL);
+	    msgbuf->data, msgbuf->len, NULL, NULL);
 
 	sbuf_free(msgbuf);
 }

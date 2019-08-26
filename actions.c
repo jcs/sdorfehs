@@ -1968,7 +1968,7 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 				 */
 				num = frame_selector(cur_frame->number);
 				width = defaults.bar_x_padding * 2 +
-				    rp_text_width(cur_screen, num, -1);
+				    rp_text_width(cur_screen, num, -1, NULL);
 				height = (FONT_HEIGHT(cur_screen) +
 				    defaults.bar_y_padding * 2);
 
@@ -1987,7 +1987,8 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 				rp_draw_string(cur_screen, wins[i], STYLE_NORMAL,
 				    defaults.bar_x_padding,
 				    defaults.bar_y_padding +
-				    FONT_ASCENT(cur_screen), num, -1, NULL);
+				    FONT_ASCENT(cur_screen), num, -1,
+				    NULL, NULL);
 
 				free(num);
 				i++;
@@ -3461,7 +3462,7 @@ cmd_help(int interactive, struct cmdarg **args)
 		XMapRaised(dpy, s->help_window);
 
 		rp_draw_string(s, s->help_window, STYLE_NORMAL,
-		    x, y + FONT_ASCENT(s), PROGNAME " key bindings", -1,
+		    x, y + FONT_ASCENT(s), PROGNAME " key bindings", -1, NULL,
 		    NULL);
 
 		y += FONT_HEIGHT(s) * 2;
@@ -3470,14 +3471,14 @@ cmd_help(int interactive, struct cmdarg **args)
 		if (map == find_keymap(ROOT_KEYMAP)) {
 			rp_draw_string(s, s->help_window, STYLE_NORMAL,
 			    x, y + FONT_ASCENT(s),
-			    "Command key: ", -1, NULL);
+			    "Command key: ", -1, NULL, NULL);
 
 			keysym_name = keysym_to_string(prefix_key.sym,
 			    prefix_key.state);
 			rp_draw_string(s, s->help_window, STYLE_NORMAL,
-			    x + rp_text_width(s, "Command key: ", -1),
+			    x + rp_text_width(s, "Command key: ", -1, NULL),
 			    y + FONT_ASCENT(s),
-			    keysym_name, -1, NULL);
+			    keysym_name, -1, NULL, NULL);
 			free(keysym_name);
 
 			y += FONT_HEIGHT(s) * 2;
@@ -3492,9 +3493,9 @@ cmd_help(int interactive, struct cmdarg **args)
 
 				rp_draw_string(s, s->help_window, STYLE_NORMAL,
 				    x, y + FONT_ASCENT(s),
-				    keysym_name, -1, NULL);
+				    keysym_name, -1, NULL, NULL);
 
-				width = rp_text_width(s, keysym_name, -1);
+				width = rp_text_width(s, keysym_name, -1, NULL);
 				if (width > max_width)
 					max_width = width;
 
@@ -3502,9 +3503,10 @@ cmd_help(int interactive, struct cmdarg **args)
 			} else {
 				rp_draw_string(s, s->help_window, STYLE_NORMAL,
 				    x, y + FONT_ASCENT(s),
-				    map->actions[i].data, -1, NULL);
+				    map->actions[i].data, -1, NULL, NULL);
 
-				width = rp_text_width(s, map->actions[i].data, -1);
+				width = rp_text_width(s, map->actions[i].data,
+				    -1, NULL);
 				if (width > max_width)
 					max_width = width;
 			}

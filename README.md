@@ -77,13 +77,22 @@ For an extremely simple example, a shell script can just echo the output of
       sleep 1
     done
 
-Bar input can use the `^fg()` markup command from dzen2 which will color
-the text following it until the next `^fg()` command.
+Bar input supports some markup commands from dzen2 in the format
+`^command(details)` which affect the text following the command until the
+command is reset with `^command()`.
+Currently supported commands:
+
+- `^fg()`: color the text following until the next `^fg()` command.
 A line of text such as `hello ^fg(green)world^fg()!` will color `hello` with
 the default foreground color (`set fgcolor`), then `world` in green, and the
 exclamation point with the default color.
 Colors can be specified as their common name (`blue`) or as a hex code
 (`#0000ff`).
+
+- `^fn()`: change the font of the following text.
+Fonts must be specified in Xft format like `set font` such as
+`^fn(noto emoji:size=13)`.
+Resetting to the default font can be done with `^fn()`.
 
 ### Gaps
 

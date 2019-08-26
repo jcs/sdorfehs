@@ -403,8 +403,8 @@ update_input_window(rp_screen *s, rp_input_line *line)
 	GC lgc;
 	XGCValues gcv;
 
-	prompt_width = rp_text_width(s, line->prompt, -1);
-	input_width = rp_text_width(s, line->buffer, line->length);
+	prompt_width = rp_text_width(s, line->prompt, -1, NULL);
+	input_width = rp_text_width(s, line->buffer, line->length, NULL);
 	total_width = defaults.bar_x_padding * 2 + prompt_width + input_width +
 	    MAX_FONT_WIDTH(defaults.font);
 	height = (FONT_HEIGHT(s) + defaults.bar_y_padding * 2);
@@ -438,13 +438,13 @@ update_input_window(rp_screen *s, rp_input_line *line)
 	    defaults.bar_x_padding,
 	    defaults.bar_y_padding + FONT_ASCENT(s),
 	    line->prompt,
-	    -1, NULL);
+	    -1, NULL, NULL);
 
 	rp_draw_string(s, s->input_window, STYLE_NORMAL,
 	    defaults.bar_x_padding + prompt_width,
 	    defaults.bar_y_padding + FONT_ASCENT(s),
 	    line->buffer,
-	    line->length, NULL);
+	    line->length, NULL, NULL);
 
 	gcv.function = GXxor;
 	gcv.foreground = rp_glob_screen.fg_color ^ rp_glob_screen.bg_color;
@@ -453,9 +453,9 @@ update_input_window(rp_screen *s, rp_input_line *line)
 	/* Draw a cheap-o cursor - MkIII */
 	XFillRectangle(dpy, s->input_window, lgc,
 	    defaults.bar_x_padding + prompt_width +
-	    rp_text_width(s, line->buffer, line->position),
+	    rp_text_width(s, line->buffer, line->position, NULL),
 	    defaults.bar_y_padding,
-	    rp_text_width(s, &line->buffer[line->position], char_len),
+	    rp_text_width(s, &line->buffer[line->position], char_len, NULL),
 	    FONT_HEIGHT(s));
 
 	XFlush(dpy);

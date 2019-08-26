@@ -428,26 +428,22 @@ init_screen(rp_screen *s)
 	XSync(dpy, 0);
 
 	s->xft_font = XftFontOpenName(dpy, screen_num, DEFAULT_XFT_FONT);
-	if (s->xft_font) {
-		if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
-		    DefaultColormap(dpy, screen_num),
-		    defaults.fgcolor_string, &s->xft_fg_color)) {
-			warnx("failed to allocate font fg color %s",
-			    defaults.fgcolor_string);
-			XftFontClose(dpy, s->xft_font);
-			s->xft_font = NULL;
-		}
-		if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
-		    DefaultColormap(dpy, screen_num),
-		    defaults.bgcolor_string, &s->xft_bg_color)) {
-			warnx("failed to allocate font bg color %s",
-			    defaults.bgcolor_string);
-			XftFontClose(dpy, s->xft_font);
-			s->xft_font = NULL;
-		}
-	} else {
-		warnx("failed to open font %s", DEFAULT_XFT_FONT);
-	}
+	if (!s->xft_font)
+		errx(1, "failed to open default font \"%s\"", DEFAULT_XFT_FONT);
+
+	memset(s->xft_font_cache, 0, sizeof(s->xft_font_cache));
+
+	if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
+	    DefaultColormap(dpy, screen_num),
+	    defaults.fgcolor_string, &s->xft_fg_color))
+		errx(1, "failed to allocate font fg color %s",
+		    defaults.fgcolor_string);
+
+	if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
+	    DefaultColormap(dpy, screen_num),
+	    defaults.bgcolor_string, &s->xft_bg_color))
+		errx(1, "failed to allocate font bg color %s",
+		    defaults.bgcolor_string);
 }
 
 void
@@ -701,6 +697,7 @@ screen_free(rp_screen *s)
 		    DefaultColormap(dpy, s->screen_num), &s->xft_bg_color);
 		XftFontClose(dpy, s->xft_font);
 	}
+	rp_clear_cached_fonts(s);
 
 	XFreeCursor(dpy, s->rat);
 	XFreeColormap(dpy, s->def_cmap);
