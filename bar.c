@@ -112,7 +112,6 @@ void
 hide_bar(rp_screen *s, int force)
 {
 	if (!s->full_screen_win && defaults.bar_sticky && !force) {
-		s->bar_is_raised = BAR_IS_STICKY;
 		redraw_sticky_bar_text(s, 0);
 		return;
 	}
@@ -273,6 +272,13 @@ redraw_sticky_bar_text(rp_screen *s, int force)
 
 	if (s->full_screen_win || !defaults.bar_sticky)
 		return;
+
+	/*
+	 * If we were showing a message or window list before, make sure we
+	 * clear it all.
+	 */
+	if (s->bar_is_raised != BAR_IS_STICKY)
+		force = 1;
 
 	width = s->width - (defaults.bar_border_width * 2);
 	height = FONT_HEIGHT(s) + (defaults.bar_y_padding * 2);
