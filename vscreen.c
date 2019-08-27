@@ -19,8 +19,6 @@
 #include <err.h>
 #include "sdorfehs.h"
 
-static void vscreen_remove_current(void);
-
 void
 init_vscreen(rp_vscreen *v, rp_screen *s)
 {
@@ -35,19 +33,19 @@ void
 vscreen_del(rp_vscreen *v)
 {
 	rp_screen *s = v->screen;
+	rp_vscreen *target = NULL;
+	rp_window *cur;
 
-	if (v == s->current_vscreen) {
-		if (list_size(&s->vscreens) == 1)
-			hide_vscreen_windows(v);
-		else
-			vscreen_remove_current();
+	if (v->number != 0)
+		target = vscreens_find_vscreen_by_number(s, 0);
 
-		s->current_vscreen = NULL;
-	} else
-		hide_vscreen_windows(v);
+	list_for_each_entry(cur, &rp_mapped_window, node) {
+		if (cur->vscr == v && target)
+			vscreen_move_window(target, cur);
+	}
 
-	/* Affect window's screen backpointer to the new current screen */
-	change_windows_vscreen(v, s->current_vscreen);
+	if (s->current_vscreen == v && target)
+		set_current_vscreen(target);
 
 	numset_release(s->vscreens_numset, v->number);
 
@@ -71,25 +69,6 @@ vscreen_prev(void)
 	    &rp_current_screen->vscreens, node);
 }
 
-static void
-vscreen_remove_current(void)
-{
-	rp_screen *new_screen;
-	rp_frame *new_frame;
-	rp_window *cur_win;
-	int cur_frame;
-
-	cur_win = current_window();
-	new_screen = screen_next();
-
-	cur_frame = new_screen->current_vscreen->current_frame;
-	new_frame = vscreen_get_frame(new_screen->current_vscreen, cur_frame);
-
-	set_active_frame(new_frame, 1);
-
-	hide_window(cur_win);
-}
-
 void
 vscreen_free(rp_vscreen *v)
 {
@@ -103,38 +82,46 @@ vscreen_free(rp_vscreen *v)
 int
 vscreens_resize(int n)
 {
-#if 0
 	struct list_head *tmp, *iter;
-	int ok = 1;
-	int x;
 	rp_vscreen *cur;
-	rp_group *g;
+	rp_screen *scr;
+	int x;
 
-	PRINT_DEBUG(("Resizing vsceens from %d to %d\n", defaults.vscreens, n));
+	PRINT_DEBUG(("Resizing vscreens from %d to %d\n", defaults.vscreens,
+	    n));
+
+	if (n < 1)
+		return 1;
 
 	if (n < defaults.vscreens) {
-		list_for_each_safe_entry(cur, iter, tmp, &rp_virtuals, node) {
-			if (cur->number <= n)
-				continue;
+		list_for_each_entry(scr, &rp_screens, node) {
+			list_for_each_safe_entry(cur, iter, tmp, &scr->vscreens,
+			    node) {
+				if (cur->number < n)
+					continue;
 
-			list_del(&(cur->node));
-			virtual_free(cur);
+				if (scr->current_vscreen == cur)
+					set_current_vscreen(
+					    vscreens_find_vscreen_by_number(scr,
+					    0));
+
+				vscreen_del(cur);
+			}
 		}
-	} else if (n > defaults.virtuals) {
-		for (x = defaults.vscreens; x <= n; x++) {
-			vscreen = xmalloc(sizeof(rp_vscreen));
-			init_vscreen(vscreen, s);
-			list_add_tail(&vscreen->node, &s->vscreens);
-
-			if (x == 0)
-				s->current_vscreen = vscreen;
-			virtual_new(x);
+	} else if (n > defaults.vscreens) {
+		list_for_each_entry(scr, &rp_screens, node) {
+			for (x = defaults.vscreens; x <= n; x++) {
+				cur = xmalloc(sizeof(rp_vscreen));
+				init_vscreen(cur, scr);
+				list_add_tail(&cur->node, &scr->vscreens);
+				init_frame_list(cur);
+			}
+		}
 	}
 
 	defaults.vscreens = n;
-#endif
 
-	return 1;
+	return 0;
 }
 
 rp_vscreen *
@@ -331,6 +318,4 @@ vscreen_move_window(rp_vscreen *v, rp_window *w)
 	}
 
 	hide_window(w);
-	set_current_vscreen(v);
-	set_active_window(w);
 }

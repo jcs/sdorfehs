@@ -349,7 +349,7 @@ init_set_vars(void)
 	add_set_var("stickyfmt", set_stickyfmt, 1, "", arg_REST);
 	add_set_var("topkmap", set_topkmap, 1, "", arg_STRING);
 	add_set_var("transgravity", set_transgravity, 1, "", arg_GRAVITY);
-	add_set_var("vsceens", set_vscreens, 1, "", arg_NUMBER);
+	add_set_var("vscreens", set_vscreens, 1, "", arg_NUMBER);
 	add_set_var("waitcursor", set_waitcursor, 1, "", arg_NUMBER);
 	add_set_var("warp", set_warp, 1, "", arg_NUMBER);
 	add_set_var("winfmt", set_winfmt, 1, "", arg_REST);
@@ -4217,7 +4217,7 @@ set_vscreens(struct cmdarg **args)
 	if (ARG(0, number) < 1)
 		return cmdret_new(RET_FAILURE, "vscreens: invalid argument");
 
-	if (!vscreens_resize(ARG(0, number)))
+	if (vscreens_resize(ARG(0, number)) != 0)
 		return cmdret_new(RET_FAILURE, "vscreens: failed resizing");
 
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -5819,16 +5819,19 @@ cmdret *
 cmd_vmove(int interactive, struct cmdarg **args)
 {
 	rp_vscreen *v;
+	rp_window *w;
 	int n;
 
-	if (current_window() == NULL)
+	if ((w = current_window()) == NULL)
 		return cmdret_new(RET_FAILURE, "vmove: no focused window");
 
 	n = string_to_positive_int(ARG_STRING(0));
 	if (n >= 0) {
 		v = vscreens_find_vscreen_by_number(rp_current_screen, n);
 		if (v) {
-			vscreen_move_window(v, current_window());
+			vscreen_move_window(v, w);
+			set_current_vscreen(v);
+			set_active_window(w);
 			return cmdret_new(RET_SUCCESS, NULL);
 		}
 	}
