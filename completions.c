@@ -16,10 +16,11 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
+/* Needed on Linux for strcasestr */
+#define _GNU_SOURCE
 #include <string.h>
 
 #include "sdorfehs.h"
-#include "completions.h"
 
 rp_completions *
 completions_new(completion_fn list_fn, enum completion_styles style)

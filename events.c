@@ -1030,7 +1030,7 @@ listen_for_events(void)
 			else if (pollfifo)
 				pfd[1].fd = rp_glob_screen.bar_fifo_fd;
 
-			poll(pfd, pollfifo ? 2 : 1, INFTIM);
+			poll(pfd, pollfifo ? 2 : 1, -1);
 
 			if (pollfifo && (pfd[1].revents & (POLLERR|POLLNVAL))) {
 				warnx("error polling on FIFO");

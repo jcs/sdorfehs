@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <err.h>
+#include <sys/time.h>
 
 #include "sdorfehs.h"
 
