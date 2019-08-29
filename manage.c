@@ -528,7 +528,7 @@ static void
 move_window(rp_window *win)
 {
 	rp_frame *frame;
-	int t;
+	int t, t2;
 
 	if (win->frame_number == EMPTY)
 		return;
@@ -559,10 +559,10 @@ move_window(rp_window *win)
 	case NorthGravity:
 	case CenterGravity:
 	case SouthGravity:
-		t = (frame->width / 2);
-		t -= (defaults.gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
-		t -= (defaults.gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
-		win->x = frame->x + t - (win->width / 2);
+		t = (defaults.gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
+		t2 = (defaults.gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
+		win->x = frame->x + t +
+		    ((frame->width - t - t2 - win->width) / 2);
 		break;
 	case NorthEastGravity:
 	case EastGravity:
@@ -583,10 +583,10 @@ move_window(rp_window *win)
 	case EastGravity:
 	case CenterGravity:
 	case WestGravity:
-		t = (frame->height / 2);
-		t -= (defaults.gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
-		t -= (defaults.gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
-		win->y = frame->y + t - (win->height / 2);
+		t = (defaults.gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
+		t2 = (defaults.gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
+		win->y = frame->y + t +
+		    ((frame->height - t - t2 - win->height) / 2);
 		break;
 	case SouthEastGravity:
 	case SouthGravity:
@@ -595,6 +595,11 @@ move_window(rp_window *win)
 		    (defaults.gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
 		break;
 	}
+
+	if (win->x < frame->x)
+		win->x = frame->x;
+	if (win->y < frame->y)
+		win->y = frame->y;
 }
 
 /*
@@ -641,8 +646,6 @@ maximize_window(rp_window *win, int transient)
 			maxh = frame->height;
 
 		if (!transient) {
-			maxw = frame->width;
-			maxh = frame->height;
 			gap = (frame_right_screen_edge(frame) ? 1 : 0.5);
 			gap += (frame_left_screen_edge(frame) ? 1 : 0.5);
 			maxw -= gap * defaults.gap;
@@ -724,7 +727,8 @@ maximize(rp_window *win)
 	/* Reposition the window. */
 	move_window(win);
 
-	PRINT_DEBUG(("Resizing window '%s' to x:%d y:%d w:%d h:%d\n",
+	PRINT_DEBUG(("Resizing %s window '%s' to x:%d y:%d w:%d h:%d\n",
+	    win->transient ? "transient" : "normal",
 	    window_name(win), win->x, win->y, win->width, win->height));
 
 	/* Actually do the maximizing. */
