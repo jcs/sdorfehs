@@ -81,7 +81,7 @@ MAN=		sdorfehs.1
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 sdorfehs: $(OBJ)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 all: sdorfehs
 
