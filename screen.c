@@ -270,9 +270,15 @@ init_screens(void)
 	rp_screen *screen;
 
 	/* Get the number of screens */
-	if (rp_have_xrandr)
+	if (rp_have_xrandr) {
 		screen_count = xrandr_query_screen(&rr_outputs);
-	else
+		if (!screen_count) {
+			rp_have_xrandr = 0;
+			warnx("XRandR reported no screens, not using it\n");
+		}
+	}
+
+	if (!screen_count)
 		screen_count = ScreenCount(dpy);
 
 	/* Create our global frame numset */

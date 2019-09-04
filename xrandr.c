@@ -120,7 +120,7 @@ xrandr_fill_screen(int rr_output, rp_screen *screen)
 	res = XRRGetScreenResourcesCurrent(dpy, RootWindow(dpy,
 	    DefaultScreen(dpy)));
 	outinfo = XRRGetOutputInfo(dpy, res, rr_output);
-	if (!outinfo->crtc)
+	if (!outinfo || !outinfo->crtc)
 		goto free_res;
 
 	crtinfo = XRRGetCrtcInfo(dpy, res, outinfo->crtc);
@@ -162,18 +162,19 @@ xrandr_output_change(XRROutputChangeNotifyEvent *ev)
 
 	screen = xrandr_screen_output(ev->output);
 
-	if (!screen && outinfo->crtc) {
+	if (!screen && outinfo && outinfo->crtc) {
 		screen = screen_add(ev->output);
 		screen_sort();
 		PRINT_DEBUG(("%s: Added screen %s with crtc %lu\n", __func__,
 			screen->xrandr.name,
 			(unsigned long) outinfo->crtc));
-	} else if (screen && !outinfo->crtc) {
+	} else if (screen && (!outinfo || !outinfo->crtc)) {
 		PRINT_DEBUG(("%s: Removing screen %s\n", __func__,
 			screen->xrandr.name));
 		screen_del(screen);
 	}
-	XRRFreeOutputInfo(outinfo);
+	if (outinfo)
+		XRRFreeOutputInfo(outinfo);
 	XRRFreeScreenResources(res);
 }
 
