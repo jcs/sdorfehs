@@ -26,8 +26,8 @@ sdorfehs retains ratpoison's GPL2 license.
 
 ### Compiling
 
-Use GNU Make (`gmake` on many non-GNU systems) to run `make` to compile,
-and `make install` to install to `/usr/local` by default.
+Run `make` to compile, and `make install` to install to `/usr/local` by
+default.
 
 ## Features
 
