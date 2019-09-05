@@ -344,6 +344,8 @@ main(int argc, char *argv[])
 	register_atom(&_net_client_list_stacking, "_NET_CLIENT_LIST_STACKING");
 	register_atom(&_net_current_desktop, "_NET_CURRENT_DESKTOP");
 	register_atom(&_net_number_of_desktops, "_NET_NUMBER_OF_DESKTOPS");
+	register_atom(&_net_workarea, "_NET_WORKAREA");
+
 	register_atom(&_net_wm_name, "_NET_WM_NAME");
 	register_atom(&_net_wm_pid, "_NET_WM_PID");
 	register_atom(&_net_wm_state, "_NET_WM_STATE");

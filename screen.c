@@ -460,6 +460,8 @@ init_screen(rp_screen *s)
 	    defaults.bgcolor_string, &s->xft_bg_color))
 		errx(1, "failed to allocate font bg color %s",
 		    defaults.bgcolor_string);
+
+	screen_update_workarea(s);
 }
 
 void
@@ -608,6 +610,8 @@ screen_update(rp_screen *s, int left, int top, int width, int height)
 			maximize_all_windows_in_frame(f);
 		}
 	}
+
+	screen_update_workarea(s);
 }
 
 void
@@ -635,6 +639,19 @@ screen_update_frames(rp_screen *s)
 	}
 
 	redraw_sticky_bar_text(rp_current_screen, 1);
+}
+
+void
+screen_update_workarea(rp_screen *s)
+{
+	long workarea[4];
+
+	workarea[0] = screen_left(s) - s->left;
+	workarea[1] = screen_top(s) - s->top;
+	workarea[2] = screen_width(s);
+	workarea[3] = screen_height(s);
+
+	set_atom(s->root, _net_workarea, XA_CARDINAL, workarea, 4);
 }
 
 rp_screen *

@@ -130,6 +130,7 @@ extern Atom _net_client_list_stacking;
 extern Atom _net_current_desktop;
 extern Atom _net_number_of_desktops;
 extern Atom _net_supported;
+extern Atom _net_workarea;
 extern Atom _net_wm_name;
 extern Atom _net_wm_pid;
 extern Atom _net_wm_state;

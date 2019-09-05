@@ -3861,6 +3861,7 @@ set_padding(struct cmdarg **args)
 	defaults.padding_top = t;
 	defaults.padding_bottom = b;
 
+	screen_update_workarea(s);
 	screen_update_frames(s);
 
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -4601,6 +4602,7 @@ set_barsticky(struct cmdarg **args)
 	defaults.bar_sticky = ARG(0, number);
 
 	hide_bar(rp_current_screen, 0);
+	screen_update_workarea(rp_current_screen);
 	screen_update_frames(rp_current_screen);
 
 	return cmdret_new(RET_SUCCESS, NULL);

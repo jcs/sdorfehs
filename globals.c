@@ -75,6 +75,7 @@ Atom _net_client_list_stacking;
 Atom _net_current_desktop;
 Atom _net_number_of_desktops;
 Atom _net_supported;
+Atom _net_workarea;
 Atom _net_wm_name;
 Atom _net_wm_pid;
 Atom _net_wm_state;
