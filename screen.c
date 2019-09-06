@@ -404,6 +404,7 @@ init_screen(rp_screen *s)
 	    rp_glob_screen.fg_color, rp_glob_screen.bg_color);
 	set_atom(s->bar_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_dock, 1);
+	XSelectInput(dpy, s->bar_window, ButtonPressMask);
 
 	/*
 	 * Setup the window that will receive all keystrokes once the prefix

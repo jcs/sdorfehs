@@ -84,14 +84,18 @@ Bar input supports some markup commands from dzen2 in the format
 command is reset with `^command()`.
 Currently supported commands:
 
-- `^fg()`: color the text following until the next `^fg()` command.
+- `^ca(btn,cmd)`: execute `cmd` when mouse button `btn` is clicked on this
+area of text.
+Closing the area of clickable text can be done with `^ca()`.
+
+- `^fg(color)`: color the text following until the next `^fg()` command.
 A line of text such as `hello ^fg(green)world^fg()!` will color `hello` with
 the default foreground color (`set fgcolor`), then `world` in green, and the
 exclamation point with the default color.
 Colors can be specified as their common name (`blue`) or as a hex code
 (`#0000ff`).
 
-- `^fn()`: change the font of the following text.
+- `^fn(font)`: change the font of the following text.
 Fonts must be specified in Xft format like `set font` such as
 `^fn(noto emoji:size=13)`.
 Resetting to the default font can be done with `^fn()`.

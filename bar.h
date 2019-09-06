@@ -39,6 +39,8 @@ void redraw_last_message(void);
 void show_last_message(void);
 void free_bar(void);
 
+void bar_handle_click(rp_screen *s, XButtonEvent *e);
+
 int bar_open_fifo(void);
 void bar_read_fifo(void);
 

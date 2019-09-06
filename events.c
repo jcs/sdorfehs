@@ -511,6 +511,20 @@ key_press(XEvent *ev)
 	handle_key(ks, modifier, s);
 }
 
+static void
+button_press(XEvent *ev)
+{
+	rp_screen *s;
+	XButtonEvent *xbe = (XButtonEvent *)ev;
+
+	s = rp_current_screen;
+	if (!s)
+		return;
+
+	if (xbe->window == s->bar_window)
+		bar_handle_click(s, xbe);
+}
+
 /*
  * Read a command off the window and execute it. Some commands return text.
  * This text is passed back using the RP_COMMAND_RESULT Atom. The client will
@@ -896,6 +910,11 @@ delegate_event(XEvent *ev)
 	case KeyPress:
 		PRINT_DEBUG(("--- Handling KeyPress ---\n"));
 		key_press(ev);
+		break;
+
+	case ButtonPress:
+		PRINT_DEBUG(("--- Handling ButtonPress ---\n"));
+		button_press(ev);
 		break;
 
 	case UnmapNotify:

@@ -124,8 +124,6 @@ static int alias_list_last;
 
 static const char invalid_negative_arg[] = "invalid negative argument";
 
-static int spawn(char *data, int raw, rp_frame *frame);
-
 /* setter function prototypes */
 static cmdret *set_barborder(struct cmdarg **args);
 static cmdret *set_bargravity(struct cmdarg **args);

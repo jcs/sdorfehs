@@ -391,7 +391,7 @@ rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
 		 */
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, s->screen_num),
 		    DefaultColormap(dpy, s->screen_num), color, &xftcolor)) {
-			warnx("couldn't !XftColorAllocName \"%s\"", color);
+			warnx("couldn't XftColorAllocName \"%s\"", color);
 			memcpy(&xftcolor, &s->xft_fg_color, sizeof(XftColor));
 		}
 	}
