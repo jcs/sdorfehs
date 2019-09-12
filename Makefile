@@ -6,7 +6,9 @@ SYSCONFDIR=	/etc
 PKGLIBS=	x11 xft xrandr xtst
 
 CC=		cc
-CFLAGS=		-g -O2 -Wall -DSYSCONFDIR="\"$(SYSCONFDIR)\"" \
+CFLAGS=		-g -O2 -Wall \
+		-Wunused -Wmissing-prototypes -Wstrict-prototypes -Wunused \
+		-DSYSCONFDIR="\"$(SYSCONFDIR)\"" \
 		`pkg-config --cflags ${PKGLIBS}`
 LDFLAGS=	`pkg-config --libs ${PKGLIBS}`
 
