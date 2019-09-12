@@ -272,7 +272,7 @@ redraw_sticky_bar_text(rp_screen *s, int force)
 	struct bar_chunk *chunk;
 	struct sbuf *tbuf, *curcmd, *curtxt;
 	char *tline, *font, *color, *clickcmd;
-	int diff = 0, len, cmd = 0, skip = 0, xftx = 0, x, clickcmdbtn;
+	int diff = 0, len, cmd = 0, skip = 0, xftx = 0, x, clickcmdbtn = 0;
 	int width, height;
 
 	if (s->full_screen_win || !defaults.bar_sticky)
