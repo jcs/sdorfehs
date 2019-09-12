@@ -20,6 +20,8 @@
 
 #include <string.h>
 
+void group_insert_window(struct list_head *h, rp_window_elem *w);
+
 static void
 set_current_group_1(rp_group *g)
 {

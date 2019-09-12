@@ -19,6 +19,9 @@
 #include <err.h>
 #include "sdorfehs.h"
 
+rp_vscreen *vscreen_next(void);
+rp_vscreen *vscreen_prev(void);
+
 void
 init_vscreen(rp_vscreen *v, rp_screen *s)
 {
