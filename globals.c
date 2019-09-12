@@ -541,14 +541,17 @@ get_config_dir(void)
 	DIR *d;
 	const char *homedir;
 	char *xdg_config, *home_config;
+	int xdg_alloc = 0;
 
 	homedir = get_homedir();
 	if (!homedir)
 		errx(1, "no home directory");
 
 	xdg_config = getenv("XDG_CONFIG_HOME");
-	if (xdg_config == NULL || !strlen(xdg_config))
+	if (xdg_config == NULL || !strlen(xdg_config)) {
 		xdg_config = xsprintf("%s/.config", homedir);
+		xdg_alloc = 1;
+	}
 
 	if (!(d = opendir(xdg_config))) {
 		if (mkdir(xdg_config, 0755) == -1)
@@ -569,7 +572,8 @@ get_config_dir(void)
 	}
 	closedir(d);
 
-	free(xdg_config);
+	if (xdg_alloc)
+		free(xdg_config);
 
 	return home_config;
 }
