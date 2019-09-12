@@ -645,7 +645,7 @@ screen_update_frames(rp_screen *s)
 void
 screen_update_workarea(rp_screen *s)
 {
-	long workarea[4];
+	unsigned long workarea[4];
 
 	workarea[0] = screen_left(s) - s->left;
 	workarea[1] = screen_top(s) - s->top;
