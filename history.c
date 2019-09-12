@@ -139,7 +139,8 @@ history_load(void)
 
 	f = fopen(filename, "r");
 	if (!f) {
-		warn("could not load history from %s", filename);
+		PRINT_DEBUG(("could not load history from %s: %s", filename,
+		    strerror(errno)));
 		free(filename);
 		return;
 	}
