@@ -321,7 +321,6 @@ init_set_vars(void)
 	add_set_var("barsticky", set_barsticky, 1, "", arg_NUMBER);
 	add_set_var("bgcolor", set_bgcolor, 1, "", arg_STRING);
 	add_set_var("border", set_border, 1, "", arg_NUMBER);
-	add_set_var("onlyborder", set_onlyborder, 1, "", arg_NUMBER);
 	add_set_var("bwcolor", set_bwcolor, 1, "", arg_STRING);
 	add_set_var("fgcolor", set_fgcolor, 1, "", arg_STRING);
 	add_set_var("font", set_font, 1, "", arg_STRING);
@@ -338,6 +337,7 @@ init_set_vars(void)
 	add_set_var("maxsizegravity", set_maxsizegravity, 1, "", arg_GRAVITY);
 	add_set_var("maxundos", set_maxundos, 1, "", arg_NUMBER);
 	add_set_var("msgwait", set_msgwait, 1, "", arg_NUMBER);
+	add_set_var("onlyborder", set_onlyborder, 1, "", arg_NUMBER);
 	add_set_var("padding", set_padding, 4, "", arg_NUMBER, "", arg_NUMBER,
 	    "", arg_NUMBER, "", arg_NUMBER);
 	add_set_var("resizefmt", set_resizefmt, 1, "", arg_REST);
