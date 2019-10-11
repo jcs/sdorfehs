@@ -273,10 +273,9 @@ set_current_vscreen(rp_vscreen *v)
 		unhide_window(win);
 	}
 
-	frame = current_frame(v);
-	if (frame == NULL)
-		set_window_focus(v->screen->key_window);
-	else
+	set_window_focus(v->screen->key_window);
+
+	if ((frame = current_frame(v)))
 		set_active_frame(frame, 0);
 
 	update_bar(v->screen);
