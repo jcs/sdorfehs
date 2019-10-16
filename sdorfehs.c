@@ -404,6 +404,11 @@ main(int argc, char *argv[])
 	if (current_window() == NULL)
 		set_window_focus(rp_current_screen->key_window);
 
+#ifdef __OpenBSD__
+	/* cpath/wpath/fattr needed for history_save() */
+	pledge("stdio rpath cpath wpath fattr unix proc exec", NULL);
+#endif
+
 	listen_for_events();
 
 	return 0;
