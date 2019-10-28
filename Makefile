@@ -1,24 +1,23 @@
-DESTDIR=
-PREFIX=		/usr/local
-X11BASE=	/usr/X11R6
-SYSCONFDIR=	/etc
+PREFIX?=	/usr/local
+X11BASE?=	/usr/X11R6
+SYSCONFDIR?=	/etc
 
 PKGLIBS=	x11 xft xrandr xtst
 
-CC=		cc
-CFLAGS=		-g -O2 -Wall \
+CC?=		cc
+CFLAGS+=	-O2 -Wall \
 		-Wunused -Wmissing-prototypes -Wstrict-prototypes -Wunused \
 		-DSYSCONFDIR="\"$(SYSCONFDIR)\"" \
 		`pkg-config --cflags ${PKGLIBS}`
-LDFLAGS=	`pkg-config --libs ${PKGLIBS}`
+LDFLAGS+=	`pkg-config --libs ${PKGLIBS}`
 
 # uncomment to enable debugging
-#CFLAGS+=	-DDEBUG=1
+#CFLAGS+=	-g -DDEBUG=1
 # and this for input-specific debugging
 #CFLAGS+=	-DINPUT_DEBUG=1
 
-BINDIR=		$(DESTDIR)$(PREFIX)/bin
-MANDIR=		$(DESTDIR)$(PREFIX)/man/man1
+BINDIR=		$(PREFIX)/bin
+MANDIR=		$(PREFIX)/man/man1
 
 SRC!=		ls *.c
 OBJ=		${SRC:.c=.o}
