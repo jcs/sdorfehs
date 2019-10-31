@@ -646,14 +646,18 @@ maximize_window(rp_window *win, int transient)
 		if (maxh > frame->height)
 			maxh = frame->height;
 
+		PRINT_DEBUG(("adjusted to frame, maxsize %d %d\n", maxw, maxh));
+
 		if (!transient) {
 			gap = (frame_right_screen_edge(frame) ? 1 : 0.5);
 			gap += (frame_left_screen_edge(frame) ? 1 : 0.5);
-			maxw -= gap * defaults.gap;
+			if (maxw > (frame->width - (gap * defaults.gap)))
+				maxw -= gap * defaults.gap;
 
 			gap = (frame_top_screen_edge(frame) ? 1 : 0.5);
 			gap += (frame_bottom_screen_edge(frame) ? 1 : 0.5);
-			maxh -= gap * defaults.gap;
+			if (maxh > (frame->height - (gap * defaults.gap)))
+				maxh -= gap * defaults.gap;
 
 			if (!(defaults.only_border == 0 &&
 			    num_frames(win->vscr) <= 1)) {
@@ -678,6 +682,8 @@ maximize_window(rp_window *win, int transient)
 		} else if (ratio > max_ratio) {
 			maxw = (int) (maxh * max_ratio);
 		}
+
+		PRINT_DEBUG(("honored ratio, maxsize %d %d\n", maxw, maxh));
 	}
 	/*
 	 * Make sure we maximize to the nearest Resize Increment specified by
@@ -704,8 +710,11 @@ maximize_window(rp_window *win, int transient)
 			amount -= delta;
 			maxh = amount + win->height;
 		}
+
+		PRINT_DEBUG(("applied width_inc/height_inc, maxsize %d %d\n",
+		    maxw, maxh));
 	}
-	PRINT_DEBUG(("maxsize: %d %d\n", maxw, maxh));
+	PRINT_DEBUG(("final maxsize: %d %d\n", maxw, maxh));
 
 	win->width = maxw;
 	win->height = maxh;
