@@ -101,6 +101,8 @@ new_window(XCreateWindowEvent *e)
 		win = add_to_window_list(rp_current_screen, e->window);
 	}
 	update_window_information(win);
+
+	PRINT_DEBUG(("created new window\n"));
 }
 
 static void

@@ -366,6 +366,10 @@ update_window_information(rp_window *win)
 	if (get_net_wm_window_type(win) == _net_wm_window_type_dialog)
 		win->transient = 1;
 
+	PRINT_DEBUG(("update_window_information: x:%d y:%d width:%d height:%d "
+	    "transient:%d\n", win->x, win->y, win->width, win->height,
+	    win->transient));
+
 	update_window_gravity(win);
 }
 
@@ -530,8 +534,10 @@ move_window(rp_window *win)
 	rp_frame *frame;
 	int t, t2;
 
-	if (win->frame_number == EMPTY)
+	if (win->frame_number == EMPTY) {
+		PRINT_DEBUG(("%s: window has no frame\n", __func__));
 		return;
+	}
 
 	frame = win_get_frame(win);
 
@@ -608,8 +614,10 @@ maximize_window(rp_window *win, int transient)
 	frame = win_get_frame(win);
 
 	/* We can't maximize a window if it has no frame. */
-	if (frame == NULL)
+	if (frame == NULL) {
+		PRINT_DEBUG(("%s: no frame\n", __func__));
 		return;
+	}
 
 	/* Set the window's border */
 	if ((defaults.only_border == 0 && num_frames(win->vscr) <= 1) ||
