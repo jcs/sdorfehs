@@ -541,13 +541,6 @@ move_window(rp_window *win)
 		return;
 	}
 
-	if (!win->transient && defaults.only_border == 0 &&
-	    num_frames(win->vscr) <= 1) {
-		win->x = frame->x;
-		win->y = frame->y;
-		return;
-	}
-
 	/* X coord. */
 	switch (win->gravity) {
 	case NorthWestGravity:
@@ -653,11 +646,12 @@ maximize_window(rp_window *win, int transient)
 			gap = (frame_top_screen_edge(frame) ? 1 : 0.5);
 			gap += (frame_bottom_screen_edge(frame) ? 1 : 0.5);
 			maxh -= gap * defaults.gap;
-		}
 
-		if (defaults.only_border == 0 && num_frames(win->vscr) <= 1) {
-			maxw -= win->border * 2;
-			maxh -= win->border * 2;
+			if (!(defaults.only_border == 0 &&
+			    num_frames(win->vscr) <= 1)) {
+				maxw -= win->border * 2;
+				maxh -= win->border * 2;
+			}
 		}
 	}
 
