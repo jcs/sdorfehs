@@ -58,7 +58,7 @@ with `Control+a, F1` through `Control+a, F12`.
 
 sdorfehs has a bar window which is shown temporarily to display status
 messages or the output of certain commands.
-By default, this bar is made sticky with the `stickybar` setting which
+By default, this bar is made sticky with the `barsticky` setting which
 forces the bar to be permanently affixed to the top or bottom (configurable
 with the `bargravity` setting) of every virtual screen displaying the
 currently-focused window's title.
