@@ -90,14 +90,13 @@ reset_alarm(void)
 	alarm_signalled = 0;
 }
 
-static void
-reset_alarm_if_needed(void)
+static int
+bar_time_left(void)
 {
 	struct itimerval left;
 
 	getitimer(ITIMER_REAL, &left);
-	if (left.it_value.tv_sec == 0)
-		reset_alarm();
+	return left.it_value.tv_sec > 0;
 }
 
 void
@@ -275,7 +274,7 @@ redraw_sticky_bar_text(rp_screen *s, int force)
 	int diff = 0, len, cmd = 0, skip = 0, xftx = 0, x, clickcmdbtn = 0;
 	int width, height;
 
-	if (s->full_screen_win || !defaults.bar_sticky)
+	if (s->full_screen_win || !defaults.bar_sticky || bar_time_left())
 		return;
 
 	/*
@@ -925,8 +924,8 @@ marked_message_internal(char *msg, int mark_start, int mark_end, int bar_type)
 	/* Keep a record of the message. */
 	update_last_message(msg, mark_start, mark_end);
 
-	if (bar_type != BAR_IS_STICKY)
-		reset_alarm_if_needed();
+	if (bar_type != BAR_IS_STICKY && bar_time_left())
+		reset_alarm();
 }
 
 /*
