@@ -290,7 +290,7 @@ init_screens(void)
 		screen = xmalloc(sizeof(*screen));
 		list_add(&screen->node, &rp_screens);
 
-		if (rp_have_xrandr)
+		if (rp_have_xrandr && rr_outputs != NULL)
 			xrandr_fill_screen(rr_outputs[i], screen);
 		else
 			xrandr_fill_screen(i, screen);
