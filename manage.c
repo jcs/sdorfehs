@@ -532,7 +532,7 @@ static void
 move_window(rp_window *win)
 {
 	rp_frame *frame;
-	int t, t2;
+	int t, t2, gap;
 
 	if (win->frame_number == EMPTY) {
 		PRINT_DEBUG(("%s: window has no frame\n", __func__));
@@ -547,19 +547,24 @@ move_window(rp_window *win)
 		return;
 	}
 
+	if (defaults.only_border == 0 && num_frames(win->vscr) <= 1)
+		gap = 0;
+	else
+		gap = defaults.gap;
+
 	/* X coord. */
 	switch (win->gravity) {
 	case NorthWestGravity:
 	case WestGravity:
 	case SouthWestGravity:
 		win->x = frame->x +
-		    (defaults.gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
+		    (gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
 		break;
 	case NorthGravity:
 	case CenterGravity:
 	case SouthGravity:
-		t = (defaults.gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
-		t2 = (defaults.gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
+		t = (gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
+		t2 = (gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
 		win->x = frame->x + t +
 		    ((frame->width - t - t2 - win->width) / 2);
 		break;
@@ -567,7 +572,7 @@ move_window(rp_window *win)
 	case EastGravity:
 	case SouthEastGravity:
 		win->x = frame->x + frame->width - win->width -
-		    (defaults.gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
+		    (gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
 		break;
 	}
 
@@ -577,13 +582,13 @@ move_window(rp_window *win)
 	case NorthGravity:
 	case NorthWestGravity:
 		win->y = frame->y +
-		    (defaults.gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
+		    (gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
 		break;
 	case EastGravity:
 	case CenterGravity:
 	case WestGravity:
-		t = (defaults.gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
-		t2 = (defaults.gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
+		t = (gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
+		t2 = (gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
 		win->y = frame->y + t +
 		    ((frame->height - t - t2 - win->height) / 2);
 		break;
@@ -591,7 +596,7 @@ move_window(rp_window *win)
 	case SouthGravity:
 	case SouthWestGravity:
 		win->y = frame->y + frame->height - win->height -
-		    (defaults.gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
+		    (gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
 		break;
 	}
 
@@ -648,7 +653,8 @@ maximize_window(rp_window *win, int transient)
 
 		PRINT_DEBUG(("adjusted to frame, maxsize %d %d\n", maxw, maxh));
 
-		if (!transient) {
+		if (!transient && !(defaults.only_border == 0 &&
+		    num_frames(win->vscr) <= 1)) {
 			gap = (frame_right_screen_edge(frame) ? 1 : 0.5);
 			gap += (frame_left_screen_edge(frame) ? 1 : 0.5);
 			if (maxw > (frame->width - (gap * defaults.gap)))
@@ -659,11 +665,8 @@ maximize_window(rp_window *win, int transient)
 			if (maxh > (frame->height - (gap * defaults.gap)))
 				maxh -= gap * defaults.gap;
 
-			if (!(defaults.only_border == 0 &&
-			    num_frames(win->vscr) <= 1)) {
-				maxw -= win->border * 2;
-				maxh -= win->border * 2;
-			}
+			maxw -= win->border * 2;
+			maxh -= win->border * 2;
 		}
 	}
 
