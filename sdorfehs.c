@@ -356,6 +356,8 @@ main(int argc, char *argv[])
 	register_atom(&_net_wm_window_type_splash, "_NET_WM_WINDOW_TYPE_SPLASH");
 	register_atom(&_net_wm_window_type_tooltip,
 	    "_NET_WM_WINDOW_TYPE_TOOLTIP");
+	register_atom(&_net_wm_window_type_utility,
+	    "_NET_WM_WINDOW_TYPE_UTILITY");
 
 	/* Setup signal handlers. */
 	XSetErrorHandler(handler);

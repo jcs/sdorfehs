@@ -143,6 +143,7 @@ extern Atom _net_wm_window_type_dialog;
 extern Atom _net_wm_window_type_dock;
 extern Atom _net_wm_window_type_splash;
 extern Atom _net_wm_window_type_tooltip;
+extern Atom _net_wm_window_type_utility;
 
 /* mouse properties */
 extern int rat_x;

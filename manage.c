@@ -459,7 +459,8 @@ unmanaged_window(Window w)
 	win_type = get_net_wm_window_type(&tmp);
 	if (win_type == _net_wm_window_type_dock ||
 	    win_type == _net_wm_window_type_splash ||
-	    win_type == _net_wm_window_type_tooltip)
+	    win_type == _net_wm_window_type_tooltip ||
+	    win_type == _net_wm_window_type_utility)
 		return 1;
 
 	return 0;
