@@ -168,6 +168,9 @@ xrandr_output_change(XRROutputChangeNotifyEvent *ev)
 		PRINT_DEBUG(("%s: Added screen %s with crtc %lu\n", __func__,
 			screen->xrandr.name,
 			(unsigned long) outinfo->crtc));
+#ifndef DEBUG
+		(void)screen;
+#endif
 	} else if (screen && (!outinfo || !outinfo->crtc)) {
 		PRINT_DEBUG(("%s: Removing screen %s\n", __func__,
 			screen->xrandr.name));
