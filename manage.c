@@ -507,7 +507,7 @@ check_state(rp_window *win)
 {
 	Atom state;
 	unsigned long read, left;
-	int i, fs;
+	int i, fs = 0;
 
 	for (i = 0, left = 1; left; i += read) {
 		read = get_atom(win->w, _net_wm_state, XA_ATOM, i, &state, 1,
