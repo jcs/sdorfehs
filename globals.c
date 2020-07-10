@@ -693,4 +693,6 @@ remove_atom(Window w, Atom a, Atom type, unsigned long remove)
 		    (unsigned char *)new, j);
 	else
 		XDeleteProperty(dpy, w, a);
+
+	free(new);
 }
