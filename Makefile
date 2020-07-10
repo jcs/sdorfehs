@@ -35,6 +35,9 @@ install: all
 	install -s $(BIN) $(BINDIR)
 	install -m 644 $(MAN) $(MANDIR)
 
+regress:
+	scan-build $(MAKE)
+
 clean:
 	rm -f $(BIN) $(OBJ)
 
