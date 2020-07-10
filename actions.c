@@ -1337,6 +1337,7 @@ cmd_meta(int interactive, struct cmdarg **args)
 		struct rp_key key;
 		cmdret *ret;
 
+		memset(&key, 0, sizeof(key));
 		ret = parse_keydesc(ARG_STRING(0), &key);
 		if (ret != NULL)
 			return ret;
