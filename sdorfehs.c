@@ -121,26 +121,6 @@ read_startup_files(const char *alt_rcfile)
 	return 0;
 }
 
-static int
-bar_mkfifo(void)
-{
-	char *config_dir;
-
-	config_dir = get_config_dir();
-	rp_glob_screen.bar_fifo_path = xsprintf("%s/bar", config_dir);
-	free(config_dir);
-
-	unlink(rp_glob_screen.bar_fifo_path);
-
-	if (mkfifo(rp_glob_screen.bar_fifo_path, S_IRUSR|S_IWUSR) == -1) {
-		warn("failed creating bar FIFO at %s",
-		    rp_glob_screen.bar_fifo_path);
-		return 0;
-	}
-
-	return bar_open_fifo();
-}
-
 /*
  * Odd that we spend so much code on making sure the silly welcome message is
  * correct.  Oh well...

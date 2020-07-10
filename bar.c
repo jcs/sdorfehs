@@ -99,6 +99,26 @@ bar_time_left(void)
 	return left.it_value.tv_sec > 0;
 }
 
+int
+bar_mkfifo(void)
+{
+	char *config_dir;
+
+	config_dir = get_config_dir();
+	rp_glob_screen.bar_fifo_path = xsprintf("%s/bar", config_dir);
+	free(config_dir);
+
+	unlink(rp_glob_screen.bar_fifo_path);
+
+	if (mkfifo(rp_glob_screen.bar_fifo_path, S_IRUSR|S_IWUSR) == -1) {
+		warn("failed creating bar FIFO at %s",
+		    rp_glob_screen.bar_fifo_path);
+		return 0;
+	}
+
+	return bar_open_fifo();
+}
+
 void
 init_bar(void)
 {
