@@ -168,6 +168,10 @@ struct rp_global_screen {
 	/* This numset is responsible for giving out numbers for each screen */
 	struct numset *numset;
 
+	/* The path to and open fd of our control socket */
+	char *control_socket_path;
+	int control_socket_fd;
+
 	/* The path to and open fd of our bar FIFO */
 	char *bar_fifo_path;
 	int bar_fifo_fd;

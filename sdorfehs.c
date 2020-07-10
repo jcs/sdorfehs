@@ -234,7 +234,7 @@ main(int argc, char *argv[])
 	char **cmd = NULL;
 	int cmd_count = 0;
 	char *display = NULL;
-	unsigned char interactive = 0;
+	int interactive = 0;
 	char *alt_rcfile = NULL;
 
 	setlocale(LC_CTYPE, "");
@@ -284,9 +284,6 @@ main(int argc, char *argv[])
 	set_close_on_exec(ConnectionNumber(dpy));
 
 	/* Set our own specific Atoms. */
-	rp_command = XInternAtom(dpy, "RP_COMMAND", False);
-	rp_command_request = XInternAtom(dpy, "RP_COMMAND_REQUEST", False);
-	rp_command_result = XInternAtom(dpy, "RP_COMMAND_RESULT", False);
 	rp_selection = XInternAtom(dpy, "RP_SELECTION", False);
 
 	/* TEXT atoms */
@@ -294,11 +291,13 @@ main(int argc, char *argv[])
 	xa_compound_text = XInternAtom(dpy, "COMPOUND_TEXT", False);
 	xa_utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
 
+	init_control_socket_path();
+
 	if (cmd_count > 0) {
 		int j, exit_status = 0;
 
 		for (j = 0; j < cmd_count; j++) {
-			if (!send_command(interactive, (unsigned char *) cmd[j]))
+			if (!send_command(interactive, (unsigned char *)cmd[j]))
 				exit_status = 1;
 			free(cmd[j]);
 		}
@@ -371,7 +370,7 @@ main(int argc, char *argv[])
 	c = read_startup_files(alt_rcfile);
 	if (c == -1)
 		return 1;
-	else if (c == 0) {
+	if (c == 0) {
 		/* No config file, just do something basic. */
 		cmdret *result;
 		if ((result = command(0, "hsplit")))
@@ -391,6 +390,7 @@ main(int argc, char *argv[])
 	pledge("stdio rpath cpath wpath fattr unix proc exec", NULL);
 #endif
 
+	listen_for_commands();
 	listen_for_events();
 
 	return 0;

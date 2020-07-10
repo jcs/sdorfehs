@@ -102,12 +102,10 @@ extern struct list_head rp_screens;
 extern rp_screen *rp_current_screen;
 extern rp_global_screen rp_glob_screen;
 
+extern Display *dpy;
+
 extern XEvent rp_current_event;
 
-extern Display *dpy;
-extern Atom rp_command;
-extern Atom rp_command_request;
-extern Atom rp_command_result;
 extern Atom rp_selection;
 
 extern Atom wm_name;

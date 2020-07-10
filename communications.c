@@ -23,125 +23,157 @@
 #include <X11/Xatom.h>
 #include <X11/Xproto.h>
 
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <fcntl.h>
 #include <string.h>
+#include <unistd.h>
+#include <err.h>
+#include <errno.h>
 
 #include "sdorfehs.h"
 
-/* Sending commands to us from another process */
-static int
-receive_command_result(Window w)
+void
+init_control_socket_path(void)
 {
-	int query;
-	int return_status = RET_FAILURE;
-	Atom type_ret;
-	int format_ret;
-	unsigned long nitems;
-	unsigned long bytes_after;
-	unsigned char *result = NULL;
+	char *config_dir;
 
-	/* First, find out how big the property is. */
-	query = XGetWindowProperty(dpy, w, rp_command_result,
-	    0, 0, False, xa_string,
-	    &type_ret, &format_ret, &nitems, &bytes_after,
-	    &result);
+	config_dir = get_config_dir();
+	rp_glob_screen.control_socket_path = xsprintf("%s/control", config_dir);
+	free(config_dir);
+}
 
-	/* Failed to retrieve property. */
-	if (query != Success || result == NULL) {
-		PRINT_DEBUG(("failed to get command result length\n"));
-		return return_status;
-	}
-	/*
-	 * XGetWindowProperty always allocates one extra byte even if the
-	 * property is zero length.
-	 */
-	XFree(result);
+void
+listen_for_commands(void)
+{
+	struct sockaddr_un sun;
 
-	/*
-	 * Now that we have the length of the message, we can get the whole
-	 * message.
-	 */
-	query = XGetWindowProperty(dpy, w, rp_command_result,
-	    0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-	    True, xa_string, &type_ret, &format_ret, &nitems,
-	    &bytes_after, &result);
+	if ((rp_glob_screen.control_socket_fd = socket(AF_UNIX,
+	    SOCK_STREAM | SOCK_NONBLOCK, 0)) == -1)
+		err(1, "socket");
 
-	/* Failed to retrieve property. */
-	if (query != Success || result == NULL) {
-		PRINT_DEBUG(("failed to get command result\n"));
-		return return_status;
-	}
-	/*
-         * We can receive:
-         * - an empty string, indicating a success but no output
-         * - a string starting with '1', indicating a success and an output
-	 * - a string starting with '0', indicating a failure and an optional
-	 * output
-         */
-	switch (result[0]) {
-	case '\0':
-		/* Command succeeded but no string to print */
-		return_status = RET_SUCCESS;
-		break;
-	case '0':
-		/* Command failed, don't print an empty line if no explanation
-		 * was given */
-		if (result[1] != '\0')
-			fprintf(stderr, "%s\n", &result[1]);
-		return_status = RET_FAILURE;
-		break;
-	case '1':
-		/* Command succeeded, print the output */
-		printf("%s\n", &result[1]);
-		return_status = RET_SUCCESS;
-		break;
-	default:
-		/* We probably got junk, so ignore it */
-		return_status = RET_FAILURE;
-	}
+	sun.sun_family = AF_UNIX;
+        if (strlcpy(sun.sun_path, rp_glob_screen.control_socket_path,
+	    sizeof(sun.sun_path)) >= sizeof(sun.sun_path))
+                err(1, "control socket path too long: %s",
+		    rp_glob_screen.control_socket_path);
 
-	/* Free the result. */
-	XFree(result);
+        if (unlink(rp_glob_screen.control_socket_path) == -1 &&
+	    errno != ENOENT)
+		err(1, "unlink %s",rp_glob_screen.control_socket_path);
 
-	return return_status;
+	if (bind(rp_glob_screen.control_socket_fd, (struct sockaddr *)&sun,
+	    sizeof(sun)) == -1)
+		err(1, "bind %s", rp_glob_screen.control_socket_path);
+
+	if (chmod(rp_glob_screen.control_socket_path, 0600) == -1)
+		err(1, "chmod %s", rp_glob_screen.control_socket_path);
+
+	if (listen(rp_glob_screen.control_socket_fd, 2) == -1)
+		err(1, "listen %s", rp_glob_screen.control_socket_path);
+
+	PRINT_DEBUG(("listening for commands at %s\n",
+	    rp_glob_screen.control_socket_path));
 }
 
 int
-send_command(unsigned char interactive, unsigned char *cmd)
+send_command(int interactive, unsigned char *cmd)
 {
-	Window w, root;
-	int done = 0, return_status = RET_FAILURE;
-	struct sbuf *s;
+	struct sockaddr_un sun;
+	char *wcmd;
+	char ret[1024];
+	size_t len;
+	int fd;
 
-	s = sbuf_new(0);
-	sbuf_printf(s, "%c%s", interactive, cmd);
+	len = 1 + strlen(cmd) + 2;
+	wcmd = malloc(len);
+	if (snprintf(wcmd, len, "%c%s\n", interactive, cmd) != (len - 1))
+		errx(1, "snprintf");
 
-	root = RootWindow(dpy, DefaultScreen(dpy));
-	w = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
+	if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+		err(1, "socket");
 
-	/* Select first to avoid race condition */
-	XSelectInput(dpy, w, PropertyChangeMask);
+	sun.sun_family = AF_UNIX;
+        if (strlcpy(sun.sun_path, rp_glob_screen.control_socket_path,
+	    sizeof(sun.sun_path)) >= sizeof(sun.sun_path))
+                err(1, "control socket path too long: %s",
+		    rp_glob_screen.control_socket_path);
 
-	XChangeProperty(dpy, w, rp_command, xa_string, 8, PropModeReplace,
-	    (unsigned char *)sbuf_get(s), strlen((char *) cmd) + 2);
+	if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) == -1)
+		err(1, "failed to connect to control socket at %s",
+		    rp_glob_screen.control_socket_path);
 
-	XChangeProperty(dpy, root, rp_command_request, XA_WINDOW,
-	    8, PropModeAppend, (unsigned char *) &w, sizeof(Window));
+	if (write(fd, wcmd, len) != len)
+		err(1, "short write to control socket");
 
-	sbuf_free(s);
+	free(wcmd);
 
-	while (!done) {
-		XEvent ev;
+	len = read(fd, &ret, sizeof(ret) - 1);
+	if (len > 2) {
+		ret[len - 1] = '\0';
+		fprintf(stderr, "%s\n", &ret[1]);
+	}
 
-		XMaskEvent(dpy, PropertyChangeMask, &ev);
-		if (ev.xproperty.atom == rp_command_result
-		    && ev.xproperty.state == PropertyNewValue) {
-			return_status =
-			    receive_command_result(ev.xproperty.window);
-			done = 1;
+	return ret[0];
+}
+
+void
+receive_command(void)
+{
+	cmdret *cmd_ret;
+	char cmd[1024] = { 0 }, c;
+	char *result, *rcmd;
+	int cl, len = 0, interactive = 0;
+
+	PRINT_DEBUG(("have connection waiting on command socket\n"));
+
+	if ((cl = accept(rp_glob_screen.control_socket_fd, NULL, NULL)) == -1) {
+		warn("accept");
+		return;
+	}
+
+	while (len <= sizeof(cmd)) {
+		if (len == sizeof(cmd)) {
+			warn("%s: bogus command length", __func__);
+			close(cl);
+			return;
+		}
+
+		if (read(cl, &c, 1) == 1) {
+			if (c == '\n') {
+				cmd[len++] = '\0';
+				break;
+			}
+			cmd[len++] = c;
+		} else if (errno != EAGAIN) {
+			PRINT_DEBUG(("bad read result on control socket: %s\n",
+			    strerror(errno)));
+			break;
 		}
 	}
 
-	XDestroyWindow(dpy, w);
+	interactive = cmd[0];
+	rcmd = cmd + 1;
 
-	return return_status;
+	PRINT_DEBUG(("read %d byte(s) on command socket: %s\n", len, rcmd));
+
+	cmd_ret = command(interactive, rcmd);
+
+	/* notify the client of any text that was returned by the command */
+	len = 2;
+	if (cmd_ret->output) {
+		result = xsprintf("%c%s\n", cmd_ret->success ? 1 : 0,
+		    cmd_ret->output);
+		len = 1 + strlen(cmd_ret->output) + 1;
+	} else if (cmd_ret->success)
+		result = xsprintf("%c\n", 1);
+	else
+		result = xsprintf("%c\n", 0);
+
+	cmdret_free(cmd_ret);
+
+	PRINT_DEBUG(("writing back %d to command client: %s", len, result + 1));
+
+	write(cl, result, len);
+	close(cl);
 }

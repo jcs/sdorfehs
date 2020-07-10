@@ -527,141 +527,6 @@ button_press(XEvent *ev)
 		bar_handle_click(s, xbe);
 }
 
-/*
- * Read a command off the window and execute it. Some commands return text.
- * This text is passed back using the RP_COMMAND_RESULT Atom. The client will
- * wait for this property change so something must be returned.
- */
-static cmdret *
-execute_remote_command(Window w)
-{
-	int status;
-	cmdret *ret;
-	Atom type_ret;
-	int format_ret;
-	unsigned long nitems;
-	unsigned long bytes_after;
-	unsigned char *req;
-
-	status = XGetWindowProperty(dpy, w, rp_command,
-	    0, 0, False, xa_string,
-	    &type_ret, &format_ret, &nitems, &bytes_after,
-	    &req);
-
-	if (status != Success || req == NULL) {
-		return cmdret_new(RET_FAILURE,
-		    "Couldn't get RP_COMMAND Property");
-	}
-	/*
-	 * XGetWindowProperty always allocates one extra byte even if the
-	 * property is zero length.
-	 */
-	XFree(req);
-
-	status = XGetWindowProperty(dpy, w, rp_command,
-	    0, (bytes_after / 4) + (bytes_after % 4 ? 1 : 0),
-	    True, xa_string, &type_ret, &format_ret, &nitems,
-	    &bytes_after, &req);
-
-	if (status != Success || req == NULL) {
-		return cmdret_new(RET_FAILURE,
-		    "Couldn't get RP_COMMAND Property");
-	}
-	PRINT_DEBUG(("command: %s\n", req));
-	ret = command(req[0], (char *) &req[1]);
-	XFree(req);
-
-	return ret;
-}
-
-/*
- * Command requests are posted as a property change using the
- * RP_COMMAND_REQUEST Atom on the root window. A Command request is a Window
- * that holds the actual command as a property using the RP_COMMAND Atom.
- * receive_command reads the list of Windows and executes their associated
- * command.
- */
-static void
-receive_command(Window root)
-{
-	cmdret *cmd_ret;
-	char *result;
-	Atom type_ret;
-	int format_ret;
-	unsigned long nitems;
-	unsigned long bytes_after;
-	unsigned char *prop_return;
-	int offset;
-
-	/*
-	 * Init offset to 0. In the case where there is more than one window in
-	 * the property, a partial read does not delete the property and we
-	 * need to grab the next window by incementing offset to the offset of
-	 * the next window.
-	 */
-	offset = 0;
-	do {
-		int ret;
-		int length;
-		Window w;
-
-		length = sizeof(Window) / 4 + (sizeof(Window) % 4 ? 1 : 0);
-		ret = XGetWindowProperty(dpy, root,
-		    rp_command_request,
-		    offset, length,
-		    True, XA_WINDOW, &type_ret, &format_ret,
-		    &nitems,
-		    &bytes_after, &prop_return);
-
-		/*
-		 * Update the offset to point to the next window (if there is
-		 * another one).
-		 */
-		offset += length;
-
-		if (ret != Success) {
-			warnx("XGetWindowProperty Failed");
-			if (prop_return)
-				XFree(prop_return);
-			break;
-		}
-		/* If there was no window, then we're done. */
-		if (prop_return == NULL) {
-			PRINT_DEBUG(("No property to read\n"));
-			break;
-		}
-		/*
-		 * We grabbed a window, so now read the command stored in this
-		 * window and execute it.
-		 */
-		w = *(Window *) prop_return;
-		XFree(prop_return);
-		cmd_ret = execute_remote_command(w);
-
-		/*
-		 * notify the client of any text that was returned by the
-		 * command.  see communications.c:receive_command_result()
-		 */
-		if (cmd_ret->output)
-			result = xsprintf("%c%s", cmd_ret->success ? '1' : '0',
-			    cmd_ret->output);
-		else if (!cmd_ret->success)
-			result = xstrdup("0");
-		else
-			result = NULL;
-
-		if (result)
-			XChangeProperty(dpy, w, rp_command_result, xa_string,
-			    8, PropModeReplace, (unsigned char *)result,
-			    strlen(result));
-		else
-			XChangeProperty(dpy, w, rp_command_result, xa_string,
-			    8, PropModeReplace, NULL, 0);
-		free(result);
-		cmdret_free(cmd_ret);
-	} while (bytes_after > 0);
-}
-
 static void
 property_notify(XEvent *ev)
 {
@@ -669,13 +534,6 @@ property_notify(XEvent *ev)
 
 	PRINT_DEBUG(("atom: %ld (%s)\n", ev->xproperty.atom,
 	    XGetAtomName(dpy, ev->xproperty.atom)));
-
-	if (ev->xproperty.atom == rp_command_request &&
-	    is_a_root_window(ev->xproperty.window) &&
-	    ev->xproperty.state == PropertyNewValue) {
-		PRINT_DEBUG((PROGNAME " command\n"));
-		receive_command(ev->xproperty.window);
-	}
 
 	win = find_window(ev->xproperty.window);
 	if (!win)
@@ -1032,14 +890,16 @@ handle_signals(void)
 void
 listen_for_events(void)
 {
-	struct pollfd pfd[2];
+	struct pollfd pfd[3];
 	int pollfifo = 1;
 
 	memset(&pfd, 0, sizeof(pfd));
 	pfd[0].fd = ConnectionNumber(dpy);
 	pfd[0].events = POLLIN;
-	pfd[1].fd = rp_glob_screen.bar_fifo_fd;
+	pfd[1].fd = rp_glob_screen.control_socket_fd;
 	pfd[1].events = POLLIN;
+	pfd[2].fd = rp_glob_screen.bar_fifo_fd;
+	pfd[2].events = POLLIN;
 
 	/* Loop forever. */
 	for (;;) {
@@ -1049,18 +909,21 @@ listen_for_events(void)
 			if (pollfifo && rp_glob_screen.bar_fifo_fd == -1)
 				pollfifo = 0;
 			else if (pollfifo)
-				pfd[1].fd = rp_glob_screen.bar_fifo_fd;
+				pfd[2].fd = rp_glob_screen.bar_fifo_fd;
 
-			poll(pfd, pollfifo ? 2 : 1, -1);
+			poll(pfd, pollfifo ? 3 : 2, -1);
 
-			if (pollfifo && (pfd[1].revents & (POLLERR|POLLNVAL))) {
+			if (pollfifo && (pfd[2].revents & (POLLERR|POLLNVAL))) {
 				warnx("error polling on FIFO");
 				pollfifo = 0;
 				continue;
 			}
 
-			if (pollfifo && (pfd[1].revents & (POLLHUP|POLLIN)))
+			if (pollfifo && (pfd[2].revents & (POLLHUP|POLLIN)))
 				bar_read_fifo();
+
+			if (pfd[1].revents & (POLLHUP|POLLIN))
+				receive_command();
 
 			if (!XPending(dpy))
 				continue;

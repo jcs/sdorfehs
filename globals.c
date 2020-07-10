@@ -58,9 +58,6 @@ Atom wm_delete;
 Atom wm_take_focus;
 Atom wm_colormaps;
 
-Atom rp_command;
-Atom rp_command_request;
-Atom rp_command_result;
 Atom rp_selection;
 
 /* TEXT atoms */

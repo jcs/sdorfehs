@@ -20,6 +20,9 @@
 #ifndef _SDORFEHS_COMMUNICATIONS_H
 #define _SDORFEHS_COMMUNICATIONS_H 1
 
-int send_command(unsigned char interactive, unsigned char *cmd);
+void init_control_socket_path(void);
+void listen_for_commands(void);
+int send_command(int interactive, unsigned char *cmd);
+void receive_command(void);
 
 #endif	/* ! _SDORFEHS_COMMUNICATIONS_H */
