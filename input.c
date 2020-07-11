@@ -548,7 +548,6 @@ get_more_input(char *prompt, char *preinput, int history_id,
 
 	/* Revert focus. */
 	set_window_focus(focus);
-	XUnmapWindow(dpy, s->input_window);
 
 	/* Possibly restore colormap. */
 	if (current_window()) {
@@ -559,6 +558,8 @@ get_more_input(char *prompt, char *preinput, int history_id,
 	/* Re-show the sticky bar if we hid it earlier */
 	if (defaults.bar_sticky)
 		hide_bar(s, 0);
+
+	XUnmapWindow(dpy, s->input_window);
 
 	return final_input;
 }
