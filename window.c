@@ -389,6 +389,8 @@ give_window_focus(rp_window *win, rp_window *last_win)
 	rp_current_screen->current_vscreen = win->vscr;
 	set_rp_window_focus(win);
 
+	raise_utility_windows();
+
 	XSync(dpy, False);
 }
 

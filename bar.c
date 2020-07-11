@@ -163,6 +163,8 @@ show_bar(rp_screen *s, char *fmt)
 		XUninstallColormap(dpy, current_window()->colormap);
 	XInstallColormap(dpy, s->def_cmap);
 
+	raise_utility_windows();
+
 	reset_alarm();
 }
 
@@ -178,6 +180,8 @@ show_group_bar(rp_screen *s)
 	if (current_window())
 		XUninstallColormap(dpy, current_window()->colormap);
 	XInstallColormap(dpy, s->def_cmap);
+
+	raise_utility_windows();
 
 	reset_alarm();
 }
@@ -489,6 +493,9 @@ redraw_bar_text:
 	    (width / 2) - (defaults.bar_x_padding * 2), FONT_HEIGHT(s),
 	    (width / 2) + defaults.bar_x_padding,
 	    defaults.bar_y_padding);
+
+	/* Our XMapRaise may have covered one */
+	raise_utility_windows();
 }
 
 void
@@ -806,6 +813,9 @@ prepare_bar(rp_screen *s, int width, int height, int bar_type)
 	}
 	XRaiseWindow(dpy, s->bar_window);
 	XClearWindow(dpy, s->bar_window);
+
+	raise_utility_windows();
+
 	XSync(dpy, False);
 }
 

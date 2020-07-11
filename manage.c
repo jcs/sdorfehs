@@ -341,6 +341,23 @@ get_net_wm_window_type(rp_window *win)
 	return window_type;
 }
 
+int
+is_unmanaged_window_type(Window win)
+{
+	Atom win_type;
+	rp_window tmp;
+
+	tmp.w = win;
+	win_type = get_net_wm_window_type(&tmp);
+	if (win_type == _net_wm_window_type_dock ||
+	    win_type == _net_wm_window_type_splash ||
+	    win_type == _net_wm_window_type_tooltip ||
+	    win_type == _net_wm_window_type_utility)
+		return 1;
+
+	return 0;
+}
+
 void
 update_window_information(rp_window *win)
 {
@@ -434,8 +451,6 @@ scanwins(void)
 int
 unmanaged_window(Window w)
 {
-	rp_window tmp;
-	Atom win_type;
 	char *wname;
 	int i;
 
@@ -455,12 +470,7 @@ unmanaged_window(Window w)
 
 	free(wname);
 
-	tmp.w = w;
-	win_type = get_net_wm_window_type(&tmp);
-	if (win_type == _net_wm_window_type_dock ||
-	    win_type == _net_wm_window_type_splash ||
-	    win_type == _net_wm_window_type_tooltip ||
-	    win_type == _net_wm_window_type_utility)
+	if (is_unmanaged_window_type(w))
 		return 1;
 
 	return 0;
@@ -955,4 +965,21 @@ hide_vscreen_windows(rp_vscreen *v)
 	list_for_each_entry(cur, &rp_mapped_window, node)
 		if (cur->vscr == v)
 			hide_window(cur);
+}
+
+void
+raise_utility_windows(void)
+{
+	unsigned int i, nwins;
+	Window dw1, dw2, *wins;
+
+	XQueryTree(dpy, rp_glob_screen.root, &dw1, &dw2, &wins, &nwins);
+
+	for (i = 0; i < nwins; i++) {
+		if (is_unmanaged_window_type(wins[i]) &&
+		    !is_rp_window(wins[i]))
+			XRaiseWindow(dpy, wins[i]);
+	}
+
+	XFree(wins);
 }

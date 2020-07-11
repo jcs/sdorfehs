@@ -37,6 +37,7 @@ void check_state(rp_window *win);
 
 int window_is_transient(rp_window *win);
 Atom get_net_wm_window_type(rp_window *win);
+int is_unmanaged_window_type(Window win);
 void update_window_information(rp_window *win);
 void map_window(rp_window *win);
 
@@ -54,5 +55,6 @@ void unhide_all_windows(void);
 void withdraw_window(rp_window *win);
 void hide_others(rp_window *win);
 void hide_vscreen_windows(rp_vscreen *v);
+void raise_utility_windows(void);
 
 #endif	/* ! _SDORFEHS_MANAGE_H */

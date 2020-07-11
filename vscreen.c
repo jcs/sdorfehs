@@ -281,6 +281,8 @@ set_current_vscreen(rp_vscreen *v)
 	update_bar(v->screen);
 	show_frame_indicator(0);
 
+	raise_utility_windows();
+
 	/* TODO: rp_switch_vscreen_hook */
 }
 
