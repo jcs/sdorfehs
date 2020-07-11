@@ -2759,7 +2759,6 @@ free_lists:
 		}
 	}
 
-	warnx("command \"%s\" unknown, ignored", cmd);
 	result = cmdret_new(RET_FAILURE, MESSAGE_UNKNOWN_COMMAND, cmd);
 
 done:
