@@ -122,6 +122,9 @@ struct rp_window {
 	 */
 	int frame_number;
 
+	/* The frame number we want to remain in */
+	int sticky_frame;
+
 	/*
 	 * Sometimes a window is intended for a certain frame. When a window is
 	 * mapped and this is >0 then use the frame (if it exists).

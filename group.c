@@ -469,11 +469,17 @@ groups_del_window(rp_window *win)
 rp_window *
 group_last_window(rp_group *g)
 {
-	int last_access = 0;
+	rp_frame *f;
 	rp_window_elem *most_recent = NULL;
 	rp_window_elem *cur;
+	int last_access = 0;
 
+	f = current_frame(g->vscreen);
 	list_for_each_entry(cur, &g->mapped_windows, node) {
+		if (cur->win->sticky_frame != EMPTY &&
+		    (!f || (cur->win->sticky_frame != f->number)))
+			continue;
+
 		if (cur->win->last_access >= last_access
 		    && cur->win != current_window()
 		    && !find_windows_frame(cur->win)
@@ -493,6 +499,7 @@ rp_window *
 group_next_window(rp_group *g, rp_window *win)
 {
 	rp_window_elem *cur, *we;
+	rp_frame *f;
 
 	/* If there is no window, then get the last accessed one. */
 	if (win == NULL)
@@ -510,13 +517,17 @@ group_next_window(rp_group *g, rp_window *win)
 	 * The window is in this group, so find the next one in the list that
 	 * isn't already displayed.
 	 */
+	f = current_frame(g->vscreen);
 	for (cur = list_next_entry(we, &g->mapped_windows, node);
 	    cur != we;
 	    cur = list_next_entry(cur, &g->mapped_windows, node)) {
+		if (cur->win->sticky_frame != EMPTY &&
+		    (!f || (cur->win->sticky_frame != f->number)))
+			continue;
+
 		if (!find_windows_frame(cur->win) &&
-		    (cur->win->vscr == win->vscr || rp_have_xrandr)) {
+		    (cur->win->vscr == win->vscr || rp_have_xrandr))
 			return cur->win;
-		}
 	}
 
 	return NULL;
@@ -526,6 +537,7 @@ rp_window *
 group_prev_window(rp_group *g, rp_window *win)
 {
 	rp_window_elem *cur, *we;
+	rp_frame *f;
 
 	/* If there is no window, then get the last accessed one. */
 	if (win == NULL)
@@ -543,13 +555,17 @@ group_prev_window(rp_group *g, rp_window *win)
 	 * The window is in this group, so find the previous one in the list
 	 * that isn't already displayed.
 	 */
+	f = current_frame(g->vscreen);
 	for (cur = list_prev_entry(we, &g->mapped_windows, node);
 	    cur != we;
 	    cur = list_prev_entry(cur, &g->mapped_windows, node)) {
+		if (cur->win->sticky_frame != EMPTY &&
+		    (!f || (cur->win->sticky_frame != f->number)))
+			continue;
+
 		if (!find_windows_frame(cur->win) &&
-		    (cur->win->vscr == win->vscr || rp_have_xrandr)) {
+		    (cur->win->vscr == win->vscr || rp_have_xrandr))
 			return cur->win;
-		}
 	}
 
 	return NULL;

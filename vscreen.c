@@ -309,6 +309,7 @@ vscreen_move_window(rp_vscreen *v, rp_window *w)
 	/* move it to the new vscreen in its current group */
 	group_move_window(v->current_group, w);
 	w->vscr = v;
+	w->sticky_frame = EMPTY;
 
 	/* forget that this window was in the frame it was in */
 	if (f)

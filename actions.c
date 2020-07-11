@@ -262,12 +262,14 @@ static cmdret *cmd_sfrestore(int interactive, struct cmdarg **args);
 static cmdret *cmd_shrink(int interactive, struct cmdarg **args);
 static cmdret *cmd_source(int interactive, struct cmdarg **args);
 static cmdret *cmd_sselect(int interactive, struct cmdarg **args);
+static cmdret *cmd_stick(int interactive, struct cmdarg **args);
 static cmdret *cmd_swap(int interactive, struct cmdarg **args);
 static cmdret *cmd_unalias(int interactive, struct cmdarg **args);
 static cmdret *cmd_undefinekey(int interactive, struct cmdarg **args);
 static cmdret *cmd_undo(int interactive, struct cmdarg **args);
 static cmdret *cmd_unmanage(int interactive, struct cmdarg **args);
 static cmdret *cmd_unsetenv(int interactive, struct cmdarg **args);
+static cmdret *cmd_unstick(int interactive, struct cmdarg **args);
 static cmdret *cmd_v_split(int interactive, struct cmdarg **args);
 static cmdret *cmd_verbexec(int interactive, struct cmdarg **args);
 static cmdret *cmd_version(int interactive, struct cmdarg **args);
@@ -561,6 +563,7 @@ init_user_commands(void)
                     "File: ", arg_REST);
 	add_command("sselect",		cmd_sselect,	1, 1, 1,
                     "Screen: ", arg_NUMBER);
+	add_command("stick",		cmd_stick,	0, 0, 0);
 	add_command("swap",		cmd_swap,	2, 1, 1,
 	            "destination frame: ", arg_FRAME,
 	            "source frame: ", arg_FRAME);
@@ -576,6 +579,7 @@ init_user_commands(void)
                     "Unmanage: ", arg_REST);
 	add_command("unsetenv",		cmd_unsetenv,	1, 1, 1,
                     "Variable: ", arg_STRING);
+	add_command("unstick",		cmd_unstick,	0, 0, 0);
 	add_command("verbexec",		cmd_verbexec,	1, 1, 1,
                     "/bin/sh -c ", arg_SHELLCMD);
 	add_command("version",		cmd_version,	0, 0, 0);
@@ -5873,6 +5877,32 @@ cmd_vselect(int interactive, struct cmdarg **args)
 	}
 
 	return cmdret_new(RET_FAILURE, "vselect: invalid virtual screen");
+}
+
+cmdret *
+cmd_stick(int interactive, struct cmdarg **args)
+{
+	rp_window *cur = current_window();
+
+	if (cur == NULL)
+		return cmdret_new(RET_FAILURE, NULL);
+
+	cur->sticky_frame = cur->frame_number;
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_unstick(int interactive, struct cmdarg **args)
+{
+	rp_window *cur = current_window();
+
+	if (cur == NULL)
+		return cmdret_new(RET_FAILURE, NULL);
+
+	cur->sticky_frame = EMPTY;
+
+	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *

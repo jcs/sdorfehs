@@ -166,6 +166,7 @@ add_to_window_list(rp_screen *s, Window w)
 	new_window->last_access = 0;
 	new_window->state = WithdrawnState;
 	new_window->number = -1;
+	new_window->sticky_frame = EMPTY;
 	new_window->frame_number = EMPTY;
 	new_window->intended_frame_number = -1;
 	new_window->named = 0;

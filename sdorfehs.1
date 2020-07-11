@@ -732,6 +732,9 @@ command.
 Switch to the screen
 .Ar screennumber .
 (If you have multiple physical ones.)
+.It Ic stick
+Mark the current window as sticky in its current frame, making it
+unavailable to other frames when selecting an available window.
 .It Ic swap Ar dest-frame Oo Ar src-frame Oc Pq Ic C\-a x
 Exchange the window in
 .Ar src\-frame
@@ -776,6 +779,9 @@ The list can be cleared again by calling
 Remove variable
 .Ar variable
 from the list of environment variables.
+.It Ic unstick
+No longer consider the current window as sticky in its current frame,
+making it again available to appear in other frames.
 .It Ic verbexec Ar cmdline
 Spawn a shell executing
 .Ar cmdline

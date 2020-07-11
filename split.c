@@ -268,6 +268,7 @@ find_window_for_frame(rp_frame *frame)
 	list_for_each_entry(cur, &rp_current_group->mapped_windows, node) {
 		if ((cur->win->vscr == v || rp_have_xrandr)
 		    && cur->win != current_window()
+		    && cur->win->sticky_frame != frame->number
 		    && !find_windows_frame(cur->win)
 		    && cur->win->last_access >= last_access
 		    && window_fits_in_frame(cur->win, frame)
@@ -373,6 +374,10 @@ remove_all_splits(void)
 	list_for_each_entry(win, &rp_mapped_window, node) {
 		if (win->frame_number != v->current_frame && win->vscr == v)
 			hide_window(win);
+
+		if (win->sticky_frame != EMPTY &&
+		    win->sticky_frame != v->current_frame && win->vscr == v)
+			win->sticky_frame = EMPTY;
 	}
 
 	/* Delete all the frames except the current one. */
@@ -702,6 +707,11 @@ remove_frame(rp_frame *frame)
 	win = find_window_number(frame->win_number);
 	hide_window(win);
 	hide_others(win);
+
+	list_for_each_entry(win, &rp_mapped_window, node) {
+		if (win->sticky_frame == frame->number && win->vscr == v)
+			win->sticky_frame = EMPTY;
+	}
 
 	list_for_each_entry(cur, &v->frames, node) {
 		rp_frame tmp_frame;
