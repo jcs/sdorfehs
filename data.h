@@ -41,6 +41,13 @@ typedef struct rp_window_elem rp_window_elem;
 typedef struct rp_completions rp_completions;
 typedef struct rp_input_line rp_input_line;
 
+enum rp_edge {
+	EDGE_TOP = (1 << 1),
+	EDGE_LEFT = (1 << 2),
+	EDGE_RIGHT = (1 << 3),
+	EDGE_BOTTOM = (1 << 4),
+};
+
 struct rp_frame {
 	int number;
 	int x, y, width, height;
@@ -59,6 +66,9 @@ struct rp_frame {
 	 * one window.
 	 */
 	unsigned int dedicated;
+
+	/* Whether this frame is touching an edge before a screen update */
+	enum rp_edge edges;
 
 	struct list_head node;
 };

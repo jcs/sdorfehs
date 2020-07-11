@@ -23,6 +23,7 @@ void frame_resize_down(rp_frame *frame, int amount);
 void frame_resize_up(rp_frame *frame, int amount);
 void frame_resize_right(rp_frame *frame, int amount);
 void frame_resize_left(rp_frame *frame, int amount);
+void mark_edge_frames(void);
 int frame_height(rp_frame *frame);
 int frame_width(rp_frame *frame);
 int frame_bottom(rp_frame *frame);

@@ -61,7 +61,7 @@ screen_left(rp_screen *s)
 int
 screen_right(rp_screen *s)
 {
-	return screen_left(s) + s->width - defaults.padding_right;
+	return s->width - defaults.padding_right;
 }
 
 int
@@ -623,16 +623,20 @@ screen_update_frames(rp_screen *s)
 
 	list_for_each_entry(v, &s->vscreens, node) {
 		list_for_each_entry(f, &v->frames, node) {
-			if (f->x < screen_left(v->screen))
+			if (f->x < screen_left(v->screen) ||
+			    (f->edges & EDGE_LEFT))
 				f->x = screen_left(v->screen);
 
-			if (f->y < screen_top(v->screen))
+			if (f->y < screen_top(v->screen) ||
+			    (f->edges & EDGE_TOP))
 				f->y = screen_top(v->screen);
 
-			if (f->x + f->width > screen_right(v->screen))
+			if (f->x + f->width > screen_right(v->screen) ||
+			    (f->edges & EDGE_RIGHT))
 				f->width = screen_right(v->screen) - f->x;
 
-			if (f->y + f->height > screen_bottom(v->screen))
+			if (f->y + f->height > screen_bottom(v->screen) ||
+			    (f->edges & EDGE_BOTTOM))
 				f->height = screen_bottom(v->screen) - f->y;
 
 			maximize_all_windows_in_frame(f);

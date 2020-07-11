@@ -3789,9 +3789,14 @@ set_font(struct cmdarg **args)
 	}
 
 	free(defaults.font_string);
+
+	mark_edge_frames();
+
 	defaults.font_string = xstrdup(ARG_STRING(0));
 
-	screen_update_frames(rp_current_screen);
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -3800,8 +3805,6 @@ static cmdret *
 set_padding(struct cmdarg **args)
 {
 	rp_screen *s;
-	rp_vscreen *v;
-	rp_frame *frame;
 	int l, t, r, b;
 
 	if (args[0] == NULL)
@@ -3820,48 +3823,17 @@ set_padding(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE, "set padding: %s",
 		    invalid_negative_arg);
 
-	s = rp_current_screen;
-
-	list_for_each_entry(v, &(s->vscreens), node) {
-		list_for_each_entry(frame, &(v->frames), node) {
-			int bk_pos, bk_len;
-
-			/* Resize horizontally. */
-			bk_pos = frame->x;
-			bk_len = frame->width;
-
-			if (frame->x == defaults.padding_left) {
-				frame->x = l;
-				frame->width += bk_pos - l;
-			}
-			if ((bk_pos + bk_len) ==
-			    (s->left + s->width - defaults.padding_right))
-				frame->width = s->left + s->width - r - frame->x;
-
-			/* Resize vertically. */
-			bk_pos = frame->y;
-			bk_len = frame->height;
-
-			if (frame->y == defaults.padding_top) {
-				frame->y = t;
-				frame->height += bk_pos - t;
-			}
-			if ((bk_pos + bk_len) ==
-			    (s->top + s->height - defaults.padding_bottom))
-				frame->height = s->top + s->height - b -
-				    frame->y;
-
-			maximize_all_windows_in_frame(frame);
-		}
-	}
+	mark_edge_frames();
 
 	defaults.padding_left = l;
 	defaults.padding_right = r;
 	defaults.padding_top = t;
 	defaults.padding_bottom = b;
 
-	screen_update_workarea(s);
-	screen_update_frames(s);
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_workarea(s);
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -3869,6 +3841,8 @@ set_padding(struct cmdarg **args)
 static cmdret *
 set_border(struct cmdarg **args)
 {
+	rp_screen *s;
+
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%d",
 		    defaults.window_border_width);
@@ -3877,9 +3851,13 @@ set_border(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE, "set border: %s",
 		    invalid_negative_arg);
 
+	mark_edge_frames();
+
 	defaults.window_border_width = ARG(0, number);
 
-	screen_update_frames(rp_current_screen);
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -3887,7 +3865,7 @@ set_border(struct cmdarg **args)
 static cmdret *
 set_onlyborder(struct cmdarg **args)
 {
-	rp_window *win;
+	rp_screen *s;
 
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%d", defaults.only_border);
@@ -3895,12 +3873,12 @@ set_onlyborder(struct cmdarg **args)
 	if (ARG(0, number) != 0 && ARG(0, number) != 1)
 		return cmdret_new(RET_FAILURE, "set onlyborder: invalid argument");
 
+	mark_edge_frames();
+
 	defaults.only_border = ARG(0, number);
 
-	/* Update all the visible windows. */
-	list_for_each_entry(win, &rp_mapped_window, node) {
-		if (win_get_frame(win))
-			maximize(win);
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_frames(s);
 	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -3909,7 +3887,7 @@ set_onlyborder(struct cmdarg **args)
 static cmdret *
 set_barborder(struct cmdarg **args)
 {
-	rp_screen *cur;
+	rp_screen *s;
 
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%d", defaults.bar_border_width);
@@ -3918,18 +3896,21 @@ set_barborder(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE, "set barborder: %s",
 		    invalid_negative_arg);
 
+	mark_edge_frames();
+
 	defaults.bar_border_width = ARG(0, number);
 
 	/* Update the frame and bar windows. */
-	list_for_each_entry(cur, &rp_screens, node) {
-		XSetWindowBorderWidth(dpy, cur->bar_window,
+	list_for_each_entry(s, &rp_screens, node) {
+		XSetWindowBorderWidth(dpy, s->bar_window,
 		    defaults.bar_border_width);
-		XSetWindowBorderWidth(dpy, cur->frame_window,
+		XSetWindowBorderWidth(dpy, s->frame_window,
 		    defaults.bar_border_width);
-		XSetWindowBorderWidth(dpy, cur->input_window,
+		XSetWindowBorderWidth(dpy, s->input_window,
 		    defaults.bar_border_width);
 
-		screen_update_frames(cur);
+		screen_update_workarea(s);
+		screen_update_frames(s);
 	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -3938,6 +3919,7 @@ set_barborder(struct cmdarg **args)
 static cmdret *
 set_barinpadding(struct cmdarg **args)
 {
+	rp_screen *s;
 	int new_value;
 
 	if (args[0] == NULL)
@@ -3948,7 +3930,14 @@ set_barinpadding(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE,
 		    "set barinpadding: invalid argument");
 
+	mark_edge_frames();
+
 	defaults.bar_in_padding = new_value;
+
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_workarea(s);
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4076,27 +4065,27 @@ static cmdret *
 set_fgcolor(struct cmdarg **args)
 {
 	XColor color, junk;
-	rp_screen *cur;
+	rp_screen *s;
 
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%s", defaults.fgcolor_string);
 
-	list_for_each_entry(cur, &rp_screens, node) {
-		if (!XAllocNamedColor(dpy, cur->def_cmap, ARG_STRING(0), &color,
+	list_for_each_entry(s, &rp_screens, node) {
+		if (!XAllocNamedColor(dpy, s->def_cmap, ARG_STRING(0), &color,
 		    &junk))
 			return cmdret_new(RET_FAILURE,
 			    "set fgcolor: unknown color");
 
 		rp_glob_screen.fg_color = color.pixel;
-		update_gc(cur);
-		XSetWindowBorder(dpy, cur->bar_window, color.pixel);
-		XSetWindowBorder(dpy, cur->input_window, color.pixel);
-		XSetWindowBorder(dpy, cur->frame_window, color.pixel);
-		XSetWindowBorder(dpy, cur->help_window, color.pixel);
+		update_gc(s);
+		XSetWindowBorder(dpy, s->bar_window, color.pixel);
+		XSetWindowBorder(dpy, s->input_window, color.pixel);
+		XSetWindowBorder(dpy, s->frame_window, color.pixel);
+		XSetWindowBorder(dpy, s->help_window, color.pixel);
 
-		if (!XftColorAllocName(dpy, DefaultVisual(dpy, cur->screen_num),
-		    DefaultColormap(dpy, cur->screen_num), ARG_STRING(0),
-		    &cur->xft_fg_color))
+		if (!XftColorAllocName(dpy, DefaultVisual(dpy, s->screen_num),
+		    DefaultColormap(dpy, s->screen_num), ARG_STRING(0),
+		    &s->xft_fg_color))
 			return cmdret_new(RET_FAILURE,
 			    "set fgcolor: unknown color");
 
@@ -4113,27 +4102,27 @@ static cmdret *
 set_bgcolor(struct cmdarg **args)
 {
 	XColor color, junk;
-	rp_screen *cur;
+	rp_screen *s;
 
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%s", defaults.bgcolor_string);
 
-	list_for_each_entry(cur, &rp_screens, node) {
-		if (!XAllocNamedColor(dpy, cur->def_cmap, ARG_STRING(0), &color,
+	list_for_each_entry(s, &rp_screens, node) {
+		if (!XAllocNamedColor(dpy, s->def_cmap, ARG_STRING(0), &color,
 		    &junk))
 			return cmdret_new(RET_FAILURE,
 			    "set bgcolor: unknown color");
 
 		rp_glob_screen.bg_color = color.pixel;
-		update_gc(cur);
-		XSetWindowBackground(dpy, cur->bar_window, color.pixel);
-		XSetWindowBackground(dpy, cur->input_window, color.pixel);
-		XSetWindowBackground(dpy, cur->frame_window, color.pixel);
-		XSetWindowBackground(dpy, cur->help_window, color.pixel);
+		update_gc(s);
+		XSetWindowBackground(dpy, s->bar_window, color.pixel);
+		XSetWindowBackground(dpy, s->input_window, color.pixel);
+		XSetWindowBackground(dpy, s->frame_window, color.pixel);
+		XSetWindowBackground(dpy, s->help_window, color.pixel);
 
-		if (!XftColorAllocName(dpy, DefaultVisual(dpy, cur->screen_num),
-		    DefaultColormap(dpy, cur->screen_num), ARG_STRING(0),
-		    &cur->xft_bg_color))
+		if (!XftColorAllocName(dpy, DefaultVisual(dpy, s->screen_num),
+		    DefaultColormap(dpy, s->screen_num), ARG_STRING(0),
+		    &s->xft_bg_color))
 			return cmdret_new(RET_FAILURE,
 			    "set fgcolor: unknown color");
 
@@ -4151,19 +4140,19 @@ set_fwcolor(struct cmdarg **args)
 {
 	XColor color, junk;
 	rp_window *win = current_window();
-	rp_screen *cur;
+	rp_screen *s;
 
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%s", defaults.fwcolor_string);
 
-	list_for_each_entry(cur, &rp_screens, node) {
-		if (!XAllocNamedColor(dpy, cur->def_cmap, ARG_STRING(0), &color,
+	list_for_each_entry(s, &rp_screens, node) {
+		if (!XAllocNamedColor(dpy, s->def_cmap, ARG_STRING(0), &color,
 		    &junk))
 			return cmdret_new(RET_FAILURE,
 			    "set fwcolor: unknown color");
 
 		rp_glob_screen.fw_color = color.pixel;
-		update_gc(cur);
+		update_gc(s);
 
 		free(defaults.fwcolor_string);
 		defaults.fwcolor_string = xstrdup(ARG_STRING(0));
@@ -4181,19 +4170,19 @@ set_bwcolor(struct cmdarg **args)
 {
 	XColor color, junk;
 	rp_window *win, *cur_win = current_window();
-	rp_screen *cur_screen;
+	rp_screen *s;
 
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%s", defaults.bwcolor_string);
 
-	list_for_each_entry(cur_screen, &rp_screens, node) {
-		if (!XAllocNamedColor(dpy, cur_screen->def_cmap, ARG_STRING(0),
-		    &color, &junk))
+	list_for_each_entry(s, &rp_screens, node) {
+		if (!XAllocNamedColor(dpy, s->def_cmap, ARG_STRING(0), &color,
+		    &junk))
 			return cmdret_new(RET_FAILURE,
 			    "set bwcolor: unknown color");
 
 		rp_glob_screen.bw_color = color.pixel;
-		update_gc(cur_screen);
+		update_gc(s);
 
 		free(defaults.bwcolor_string);
 		defaults.bwcolor_string = xstrdup(ARG_STRING(0));
@@ -4226,15 +4215,21 @@ set_vscreens(struct cmdarg **args)
 static cmdret *
 set_gap(struct cmdarg **args)
 {
+	rp_screen *s;
+
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%d", defaults.gap);
 
 	if (ARG(0, number) < 0)
 		return cmdret_new(RET_FAILURE, "gap: invalid argument");
 
+	mark_edge_frames();
+
 	defaults.gap = ARG(0, number);
 
-	screen_update_frames(rp_current_screen);
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4242,6 +4237,8 @@ set_gap(struct cmdarg **args)
 static cmdret *
 set_ignoreresizehints(struct cmdarg **args)
 {
+	rp_screen *s;
+
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%d",
 		    defaults.ignore_resize_hints);
@@ -4250,9 +4247,13 @@ set_ignoreresizehints(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE,
 		    "ignoreresizehints: invalid argument");
 
+	mark_edge_frames();
+
 	defaults.ignore_resize_hints = ARG(0, number);
 
-	screen_update_frames(rp_current_screen);
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4567,6 +4568,7 @@ cmd_link(int interactive, struct cmdarg **args)
 static cmdret *
 set_barpadding(struct cmdarg **args)
 {
+	rp_screen *s;
 	int x, y;
 
 	if (args[0] == NULL)
@@ -4580,10 +4582,14 @@ set_barpadding(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE, "set barpadding: %s",
 		    invalid_negative_arg);
 
+	mark_edge_frames();
+
 	defaults.bar_x_padding = x;
 	defaults.bar_y_padding = y;
 
-	screen_update_frames(rp_current_screen);
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4591,6 +4597,8 @@ set_barpadding(struct cmdarg **args)
 static cmdret *
 set_barsticky(struct cmdarg **args)
 {
+	rp_screen *s;
+
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%d", defaults.bar_sticky);
 
@@ -4598,11 +4606,15 @@ set_barsticky(struct cmdarg **args)
 		return cmdret_new(RET_FAILURE,
 		    "set barsticky: invalid argument");
 
+	mark_edge_frames();
+
 	defaults.bar_sticky = ARG(0, number);
 
-	hide_bar(rp_current_screen, 0);
-	screen_update_workarea(rp_current_screen);
-	screen_update_frames(rp_current_screen);
+	list_for_each_entry(s, &rp_screens, node) {
+		hide_bar(s, 0);
+		screen_update_workarea(s);
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4610,13 +4622,17 @@ set_barsticky(struct cmdarg **args)
 static cmdret *
 set_stickyfmt(struct cmdarg **args)
 {
+	rp_screen *s;
+
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%s", defaults.sticky_fmt);
 
 	free(defaults.sticky_fmt);
 	defaults.sticky_fmt = xstrdup(ARG_STRING(0));
 
-	hide_bar(rp_current_screen, 0);
+	list_for_each_entry(s, &rp_screens, node) {
+		hide_bar(s, 0);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -5335,12 +5351,14 @@ cmd_set(int interactive, struct cmdarg **args)
 	/* Free the lists. */
 failed:
 	/* Free the parsed strings */
-	list_for_each_safe_entry(scur, iter, tmp, &head, node)
+	list_for_each_safe_entry(scur, iter, tmp, &head, node) {
 		sbuf_free(scur);
+	}
 
 	/* Free the args */
-	list_for_each_safe_entry(acur, iter, tmp, &arglist, node)
+	list_for_each_safe_entry(acur, iter, tmp, &arglist, node) {
 		arg_free(acur);
+	}
 
 	return result;
 }

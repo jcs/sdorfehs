@@ -138,6 +138,31 @@ frame_resize_down(rp_frame *frame, int amount)
 	frame->height += amount;
 }
 
+void
+mark_edge_frames(void)
+{
+	rp_screen *s;
+	rp_vscreen *v;
+	rp_frame *f;
+
+	list_for_each_entry(s, &rp_screens, node) {
+		list_for_each_entry(v, &s->vscreens, node) {
+			list_for_each_entry(f, &v->frames, node) {
+				f->edges = 0;
+
+				if (frame_top_screen_edge(f))
+					f->edges |= EDGE_TOP;
+				if (frame_left_screen_edge(f))
+					f->edges |= EDGE_LEFT;
+				if (frame_right_screen_edge(f))
+					f->edges |= EDGE_RIGHT;
+				if (frame_bottom_screen_edge(f))
+					f->edges |= EDGE_BOTTOM;
+			}
+		}
+	}
+}
+
 static void
 init_frame(rp_frame *f)
 {
