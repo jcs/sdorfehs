@@ -86,8 +86,6 @@ numset_add_num(struct numset *ns, int n)
 {
 	int ec;
 
-	PRINT_DEBUG(("ns=%p numset_add_num %d\n", ns, n));
-
 	if (numset_num_is_taken(ns, n))
 		return 0;	/* failed. */
 
@@ -116,8 +114,6 @@ numset_request(struct numset *ns)
 	while (!numset_add_num(ns, i))
 		i++;
 
-	PRINT_DEBUG(("ns=%p numset_request got %d\n", ns, i));
-
 	return i;
 }
 
@@ -129,8 +125,6 @@ void
 numset_release(struct numset *ns, int n)
 {
 	int i;
-
-	PRINT_DEBUG(("ns=%p numset_release %d\n", ns, n));
 
 	if (n < 0)
 		warnx("ns=%p attempt to release %d!", ns, n);
