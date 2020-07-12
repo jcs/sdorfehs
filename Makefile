@@ -4,6 +4,11 @@ SYSCONFDIR?=	/etc
 
 PKGLIBS=	x11 xft xrandr xtst
 
+ifeq ($(shell uname), Linux)
+PKGLIBS+=	libbsd-overlay
+CFLAGS+=	-DLIBBSD_OVERLAY -I/usr/include/bsd
+endif
+
 CC?=		cc
 CFLAGS+=	-O2 -Wall \
 		-Wunused -Wmissing-prototypes -Wstrict-prototypes -Wunused \

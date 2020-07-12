@@ -29,6 +29,13 @@ sdorfehs retains ratpoison's GPL2 license.
 Run `make` to compile, and `make install` to install to `/usr/local` by
 default.
 
+Libbsd is a requirement on GNU/Linux distributions (`libbsd-dev` in debian 
+and derivatives).
+
+#### Linux dependencies
+
+libbsd-dev
+
 ## Features
 
 sdorfehs retains most of ratpoison's features while adding some more modern
