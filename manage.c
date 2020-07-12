@@ -644,15 +644,20 @@ maximize_window(rp_window *win, int transient)
 		maxw = win->vscr->screen->width;
 		maxh = win->vscr->screen->height;
 	} else {
-		if (win->hints->flags & PMaxSize) {
-			maxw = win->hints->max_width;
-			maxh = win->hints->max_height;
-		} else if (transient) {
+		if (transient) {
 			maxw = win->width;
 			maxh = win->height;
 		} else {
 			maxw = frame->width;
 			maxh = frame->height;
+		}
+
+		if (win->hints->flags & PMaxSize) {
+			if (maxw > win->hints->max_width)
+				maxw = win->hints->max_width;
+
+			if (maxh > win->hints->max_height)
+				maxh = win->hints->max_height;
 		}
 
 		if (maxw > frame->width)
