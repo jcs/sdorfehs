@@ -102,7 +102,7 @@ Resetting to the default font can be done with `^fn()`.
 
 ### Gaps
 
-sdorfehs enables a configurable gap (with `set gaps`) between frames by
+sdorfehs enables a configurable gap (with `set gap`) between frames by
 default to look a bit nicer on larger displays.
 
 ## Tips
