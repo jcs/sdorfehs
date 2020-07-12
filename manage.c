@@ -335,8 +335,6 @@ get_net_wm_window_type(rp_window *win)
 	    &data) == Success && nitems > 0) {
 		window_type = *(Atom *)data;
 		XFree(data);
-		PRINT_DEBUG(("_NET_WM_WINDOW_TYPE = %ld (%s)\n", window_type,
-		    XGetAtomName(dpy, window_type)));
 	}
 	return window_type;
 }
@@ -976,8 +974,8 @@ raise_utility_windows(void)
 	XQueryTree(dpy, rp_glob_screen.root, &dw1, &dw2, &wins, &nwins);
 
 	for (i = 0; i < nwins; i++) {
-		if (is_unmanaged_window_type(wins[i]) &&
-		    !is_rp_window(wins[i]))
+		if (!is_rp_window(wins[i]) &&
+		    is_unmanaged_window_type(wins[i]))
 			XRaiseWindow(dpy, wins[i]);
 	}
 
