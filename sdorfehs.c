@@ -98,17 +98,17 @@ read_startup_files(const char *alt_rcfile)
 	FILE *fileptr = NULL;
 	char *config_dir, *filename;
 
-	if (alt_rcfile && ((fileptr = fopen(alt_rcfile, "r")) == NULL)) {
-		warn("could not open %s\n", alt_rcfile);
-		return -1;
+	if (alt_rcfile)
+		filename = strdup(alt_rcfile);
+	else {
+		config_dir = get_config_dir();
+		filename = xsprintf("%s/config", config_dir);
+		free(config_dir);
 	}
 
-	config_dir = get_config_dir();
-	filename = xsprintf("%s/config", config_dir);
 	fileptr = fopen(filename, "r");
 	if (fileptr == NULL && errno != ENOENT)
 		warn("could not open %s", filename);
-	free(config_dir);
 	free(filename);
 
 	if (fileptr != NULL) {
