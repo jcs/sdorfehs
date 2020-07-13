@@ -52,13 +52,15 @@ listen_for_commands(void)
 	    SOCK_STREAM | SOCK_NONBLOCK, 0)) == -1)
 		err(1, "socket");
 
-	sun.sun_family = AF_UNIX;
-        if (strlcpy(sun.sun_path, rp_glob_screen.control_socket_path,
-	    sizeof(sun.sun_path)) >= sizeof(sun.sun_path))
-                err(1, "control socket path too long: %s",
+	if (strlen(rp_glob_screen.control_socket_path) >= sizeof(sun.sun_path))
+		err(1, "control socket path too long: %s",
 		    rp_glob_screen.control_socket_path);
 
-        if (unlink(rp_glob_screen.control_socket_path) == -1 &&
+	strncpy(sun.sun_path, rp_glob_screen.control_socket_path,
+	    sizeof(sun.sun_path));
+	sun.sun_family = AF_UNIX;
+
+	if (unlink(rp_glob_screen.control_socket_path) == -1 &&
 	    errno != ENOENT)
 		err(1, "unlink %s",rp_glob_screen.control_socket_path);
 
@@ -85,7 +87,7 @@ send_command(int interactive, unsigned char *cmd)
 	size_t len;
 	int fd;
 
-	len = 1 + strlen(cmd) + 2;
+	len = 1 + strlen((char *)cmd) + 2;
 	wcmd = malloc(len);
 	if (snprintf(wcmd, len, "%c%s\n", interactive, cmd) != (len - 1))
 		errx(1, "snprintf");
@@ -93,11 +95,13 @@ send_command(int interactive, unsigned char *cmd)
 	if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
 		err(1, "socket");
 
-	sun.sun_family = AF_UNIX;
-        if (strlcpy(sun.sun_path, rp_glob_screen.control_socket_path,
-	    sizeof(sun.sun_path)) >= sizeof(sun.sun_path))
-                err(1, "control socket path too long: %s",
+	if (strlen(rp_glob_screen.control_socket_path) >= sizeof(sun.sun_path))
+		err(1, "control socket path too long: %s",
 		    rp_glob_screen.control_socket_path);
+
+	strncpy(sun.sun_path, rp_glob_screen.control_socket_path,
+	    sizeof(sun.sun_path));
+	sun.sun_family = AF_UNIX;
 
 	if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) == -1)
 		err(1, "failed to connect to control socket at %s",
