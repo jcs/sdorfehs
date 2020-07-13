@@ -3728,11 +3728,20 @@ set_framemsgwait(struct cmdarg **args)
 static cmdret *
 set_bargravity(struct cmdarg **args)
 {
+	rp_screen *s;
+
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%s",
 		    wingravity_to_string(defaults.bar_location));
 
+	mark_edge_frames();
+
 	defaults.bar_location = ARG(0, gravity);
+
+	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_workarea(s);
+		screen_update_frames(s);
+	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4231,6 +4240,7 @@ set_gap(struct cmdarg **args)
 	defaults.gap = ARG(0, number);
 
 	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_workarea(s);
 		screen_update_frames(s);
 	}
 
@@ -4591,6 +4601,7 @@ set_barpadding(struct cmdarg **args)
 	defaults.bar_y_padding = y;
 
 	list_for_each_entry(s, &rp_screens, node) {
+		screen_update_workarea(s);
 		screen_update_frames(s);
 	}
 
