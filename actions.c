@@ -3791,6 +3791,8 @@ set_font(struct cmdarg **args)
 	if (args[0] == NULL)
 		return cmdret_new(RET_SUCCESS, "%s", defaults.font_string);
 
+	mark_edge_frames();
+
 	list_for_each_entry(s, &rp_screens, node) {
 		font = XftFontOpenName(dpy, s->screen_num, ARG_STRING(0));
 		if (font == NULL)
@@ -3801,8 +3803,6 @@ set_font(struct cmdarg **args)
 	}
 
 	free(defaults.font_string);
-
-	mark_edge_frames();
 
 	defaults.font_string = xstrdup(ARG_STRING(0));
 
