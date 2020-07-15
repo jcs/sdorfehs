@@ -541,7 +541,7 @@ static void
 move_window(rp_window *win)
 {
 	rp_frame *frame;
-	int t, t2, gap;
+	int gap;
 
 	if (win->frame_number == EMPTY) {
 		PRINT_DEBUG(("%s: window has no frame\n", __func__));
@@ -572,10 +572,8 @@ move_window(rp_window *win)
 	case NorthGravity:
 	case CenterGravity:
 	case SouthGravity:
-		t = (gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
-		t2 = (gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
-		win->x = frame->x + t +
-		    ((frame->width - t - t2 - win->width) / 2);
+		win->x = frame->x +
+		    (frame->width - win->border * 2) / 2 - win->width / 2;
 		break;
 	case NorthEastGravity:
 	case EastGravity:
@@ -596,10 +594,8 @@ move_window(rp_window *win)
 	case EastGravity:
 	case CenterGravity:
 	case WestGravity:
-		t = (gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
-		t2 = (gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
-		win->y = frame->y + t +
-		    ((frame->height - t - t2 - win->height) / 2);
+		win->y = frame->y + 
+		    (frame->height - win->border * 2) / 2 - win->height / 2;
 		break;
 	case SouthEastGravity:
 	case SouthGravity:
