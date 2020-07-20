@@ -120,7 +120,7 @@ get_child_info(Window w, int add)
 		pid = 0;
 	}
 
-	PRINT_DEBUG(("pid: %ld\n", pid));
+	PRINT_DEBUG(("NET_WM_PID: %ld\n", pid));
 
 	if (pid) {
 		list_for_each_entry(cur, &rp_children, node)

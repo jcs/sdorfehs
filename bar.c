@@ -513,7 +513,7 @@ bar_handle_click(rp_screen *s, XButtonEvent *e)
 		    e->x <= (chunk->text_x + chunk->text_width)) {
 			PRINT_DEBUG(("executing bar click action %s\n",
 			    chunk->cmd));
-			spawn(chunk->cmd, 0, current_frame(rp_current_vscreen));
+			spawn(chunk->cmd, current_frame(rp_current_vscreen));
 		}
 	}
 }

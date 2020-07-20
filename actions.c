@@ -2795,26 +2795,32 @@ cmd_colon(int interactive, struct cmdarg **args)
 cmdret *
 cmd_exec(int interactive, struct cmdarg **args)
 {
-	spawn(ARG_STRING(0), 0, current_frame(rp_current_vscreen));
+	spawn(ARG_STRING(0), current_frame(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
 cmd_execa(int interactive, struct cmdarg **args)
 {
-	spawn(ARG_STRING(0), 0, NULL);
+	spawn(ARG_STRING(0), NULL);
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
 cmd_execf(int interactive, struct cmdarg **args)
 {
-	spawn(ARG_STRING(1), 0, ARG(0, frame));
+	/*
+	 * Tell spawn's shell to exec the command it finds, reusing the pid
+	 * that fork() returned so matching to its NET_WM_PID later works
+	 * properly.
+	 */
+	char *cmd = xsprintf("exec %s", ARG_STRING(1));
+	spawn(cmd, ARG(0, frame));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 int
-spawn(char *cmd, int raw, rp_frame *frame)
+spawn(char *cmd, rp_frame *frame)
 {
 	rp_child_info *child;
 	int pid;
@@ -2839,15 +2845,13 @@ spawn(char *cmd, int raw, rp_frame *frame)
 			setpgid(0, 0);
 		}
 
-		/* raw means don't run it through sh.  */
-		if (raw)
-			execl(cmd, cmd, (char *) NULL);
 		execl("/bin/sh", "sh", "-c", cmd, (char *) NULL);
 		_exit(1);
 	}
 
 	/* wait((int *) 0); */
-	PRINT_DEBUG(("spawned %s\n", cmd));
+	PRINT_DEBUG(("spawned %s with pid %d destined for frame %d\n", cmd,
+	    pid, frame ? frame->number : -1));
 
 	/* Add this child process to our list. */
 	child = xmalloc(sizeof(rp_child_info));
@@ -4936,7 +4940,7 @@ cmdret *
 cmd_verbexec(int interactive, struct cmdarg **args)
 {
 	marked_message_printf(0, 0, "Running %s", ARG_STRING(0));
-	spawn(ARG_STRING(0), 0, current_frame(rp_current_vscreen));
+	spawn(ARG_STRING(0), current_frame(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 

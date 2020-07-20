@@ -43,6 +43,6 @@ void free_keymaps(void);
 char *wingravity_to_string(int g);
 rp_action *find_keybinding(KeySym keysym, unsigned int state, rp_keymap *map);
 rp_action *find_keybinding_by_action(char *action, rp_keymap *map);
-int spawn(char *cmd, int raw, rp_frame *frame);
+int spawn(char *cmd, rp_frame *frame);
 
 #endif	/* ! _SDORFEHS_ACTIONS_H */
