@@ -985,73 +985,85 @@ show_frame_message(char *msg)
 rp_frame *
 find_frame_up(rp_frame *frame)
 {
-	rp_screen *s;
-	rp_frame *cur;
+	rp_frame *cur, *winner = NULL;
+	rp_vscreen *v = frames_vscreen(frame);
+	int wingap = 0, curgap;
 
-	list_for_each_entry(s, &rp_screens, node) {
-		list_for_each_entry(cur, &s->current_vscreen->frames, node) {
-			if (frame_top_abs(frame) == frame_bottom_abs(cur))
-				if (frame_right_abs(frame) >= frame_left_abs(cur) &&
-				    frame_left_abs(frame) <= frame_right_abs(cur))
-					return cur;
+	list_for_each_entry(cur, &v->frames, node) {
+		if (frame_top_abs(frame) != frame_bottom_abs(cur))
+			continue;
+
+		curgap = abs(frame_left_abs(frame) - frame_left_abs(cur));
+		if (!winner || (curgap < wingap)) {
+			winner = cur;
+			wingap = curgap;
 		}
 	}
 
-	return NULL;
+	return winner;
 }
 
 rp_frame *
 find_frame_down(rp_frame *frame)
 {
-	rp_screen *s;
-	rp_frame *cur;
+	rp_frame *cur, *winner = NULL;
+	rp_vscreen *v = frames_vscreen(frame);
+	int wingap = 0, curgap;
 
-	list_for_each_entry(s, &rp_screens, node) {
-		list_for_each_entry(cur, &s->current_vscreen->frames, node) {
-			if (frame_bottom_abs(frame) == frame_top_abs(cur))
-				if (frame_right_abs(frame) >= frame_left_abs(cur) &&
-				    frame_left_abs(frame) <= frame_right_abs(cur))
-					return cur;
+	list_for_each_entry(cur, &v->frames, node) {
+		if (frame_bottom_abs(frame) != frame_top_abs(cur))
+			continue;
+
+		curgap = abs(frame_left_abs(frame) - frame_left_abs(cur));
+		if (!winner || (curgap < wingap)) {
+			winner = cur;
+			wingap = curgap;
 		}
 	}
 
-	return NULL;
+	return winner;
 }
 
 rp_frame *
 find_frame_left(rp_frame *frame)
 {
-	rp_screen *s;
-	rp_frame *cur;
+	rp_frame *cur, *winner = NULL;
+	rp_vscreen *v = frames_vscreen(frame);
+	int wingap = 0, curgap;
 
-	list_for_each_entry(s, &rp_screens, node) {
-		list_for_each_entry(cur, &s->current_vscreen->frames, node) {
-			if (frame_left_abs(frame) == frame_right_abs(cur))
-				if (frame_bottom_abs(frame) >= frame_top_abs(cur) &&
-				    frame_top_abs(frame) <= frame_bottom_abs(cur))
-					return cur;
+	list_for_each_entry(cur, &v->frames, node) {
+		if (frame_left_abs(frame) != frame_right_abs(cur))
+			continue;
+
+		curgap = abs(frame_top_abs(frame) - frame_top_abs(cur));
+		if (!winner || (curgap < wingap)) {
+			winner = cur;
+			wingap = curgap;
 		}
 	}
 
-	return NULL;
+	return winner;
 }
 
 rp_frame *
 find_frame_right(rp_frame *frame)
 {
-	rp_screen *s;
-	rp_frame *cur;
+	rp_frame *cur, *winner = NULL;
+	rp_vscreen *v = frames_vscreen(frame);
+	int wingap = 0, curgap;
 
-	list_for_each_entry(s, &rp_screens, node) {
-		list_for_each_entry(cur, &s->current_vscreen->frames, node) {
-			if (frame_right_abs(frame) == frame_left_abs(cur))
-				if (frame_bottom_abs(frame) >= frame_top_abs(cur) &&
-				    frame_top_abs(frame) <= frame_bottom_abs(cur))
-					return cur;
+	list_for_each_entry(cur, &v->frames, node) {
+		if (frame_right_abs(frame) != frame_left_abs(cur))
+			continue;
+
+		curgap = abs(frame_top_abs(frame) - frame_top_abs(cur));
+		if (!winner || (curgap < wingap)) {
+			winner = cur;
+			wingap = curgap;
 		}
 	}
 
-	return NULL;
+	return winner;
 }
 
 rp_frame *
