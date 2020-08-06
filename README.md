@@ -34,7 +34,7 @@ default.
 sdorfehs retains most of ratpoison's features while adding some more modern
 touches.
 
-![Screenshot](https://jcs.org/sdorfehs-20190826.png)
+![Screenshot](https://jcs.org/images/sdorfehs-20190826.png)
 
 ### EWMH
 
