@@ -814,10 +814,21 @@ force_maximize(rp_window *win)
 void
 map_window(rp_window *win)
 {
+	rp_window *transfor;
+
 	PRINT_DEBUG(("Mapping the unmapped window %s\n", window_name(win)));
 
 	/* Fill in the necessary data about the window */
 	update_window_information(win);
+
+	if (win->transient_for &&
+	    (transfor = find_window(win->transient_for))) {
+		PRINT_DEBUG(("map_window: transient_for %lu\n",
+		    win->transient_for));
+		win->vscr = transfor->vscr;
+		win->intended_frame_number = transfor->frame_number;
+	}
+
 	win->number = numset_request(rp_window_numset);
 	grab_top_level_keys(win->w);
 
