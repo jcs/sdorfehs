@@ -337,6 +337,8 @@ main(int argc, char *argv[])
 	    "_NET_WM_WINDOW_TYPE_TOOLTIP");
 	register_atom(&_net_wm_window_type_utility,
 	    "_NET_WM_WINDOW_TYPE_UTILITY");
+	register_atom(&_net_supporting_wm_check,
+	    "_NET_SUPPORTING_WM_CHECK");
 
 	/* Setup signal handlers. */
 	XSetErrorHandler(handler);

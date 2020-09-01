@@ -175,7 +175,7 @@ struct rp_group {
 };
 
 struct rp_global_screen {
-	Window root;
+	Window root, wm_check;
 	unsigned long fg_color, bg_color, fw_color, bw_color;	/* The pixel color. */
 
 	/* This numset is responsible for giving out numbers for each screen */

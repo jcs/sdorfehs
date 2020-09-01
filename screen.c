@@ -259,6 +259,19 @@ init_global_screen(rp_global_screen *s)
 		warnx("failed allocating bwcolor %s", defaults.bwcolor_string);
 		s->bw_color = BlackPixel(dpy, screen_num);
 	}
+
+	s->wm_check = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
+	    0, 0, rp_glob_screen.bg_color);
+	set_atom(s->wm_check, _net_supporting_wm_check, XA_WINDOW,
+	    &s->wm_check, 1);
+	set_atom(s->root, _net_supporting_wm_check, XA_WINDOW,
+	    &s->wm_check, 1);
+	XChangeProperty(dpy, s->root, _net_wm_name,
+	    xa_utf8_string, 8, PropModeReplace,
+	    (unsigned char *)PROGNAME, strlen(PROGNAME));
+	XChangeProperty(dpy, s->wm_check, _net_wm_name,
+	    xa_utf8_string, 8, PropModeReplace,
+	    (unsigned char *)PROGNAME, strlen(PROGNAME));
 }
 
 void
@@ -468,15 +481,6 @@ init_screen(rp_screen *s)
 void
 activate_screen(rp_screen *s)
 {
-	/* Add netwm support. FIXME: I think this is busted. */
-	XChangeProperty(dpy, RootWindow(dpy, s->screen_num),
-	    _net_supported, XA_ATOM, 32, PropModeReplace,
-	    (unsigned char *) &_net_wm_pid, 1);
-
-	/* set window manager name */
-	XChangeProperty(dpy, RootWindow(dpy, s->screen_num),
-	    _net_wm_name, xa_utf8_string, 8, PropModeReplace,
-	    (unsigned char *)PROGNAME, strlen(PROGNAME));
 	XMapWindow(dpy, s->key_window);
 }
 
@@ -485,10 +489,6 @@ deactivate_screen(rp_screen *s)
 {
 	/* Unmap its key window */
 	XUnmapWindow(dpy, s->key_window);
-
-	/* delete everything so noone sees them while we are not there */
-	XDeleteProperty(dpy, RootWindow(dpy, s->screen_num), _net_supported);
-	XDeleteProperty(dpy, RootWindow(dpy, s->screen_num), _net_wm_name);
 }
 
 static int
@@ -753,4 +753,9 @@ screen_free_final(void)
 	XSelectInput(dpy, RootWindow(dpy, DefaultScreen(dpy)), 0);
 
 	numset_free(rp_glob_screen.numset);
+
+	XDeleteProperty(dpy, rp_glob_screen.root, _net_wm_name);
+	XDeleteProperty(dpy, rp_glob_screen.root, _net_supporting_wm_check);
+	XDeleteProperty(dpy, rp_glob_screen.root, _net_supported);
+	XDestroyWindow(dpy, rp_glob_screen.wm_check);
 }

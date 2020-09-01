@@ -83,6 +83,7 @@ Atom _net_wm_window_type_dock;
 Atom _net_wm_window_type_splash;
 Atom _net_wm_window_type_tooltip;
 Atom _net_wm_window_type_utility;
+Atom _net_supporting_wm_check;
 
 LIST_HEAD(rp_screens);
 rp_screen *rp_current_screen;
