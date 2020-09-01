@@ -669,18 +669,21 @@ maximize_window(rp_window *win, int transient)
 
 		if (!transient && !(defaults.only_border == 0 &&
 		    num_frames(win->vscr) <= 1)) {
+			int fw, fh;
+
 			gap = (frame_right_screen_edge(frame) ? 1 : 0.5);
 			gap += (frame_left_screen_edge(frame) ? 1 : 0.5);
-			if (maxw > (frame->width - (gap * defaults.gap)))
-				maxw -= gap * defaults.gap;
+			fw = frame->width - (gap * defaults.gap) -
+			    (win->border * 2);
+			if (maxw > fw)
+				maxw = fw;
 
 			gap = (frame_top_screen_edge(frame) ? 1 : 0.5);
 			gap += (frame_bottom_screen_edge(frame) ? 1 : 0.5);
-			if (maxh > (frame->height - (gap * defaults.gap)))
-				maxh -= gap * defaults.gap;
-
-			maxw -= win->border * 2;
-			maxh -= win->border * 2;
+			fh = frame->height - (gap * defaults.gap) -
+			    (win->border * 2);
+			if (maxh > fh)
+				maxh = fh;
 		}
 	}
 
