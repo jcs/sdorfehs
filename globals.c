@@ -45,8 +45,6 @@ int alarm_signalled = 0;
 int kill_signalled = 0;
 int hup_signalled = 0;
 int chld_signalled = 0;
-int rat_x;
-int rat_y;
 
 int rp_font_ascent, rp_font_descent, rp_font_width;
 

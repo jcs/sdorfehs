@@ -144,10 +144,6 @@ extern Atom _net_wm_window_type_tooltip;
 extern Atom _net_wm_window_type_utility;
 extern Atom _net_supporting_wm_check;
 
-/* mouse properties */
-extern int rat_x;
-extern int rat_y;
-
 /*
  * When unmapping or deleting windows, it is sometimes helpful to ignore a bad
  * window when attempting to clean the window up. This does just that when set
