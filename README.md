@@ -14,7 +14,7 @@ which are not being shown in another frame).
 
 Like Screen, sdorfehs primarily uses prefixed/modal key bindings for most
 actions.
-sdorfehs' command mode is entered with a configurable keystroke
+sdorfehs's command mode is entered with a configurable keystroke
 (`Control+a` by default) which then allows a number of bindings accessible
 with just a single keystroke or any other combination.
 For example, to cycle through available windows in a frame, press
@@ -61,12 +61,12 @@ messages or the output of certain commands.
 By default, this bar is made sticky with the `barsticky` setting which
 forces the bar to be permanently affixed to the top or bottom (configurable
 with the `bargravity` setting) of every virtual screen displaying the
-currently-focused window's title.
+currently-focused window's title on the left side.
 
 When the bar is sticky, it also enables a mechanism to display arbitrary
-text, similar to bar programs for other window managers like i3bar, dzen2,
-etc.
-sdorfehs creates a 
+text on the right side, similar to bar programs for other window managers like
+i3bar, dzen2, etc.
+sdorfehs creates a
 [named pipe](https://en.wikipedia.org/wiki/Named_pipe)
 at `~/.config/sdorfehs/bar` and any text input into the pipe shows up on
 the bar, making it easy to integrate with standard utilities which can just
@@ -104,6 +104,27 @@ Resetting to the default font can be done with `^fn()`.
 
 sdorfehs enables a configurable gap (with `set gap`) between frames by
 default to look a bit nicer on larger displays.
+
+### Secure Remote Control
+
+sdorfehs's `-c` command line option uses a more secure IPC mechanism
+than Ratpoison for sending commands to a running sdorfehs process,
+such as a script controlling sdorfehs and restore a particular
+layout.
+
+Ratpoison's IPC only requires that a process create a new X11 window
+and set an Atom on it, which the parent Ratpoison process reads and
+executes the value of that Atom.
+An unprivileged application that only has an X11 connection (say a
+sandboxed Firefox child process) could set the `RP_COMMAND_REQUEST`
+Atom property on its existing window with a value of `0exec
+something` to cause Ratpoison to read it and execute that shell
+command as the user id running Ratpoison.
+
+sdorfehs's IPC mechanism switches to a Unix socket in the
+`~/.config/sdorfehs` directory which ensures the requesting process
+has the ability to make socket connections and can write to that
+path.
 
 ## Tips
 
