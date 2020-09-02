@@ -575,12 +575,14 @@ move_window(rp_window *win)
 		t = (gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
 		t2 = (gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
 		win->x = frame->x + t +
-		    ((frame->width - t - t2 - win->width) / 2);
+		    ((frame->width - t - t2 -
+		    (win->width + win->border * 2)) / 2);
 		break;
 	case NorthEastGravity:
 	case EastGravity:
 	case SouthEastGravity:
-		win->x = frame->x + frame->width - win->width -
+		win->x = frame->x + frame->width -
+		    (win->width + win->border * 2) -
 		    (gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
 		break;
 	}
@@ -599,12 +601,14 @@ move_window(rp_window *win)
 		t = (gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
 		t2 = (gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
 		win->y = frame->y + t +
-		    ((frame->height - t - t2 - win->height) / 2);
+		    ((frame->height - t - t2 -
+		    (win->height + win->border * 2)) / 2);
 		break;
 	case SouthEastGravity:
 	case SouthGravity:
 	case SouthWestGravity:
-		win->y = frame->y + frame->height - win->height -
+		win->y = frame->y + frame->height -
+		    (win->height + win->border * 2) -
 		    (gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
 		break;
 	}
