@@ -266,6 +266,9 @@ init_global_screen(rp_global_screen *s)
 	    &s->wm_check, 1);
 	set_atom(s->root, _net_supporting_wm_check, XA_WINDOW,
 	    &s->wm_check, 1);
+	XChangeProperty(dpy, s->root, _net_supported,
+	    XA_ATOM, 32, PropModeReplace,
+	    (unsigned char *)&_net_wm_pid, 1);
 	XChangeProperty(dpy, s->root, _net_wm_name,
 	    xa_utf8_string, 8, PropModeReplace,
 	    (unsigned char *)PROGNAME, strlen(PROGNAME));
