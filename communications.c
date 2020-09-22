@@ -115,7 +115,7 @@ send_command(int interactive, unsigned char *cmd)
 	len = read(fd, &ret, sizeof(ret) - 1);
 	if (len > 2) {
 		ret[len - 1] = '\0';
-		fprintf(stderr, "%s\n", &ret[1]);
+		fprintf(ret[0] ? stdout : stderr, "%s\n", &ret[1]);
 	}
 
 	return ret[0];
