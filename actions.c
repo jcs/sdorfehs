@@ -4787,8 +4787,8 @@ cmd_fselect(int interactive, struct cmdarg **args)
 	set_active_frame(ARG(0, frame), 1);
 	if (interactive)
 		return cmdret_new(RET_SUCCESS, NULL);
-	else
-		return cmdret_new(RET_SUCCESS, "%d", ARG(0, frame)->number);
+
+	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 char *
