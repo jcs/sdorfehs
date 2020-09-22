@@ -4296,8 +4296,8 @@ cmd_setenv(int interactive, struct cmdarg **args)
 	if (setenv(var, val, 1) == -1)
 		return cmdret_new(RET_FAILURE, "cmd_setenv failed: %s",
 		    strerror(errno));
-	else
-		return cmdret_new(RET_SUCCESS, NULL);
+
+	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
@@ -4308,8 +4308,8 @@ cmd_getenv(int interactive, struct cmdarg **args)
 	value = getenv(ARG_STRING(0));
 	if (value)
 		return cmdret_new(RET_SUCCESS, "%s", value);
-	else
-		return cmdret_new(RET_FAILURE, NULL);
+
+	return cmdret_new(RET_FAILURE, NULL);
 }
 
 /*
@@ -4351,8 +4351,8 @@ cmd_unsetenv(int interactive, struct cmdarg **args)
 	if (unsetenv(var) == -1)
 		return cmdret_new(RET_FAILURE, "cmd_unsetenv failed: %s",
 		    strerror(errno));
-	else
-		return cmdret_new(RET_SUCCESS, NULL);
+
+	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 /*
