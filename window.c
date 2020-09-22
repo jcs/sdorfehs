@@ -648,19 +648,21 @@ window_full_screen(rp_window *win)
 {
 	rp_window *oldfs;
 
+	if ((oldfs = rp_current_screen->full_screen_win)) {
+		if (win == oldfs)
+			return;
+
+		PRINT_DEBUG(("making window 0x%lx no longer "
+		    "full-screen\n", oldfs->w));
+
+		oldfs->full_screen = 0;
+		remove_atom(oldfs->w, _net_wm_state, XA_ATOM,
+		    _net_wm_state_fullscreen);
+		maximize(oldfs);
+	}
+
 	if (!win) {
-		oldfs = rp_current_screen->full_screen_win;
 		rp_current_screen->full_screen_win = NULL;
-		if (oldfs) {
-			PRINT_DEBUG(("making window 0x%lx no longer "
-			    "full-screen\n", oldfs->w));
-
-			oldfs->full_screen = 0;
-			remove_atom(oldfs->w, _net_wm_state, XA_ATOM,
-			    _net_wm_state_fullscreen);
-			maximize(oldfs);
-		}
-
 		hide_bar(rp_current_screen, 0);
 		return;
 	}
@@ -670,5 +672,7 @@ window_full_screen(rp_window *win)
 
 	rp_current_screen->full_screen_win = win;
 	win->full_screen = 1;
+	set_atom(win->w, _net_wm_state, XA_ATOM,
+	    &_net_wm_state_fullscreen, 1);
 	maximize(win);
 }
