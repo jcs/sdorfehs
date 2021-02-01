@@ -16,8 +16,8 @@ LDFLAGS+=	`pkg-config --libs ${PKGLIBS}`
 # and this for input-specific debugging
 #CFLAGS+=	-DINPUT_DEBUG=1
 
-BINDIR=		$(PREFIX)/bin
-MANDIR=		$(PREFIX)/man/man1
+BINDIR=		${DESTDIR}$(PREFIX)/bin
+MANDIR=		${DESTDIR}$(PREFIX)/man/man1
 
 SRC!=		ls *.c
 OBJ=		${SRC:.c=.o}
