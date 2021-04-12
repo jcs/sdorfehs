@@ -236,6 +236,7 @@ main(int argc, char *argv[])
 	char *display = NULL;
 	int interactive = 0;
 	char *alt_rcfile = NULL;
+	char pid[8];
 
 	setlocale(LC_CTYPE, "");
 
@@ -307,7 +308,11 @@ main(int argc, char *argv[])
 		return exit_status;
 	}
 
-	/* must be first */
+	/* For child processes to know */
+	snprintf(pid, sizeof(pid), "%d", getpid());
+	setenv("SDORFEHS_PID", pid, 1);
+
+	/* Must be first */
 	register_atom(&_net_supported, "_NET_SUPPORTED");
 
 	register_atom(&wm_change_state, "WM_CHANGE_STATE");
