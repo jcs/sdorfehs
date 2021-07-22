@@ -44,7 +44,7 @@ enum argtype {
 	arg_KEYMAP,
 	arg_KEY,
 	arg_GRAVITY,
-	arg_GROUP,
+	arg_VSCREEN,
 	arg_HOOK,
 	arg_VARIABLE,
 	arg_RAW,
@@ -56,7 +56,7 @@ union arg_union {
 	float fnumber;
 	rp_window *win;
 	rp_keymap *keymap;
-	rp_group *group;
+	rp_vscreen *vscreen;
 	struct list_head *hook;
 	struct set_var *variable;
 	struct rp_key *key;
@@ -200,21 +200,9 @@ static cmdret *cmd_focusright(int interactive, struct cmdarg **args);
 static cmdret *cmd_focusup(int interactive, struct cmdarg **args);
 static cmdret *cmd_frestore(int interactive, struct cmdarg **args);
 static cmdret *cmd_fselect(int interactive, struct cmdarg **args);
-static cmdret *cmd_gdelete(int interactive, struct cmdarg **args);
 static cmdret *cmd_getenv(int interactive, struct cmdarg **args);
 static cmdret *cmd_getsel(int interactive, struct cmdarg **args);
-static cmdret *cmd_gmerge(int interactive, struct cmdarg **args);
-static cmdret *cmd_gmove(int interactive, struct cmdarg **args);
-static cmdret *cmd_gnew(int interactive, struct cmdarg **args);
-static cmdret *cmd_gnewbg(int interactive, struct cmdarg **args);
-static cmdret *cmd_gnext(int interactive, struct cmdarg **args);
-static cmdret *cmd_gnumber(int interactive, struct cmdarg **args);
-static cmdret *cmd_gother(int interactive, struct cmdarg **args);
-static cmdret *cmd_gprev(int interactive, struct cmdarg **args);
 static cmdret *cmd_gravity(int interactive, struct cmdarg **args);
-static cmdret *cmd_grename(int interactive, struct cmdarg **args);
-static cmdret *cmd_groups(int interactive, struct cmdarg **args);
-static cmdret *cmd_gselect(int interactive, struct cmdarg **args);
 static cmdret *cmd_h_split(int interactive, struct cmdarg **args);
 static cmdret *cmd_help(int interactive, struct cmdarg **args);
 static cmdret *cmd_inext(int interactive, struct cmdarg **args);
@@ -274,6 +262,8 @@ static cmdret *cmd_v_split(int interactive, struct cmdarg **args);
 static cmdret *cmd_verbexec(int interactive, struct cmdarg **args);
 static cmdret *cmd_version(int interactive, struct cmdarg **args);
 static cmdret *cmd_vmove(int interactive, struct cmdarg **args);
+static cmdret *cmd_vrename(int interactive, struct cmdarg **args);
+static cmdret *cmd_vscreens(int interactive, struct cmdarg **args);
 static cmdret *cmd_vselect(int interactive, struct cmdarg **args);
 static cmdret *cmd_windows(int interactive, struct cmdarg **args);
 
@@ -460,32 +450,11 @@ init_user_commands(void)
 	            "Frames: ", arg_REST);
 	add_command("fselect",		cmd_fselect,	1, 1, 1,
 	            "", arg_FRAME);
-	add_command("gdelete",		cmd_gdelete,	1, 0, 0,
-	            "Group:", arg_GROUP);
 	add_command("getenv",		cmd_getenv,	1, 1, 1,
 	            "Variable: ", arg_STRING);
 	add_command("getsel",		cmd_getsel,	0, 0, 0);
-	add_command("gmerge",		cmd_gmerge,	1, 1, 1,
-	            "Group: ", arg_GROUP);
-	add_command("gmove",		cmd_gmove,	1, 1, 1,
-	            "Group: ", arg_GROUP);
-	add_command("gnew",		cmd_gnew,	1, 1, 1,
-	            "Name: ", arg_STRING);
-	add_command("gnewbg",		cmd_gnewbg,	1, 1, 1,
-	            "Name: ", arg_STRING);
-	add_command("gnext",		cmd_gnext,	0, 0, 0);
-	add_command("gnumber",		cmd_gnumber,	2, 1, 1,
-	            "Number: ", arg_NUMBER,
-	            "Number: ", arg_NUMBER);
-	add_command("gother",		cmd_gother,	0, 0, 0);
-	add_command("gprev",		cmd_gprev,	0, 0, 0);
 	add_command("gravity",		cmd_gravity,	1, 0, 0,
 	            "Gravity: ", arg_GRAVITY);
-	add_command("grename",		cmd_grename,	1, 1, 1,
-	            "Change group name to: ", arg_REST);
-	add_command("groups",		cmd_groups,	0, 0, 0);
-	add_command("gselect",		cmd_gselect,	1, 1, 1,
-	            "Group: ", arg_GROUP);
 	add_command("help",		cmd_help,	1, 0, 0,
 	            "Keymap: ", arg_KEYMAP);
 	add_command("hsplit",		cmd_h_split,	1, 0, 0,
@@ -584,9 +553,12 @@ init_user_commands(void)
                     "/bin/sh -c ", arg_SHELLCMD);
 	add_command("version",		cmd_version,	0, 0, 0);
 	add_command("vmove",		cmd_vmove,	1, 1, 1,
-	            "Virtual Screen: ", arg_NUMBER);
+	            "Virtual Screen: ", arg_VSCREEN);
+	add_command("vrename",		cmd_vrename,	1, 1, 1,
+	            "Change virtual screen name to: ", arg_REST);
+	add_command("vscreens",		cmd_vscreens,	0, 0, 0);
 	add_command("vselect",		cmd_vselect,	1, 1, 1,
-	            "Virtual Screen: ", arg_NUMBER);
+	            "Virtual Screen: ", arg_VSCREEN);
 	add_command("vsplit",		cmd_v_split,	1, 0, 0,
                     "Split: ", arg_STRING);
 	add_command("windows",		cmd_windows,	1, 0, 0,
@@ -1367,7 +1339,7 @@ cmd_prev(int interactive, struct cmdarg **args)
 {
 	rp_window *cur, *win;
 	cur = current_window();
-	win = group_prev_window(rp_current_group, cur);
+	win = vscreen_prev_window(rp_current_vscreen, cur);
 
 	if (win)
 		set_active_window(win);
@@ -1399,7 +1371,7 @@ cmd_next(int interactive, struct cmdarg **args)
 {
 	rp_window *cur, *win;
 	cur = current_window();
-	win = group_next_window(rp_current_group, cur);
+	win = vscreen_next_window(rp_current_vscreen, cur);
 
 	if (win)
 		set_active_window(win);
@@ -1432,7 +1404,7 @@ cmd_other(int interactive, struct cmdarg **args)
 	rp_window *w;
 
 	/* w = find_window_other (); */
-	w = group_last_window(rp_current_vscreen->current_group);
+	w = vscreen_last_window(rp_current_vscreen);
 	if (!w)
 		return cmdret_new(RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
 
@@ -1503,7 +1475,7 @@ window_completions(char *str)
 	INIT_LIST_HEAD(list);
 
 	/* Gather the names of all the windows. */
-	list_for_each_entry(cur, &rp_current_group->mapped_windows, node) {
+	list_for_each_entry(cur, &rp_current_vscreen->mapped_windows, node) {
 		struct sbuf *name;
 
 		name = sbuf_new(0);
@@ -1543,8 +1515,8 @@ cmd_select(int interactive, struct cmdarg **args)
 			ret = cmdret_new(RET_SUCCESS, NULL);
 		} else if ((n = string_to_positive_int(str)) >= 0) {
 			/* try by number */
-			rp_window_elem *elem = group_find_window_by_number(
-			    rp_current_group, n);
+			rp_window_elem *elem = vscreen_find_window_by_number(
+			    rp_current_vscreen, n);
 
 			if (elem) {
 				goto_window(elem->win);
@@ -1764,35 +1736,30 @@ read_keydesc(struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
 }
 
 static struct list_head *
-group_completions(char *str)
+vscreen_completions(char *str)
 {
-	struct list_head *list;
-	rp_group *cur;
+       struct list_head *list;
+       rp_vscreen *cur;
 
-	/* Initialize our list. */
-	list = xmalloc(sizeof(struct list_head));
-	INIT_LIST_HEAD(list);
+       /* Initialize our list. */
+       list = xmalloc(sizeof(struct list_head));
+       INIT_LIST_HEAD(list);
 
-	/* Grab all the group names. */
-	list_for_each_entry(cur, &(rp_current_screen->current_vscreen->groups),
-	    node) {
-		struct sbuf *s;
+       /* Grab all the vscreen names. */
+       list_for_each_entry(cur, &(rp_current_screen)->vscreens, node) {
+	       struct sbuf *s;
 
-		s = sbuf_new(0);
-		/*
-		 * A group may not have a name, so if it doesn't, use it's
-		 * number.
-		 */
-		if (cur->name) {
-			sbuf_copy(s, cur->name);
-		} else {
-			sbuf_printf(s, "%d", cur->number);
-		}
+	       s = sbuf_new(0);
+	       if (cur->name) {
+		       sbuf_copy(s, cur->name);
+	       } else {
+		       sbuf_printf(s, "%d", cur->number);
+	       }
 
-		list_add_tail(&s->node, list);
-	}
+	       list_add_tail(&s->node, list);
+       }
 
-	return list;
+       return list;
 }
 
 static struct list_head *
@@ -2061,8 +2028,8 @@ read_window(struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
 	if (name) {
 		/* try by number */
 		if ((n = string_to_positive_int(name)) >= 0) {
-			rp_window_elem *elem = group_find_window_by_number(
-			    rp_current_group, n);
+			rp_window_elem *elem = vscreen_find_window_by_number(
+			    rp_current_vscreen, n);
 			if (elem)
 				win = elem->win;
 		} else {
@@ -2151,54 +2118,54 @@ read_gravity(struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
 }
 
 /*
- * Given a string, find a matching group. First check if the string exactly
- * matches a group name, then check if it is a number & lastly check if it
- * partially matches the name of a group.
+ * Given a string, find a matching vscreen. First check if the string exactly
+ * matches a vscreen name, then check if it is a number & lastly check if it
+ * partially matches the name of a vscreen.
  */
-static rp_group *
-find_group(char *str)
+static rp_vscreen *
+find_vscreen(char *str)
 {
-	rp_group *group;
+	rp_vscreen *vscreen;
 	int n;
 
-	/* Check if the user typed a group number. */
+	/* Check if the user typed a vsceen number. */
 	n = string_to_positive_int(str);
 	if (n >= 0) {
-		group = groups_find_group_by_number(rp_current_vscreen, n);
-		if (group)
-			return group;
+		vscreen = screen_find_vscreen_by_number(rp_current_screen, n);
+		if (vscreen)
+			return vscreen;
 	}
 
 	/* Exact matches are special cases. */
-	if ((group = groups_find_group_by_name(rp_current_vscreen, str, 1)))
-		return group;
+	if ((vscreen = screen_find_vscreen_by_name(rp_current_screen, str, 1)))
+		return vscreen;
 
-	group = groups_find_group_by_name(rp_current_vscreen, str, 0);
-	return group;
+	vscreen = screen_find_vscreen_by_name(rp_current_screen, str, 0);
+	return vscreen;
 }
 
 static cmdret *
-read_group(struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
+read_vscreen(struct argspec *spec, struct sbuf *s, struct cmdarg **arg)
 {
 	char *input;
 
 	if (s)
 		input = xstrdup(sbuf_get(s));
 	else
-		input = get_input(spec->prompt, hist_GROUP, group_completions);
+		input = get_input(spec->prompt, hist_VSCREEN,
+		    vscreen_completions);
 
 	if (input) {
-		rp_group *g = find_group(input);
-
-		if (g) {
+		rp_vscreen *v = find_vscreen(input);
+		if (v) {
 			*arg = xmalloc(sizeof(struct cmdarg));
-			(*arg)->type = arg_GROUP;
-			(*arg)->arg.group = g;
+			(*arg)->type = arg_VSCREEN;
+			(*arg)->arg.vscreen = v;
 			(*arg)->string = input;
 			return NULL;
 		}
 
-		cmdret *ret = cmdret_new(RET_FAILURE, "unknown group '%s'",
+		cmdret *ret = cmdret_new(RET_FAILURE, "unknown vscreen '%s'",
 		    input);
 		free(input);
 		return ret;
@@ -2283,7 +2250,7 @@ var_completions(char *str)
 	list = xmalloc(sizeof(struct list_head));
 	INIT_LIST_HEAD(list);
 
-	/* Grab all the group names. */
+	/* Grab all the vscreen names. */
 	list_for_each_entry(cur, &set_vars, node) {
 		struct sbuf *s;
 
@@ -2401,8 +2368,8 @@ read_arg(struct argspec *spec, struct sbuf *s, struct cmdarg **arg,
 	case arg_FRAME:
 		ret = read_frame(s, arg);
 		break;
-	case arg_GROUP:
-		ret = read_group(spec, s, arg);
+	case arg_VSCREEN:
+		ret = read_vscreen(spec, s, arg);
 		break;
 	case arg_HOOK:
 		ret = read_hook(spec, s, arg);
@@ -2615,7 +2582,7 @@ arg_free(struct cmdarg *arg)
 	case arg_SHELLCMD:
 	case arg_KEYMAP:
 	case arg_GRAVITY:
-	case arg_GROUP:
+	case arg_VSCREEN:
 	case arg_HOOK:
 	case arg_VARIABLE:
 	case arg_RAW:
@@ -2859,7 +2826,6 @@ spawn(char *cmd, rp_frame *frame)
 	child->pid = pid;
 	child->terminated = 0;
 	child->frame = frame;
-	child->group = rp_current_group;
 	child->vscreen = rp_current_vscreen;
 	child->screen = rp_current_screen;
 	child->window_mapped = 0;
@@ -2886,33 +2852,32 @@ cmd_number(int interactive, struct cmdarg **args)
 	/* Gather the args. */
 	new_number = ARG(0, number);
 	if (args[1])
-		win = group_find_window_by_number(rp_current_group,
+		win = vscreen_find_window_by_number(rp_current_vscreen,
 		    ARG(1, number));
-	else {
-		rp_group *g = rp_current_group;
-		win = group_find_window(&g->mapped_windows, current_window());
-	}
+	else
+		win = vscreen_find_window(&rp_current_vscreen->mapped_windows,
+		    current_window());
 
 	/* Make the switch. */
 	if (new_number >= 0 && win) {
 		/* Find other window with same number and give it old number. */
-		other_win = group_find_window_by_number(rp_current_group,
+		other_win = vscreen_find_window_by_number(rp_current_vscreen,
 		    new_number);
 		if (other_win != NULL) {
 			old_number = win->number;
 			other_win->number = old_number;
 
 			/* Resort the window in the list */
-			group_resort_window(rp_current_group, other_win);
+			vscreen_resort_window(rp_current_vscreen, other_win);
 		} else {
-			numset_release(rp_current_group->numset, win->number);
+			numset_release(rp_current_vscreen->numset, win->number);
 		}
 
 		win->number = new_number;
-		numset_add_num(rp_current_group->numset, new_number);
+		numset_add_num(rp_current_vscreen->numset, new_number);
 
 		/* resort the the window in the list */
-		group_resort_window(rp_current_group, win);
+		vscreen_resort_window(rp_current_vscreen, win);
 
 		/* Update the window list. */
 		update_window_names(win->win->vscr->screen,
@@ -4365,21 +4330,11 @@ cmd_info(int interactive, struct cmdarg **args)
 	if (current_window() != NULL) {
 		rp_window *win = current_window();
 		rp_window_elem *win_elem;
-		win_elem = group_find_window(&(rp_current_group->mapped_windows),
+		win_elem = vscreen_find_window(&rp_current_vscreen->mapped_windows,
 		    win);
 		if (!win_elem)
-			win_elem = group_find_window(
-			    &(rp_current_group->unmapped_windows), win);
-
-		if (!win_elem) {
-			rp_group *g = groups_find_group_by_window(win);
-			if (g != NULL)
-				win_elem = group_find_window(&g->mapped_windows,
-				    win);
-			if (!win_elem && g != NULL)
-				win_elem = group_find_window(
-				    &g->unmapped_windows, win);
-		}
+			win_elem = vscreen_find_window(
+			    &rp_current_vscreen->unmapped_windows, win);
 
 		if (win_elem) {
 			char *s;
@@ -4963,153 +4918,52 @@ set_winliststyle(struct cmdarg **args)
 }
 
 cmdret *
-cmd_gnext(int interactive, struct cmdarg **args)
+cmd_vrename(int interactive, struct cmdarg **args)
 {
-	set_current_group(group_next_group(rp_current_vscreen));
+	if (screen_find_vscreen_by_name(rp_current_screen, ARG_STRING(0), 1))
+		return cmdret_new(RET_FAILURE, "vrename: duplicate vscreen name");
+	vscreen_rename(rp_current_vscreen, ARG_STRING(0));
+
+	/* Update the vscreen list. */
+	update_vscreen_names(rp_current_screen);
+
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
-cmd_gprev(int interactive, struct cmdarg **args)
+cmd_vselect(int interactive, struct cmdarg **args)
 {
-	set_current_group(group_prev_group(rp_current_vscreen));
-	return cmdret_new(RET_SUCCESS, NULL);
-}
+	rp_vscreen *v;
 
-cmdret *
-cmd_gother(int interactive, struct cmdarg **args)
-{
-	set_current_group(group_last_group(rp_current_vscreen));
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-cmdret *
-cmd_gnew(int interactive, struct cmdarg **args)
-{
-	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
-		return cmdret_new(RET_FAILURE, "gnew: group already exists");
-	set_current_group(group_add_new_group(rp_current_vscreen, ARG_STRING(0)));
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-cmdret *
-cmd_gnewbg(int interactive, struct cmdarg **args)
-{
-	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
-		return cmdret_new(RET_FAILURE, "gnewbg: group already exists");
-	group_add_new_group(rp_current_vscreen, ARG_STRING(0));
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-cmdret *
-cmd_gnumber(int interactive, struct cmdarg **args)
-{
-	int old_number, new_number;
-	rp_group *other_g, *g;
-
-	struct numset *g_numset = group_get_numset(rp_current_vscreen);
-
-	/* Gather the args. */
-	new_number = ARG(0, number);
-	if (args[1])
-		g = groups_find_group_by_number(rp_current_vscreen,
-		    ARG(1, number));
+	v = find_vscreen(ARG_STRING(0));
+	if (v)
+		set_current_vscreen(v);
 	else
-		g = rp_current_group;
-
-	/* Make the switch. */
-	if (new_number >= 0 && g) {
-		/* Find other window with same number and give it old number. */
-		other_g = groups_find_group_by_number(rp_current_vscreen,
-		    new_number);
-		if (other_g != NULL) {
-			old_number = g->number;
-			other_g->number = old_number;
-
-			/* Resort the window in the list */
-			group_resort_group(other_g);
-		} else {
-			numset_release(g_numset, g->number);
-		}
-
-		g->number = new_number;
-		numset_add_num(g_numset, new_number);
-
-		/* resort the the window in the list */
-		group_resort_group(g);
-
-		/* Update the group list. */
-		update_group_names(rp_current_screen);
-	}
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-cmdret *
-cmd_grename(int interactive, struct cmdarg **args)
-{
-	if (groups_find_group_by_name(rp_current_vscreen, ARG_STRING(0), 1))
-		return cmdret_new(RET_FAILURE, "grename: duplicate group name");
-	group_rename(rp_current_group, ARG_STRING(0));
-
-	/* Update the group list. */
-	update_group_names(rp_current_screen);
+		return cmd_vscreens(interactive, NULL);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
+/* Show all the vscreens, with the current one highlighted. */
 cmdret *
-cmd_gselect(int interactive, struct cmdarg **args)
+cmd_vscreens(int interactive, struct cmdarg **args)
 {
-	rp_group *g;
-
-	g = find_group(ARG_STRING(0));
-
-	if (g)
-		set_current_group(g);
-	else
-		return cmd_groups(interactive, NULL);
-
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-/* Show all the groups, with the current one highlighted. */
-cmdret *
-cmd_groups(int interactive, struct cmdarg **args)
-{
-	struct sbuf *group_list = NULL;
+	struct sbuf *vscreen_list = NULL;
 	int dummy;
 
 	if (interactive) {
-		show_group_bar(rp_current_screen);
+		show_vscreen_bar(rp_current_screen);
 		return cmdret_new(RET_SUCCESS, NULL);
 	} else {
 		cmdret *ret;
 
-		group_list = sbuf_new(0);
-		get_group_list(rp_current_vscreen, "\n", group_list, &dummy,
+		vscreen_list = sbuf_new(0);
+		get_vscreen_list(rp_current_screen, "\n", vscreen_list, &dummy,
 		    &dummy);
-		ret = cmdret_new(RET_SUCCESS, "%s", sbuf_get(group_list));
-		sbuf_free(group_list);
+		ret = cmdret_new(RET_SUCCESS, "%s", sbuf_get(vscreen_list));
+		sbuf_free(vscreen_list);
 		return ret;
 	}
-}
-
-/* Move a window to a different group. */
-cmdret *
-cmd_gmove(int interactive, struct cmdarg **args)
-{
-	if (current_window() == NULL)
-		return cmdret_new(RET_FAILURE, "gmove: no focused window");
-
-	group_move_window(ARG(0, group), current_window());
-	return cmdret_new(RET_SUCCESS, NULL);
-}
-
-cmdret *
-cmd_gmerge(int interactive, struct cmdarg **args)
-{
-	groups_merge(ARG(0, group), rp_current_group);
-	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
@@ -5173,35 +5027,6 @@ cmd_listhook(int interactive, struct cmdarg **args)
 	ret = cmdret_new(RET_SUCCESS, "%s", sbuf_get(buffer));
 	sbuf_free(buffer);
 	return ret;
-}
-
-cmdret *
-cmd_gdelete(int interactive, struct cmdarg **args)
-{
-	rp_group *g;
-
-	if (args[0] == NULL)
-		g = rp_current_group;
-	else
-		g = ARG(0, group);
-
-	switch (group_delete_group(g)) {
-	case GROUP_DELETE_GROUP_OK:
-		break;
-	case GROUP_DELETE_GROUP_NONEMPTY:
-		return cmdret_new(RET_FAILURE,
-		    "gdelete: non-empty group");
-		break;
-	case GROUP_DELETE_LAST_GROUP:
-		return cmdret_new(RET_FAILURE,
-		    "gdelete: cannot delete the sole group");
-		break;
-	default:
-		return cmdret_new(RET_FAILURE,
-		    "gdelete: unknown return code (this shouldn't happen)");
-	}
-
-	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
@@ -5550,12 +5375,12 @@ cmd_cnext(int interactive, struct cmdarg **args)
 		return cmd_next(interactive, args);
 
 	/* CUR !in cycle list, so LAST marks last node. */
-	last = group_prev_window(rp_current_group, cur);
+	last = vscreen_prev_window(rp_current_vscreen, cur);
 
 	if (last)
-		for (win = group_next_window(rp_current_group, cur);
+		for (win = vscreen_next_window(rp_current_vscreen, cur);
 		    win;
-		    win = group_next_window(rp_current_group, win)) {
+		    win = vscreen_next_window(rp_current_vscreen, win)) {
 			if (win->res_class
 			    && strcmp(cur->res_class, win->res_class)) {
 				set_active_window_force(win);
@@ -5578,12 +5403,12 @@ cmd_cprev(int interactive, struct cmdarg **args)
 		return cmd_next(interactive, args);
 
 	/* CUR !in cycle list, so LAST marks last node. */
-	last = group_next_window(rp_current_group, cur);
+	last = vscreen_next_window(rp_current_vscreen, cur);
 
 	if (last)
-		for (win = group_prev_window(rp_current_group, cur);
+		for (win = vscreen_prev_window(rp_current_vscreen, cur);
 		    win;
-		    win = group_prev_window(rp_current_group, win)) {
+		    win = vscreen_prev_window(rp_current_vscreen, win)) {
 			if (win->res_class
 			    && strcmp(cur->res_class, win->res_class)) {
 				set_active_window_force(win);
@@ -5606,12 +5431,12 @@ cmd_inext(int interactive, struct cmdarg **args)
 		return cmd_next(interactive, args);
 
 	/* CUR !in cycle list, so LAST marks last node. */
-	last = group_prev_window(rp_current_group, cur);
+	last = vscreen_prev_window(rp_current_vscreen, cur);
 
 	if (last)
-		for (win = group_next_window(rp_current_group, cur);
+		for (win = vscreen_next_window(rp_current_vscreen, cur);
 		    win;
-		    win = group_next_window(rp_current_group, win)) {
+		    win = vscreen_next_window(rp_current_vscreen, win)) {
 			if (win->res_class
 			    && !strcmp(cur->res_class, win->res_class)) {
 				set_active_window_force(win);
@@ -5634,12 +5459,12 @@ cmd_iprev(int interactive, struct cmdarg **args)
 		return cmd_next(interactive, args);
 
 	/* CUR !in cycle list, so LAST marks last node. */
-	last = group_next_window(rp_current_group, cur);
+	last = vscreen_next_window(rp_current_vscreen, cur);
 
 	if (last)
-		for (win = group_prev_window(rp_current_group, cur);
+		for (win = vscreen_prev_window(rp_current_vscreen, cur);
 		    win;
-		    win = group_prev_window(rp_current_group, win)) {
+		    win = vscreen_prev_window(rp_current_vscreen, win)) {
 			if (win->res_class
 			    && !strcmp(cur->res_class, win->res_class)) {
 				set_active_window_force(win);
@@ -5659,7 +5484,8 @@ cmd_cother(int interactive, struct cmdarg **args)
 
 	cur = current_window();
 	if (cur)
-		w = group_last_window_by_class(rp_current_group, cur->res_class);
+		w = vscreen_last_window_by_class(rp_current_vscreen,
+		    cur->res_class);
 
 	if (!w)
 		return cmdret_new(RET_FAILURE, "%s", MESSAGE_NO_OTHER_WINDOW);
@@ -5676,7 +5502,7 @@ cmd_iother(int interactive, struct cmdarg **args)
 
 	cur = current_window();
 	if (cur)
-		w = group_last_window_by_class_complement(rp_current_group,
+		w = vscreen_last_window_by_class_complement(rp_current_vscreen,
 		    cur->res_class);
 
 	if (!w)
@@ -5864,7 +5690,7 @@ cmd_vmove(int interactive, struct cmdarg **args)
 
 	n = string_to_positive_int(ARG_STRING(0));
 	if (n >= 0) {
-		v = vscreens_find_vscreen_by_number(rp_current_screen, n);
+		v = screen_find_vscreen_by_number(rp_current_screen, n);
 		if (v) {
 			vscreen_move_window(v, w);
 			set_current_vscreen(v);
@@ -5874,24 +5700,6 @@ cmd_vmove(int interactive, struct cmdarg **args)
 	}
 
 	return cmdret_new(RET_FAILURE, "vmove: invalid virtual screen");
-}
-
-cmdret *
-cmd_vselect(int interactive, struct cmdarg **args)
-{
-	rp_vscreen *v;
-	int n;
-
-	n = string_to_positive_int(ARG_STRING(0));
-	if (n >= 0) {
-		v = vscreens_find_vscreen_by_number(rp_current_screen, n);
-		if (v) {
-			set_current_vscreen(v);
-			return cmdret_new(RET_SUCCESS, NULL);
-		}
-	}
-
-	return cmdret_new(RET_FAILURE, "vselect: invalid virtual screen");
 }
 
 cmdret *

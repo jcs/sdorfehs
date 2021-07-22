@@ -160,8 +160,6 @@ Run before restarting
 .It Cm switchframe
 Run after a frame actually switched, but before the window in it is
 focused.
-.It Cm switchgroup
-Run after selecting a new group.
 .It Cm switchscreen
 Run when the user switches to a different screen.
 .It Cm switchwin
@@ -215,7 +213,7 @@ interactively.
 .It Ic cother
 Like
 .Ic other
-but switch to the window of the current group that was last accessed and
+but switch to the window of the current vscreen that was last accessed and
 has another resource class but is not currently visible.
 .It Ic curframe Pq Ic C\-a F
 Show a bar marking the current frame.
@@ -380,63 +378,13 @@ can be changed by
 .Ic set Ns
 ting
 .Ar framesels .
-.It Ic gdelete Op Ar group
-If the optional argument
-.Ar group
-is supplied, delete
-.Ar group .
-Otherwise delete the current group.
-If the last group is deleted, a new group with name
-.Li default
-is created.
-The group has to be empty, otherwise it cannot be deleted.
 .It Ic getenv Ar variable
 Output the value of the environment variable
 .Ar variable .
 .It Ic getsel
 Paste the current X Selection into the current window.
-.It Ic gmerge Ar group
-Move all windows from group
-.Ar group
-into the current group.
-.It Ic gmove Ar group
-Move the current window into group
-.Ar group .
-.It Ic gnew Ar group
-Create a new group with name
-.Ar group
-and select it.
-Most window commands only see (and thus select, consider next,
-previous or last) windows within the group active when they are
-issued.
-.It Ic gnewbg Ar group
-Create a new group named
-.Ar group ,
-but do not select it.
-.It Ic gnext
-Select the next group.
-Most window commands only see windows in the effective group.
-.It Ic gnumber Op Ar old new
-Give the number
-.Ar new
-to the group with the number
-.Ar old
-or the current group.
-.It Ic gother
-Select the last accessed group.
-Most window commands only see windows in the effective group.
-.It Ic gprev
-Select the prior group.
-Most window commands only see windows in the effective group.
 .It Ic gravity Op Cm nw | w | sw | n | c | s | ne | e | se
 Change how in its frame the current window is aligned.
-.It Ic grename
-Rename current group.
-.It Ic groups
-Output a list of all groups with their number.
-.It Ic gselect Ar group
-Select the group named
-.Ar group .
 .It Ic help Op Ar keymap
 If the optional parameter
 .Ar keymap
@@ -490,7 +438,7 @@ current one.)
 .It Ic iother
 Like
 .Ic other
-but switch to the window of the current group that was last accessed and
+but switch to the window of the current vscreen that was last accessed and
 has the same resource class but is not currently visible.
 .It Ic kill Pq Ic C\-a K
 Close the X-connection of the X-client responsible for the current window.
@@ -530,7 +478,7 @@ This keymap can be used to add new key-command mappings to it with
 and can be called with
 .Ic readkey .
 .It Ic next Pq Ic C\-a Return | C\-a n | C\-a space
-Switch to the next window in the current group.
+Switch to the next window in the current vscreen.
 .It Ic nextscreen Pq Ic C\-a N
 Switch to the next screen. (If you have multiple physical ones.)
 .It Ic number Ar new Op Ar old
@@ -543,10 +491,10 @@ or the current window.
 Remove all frames on the current screen except the current frame and
 maximize this one to the size of the whole screen.
 .It Ic other Pq Ic C\-a C\-a
-Switch to the window of the current group that was last
+Switch to the window of the current vscreen that was last
 accessed but is not currently visible.
 .It Ic prev Pq Ic C\-a p
-Switch to the previous window in the current group.
+Switch to the previous window in the current vscreen.
 .It Ic prevscreen Pq Ic C\-a P
 Switch to the previous screen. (If you have multiple physical ones.)
 .It Ic prompt Op Ar prompt
@@ -675,7 +623,7 @@ y-coordinate, its width, its height and if it is currently selected
 .It Ic select ( Cm \- | Ar name | Ar number ) Pq Ic C\-a \&'
 If a number is given, switch to the window with number
 .Ar number .
-If a name is given, switch to the window in the current group with
+If a name is given, switch to the window in the current vscreen with
 name
 .Ar name .
 Blank the current frame, if
@@ -788,12 +736,16 @@ Spawn a shell executing
 after showing a message with the command.
 .It Ic version Pq Ic C\-a v
 Output version and compile time information.
-.It Ic vselect Oo Ar vscreenno Oc
-Switch to the virtual screen numbered
-.Ar vscreenno .
-.It Ic vmove Oo Ar vscreenno Oc
-Move the current window to the virtual screen numbered
-.Ar vscreenno .
+.It Ic vmove Oo Ar vscreen Oc
+Move the current window to the virtual screen
+.Ar vscreen .
+.It Ic vrename
+Rename current vscreen.
+.It Ic vscreens
+Output a list of all vscreens with their number.
+.It Ic vselect Ar vscreen
+Select the vscreen named
+.Ar vscreen .
 .It Ic vsplit Oo Ar l Ns Li / Ns Ar p | Ar "pixels-from-top" | Li \- Ns Ar "pixels-from-bottom" Oc Pq Ic C\-a s
 Split the current frame into upper frame and a lower frame.
 If no parameter is given, split in halves.
@@ -818,7 +770,7 @@ high, depending whether there is a
 in front of the number or not.
 .It Ic windows Oo Ar format Oc Pq Ic C\-a w
 In interactive mode,
-show the list of all windows in the current group for the duration
+show the list of all windows in the current vscreen for the duration
 specified by the variable
 .Va msgwait .
 If
@@ -897,7 +849,7 @@ For example:
 .Li %20t
 .Pc
 .Pp
-In non\-interactive mode, output the list of windows in the current group
+In non\-interactive mode, output the list of windows in the current vscreen
 line by line.
 The format string can be overwritten by the optional parameter
 .Ar format .

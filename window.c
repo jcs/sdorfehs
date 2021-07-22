@@ -140,7 +140,6 @@ get_child_info(Window w, int add)
 	cur->pid = pid;
 	cur->terminated = 0;
 	cur->frame = current_frame(rp_current_vscreen);
-	cur->group = rp_current_group;
 	cur->vscreen = rp_current_vscreen;
 	cur->screen = rp_current_screen;
 	cur->window_mapped = 0;
@@ -156,7 +155,7 @@ add_to_window_list(rp_screen *s, Window w)
 {
 	struct rp_child_info *child_info;
 	rp_window *new_window;
-	rp_group *group = NULL;
+	rp_vscreen *vscreen = NULL;
 	int frame_num = -1;
 
 	new_window = xmalloc(sizeof(rp_window));
@@ -203,7 +202,7 @@ add_to_window_list(rp_screen *s, Window w)
 			    child_info->vscreen, child_info->frame);
 
 			PRINT_DEBUG(("frame=%p\n", frame));
-			group = groups_find_group_by_group(child_info->group);
+			vscreen = child_info->vscreen;
 			if (frame)
 				frame_num = frame->number;
 			/* Only map the first window in the launch frame. */
@@ -212,13 +211,13 @@ add_to_window_list(rp_screen *s, Window w)
 	}
 
 	/*
-	 * Add the window to the group its pid was launched in or the current
+	 * Add the window to the vscreen its pid was launched in or the current
 	 * one.
 	 */
-	if (group)
-		group_add_window(group, new_window);
+	if (vscreen)
+		vscreen_add_window(vscreen, new_window);
 	else
-		group_add_window(new_window->vscr->current_group, new_window);
+		vscreen_add_window(new_window->vscr, new_window);
 
 	PRINT_DEBUG(("frame_num: %d\n", frame_num));
 	if (frame_num >= 0)
@@ -283,13 +282,13 @@ find_window_name(char *name, int exact_match)
 	rp_window_elem *cur;
 
 	if (!exact_match) {
-		list_for_each_entry(cur, &rp_current_group->mapped_windows,
+		list_for_each_entry(cur, &rp_current_vscreen->mapped_windows,
 		    node) {
 			if (str_comp(name, window_name(cur->win), strlen(name)))
 				return cur->win;
 		}
 	} else {
-		list_for_each_entry(cur, &rp_current_group->mapped_windows,
+		list_for_each_entry(cur, &rp_current_vscreen->mapped_windows,
 		    node) {
 			if (!strcmp(name, window_name(cur->win)))
 				return cur->win;
@@ -300,10 +299,11 @@ find_window_name(char *name, int exact_match)
 	return NULL;
 }
 
+/* TODO: remove this */
 rp_window *
 find_window_other(rp_vscreen *vscreen)
 {
-	return group_last_window(vscreen->current_group);
+	return vscreen_last_window(vscreen);
 }
 
 /*
@@ -530,7 +530,7 @@ get_current_window_in_fmt(char *fmt, struct sbuf *buffer)
 	sbuf_clear(buffer);
 	find_window_other(rp_current_vscreen);
 
-	list_for_each_entry(we, &rp_current_group->mapped_windows, node) {
+	list_for_each_entry(we, &rp_current_vscreen->mapped_windows, node) {
 		if (we->win != current_window())
 			continue;
 
@@ -555,8 +555,8 @@ get_window_list(char *fmt, char *delim, struct sbuf *buffer,
 	sbuf_clear(buffer);
 	find_window_other(rp_current_vscreen);
 
-	/* We only loop through the current group to look for windows. */
-	list_for_each_entry(we, &rp_current_group->mapped_windows, node) {
+	/* We only loop through the current vscreen to look for windows. */
+	list_for_each_entry(we, &rp_current_vscreen->mapped_windows, node) {
 		PRINT_DEBUG(("%d-%s\n", we->number, window_name(we->win)));
 
 		if (we->win == current_window())
@@ -582,7 +582,7 @@ get_window_list(char *fmt, char *delim, struct sbuf *buffer,
 		 * Only put the delimiter between the windows, and not after
 		 * the the last window.
 		 */
-		if (delim && we->node.next != &rp_current_group->mapped_windows)
+		if (delim && we->node.next != &rp_current_vscreen->mapped_windows)
 			sbuf_concat(buffer, delim);
 
 		if (we->win == current_window()) {
@@ -609,14 +609,14 @@ free_window_stuff(void)
 
 	list_for_each_safe_entry(cur, iter, tmp, &rp_unmapped_window, node) {
 		list_del(&cur->node);
-		groups_del_window(cur);
+		vscreen_del_window(cur->vscr, cur);
 		free_window(cur);
 	}
 
 	list_for_each_safe_entry(cur, iter, tmp, &rp_mapped_window, node) {
 		list_del(&cur->node);
-		groups_unmap_window(cur);
-		groups_del_window(cur);
+		vscreen_unmap_window(cur->vscr, cur);
+		vscreen_del_window(cur->vscr, cur);
 		free_window(cur);
 	}
 

@@ -22,7 +22,7 @@
 enum {
 	hist_NONE = 0, hist_COMMAND, hist_SHELLCMD,
 	hist_SELECT, hist_KEYMAP, hist_KEY,
-	hist_WINDOW, hist_GRAVITY, hist_GROUP,
+	hist_WINDOW, hist_GRAVITY, hist_VSCREEN,
 	hist_HOOK, hist_VARIABLE, hist_PROMPT,
 	hist_OTHER,
 	/* must be last, do not use, for length only: */

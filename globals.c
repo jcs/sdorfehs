@@ -259,7 +259,6 @@ get_selection(void)
 LIST_HEAD(rp_key_hook);
 LIST_HEAD(rp_switch_win_hook);
 LIST_HEAD(rp_switch_frame_hook);
-LIST_HEAD(rp_switch_group_hook);
 LIST_HEAD(rp_switch_screen_hook);
 LIST_HEAD(rp_quit_hook);
 LIST_HEAD(rp_restart_hook);
@@ -271,7 +270,6 @@ struct rp_hook_db_entry rp_hook_db[] =
 	{{"key", &rp_key_hook},
 	{"switchwin", &rp_switch_win_hook},
 	{"switchframe", &rp_switch_frame_hook},
-	{"switchgroup", &rp_switch_group_hook},
 	{"switchscreen", &rp_switch_screen_hook},
 	{"deletewindow", &rp_delete_window_hook},
 	{"quit", &rp_quit_hook},
@@ -592,7 +590,7 @@ clean_up(void)
 
 	list_for_each_safe_entry(cur, iter, tmp, &rp_screens, node) {
 		list_for_each_entry(vcur, &cur->vscreens, node)
-			free_groups(vcur);
+			vscreen_del(vcur);
 
 		list_del(&cur->node);
 		screen_free(cur);

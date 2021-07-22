@@ -78,7 +78,6 @@ do {                                            \
 #include "frame.h"
 #include "screen.h"
 #include "vscreen.h"
-#include "group.h"
 #include "editor.h"
 #include "history.h"
 #include "completions.h"

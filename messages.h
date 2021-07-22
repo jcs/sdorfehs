@@ -28,14 +28,10 @@
 
 #define MESSAGE_RAISE_TRANSIENT		"Raise request from transient window %d (%s)"
 #define MESSAGE_RAISE_WINDOW		"Raise request from window %d (%s)"
-#define MESSAGE_RAISE_TRANSIENT_GROUP	"Raise request from transient window %d (%s) in group %s"
-#define MESSAGE_RAISE_WINDOW_GROUP	"Raise request from window %d (%s) in group %s"
 #define MESSAGE_RAISE_TRANSIENT_VSCREEN	"Raise request from transient window %d (%s) on vscreen %d"
 #define MESSAGE_RAISE_WINDOW_VSCREEN	"Raise request from window %d (%s) on vscreen %d"
 #define MESSAGE_MAP_TRANSIENT		"New transient window %d (%s)"
 #define MESSAGE_MAP_WINDOW		"New window %d (%s)"
-#define MESSAGE_MAP_TRANSIENT_GROUP	"New transient window %d (%s) in group %s"
-#define MESSAGE_MAP_WINDOW_GROUP	"New window %d (%s) in group %s"
 #define MESSAGE_MAP_TRANSIENT_VSCREEN	"New transient window %d (%s) on vscreen %d"
 #define MESSAGE_MAP_WINDOW_VSCREEN	"New window %d (%s) on vscreen %d"
 
@@ -44,7 +40,7 @@
 #define MESSAGE_PROMPT_SHELL_COMMAND	"/bin/sh -c "
 #define MESSAGE_PROMPT_COMMAND		":"
 #define MESSAGE_PROMPT_XTERM_COMMAND	MESSAGE_PROMPT_SHELL_COMMAND TERM_PROG " -e "
-#define MESSAGE_PROMPT_SWITCH_TO_GROUP	"Switch to group: "
+#define MESSAGE_PROMPT_SWITCH_TO_VSCREEN "Switch to vscreen: "
 #define MESSAGE_PROMPT_SELECT_VAR	"Variable: "
 #define MESSAGE_PROMPT_VAR_VALUE	"Value: "
 

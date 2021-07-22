@@ -100,8 +100,8 @@
  */
 #define IGNORE_BADWINDOW 1
 
-/* This is the name of the first group that is created. */
-#define DEFAULT_GROUP_NAME "default"
+/* This is the name of the first vscreen that is created. */
+#define DEFAULT_VSCREEN_NAME "default"
 
 /* Maximum allowed history size */
 #define MAX_HISTORY_SIZE 100

@@ -265,9 +265,8 @@ find_window_for_frame(rp_frame *frame)
 	rp_window_elem *most_recent = NULL;
 	rp_window_elem *cur;
 
-	list_for_each_entry(cur, &rp_current_group->mapped_windows, node) {
-		if ((cur->win->vscr == v || rp_have_xrandr)
-		    && cur->win != current_window()
+	list_for_each_entry(cur, &v->mapped_windows, node) {
+		if (cur->win != current_window()
 		    && cur->win->sticky_frame != frame->number
 		    && !find_windows_frame(cur->win)
 		    && cur->win->last_access >= last_access
@@ -937,22 +936,17 @@ show_frame_message(char *msg)
 	frame = current_frame(rp_current_vscreen);
 	win = current_window();
 	if (win) {
-		rp_group *g;
-
-		g = groups_find_group_by_window(win);
-		if (g)
-			elem = group_find_window(&g->mapped_windows, win);
-		else
-			warnx("window 0x%lx not in any group\n",
+		elem = vscreen_find_window(&win->vscr->mapped_windows, win);
+		if (!elem)
+			warnx("window 0x%lx not on any vscreen\n",
 			    (unsigned long)win->w);
 	}
 	/* A frame doesn't always contain a window. */
 	msgbuf = sbuf_new(0);
 	if (elem)
 		format_string(msg, elem, msgbuf);
-	else {
+	else
 		sbuf_concat(msgbuf, EMPTY_FRAME_MESSAGE);
-	}
 
 	width = defaults.bar_x_padding * 2
 	    + rp_text_width(s, msgbuf->data, msgbuf->len, NULL);

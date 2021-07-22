@@ -36,7 +36,6 @@ typedef struct rp_action rp_action;
 typedef struct rp_keymap rp_keymap;
 typedef struct rp_frame rp_frame;
 typedef struct rp_child_info rp_child_info;
-typedef struct rp_group rp_group;
 typedef struct rp_window_elem rp_window_elem;
 typedef struct rp_completions rp_completions;
 typedef struct rp_input_line rp_input_line;
@@ -82,9 +81,9 @@ struct rp_window {
 
 	/*
 	 * A number uniquely identifying this window. This is a different
-	 * number than the one given to it by the group it is in. This number
-	 * is used for internal purposes, whereas the group number is what the
-	 * user sees.
+	 * number than the one given to it by the vscreen it is in. This number
+	 * is used for internal purposes, whereas the vscreen number is what
+	 * the user sees.
 	 */
 	int number;
 
@@ -140,40 +139,6 @@ struct rp_window_elem {
 	struct list_head node;
 };
 
-/*
- * An rp_group is a group of windows. By default all windows are added to the
- * same group. But a new group can be created. All new windows will be part of
- * this new current group. The windows of any other group may be visible in
- * another frame, but will not show up in the window list and will not be
- * accessible with select, next, or prev. These window navigation commands only
- * navigate the current group.
- */
-struct rp_group {
-	rp_vscreen *vscreen;
-
-	/*
-	 * The name and number of this group. This is to allow the user to
-	 * quickly jump to the desired group.
-	 */
-	char *name;
-	int number;
-
-	/* For determining the last group. */
-	int last_access;
-
-	/* The list of windows participating in this group. */
-	struct list_head mapped_windows, unmapped_windows;
-
-	/*
-	 * This numset is responsible for giving out numbers for each window in
-	 * the group.
-	 */
-	struct numset *numset;
-
-	/* This structure can exist in a list. */
-	struct list_head node;
-};
-
 struct rp_global_screen {
 	Window root, wm_check;
 	unsigned long fg_color, bg_color, fw_color, bw_color;	/* The pixel color. */
@@ -203,6 +168,12 @@ struct rp_vscreen {
 	/* Virtual screen number, handled by rp_screen's vscreens_numset */
 	int number;
 
+	/* Name */
+	char *name;
+
+	/* For determining the last vscreen. */
+	int last_access;
+
 	/*
 	 * A list of frames that may or may not contain windows. There should
 	 * always be one in the list.
@@ -218,9 +189,14 @@ struct rp_vscreen {
 	 */
 	int current_frame;
 
-	struct numset *group_numset;
-	struct list_head groups;
-	rp_group *current_group;
+	/* The list of windows participating in this vscreen. */
+	struct list_head mapped_windows, unmapped_windows;
+
+	/*
+	 * This numset is responsible for giving out numbers for each window in
+	 * the vscreen.
+	 */
+	struct numset *numset;
 
 	struct list_head node;
 };
@@ -388,7 +364,6 @@ struct rp_child_info {
 	int terminated;
 
 	/* what was current when it was launched? */
-	rp_group *group;
 	rp_frame *frame;
 	rp_screen *screen;
 	rp_vscreen *vscreen;

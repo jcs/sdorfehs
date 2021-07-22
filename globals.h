@@ -54,17 +54,9 @@
 #define COMPLETION_NEXT         0
 #define COMPLETION_PREVIOUS     1
 
-/* Error codes for group_delete_group() */
-#define GROUP_DELETE_GROUP_OK         0
-#define GROUP_DELETE_GROUP_NONEMPTY   1
-#define GROUP_DELETE_LAST_GROUP       2
-
 /* Font styles */
 #define STYLE_NORMAL  0
 #define STYLE_INVERSE 1
-
-/* The list of groups. */
-extern struct list_head rp_groups;
 
 /* Whether or not we support xrandr */
 extern int rp_have_xrandr;
@@ -181,7 +173,6 @@ extern struct numset *rp_window_numset;
 extern struct list_head rp_key_hook;
 extern struct list_head rp_switch_win_hook;
 extern struct list_head rp_switch_frame_hook;
-extern struct list_head rp_switch_group_hook;
 extern struct list_head rp_switch_screen_hook;
 extern struct list_head rp_delete_window_hook;
 extern struct list_head rp_quit_hook;

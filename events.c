@@ -48,21 +48,10 @@ XEvent rp_current_event;
 void
 show_rudeness_msg(rp_window *win, int raised)
 {
-	rp_group *g = groups_find_group_by_window(win);
-	rp_window_elem *elem = group_find_window(&g->mapped_windows, win);
+	rp_vscreen *v = win->vscr;
+	rp_window_elem *elem = vscreen_find_window(&v->mapped_windows, win);
 
-	if (win->vscr != rp_current_vscreen) {
-		if (win->transient)
-			marked_message_printf(0, 0, raised ?
-			    MESSAGE_RAISE_TRANSIENT_VSCREEN :
-			    MESSAGE_MAP_TRANSIENT_VSCREEN,
-			    elem->number, window_name(win), win->vscr->number);
-		else
-			marked_message_printf(0, 0, raised ?
-			    MESSAGE_RAISE_WINDOW_VSCREEN :
-			    MESSAGE_MAP_WINDOW_VSCREEN,
-			    elem->number, window_name(win), win->vscr->number);
-	} else if (g == rp_current_group) {
+	if (v == rp_current_vscreen) {
 		if (win->transient)
 			marked_message_printf(0, 0, raised ?
 			    MESSAGE_RAISE_TRANSIENT : MESSAGE_MAP_TRANSIENT,
@@ -74,13 +63,14 @@ show_rudeness_msg(rp_window *win, int raised)
 	} else {
 		if (win->transient)
 			marked_message_printf(0, 0, raised ?
-			    MESSAGE_RAISE_TRANSIENT_GROUP :
-			    MESSAGE_MAP_TRANSIENT_GROUP,
-			    elem->number, window_name(win), g->name);
+			    MESSAGE_RAISE_TRANSIENT_VSCREEN :
+			    MESSAGE_MAP_TRANSIENT_VSCREEN,
+			    elem->number, window_name(win), win->vscr->number);
 		else
 			marked_message_printf(0, 0, raised ?
-			    MESSAGE_RAISE_WINDOW_GROUP : MESSAGE_MAP_WINDOW_GROUP,
-			    elem->number, window_name(win), g->name);
+			    MESSAGE_RAISE_WINDOW_VSCREEN :
+			    MESSAGE_MAP_WINDOW_VSCREEN,
+			    elem->number, window_name(win), win->vscr->number);
 	}
 }
 
@@ -385,7 +375,7 @@ client_msg(XClientMessageEvent *ev)
 			PRINT_DEBUG(("Received _NET_CURRENT_DESKTOP = %ld\n",
 			    ev->data.l[0]));
 
-			v = vscreens_find_vscreen_by_number(s, ev->data.l[0]);
+			v = screen_find_vscreen_by_number(s, ev->data.l[0]);
 			if (v)
 				set_current_vscreen(v);
 		} else {
@@ -555,7 +545,6 @@ property_notify(XEvent *ev)
 				 */
 				child_info->window_mapped = 1;
 			}
-			/* TODO: also adopt group information? */
 		}
 	} else if (ev->xproperty.atom == XA_WM_NAME) {
 		PRINT_DEBUG(("updating window name\n"));

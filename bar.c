@@ -35,7 +35,7 @@
 /* Possible values for bar_is_raised status. */
 #define BAR_IS_HIDDEN		0
 #define BAR_IS_WINDOW_LIST	1
-#define BAR_IS_GROUP_LIST	2
+#define BAR_IS_VSCREEN_LIST	2
 #define BAR_IS_MESSAGE		3
 #define BAR_IS_STICKY		4
 
@@ -168,13 +168,13 @@ show_bar(rp_screen *s, char *fmt)
 	reset_alarm();
 }
 
-/* Show group listing in bar. */
+/* Show vscreen listing in bar. */
 void
-show_group_bar(rp_screen *s)
+show_vscreen_bar(rp_screen *s)
 {
-	s->bar_is_raised = BAR_IS_GROUP_LIST;
+	s->bar_is_raised = BAR_IS_VSCREEN_LIST;
 	XMapRaised(dpy, s->bar_window);
-	update_group_names(s);
+	update_vscreen_names(s);
 
 	/* Switch to the default colormap */
 	if (current_window())
@@ -272,8 +272,8 @@ update_bar(rp_screen *s)
 	case BAR_IS_WINDOW_LIST:
 		update_window_names(s, defaults.window_fmt);
 		break;
-	case BAR_IS_GROUP_LIST:
-		update_group_names(s);
+	case BAR_IS_VSCREEN_LIST:
+		update_vscreen_names(s);
 		break;
 	case BAR_IS_STICKY:
 		hide_bar(s, 0);
@@ -550,24 +550,23 @@ update_window_names(rp_screen *s, char *fmt)
  * Note that we use marked_message_internal to avoid resetting the alarm.
  */
 void
-update_group_names(rp_screen *s)
+update_vscreen_names(rp_screen *s)
 {
 	struct sbuf *bar_buffer;
 	int mark_start = 0;
 	int mark_end = 0;
 	char *delimiter;
 
-	if (s->bar_is_raised != BAR_IS_GROUP_LIST)
+	if (s->bar_is_raised != BAR_IS_VSCREEN_LIST)
 		return;
 
 	delimiter = (defaults.window_list_style == STYLE_ROW) ? " " : "\n";
 
 	bar_buffer = sbuf_new(0);
 
-	get_group_list(s->current_vscreen, delimiter, bar_buffer, &mark_start,
-	    &mark_end);
+	get_vscreen_list(s, delimiter, bar_buffer, &mark_start, &mark_end);
 	marked_message_internal(sbuf_get(bar_buffer), mark_start, mark_end,
-	    BAR_IS_GROUP_LIST);
+	    BAR_IS_VSCREEN_LIST);
 
 	sbuf_free(bar_buffer);
 }

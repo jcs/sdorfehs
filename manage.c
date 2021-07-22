@@ -392,7 +392,7 @@ void
 unmanage(rp_window *w)
 {
 	list_del(&w->node);
-	groups_del_window(w);
+	vscreen_del_window(w->vscr, w);
 
 	remove_atom(rp_glob_screen.root, _net_client_list, XA_WINDOW, w->w);
 	remove_atom(rp_glob_screen.root, _net_client_list_stacking, XA_WINDOW,
@@ -840,8 +840,7 @@ map_window(rp_window *win)
 	list_del(&win->node);
 	insert_into_list(win, &rp_mapped_window);
 
-	/* Update all groups. */
-	groups_map_window(win->vscr, win);
+	vscreen_map_window(win->vscr, win);
 
 	/*
 	 * The window has never been accessed since it was brought back from the
@@ -939,8 +938,8 @@ withdraw_window(rp_window *win)
 
 	list_move_tail(&win->node, &rp_unmapped_window);
 
-	/* Update the groups. */
-	groups_unmap_window(win);
+	/* Update the vscreens. */
+	vscreen_unmap_window(win->vscr, win);
 
 	ignore_badwindow++;
 
