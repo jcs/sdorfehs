@@ -561,5 +561,12 @@ get_more_input(char *prompt, char *preinput, int history_id,
 
 	XUnmapWindow(dpy, s->input_window);
 
+	/*
+	 * XXX: Without this, the input window doesn't show up again if we need
+	 * to prompt the user for more input, until the user types a character.
+	 * Figure out what is actually causing this and remove this.
+	 */
+	usleep(1);
+
 	return final_input;
 }
