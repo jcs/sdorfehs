@@ -290,6 +290,7 @@ vscreen_move_window(rp_vscreen *to, rp_window *w)
 	rp_vscreen *from = w->vscr;
 	rp_frame *f;
 	rp_window_elem *we;
+	struct rp_child_info *child;
 
 	we = vscreen_find_window(&from->mapped_windows, w);
 	if (we == NULL) {
@@ -315,6 +316,18 @@ vscreen_move_window(rp_vscreen *to, rp_window *w)
 		set_active_window_force(w);
 	else
 		hide_window(w);
+
+	/*
+	 * Update rp_children so that any new windows from this application
+	 * will appear on the vscreen we just moved to
+	 */
+	child = get_child_info(w->w, 0);
+	if (!child)
+		return;
+
+	child->frame = current_frame(to);
+	child->vscreen = to;
+	child->screen = to->screen;
 }
 
 struct numset *
