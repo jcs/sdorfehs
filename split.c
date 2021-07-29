@@ -960,8 +960,8 @@ show_frame_message(char *msg)
 	hide_frame_indicator();
 
 	XMoveResizeWindow(dpy, s->frame_window,
-	    s->left + frame->x + frame->width / 2 - width / 2,
-	    s->top + frame->y + frame->height / 2 - height / 2,
+	    frame->x + frame->width / 2 - width / 2,
+	    frame->y + frame->height / 2 - height / 2,
 	    width, height);
 
 	XMapRaised(dpy, s->frame_window);
@@ -984,10 +984,10 @@ find_frame_up(rp_frame *frame)
 	int wingap = 0, curgap;
 
 	list_for_each_entry(cur, &v->frames, node) {
-		if (frame_top_abs(frame) != frame_bottom_abs(cur))
+		if (frame_top(frame) != frame_bottom(cur))
 			continue;
 
-		curgap = abs(frame_left_abs(frame) - frame_left_abs(cur));
+		curgap = abs(frame_left(frame) - frame_left(cur));
 		if (!winner || (curgap < wingap)) {
 			winner = cur;
 			wingap = curgap;
@@ -1005,10 +1005,10 @@ find_frame_down(rp_frame *frame)
 	int wingap = 0, curgap;
 
 	list_for_each_entry(cur, &v->frames, node) {
-		if (frame_bottom_abs(frame) != frame_top_abs(cur))
+		if (frame_bottom(frame) != frame_top(cur))
 			continue;
 
-		curgap = abs(frame_left_abs(frame) - frame_left_abs(cur));
+		curgap = abs(frame_left(frame) - frame_left(cur));
 		if (!winner || (curgap < wingap)) {
 			winner = cur;
 			wingap = curgap;
@@ -1026,10 +1026,10 @@ find_frame_left(rp_frame *frame)
 	int wingap = 0, curgap;
 
 	list_for_each_entry(cur, &v->frames, node) {
-		if (frame_left_abs(frame) != frame_right_abs(cur))
+		if (frame_left(frame) != frame_right(cur))
 			continue;
 
-		curgap = abs(frame_top_abs(frame) - frame_top_abs(cur));
+		curgap = abs(frame_top(frame) - frame_top(cur));
 		if (!winner || (curgap < wingap)) {
 			winner = cur;
 			wingap = curgap;
@@ -1047,10 +1047,10 @@ find_frame_right(rp_frame *frame)
 	int wingap = 0, curgap;
 
 	list_for_each_entry(cur, &v->frames, node) {
-		if (frame_right_abs(frame) != frame_left_abs(cur))
+		if (frame_right(frame) != frame_left(cur))
 			continue;
 
-		curgap = abs(frame_top_abs(frame) - frame_top_abs(cur));
+		curgap = abs(frame_top(frame) - frame_top(cur));
 		if (!winner || (curgap < wingap)) {
 			winner = cur;
 			wingap = curgap;

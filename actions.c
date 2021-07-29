@@ -1944,8 +1944,8 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 
 				/* Create and map the window. */
 				wins[i] = XCreateWindow(dpy, cur_screen->root,
-				    cur_screen->left + cur_frame->x,
-				    cur_screen->top + cur_frame->y, width,
+				    cur_frame->x,
+				    cur_frame->y, width,
 				    height, 1, CopyFromParent, CopyFromParent,
 				    CopyFromParent,
 				    CWOverrideRedirect|CWBorderPixel|CWBackPixel,

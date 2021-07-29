@@ -32,7 +32,7 @@ int
 frame_left_screen_edge(rp_frame *frame)
 {
 	rp_vscreen *v = frames_vscreen(frame);
-	return (frame->x <= screen_left(v->screen));
+	return (frame_left(frame) <= screen_left(v->screen));
 }
 
 int
@@ -45,7 +45,7 @@ int
 frame_top_screen_edge(rp_frame *frame)
 {
 	rp_vscreen *v = frames_vscreen(frame);
-	return (frame->y <= screen_top(v->screen));
+	return (frame_top(frame) <= screen_top(v->screen));
 }
 
 int
@@ -58,7 +58,7 @@ int
 frame_right_screen_edge(rp_frame *frame)
 {
 	rp_vscreen *v = frames_vscreen(frame);
-	return (frame->x + frame->width >= screen_width(v->screen));
+	return (frame_right(frame) >= screen_right(v->screen));
 }
 
 int
@@ -71,33 +71,7 @@ int
 frame_bottom_screen_edge(rp_frame *frame)
 {
 	rp_vscreen *v = frames_vscreen(frame);
-	return (frame->y + frame->height >= screen_bottom(v->screen));
-}
-
-int
-frame_left_abs(rp_frame *frame)
-{
-	rp_vscreen *v = frames_vscreen(frame);
-	return v->screen->left + frame->x;
-}
-
-int
-frame_top_abs(rp_frame *frame)
-{
-	rp_vscreen *v = frames_vscreen(frame);
-	return v->screen->top + frame->y;
-}
-
-int
-frame_right_abs(rp_frame *frame)
-{
-	return frame_left_abs(frame) + frame->width;
-}
-
-int
-frame_bottom_abs(rp_frame *frame)
-{
-	return frame_top_abs(frame) + frame->height;
+	return (frame_bottom(frame) >= screen_bottom(v->screen));
 }
 
 int

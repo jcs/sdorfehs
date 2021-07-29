@@ -767,8 +767,7 @@ maximize(rp_window *win)
 	    window_name(win), win->x, win->y, win->width, win->height));
 
 	/* Actually do the maximizing. */
-	XMoveResizeWindow(dpy, win->w, win->vscr->screen->left + win->x,
-	    win->vscr->screen->top + win->y, win->width, win->height);
+	XMoveResizeWindow(dpy, win->w, win->x, win->y, win->width, win->height);
 	XSetWindowBorderWidth(dpy, win->w, win->border);
 
 	XSync(dpy, False);

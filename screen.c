@@ -61,7 +61,7 @@ screen_left(rp_screen *s)
 int
 screen_right(rp_screen *s)
 {
-	return s->width - defaults.padding_right;
+	return s->left + s->width - defaults.padding_right;
 }
 
 int
@@ -85,7 +85,7 @@ screen_top(rp_screen *s)
 int
 screen_bottom(rp_screen *s)
 {
-	int ret = s->height - defaults.padding_bottom;
+	int ret = s->top + s->height - defaults.padding_bottom;
 
 	if (defaults.bar_sticky) {
 		switch (defaults.bar_location) {
@@ -623,19 +623,17 @@ screen_update_frames(rp_screen *s)
 
 	list_for_each_entry(v, &s->vscreens, node) {
 		list_for_each_entry(f, &v->frames, node) {
-			if (f->x < screen_left(v->screen) ||
-			    (f->edges & EDGE_LEFT))
+			if (frame_left_screen_edge(f) || (f->edges & EDGE_LEFT))
 				f->x = screen_left(v->screen);
 
-			if (f->y < screen_top(v->screen) ||
-			    (f->edges & EDGE_TOP))
+			if (frame_top_screen_edge(f) || (f->edges & EDGE_TOP))
 				f->y = screen_top(v->screen);
 
-			if (f->x + f->width > screen_right(v->screen) ||
+			if (frame_right_screen_edge(f) ||
 			    (f->edges & EDGE_RIGHT))
 				f->width = screen_right(v->screen) - f->x;
 
-			if (f->y + f->height > screen_bottom(v->screen) ||
+			if (frame_bottom_screen_edge(f) ||
 			    (f->edges & EDGE_BOTTOM))
 				f->height = screen_bottom(v->screen) - f->y;
 
