@@ -1891,78 +1891,66 @@ static cmdret *
 read_frame(struct sbuf *s, struct cmdarg **arg)
 {
 	rp_frame *frame;
+	XSetWindowAttributes attr;
 	int fnum = -1;
 	KeySym c;
 	char keysym_buf[513];
 	int keysym_bufsize = sizeof(keysym_buf);
 	unsigned int mod;
 	Window *wins;
-	int i;
+	int i = 0;
 	rp_frame *cur_frame;
-	rp_screen *cur_screen;
+	rp_screen *cur_screen = rp_current_screen;
 	int frames;
 
 	if (s == NULL) {
-		frames = 0;
-
-		list_for_each_entry(cur_screen, &rp_screens, node) {
-			frames += num_frames(cur_screen->current_vscreen);
-		}
-
+		frames = num_frames(rp_current_vscreen);
 		wins = xmalloc(sizeof(Window) * frames);
 
 		/*
 		 * Loop through each frame and display its number in it's top
 		 * left corner.
 		 */
-		i = 0;
-		list_for_each_entry(cur_screen, &rp_screens, node) {
-			XSetWindowAttributes attr;
+		attr.border_pixel = rp_glob_screen.fg_color;
+		attr.background_pixel = rp_glob_screen.bg_color;
+		attr.override_redirect = True;
+
+		list_for_each_entry(cur_frame, &rp_current_vscreen->frames,
+		    node) {
+			int width, height;
+			char *num;
 
 			/*
-			 * Set up the window attributes to be used in the loop.
+			 * Create the string to be displayed in the
+			 * window and determine the height and width of
+			 * the window.
 			 */
-			attr.border_pixel = rp_glob_screen.fg_color;
-			attr.background_pixel = rp_glob_screen.bg_color;
-			attr.override_redirect = True;
+			num = frame_selector(cur_frame->number);
+			width = defaults.bar_x_padding * 2 +
+			    rp_text_width(cur_screen, num, -1, NULL);
+			height = (FONT_HEIGHT(cur_screen) +
+			    defaults.bar_y_padding * 2);
 
-			list_for_each_entry(cur_frame,
-			    &cur_screen->current_vscreen->frames, node) {
-				int width, height;
-				char *num;
+			/* Create and map the window. */
+			wins[i] = XCreateWindow(dpy, cur_screen->root,
+			    cur_frame->x,
+			    cur_frame->y, width,
+			    height, 1, CopyFromParent, CopyFromParent,
+			    CopyFromParent,
+			    CWOverrideRedirect|CWBorderPixel|CWBackPixel,
+			    &attr);
+			XMapWindow(dpy, wins[i]);
+			XClearWindow(dpy, wins[i]);
 
-				/*
-				 * Create the string to be displayed in the
-				 * window and determine the height and width of
-				 * the window.
-				 */
-				num = frame_selector(cur_frame->number);
-				width = defaults.bar_x_padding * 2 +
-				    rp_text_width(cur_screen, num, -1, NULL);
-				height = (FONT_HEIGHT(cur_screen) +
-				    defaults.bar_y_padding * 2);
+			/* Display the frame's number inside the window. */
+			rp_draw_string(cur_screen, wins[i], STYLE_NORMAL,
+			    defaults.bar_x_padding,
+			    defaults.bar_y_padding +
+			    FONT_ASCENT(cur_screen), num, -1,
+			    NULL, NULL);
 
-				/* Create and map the window. */
-				wins[i] = XCreateWindow(dpy, cur_screen->root,
-				    cur_frame->x,
-				    cur_frame->y, width,
-				    height, 1, CopyFromParent, CopyFromParent,
-				    CopyFromParent,
-				    CWOverrideRedirect|CWBorderPixel|CWBackPixel,
-				    &attr);
-				XMapWindow(dpy, wins[i]);
-				XClearWindow(dpy, wins[i]);
-
-				/* Display the frame's number inside the window. */
-				rp_draw_string(cur_screen, wins[i], STYLE_NORMAL,
-				    defaults.bar_x_padding,
-				    defaults.bar_y_padding +
-				    FONT_ASCENT(cur_screen), num, -1,
-				    NULL, NULL);
-
-				free(num);
-				i++;
-			}
+			free(num);
+			i++;
 		}
 		XSync(dpy, False);
 
