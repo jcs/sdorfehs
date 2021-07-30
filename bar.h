@@ -22,7 +22,7 @@
 
 int bar_mkfifo(void);
 void init_bar(void);
-void redraw_sticky_bar_text(rp_screen *s, int force);
+void redraw_sticky_bar_text(int force);
 void update_window_names(rp_screen *s, char *fmt);
 void update_vscreen_names(rp_screen *s);
 void update_bar(rp_screen *s);

@@ -122,10 +122,12 @@ bar_mkfifo(void)
 void
 init_bar(void)
 {
+	rp_screen *primary = screen_primary();
+
 	bar_buf = sbuf_new(sizeof(bar_tmp_line));
 	bar_line = sbuf_new(sizeof(bar_tmp_line));
-	bar_pm = XCreatePixmap(dpy, rp_current_screen->bar_window,
-	    rp_current_screen->width, FONT_HEIGHT(rp_current_screen) * 2,
+	bar_pm = XCreatePixmap(dpy, primary->bar_window, primary->width,
+	    FONT_HEIGHT(rp_current_screen) * 2,
 	    DefaultDepth(dpy, DefaultScreen(dpy)));
 
 	INIT_LIST_HEAD(&bar_chunks);
@@ -136,8 +138,11 @@ void
 hide_bar(rp_screen *s, int force)
 {
 	if (!s->full_screen_win && defaults.bar_sticky && !force) {
-		redraw_sticky_bar_text(s, 0);
-		return;
+		redraw_sticky_bar_text(0);
+
+		if (s == screen_primary())
+			return;
+		/* otherwise, we need to hide this secondary screen's bar */
 	}
 
 	s->bar_is_raised = BAR_IS_HIDDEN;
@@ -289,8 +294,9 @@ update_bar(rp_screen *s)
  * copied into the actual bar window side by side.
  */
 void
-redraw_sticky_bar_text(rp_screen *s, int force)
+redraw_sticky_bar_text(int force)
 {
+	rp_screen *s = screen_primary();
 	struct list_head *iter, *tmp;
 	struct bar_chunk *chunk;
 	struct sbuf *tbuf, *curcmd, *curtxt;
@@ -532,7 +538,7 @@ update_window_names(rp_screen *s, char *fmt)
 	bar_buffer = sbuf_new(0);
 
 	if (s->bar_is_raised == BAR_IS_STICKY) {
-		redraw_sticky_bar_text(s, 0);
+		redraw_sticky_bar_text(0);
 	} else if (s->bar_is_raised == BAR_IS_WINDOW_LIST) {
 		delimiter = (defaults.window_list_style == STYLE_ROW) ?
 		    " " : "\n";
@@ -612,7 +618,7 @@ count_lines(char *msg, int len)
 static int
 max_line_length(char *msg)
 {
-	rp_screen *s = rp_current_screen;
+	rp_screen *s = screen_primary();
 	size_t i;
 	size_t start;
 	int ret = 0;
@@ -929,10 +935,15 @@ marked_message(char *msg, int mark_start, int mark_end, int bar_type)
 static void
 marked_message_internal(char *msg, int mark_start, int mark_end, int bar_type)
 {
-	rp_screen *s = rp_current_screen;
+	rp_screen *s = screen_primary();
 	int num_lines;
 	int width;
 	int height;
+
+	if (bar_type == BAR_IS_STICKY)
+		s = screen_primary();
+	else
+		s = rp_current_screen;
 
 	PRINT_DEBUG(("msg = %s\n", msg ? msg : "NULL"));
 	PRINT_DEBUG(("mark_start = %d, mark_end = %d\n", mark_start, mark_end));
@@ -1045,7 +1056,7 @@ bar_read_fifo(void)
 				sbuf_nconcat(bar_buf, bar_tmp_line + start,
 				    x - start);
 				sbuf_copy(bar_line, sbuf_get(bar_buf));
-				redraw_sticky_bar_text(rp_current_screen, 0);
+				redraw_sticky_bar_text(0);
 				sbuf_clear(bar_buf);
 				start = x + 1;
 			}

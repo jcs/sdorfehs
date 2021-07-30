@@ -36,7 +36,7 @@ screen_height(rp_screen *s)
 {
 	int ret = s->height - defaults.padding_bottom - defaults.padding_top;
 
-	if (defaults.bar_sticky) {
+	if (defaults.bar_sticky && xrandr_is_primary(s)) {
 		switch (defaults.bar_location) {
 		case NorthEastGravity:
 		case NorthGravity:
@@ -69,7 +69,7 @@ screen_top(rp_screen *s)
 {
 	int ret = s->top + defaults.padding_top;
 
-	if (defaults.bar_sticky) {
+	if (defaults.bar_sticky && xrandr_is_primary(s)) {
 		switch (defaults.bar_location) {
 		case NorthEastGravity:
 		case NorthGravity:
@@ -87,7 +87,7 @@ screen_bottom(rp_screen *s)
 {
 	int ret = s->top + s->height - defaults.padding_bottom;
 
-	if (defaults.bar_sticky) {
+	if (defaults.bar_sticky && xrandr_is_primary(s)) {
 		switch (defaults.bar_location) {
 		case SouthEastGravity:
 		case SouthGravity:
@@ -193,27 +193,36 @@ screen_set_numbers(void)
 	}
 }
 
-static void
-screen_select_primary(void)
+rp_screen *
+screen_primary(void)
 {
 	rp_screen *cur;
 
 	/* By default, take the first screen as current screen */
 	list_first(cur, &rp_screens, node);
+
+	if (!rp_have_xrandr)
+		return cur;
+
+	list_for_each_entry(cur, &rp_screens, node)
+		if (xrandr_is_primary(cur))
+			return cur;
+
+	/* nothing is primary? */
+	return cur;
+}
+
+static void
+screen_select_primary(void)
+{
+	rp_screen *cur = screen_primary();
+
 	if (!rp_current_screen)
 		rp_current_screen = cur;
 
-	if (!rp_have_xrandr)
-		return;
-
-	list_for_each_entry(cur, &rp_screens, node) {
-		if (xrandr_is_primary(cur)) {
-			rp_current_screen = cur;
-			PRINT_DEBUG(("Xrandr primary screen %d detected\n",
-				rp_current_screen->number));
-			break;
-		}
-	}
+	rp_current_screen = cur;
+	PRINT_DEBUG(("Xrandr primary screen %d detected\n",
+	    rp_current_screen->number));
 }
 
 static void
@@ -596,7 +605,7 @@ screen_update(rp_screen *s, int left, int top, int width, int height)
 	s->width = width;
 	s->height = height;
 
-	if (defaults.bar_sticky)
+	if (defaults.bar_sticky && xrandr_is_primary(s))
 		hide_bar(s, 0);
 
 	XMoveResizeWindow(dpy, s->help_window, s->left, s->top, s->width,
@@ -641,7 +650,7 @@ screen_update_frames(rp_screen *s)
 		}
 	}
 
-	redraw_sticky_bar_text(rp_current_screen, 1);
+	redraw_sticky_bar_text(1);
 }
 
 void

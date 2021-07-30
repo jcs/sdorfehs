@@ -4065,7 +4065,7 @@ set_fgcolor(struct cmdarg **args)
 		defaults.fgcolor_string = xstrdup(ARG_STRING(0));
 	}
 
-	redraw_sticky_bar_text(rp_current_screen, 1);
+	redraw_sticky_bar_text(1);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4102,7 +4102,7 @@ set_bgcolor(struct cmdarg **args)
 		defaults.bgcolor_string = xstrdup(ARG_STRING(0));
 	}
 
-	redraw_sticky_bar_text(rp_current_screen, 1);
+	redraw_sticky_bar_text(1);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }

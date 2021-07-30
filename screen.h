@@ -43,7 +43,7 @@ void screen_update_frames(rp_screen *s);
 void screen_update_workarea(rp_screen *s);
 
 int screen_count(void);
-
+rp_screen *screen_primary(void);
 rp_screen *screen_next(void);
 rp_screen *screen_prev(void);
 
