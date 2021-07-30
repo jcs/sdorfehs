@@ -248,6 +248,7 @@ static cmdret *cmd_setenv(int interactive, struct cmdarg **args);
 static cmdret *cmd_sfdump(int interactive, struct cmdarg **args);
 static cmdret *cmd_sfrestore(int interactive, struct cmdarg **args);
 static cmdret *cmd_shrink(int interactive, struct cmdarg **args);
+static cmdret *cmd_smove(int interactive, struct cmdarg **args);
 static cmdret *cmd_source(int interactive, struct cmdarg **args);
 static cmdret *cmd_sselect(int interactive, struct cmdarg **args);
 static cmdret *cmd_stick(int interactive, struct cmdarg **args);
@@ -525,11 +526,13 @@ init_user_commands(void)
                     "Variable: ", arg_STRING,
                     "Value: ", arg_REST);
 	add_command("sfdump",		cmd_sfdump,	0, 0, 0);
-	add_command("shrink",		cmd_shrink,	0, 0, 0);
 	add_command("sfrestore",	cmd_sfrestore,	1, 1, 1,
                     "Frames: ", arg_REST);
+	add_command("shrink",		cmd_shrink,	0, 0, 0);
 	add_command("source",		cmd_source,	1, 1, 1,
                     "File: ", arg_REST);
+	add_command("smove",		cmd_smove,	1, 1, 1,
+                    "Screen: ", arg_NUMBER);
 	add_command("sselect",		cmd_sselect,	1, 1, 1,
                     "Screen: ", arg_NUMBER);
 	add_command("stick",		cmd_stick,	0, 0, 0);
@@ -4676,6 +4679,34 @@ cmd_prevscreen(int interactive, struct cmdarg **args)
 
 	set_active_frame(new_frame, 1);
 
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_smove(int interactive, struct cmdarg **args)
+{
+	rp_window *w;
+	rp_screen *screen;
+	int new_screen;
+
+	if ((w = current_window()) == NULL)
+		return cmdret_new(RET_FAILURE, "smove: no focused window");
+
+	new_screen = ARG(0, number);
+	if (new_screen < 0)
+		return cmdret_new(RET_FAILURE, "smove: out of range");
+
+	screen = screen_number(new_screen);
+	if (!screen)
+		return cmdret_new(RET_FAILURE, "smove: screen %d not found",
+		    new_screen);
+
+	if (screen == rp_current_screen)
+		return cmdret_new(RET_SUCCESS, NULL);
+
+	vscreen_move_window(screen->current_vscreen, w);
+	set_active_frame(current_frame(screen->current_vscreen), 1);
+	set_active_window(w);
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 

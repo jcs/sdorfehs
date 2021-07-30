@@ -121,7 +121,7 @@ Execute a
 .Nm
 command
 .It Ic C\-a F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 | F9 | F10 | F11 | F12
-Switch to virtual screen number 0 | 1 | 2 | ...
+Switch to vscreen number 0 | 1 | 2 | ...
 .El
 .Pp
 Further default key bindings can be found in parentheses after the
@@ -680,6 +680,10 @@ command.
 Switch to the screen
 .Ar screennumber .
 (If you have multiple physical ones.)
+.It Ic smove Oo Ar screen Oc
+Move the current window to the current frame and vscreen on screen
+.Ar screen
+and focus it.
 .It Ic stick
 Mark the current window as sticky in its current frame, making it
 unavailable to other frames when selecting an available window.
@@ -737,8 +741,9 @@ after showing a message with the command.
 .It Ic version Pq Ic C\-a v
 Output version and compile time information.
 .It Ic vmove Oo Ar vscreen Oc
-Move the current window to the virtual screen
-.Ar vscreen .
+Move the current window to the current frame on vscreen
+.Ar vscreen
+and switch to it.
 .It Ic vrename
 Rename current vscreen.
 .It Ic vscreens
@@ -1092,7 +1097,7 @@ points or numbers 1 to 9.
 Default is
 .Li c .
 .It Cm vscreens Ar number
-Set the number of virtual screens.
+Set the number of virtual screens (vscreens).
 .Pp
 Default is
 .Li 12 .
