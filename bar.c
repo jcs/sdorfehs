@@ -304,7 +304,8 @@ redraw_sticky_bar_text(int force)
 	int diff = 0, len, cmd = 0, skip = 0, xftx = 0, x, clickcmdbtn = 0;
 	int width, height;
 
-	if (s->full_screen_win || !defaults.bar_sticky || bar_time_left())
+	if (!force && (s->full_screen_win || !defaults.bar_sticky ||
+	    bar_time_left()))
 		return;
 
 	/*

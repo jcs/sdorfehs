@@ -22,6 +22,14 @@
 
 #include "sdorfehs.h"
 
+rp_screen *xrandr_screen_output(int rr_output);
+rp_screen *xrandr_screen_crtc(int rr_crtc);
+void xrandr_output_change(XRROutputChangeNotifyEvent *ev);
+void xrandr_crtc_change(XRRCrtcChangeNotifyEvent *ev);
+#ifdef DEBUG
+const char *xrandr_rotation_string(Rotation r);
+#endif
+
 static int xrandr_evbase;
 
 #define XRANDR_MAJOR 1
@@ -77,7 +85,7 @@ xrandr_query_screen(int **outputs)
 	return count;
 }
 
-static rp_screen *
+rp_screen *
 xrandr_screen_output(int rr_output)
 {
 	rp_screen *cur;
@@ -90,7 +98,7 @@ xrandr_screen_output(int rr_output)
 	return NULL;
 }
 
-static rp_screen *
+rp_screen *
 xrandr_screen_crtc(int rr_crtc)
 {
 	rp_screen *cur;
@@ -133,6 +141,8 @@ xrandr_fill_screen(int rr_output, rp_screen *screen)
 	else
 		screen->xrandr.primary = 0;
 
+	if (screen->xrandr.name)
+		free(screen->xrandr.name);
 	screen->xrandr.name = xstrdup(outinfo->name);
 	screen->xrandr.output = rr_output;
 	screen->xrandr.crtc = outinfo->crtc;
@@ -149,18 +159,24 @@ free_res:
 	XRRFreeScreenResources(res);
 }
 
-static void
+void
 xrandr_output_change(XRROutputChangeNotifyEvent *ev)
 {
 	XRRScreenResources *res;
 	XRROutputInfo *outinfo;
-	rp_screen *screen;
+	rp_screen *screen, *cur;
 
 	res = XRRGetScreenResourcesCurrent(dpy, RootWindow(dpy,
 	    DefaultScreen(dpy)));
 	outinfo = XRRGetOutputInfo(dpy, res, ev->output);
 
 	screen = xrandr_screen_output(ev->output);
+
+	/* bar might move if primary screen changed */
+	list_for_each_entry(cur, &rp_screens, node)
+		hide_bar(cur, 1);
+
+	mark_edge_frames();
 
 	if (!screen && outinfo && outinfo->crtc) {
 		screen = screen_add(ev->output);
@@ -176,13 +192,22 @@ xrandr_output_change(XRROutputChangeNotifyEvent *ev)
 			screen->xrandr.name));
 		screen_del(screen);
 	}
+
 	if (outinfo)
 		XRRFreeOutputInfo(outinfo);
 	XRRFreeScreenResources(res);
+
+	list_for_each_entry(cur, &rp_screens, node) {
+		xrandr_fill_screen(cur->xrandr.output, cur);
+		screen_update_workarea(cur);
+		screen_update_frames(cur);
+	}
+
+	redraw_sticky_bar_text(1);
 }
 
 #ifdef DEBUG
-static const char *
+const char *
 xrandr_rotation_string(Rotation r)
 {
 	static char buf[64];
@@ -202,7 +227,7 @@ xrandr_rotation_string(Rotation r)
 }
 #endif
 
-static void
+void
 xrandr_crtc_change(XRRCrtcChangeNotifyEvent *ev)
 {
 	rp_screen *screen;
