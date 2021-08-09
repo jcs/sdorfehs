@@ -196,20 +196,20 @@ screen_set_numbers(void)
 rp_screen *
 screen_primary(void)
 {
-	rp_screen *cur;
+	rp_screen *first, *cur;
 
 	/* By default, take the first screen as current screen */
-	list_first(cur, &rp_screens, node);
+	list_first(first, &rp_screens, node);
 
 	if (!rp_have_xrandr)
-		return cur;
+		return first;
 
 	list_for_each_entry(cur, &rp_screens, node)
 		if (xrandr_is_primary(cur))
 			return cur;
 
 	/* nothing is primary? */
-	return cur;
+	return first;
 }
 
 static void
@@ -310,6 +310,7 @@ init_screens(void)
 
 	for (i = 0; i < screen_count; i++) {
 		screen = xmalloc(sizeof(*screen));
+		memset(screen, 0, sizeof(*screen));
 		list_add(&screen->node, &rp_screens);
 
 		if (rp_have_xrandr && rr_outputs != NULL)
@@ -672,6 +673,7 @@ screen_add(int rr_output)
 	rp_screen *screen;
 
 	screen = xmalloc(sizeof(*screen));
+	memset(screen, 0, sizeof(*screen));
 	list_add(&screen->node, &rp_screens);
 
 	screen->number = numset_request(rp_glob_screen.numset);
