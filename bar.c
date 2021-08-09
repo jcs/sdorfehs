@@ -935,7 +935,7 @@ marked_message(char *msg, int mark_start, int mark_end, int bar_type)
 static void
 marked_message_internal(char *msg, int mark_start, int mark_end, int bar_type)
 {
-	rp_screen *s = screen_primary();
+	rp_screen *s;
 	int num_lines;
 	int width;
 	int height;
