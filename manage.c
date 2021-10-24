@@ -567,13 +567,13 @@ move_window(rp_window *win)
 	case WestGravity:
 	case SouthWestGravity:
 		win->x = frame->x +
-		    (gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
+		    (frame_left_screen_edge(frame) ? 0 : gap);
 		break;
 	case NorthGravity:
 	case CenterGravity:
 	case SouthGravity:
-		t = (gap * (frame_left_screen_edge(frame) ? 1 : 0.5));
-		t2 = (gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
+		t = (frame_left_screen_edge(frame) ? 0 : gap);
+		t2 = (frame_right_screen_edge(frame) ? 0 : gap);
 		win->x = frame->x + t +
 		    ((frame->width - t - t2 -
 		    (win->width + win->border * 2)) / 2);
@@ -583,7 +583,7 @@ move_window(rp_window *win)
 	case SouthEastGravity:
 		win->x = frame->x + frame->width -
 		    (win->width + win->border * 2) -
-		    (gap * (frame_right_screen_edge(frame) ? 1 : 0.5));
+		    (frame_right_screen_edge(frame) ? 0 : gap);
 		break;
 	}
 
@@ -593,13 +593,13 @@ move_window(rp_window *win)
 	case NorthGravity:
 	case NorthWestGravity:
 		win->y = frame->y +
-		    (gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
+		    (frame_top_screen_edge(frame) ? 0 : gap);
 		break;
 	case EastGravity:
 	case CenterGravity:
 	case WestGravity:
-		t = (gap * (frame_top_screen_edge(frame) ? 1 : 0.5));
-		t2 = (gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
+		t = (frame_top_screen_edge(frame) ? 0 : gap);
+		t2 = (frame_bottom_screen_edge(frame) ? 0 : gap);
 		win->y = frame->y + t +
 		    ((frame->height - t - t2 -
 		    (win->height + win->border * 2)) / 2);
@@ -609,7 +609,7 @@ move_window(rp_window *win)
 	case SouthWestGravity:
 		win->y = frame->y + frame->height -
 		    (win->height + win->border * 2) -
-		    (gap * (frame_bottom_screen_edge(frame) ? 1 : 0.5));
+		    (frame_bottom_screen_edge(frame) ? 0 : gap);
 		break;
 	}
 
@@ -675,15 +675,15 @@ maximize_window(rp_window *win, int transient)
 		    num_frames(win->vscr) <= 1)) {
 			int fw, fh;
 
-			gap = (frame_right_screen_edge(frame) ? 1 : 0.5);
-			gap += (frame_left_screen_edge(frame) ? 1 : 0.5);
+			gap = (frame_right_screen_edge(frame) ? 0 : 1);
+			gap += (frame_left_screen_edge(frame) ? 0 : 1);
 			fw = frame->width - (gap * defaults.gap) -
 			    (win->border * 2);
 			if (maxw > fw)
 				maxw = fw;
 
-			gap = (frame_top_screen_edge(frame) ? 1 : 0.5);
-			gap += (frame_bottom_screen_edge(frame) ? 1 : 0.5);
+			gap = (frame_top_screen_edge(frame) ? 0 : 1);
+			gap += (frame_bottom_screen_edge(frame) ? 0 : 1);
 			fh = frame->height - (gap * defaults.gap) -
 			    (win->border * 2);
 			if (maxh > fh)

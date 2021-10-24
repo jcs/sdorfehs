@@ -186,10 +186,12 @@ init_defaults(void)
 	defaults.frame_indicator_timeout = 1;
 	defaults.frame_resize_unit = 10;
 
-	defaults.padding_left = 0;
-	defaults.padding_right = 0;
-	defaults.padding_top = 0;
-	defaults.padding_bottom = 0;
+	defaults.padding_left = 20;
+	defaults.padding_right = 20;
+	defaults.padding_top = 20;
+	defaults.padding_bottom = 20;
+
+	defaults.gap = 10;
 
 	defaults.font_string = xstrdup(DEFAULT_XFT_FONT);
 
@@ -221,8 +223,6 @@ init_defaults(void)
 		defaults.vscreens = (int)atom;
 	else
 		defaults.vscreens = 12;
-
-	defaults.gap = 20;
 
 	defaults.ignore_resize_hints = 0;
 }

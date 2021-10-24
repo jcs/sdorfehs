@@ -971,7 +971,7 @@ Default is
 .Li black .
 .It Cm gap Ar pixels
 Specify the number of pixels surrounding each frame, except for the outer
-edges which border the screen.
+edges which border the screen or its padding.
 .Pp
 Default is
 .Li 20 .
@@ -1030,7 +1030,7 @@ Default is
 Set how much space at the borders of the screen will not be used.
 .Pp
 Default is
-.Li 0 0 0 0 .
+.Li 20 20 20 20 .
 .It Cm resizefmt Ar format
 Choose the default format for the window label shown when interactively
 resizing a window.
