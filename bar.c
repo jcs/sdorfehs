@@ -201,24 +201,21 @@ bar_x(rp_screen *s, int width)
 	case WestGravity:
 	case SouthWestGravity:
 		x = s->left +
-		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
-		    defaults.padding_left);
+		    (defaults.bar_in_padding ? 0 : defaults.padding_left);
 		break;
 	case NorthGravity:
 	case CenterGravity:
 	case SouthGravity:
 		x = s->left +
 		    (s->width - width - defaults.bar_border_width * 2) / 2 -
-		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
-		    defaults.padding_left);
+		    (defaults.bar_in_padding ? 0 : defaults.padding_left);
 		break;
 	case NorthEastGravity:
 	case EastGravity:
 	case SouthEastGravity:
 		x = s->left + s->width - width -
 		    (defaults.bar_border_width * 2) -
-		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
-		    defaults.padding_right);
+		    (defaults.bar_in_padding ? 0 : defaults.padding_right);
 		break;
 	}
 
@@ -235,24 +232,21 @@ bar_y(rp_screen *s, int height)
 	case NorthGravity:
 	case NorthWestGravity:
 		y = s->top +
-		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
-		    defaults.padding_top);
+		    (defaults.bar_in_padding ? 0 : defaults.padding_top);
 		break;
 	case EastGravity:
 	case CenterGravity:
 	case WestGravity:
 		y = s->top + (s->height - height -
 		    defaults.bar_border_width * 2) / 2 -
-		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
-		    defaults.padding_top);
+		    (defaults.bar_in_padding ? 0 : defaults.padding_top);
 		break;
 	case SouthEastGravity:
 	case SouthGravity:
 	case SouthWestGravity:
 		y = s->top + (s->height - height -
 		    defaults.bar_border_width * 2) -
-		    (defaults.bar_in_padding || defaults.bar_sticky ? 0 :
-		    defaults.padding_top);
+		    (defaults.bar_in_padding ? 0 : defaults.padding_top);
 		break;
 	}
 
@@ -316,6 +310,8 @@ redraw_sticky_bar_text(int force)
 		force = 1;
 
 	width = s->width - (defaults.bar_border_width * 2);
+	if (!defaults.bar_in_padding)
+		width -= defaults.padding_right + defaults.padding_left;
 	height = FONT_HEIGHT(s) + (defaults.bar_y_padding * 2);
 	XMoveResizeWindow(dpy, s->bar_window, bar_x(s, width), bar_y(s, height),
 	    width, height);
@@ -803,6 +799,8 @@ prepare_bar(rp_screen *s, int width, int height, int bar_type)
 		width = s->width - (defaults.bar_border_width * 2);
 	else
 		width = width < s->width ? width : s->width;
+	if (!defaults.bar_in_padding)
+		width -= defaults.padding_right + defaults.padding_left;
 	height = height < s->height ? height : s->height;
 	XMoveResizeWindow(dpy, s->bar_window, bar_x(s, width), bar_y(s, height),
 	    width, height);
@@ -952,6 +950,8 @@ marked_message_internal(char *msg, int mark_start, int mark_end, int bar_type)
 	/* Calculate the width and height of the window. */
 	num_lines = count_lines(msg, strlen(msg));
 	width = defaults.bar_x_padding * 2 + max_line_length(msg);
+	if (!defaults.bar_in_padding)
+		width -= defaults.padding_right + defaults.padding_left;
 	height = FONT_HEIGHT(s) * num_lines + defaults.bar_y_padding * 2;
 
 	prepare_bar(s, width, height, bar_type);

@@ -37,16 +37,16 @@ screen_height(rp_screen *s)
 	int ret = s->height - defaults.padding_bottom - defaults.padding_top;
 
 	if (defaults.bar_sticky && xrandr_is_primary(s)) {
-		switch (defaults.bar_location) {
-		case NorthEastGravity:
-		case NorthGravity:
-		case NorthWestGravity:
-		case SouthEastGravity:
-		case SouthGravity:
-		case SouthWestGravity:
-			ret -= sticky_bar_height(s);
-			break;
-		}
+		ret -= sticky_bar_height(s);
+
+		if (!defaults.bar_in_padding)
+			switch (defaults.bar_location) {
+			case NorthEastGravity:
+			case NorthGravity:
+			case NorthWestGravity:
+				ret -= defaults.padding_top;
+				break;
+			}
 	}
 
 	return ret;
@@ -75,6 +75,8 @@ screen_top(rp_screen *s)
 		case NorthGravity:
 		case NorthWestGravity:
 			ret += sticky_bar_height(s);
+			if (!defaults.bar_in_padding)
+				ret += defaults.padding_top;
 			break;
 		}
 	}

@@ -180,7 +180,7 @@ init_defaults(void)
 	defaults.bar_location = NorthWestGravity;
 	defaults.bar_timeout = 3;
 	defaults.bar_border_width = 0;
-	defaults.bar_in_padding = 0;
+	defaults.bar_in_padding = 1;
 	defaults.bar_sticky = 1;
 
 	defaults.frame_indicator_timeout = 1;
