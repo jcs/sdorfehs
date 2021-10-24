@@ -199,6 +199,7 @@ init_defaults(void)
 	defaults.bgcolor_string = xstrdup("black");
 	defaults.fwcolor_string = xstrdup("black");
 	defaults.bwcolor_string = xstrdup("black");
+	defaults.barbordercolor_string = xstrdup("#eeeeee");
 
 	defaults.wait_for_key_cursor = 1;
 

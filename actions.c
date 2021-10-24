@@ -126,6 +126,7 @@ static const char invalid_negative_arg[] = "invalid negative argument";
 
 /* setter function prototypes */
 static cmdret *set_barborder(struct cmdarg **args);
+static cmdret *set_barbordercolor(struct cmdarg **args);
 static cmdret *set_bargravity(struct cmdarg **args);
 static cmdret *set_barinpadding(struct cmdarg **args);
 static cmdret *set_barpadding(struct cmdarg **args);
@@ -307,6 +308,7 @@ init_set_vars(void)
 {
 	/* Keep this sorted alphabetically. */
 	add_set_var("barborder", set_barborder, 1, "", arg_NUMBER);
+	add_set_var("barbordercolor", set_barbordercolor, 1, "", arg_STRING);
 	add_set_var("bargravity", set_bargravity, 1, "", arg_GRAVITY);
 	add_set_var("barinpadding", set_barinpadding, 1, "", arg_NUMBER);
 	add_set_var("barpadding", set_barpadding, 2, "", arg_NUMBER, "",
@@ -4050,10 +4052,6 @@ set_fgcolor(struct cmdarg **args)
 
 		rp_glob_screen.fg_color = color.pixel;
 		update_gc(s);
-		XSetWindowBorder(dpy, s->bar_window, color.pixel);
-		XSetWindowBorder(dpy, s->input_window, color.pixel);
-		XSetWindowBorder(dpy, s->frame_window, color.pixel);
-		XSetWindowBorder(dpy, s->help_window, color.pixel);
 
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, s->screen_num),
 		    DefaultColormap(dpy, s->screen_num), ARG_STRING(0),
@@ -4165,6 +4163,38 @@ set_bwcolor(struct cmdarg **args)
 		if (win != cur_win)
 			XSetWindowBorder(dpy, win->w, rp_glob_screen.bw_color);
 	}
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_barbordercolor(struct cmdarg **args)
+{
+	XColor color, junk;
+	rp_screen *s;
+
+	if (args[0] == NULL)
+		return cmdret_new(RET_SUCCESS, "%s",
+		    defaults.barbordercolor_string);
+
+	list_for_each_entry(s, &rp_screens, node) {
+		if (!XAllocNamedColor(dpy, s->def_cmap, ARG_STRING(0), &color,
+		    &junk))
+			return cmdret_new(RET_FAILURE,
+			    "set barbordercolor: unknown color");
+
+		rp_glob_screen.bar_border_color = color.pixel;
+		update_gc(s);
+		XSetWindowBorder(dpy, s->bar_window, color.pixel);
+		XSetWindowBorder(dpy, s->input_window, color.pixel);
+		XSetWindowBorder(dpy, s->frame_window, color.pixel);
+		XSetWindowBorder(dpy, s->help_window, color.pixel);
+
+		free(defaults.barbordercolor_string);
+		defaults.barbordercolor_string = xstrdup(ARG_STRING(0));
+	}
+
+	redraw_sticky_bar_text(1);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }

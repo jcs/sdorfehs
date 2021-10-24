@@ -141,7 +141,7 @@ struct rp_window_elem {
 
 struct rp_global_screen {
 	Window root, wm_check;
-	unsigned long fg_color, bg_color, fw_color, bw_color;	/* The pixel color. */
+	unsigned long fg_color, bg_color, fw_color, bw_color, bar_border_color;
 
 	/* This numset is responsible for giving out numbers for each screen */
 	struct numset *numset;
@@ -301,6 +301,7 @@ struct rp_defaults {
 	char *bgcolor_string;
 	char *fwcolor_string;
 	char *bwcolor_string;
+	char *barbordercolor_string;
 
 	int wait_for_key_cursor;
 

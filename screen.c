@@ -271,6 +271,15 @@ init_global_screen(rp_global_screen *s)
 		s->bw_color = BlackPixel(dpy, screen_num);
 	}
 
+	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
+	    defaults.barbordercolor_string, &color, &junk))
+		rp_glob_screen.bar_border_color = color.pixel;
+	else {
+		warnx("failed allocating barbordercolor %s",
+		    defaults.barbordercolor_string);
+		s->bar_border_color = BlackPixel(dpy, screen_num);
+	}
+
 	s->wm_check = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
 	    0, 0, rp_glob_screen.bg_color);
 	set_atom(s->wm_check, _net_supporting_wm_check, XA_WINDOW,
@@ -425,8 +434,8 @@ init_screen(rp_screen *s)
 	/* Create the program bar window. */
 	s->bar_is_raised = 0;
 	s->bar_window = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
-	    defaults.bar_border_width,
-	    rp_glob_screen.fg_color, rp_glob_screen.bg_color);
+	    defaults.bar_border_width, rp_glob_screen.bar_border_color,
+	    rp_glob_screen.bg_color);
 	set_atom(s->bar_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_dock, 1);
 	XSelectInput(dpy, s->bar_window, ButtonPressMask);
@@ -444,22 +453,22 @@ init_screen(rp_screen *s)
 
 	/* Create the input window. */
 	s->input_window = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
-	    defaults.bar_border_width,
-	    rp_glob_screen.fg_color, rp_glob_screen.bg_color);
+	    defaults.bar_border_width, rp_glob_screen.bar_border_color,
+	    rp_glob_screen.bg_color);
 	set_atom(s->input_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_dock, 1);
 	XSelectInput(dpy, s->input_window, KeyPressMask | KeyReleaseMask);
 
 	/* Create the frame indicator window */
 	s->frame_window = XCreateSimpleWindow(dpy, s->root, 1, 1, 1, 1,
-	    defaults.bar_border_width, rp_glob_screen.fg_color,
+	    defaults.bar_border_width, rp_glob_screen.bar_border_color,
 	    rp_glob_screen.bg_color);
 	set_atom(s->frame_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_tooltip, 1);
 
 	/* Create the help window */
 	s->help_window = XCreateSimpleWindow(dpy, s->root, s->left, s->top,
-	    s->width, s->height, 0, rp_glob_screen.fg_color,
+	    s->width, s->height, 0, rp_glob_screen.bar_border_color,
 	    rp_glob_screen.bg_color);
 	set_atom(s->help_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_splash, 1);

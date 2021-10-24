@@ -316,7 +316,6 @@ rp_get_font(rp_screen *s, char *font)
 	}
 
 	/* not in the cache, make sure we can open it first */
-
 	f = XftFontOpenName(dpy, DefaultScreen(dpy), font);
 	if (!f) {
 		warnx("failed opening xft font \"%s\"", font);
