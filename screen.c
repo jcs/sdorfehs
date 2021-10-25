@@ -241,7 +241,7 @@ init_global_screen(rp_global_screen *s)
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.fgcolor_string, &color, &junk))
-		rp_glob_screen.fg_color = color.pixel;
+		rp_glob_screen.fg_color = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating fgcolor %s", defaults.fgcolor_string);
 		s->fg_color = WhitePixel(dpy, screen_num);
@@ -249,7 +249,7 @@ init_global_screen(rp_global_screen *s)
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.bgcolor_string, &color, &junk))
-		rp_glob_screen.bg_color = color.pixel;
+		rp_glob_screen.bg_color = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating bgcolor %s",defaults.bgcolor_string);
 		s->bg_color = BlackPixel(dpy, screen_num);
@@ -257,7 +257,7 @@ init_global_screen(rp_global_screen *s)
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.fwcolor_string, &color, &junk))
-		rp_glob_screen.fw_color = color.pixel;
+		rp_glob_screen.fw_color = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating fwcolor %s", defaults.fwcolor_string);
 		s->fw_color = BlackPixel(dpy, screen_num);
@@ -265,7 +265,7 @@ init_global_screen(rp_global_screen *s)
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.bwcolor_string, &color, &junk))
-		rp_glob_screen.bw_color = color.pixel;
+		rp_glob_screen.bw_color = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating bwcolor %s", defaults.bwcolor_string);
 		s->bw_color = BlackPixel(dpy, screen_num);
@@ -273,7 +273,7 @@ init_global_screen(rp_global_screen *s)
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.barbordercolor_string, &color, &junk))
-		rp_glob_screen.bar_border_color = color.pixel;
+		rp_glob_screen.bar_border_color = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating barbordercolor %s",
 		    defaults.barbordercolor_string);
