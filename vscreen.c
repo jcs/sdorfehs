@@ -281,6 +281,8 @@ set_current_vscreen(rp_vscreen *v)
 
 	raise_utility_windows();
 
+	vscreen_announce_current(v);
+
 	/* TODO: rp_switch_vscreen_hook */
 }
 
@@ -783,4 +785,11 @@ vscreen_last_window_by_class_complement(rp_vscreen *v, char *class)
 		return most_recent->win;
 
 	return NULL;
+}
+
+void
+vscreen_announce_current(rp_vscreen *v)
+{
+	set_atom(v->screen->root, _net_current_desktop, XA_CARDINAL,
+	    (unsigned long *)&v->number, 1);
 }

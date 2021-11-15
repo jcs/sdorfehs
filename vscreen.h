@@ -74,6 +74,8 @@ void set_current_vscreen(rp_vscreen *v);
 rp_window *vscreen_last_window_by_class(rp_vscreen *v, char *class);
 rp_window *vscreen_last_window_by_class_complement(rp_vscreen *v, char *class);
 
+void vscreen_announce_current(rp_vscreen *v);
+
 #define rp_current_vscreen	(rp_current_screen->current_vscreen)
 
 #endif

@@ -373,18 +373,6 @@ init_screen(rp_screen *s)
 	    | StructureNotifyMask);
 	XSync(dpy, False);
 
-	INIT_LIST_HEAD(&s->vscreens);
-	s->vscreens_numset = numset_new();
-
-	for (x = 0; x < defaults.vscreens; x++) {
-		vscreen = xmalloc(sizeof(rp_vscreen));
-		init_vscreen(vscreen, s);
-		list_add_tail(&vscreen->node, &s->vscreens);
-
-		if (x == 0)
-			s->current_vscreen = vscreen;
-	}
-
 	s->scratch_buffer = NULL;
 
 	/* Build the display string for each screen */
@@ -411,6 +399,20 @@ init_screen(rp_screen *s)
 	s->screen_num = screen_num;
 	s->def_cmap = DefaultColormap(dpy, screen_num);
 	s->full_screen_win = NULL;
+
+	INIT_LIST_HEAD(&s->vscreens);
+	s->vscreens_numset = numset_new();
+
+	for (x = 0; x < defaults.vscreens; x++) {
+		vscreen = xmalloc(sizeof(rp_vscreen));
+		init_vscreen(vscreen, s);
+		list_add_tail(&vscreen->node, &s->vscreens);
+
+		if (x == 0) {
+			s->current_vscreen = vscreen;
+			vscreen_announce_current(vscreen);
+		}
+	}
 
 	init_rat_cursor(s);
 
