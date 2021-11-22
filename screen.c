@@ -336,6 +336,9 @@ init_screens(void)
 	screen_set_numbers();
 	screen_select_primary();
 
+	set_atom(rp_glob_screen.root, _net_number_of_desktops, XA_CARDINAL,
+	    (unsigned long *)&defaults.vscreens, 1);
+
 	free(rr_outputs);
 }
 

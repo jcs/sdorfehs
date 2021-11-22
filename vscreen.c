@@ -134,6 +134,9 @@ vscreens_resize(int n)
 
 	defaults.vscreens = n;
 
+	set_atom(rp_glob_screen.root, _net_number_of_desktops, XA_CARDINAL,
+	    (unsigned long *)&defaults.vscreens, 1);
+
 	return 0;
 }
 

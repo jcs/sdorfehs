@@ -363,9 +363,6 @@ main(int argc, char *argv[])
 	init_xrandr();
 	init_screens();
 
-	set_atom(rp_glob_screen.root, _net_number_of_desktops, XA_CARDINAL,
-	    (unsigned long *)&defaults.vscreens, 1);
-
 	init_frame_lists();
 	update_modifier_map();
 	init_user_commands();
