@@ -480,22 +480,22 @@ redraw_bar_text:
 		xftx += (chunk->text_width = rp_text_width(s, chunk->text,
 		    chunk->length, chunk->font));
 	}
-	if (xftx > (width / 2) - (defaults.bar_x_padding * 2))
-		xftx = (width / 2) - (defaults.bar_x_padding * 2);
 
 	/* update each chunk's text_x relative to its final location */
 	x = 0;
-	list_for_each_entry_prev(chunk, &bar_chunks, node) {
-		chunk->text_x = s->width - defaults.bar_x_padding -
-		    chunk->text_width - x;
+	list_for_each_entry(chunk, &bar_chunks, node) {
+		chunk->text_x = width - xftx - defaults.bar_x_padding + x;
 		x += chunk->text_width;
 	}
+
+	/* we can only copy up to half of the bar width */
+	if (xftx > (width / 2) - (defaults.bar_x_padding * 2))
+		xftx = (width / 2) - (defaults.bar_x_padding * 2);
 
 	XCopyArea(dpy, bar_pm, s->bar_window, s->inverse_gc,
 	    xftx + (defaults.bar_x_padding * 2), FONT_HEIGHT(s),
 	    (width / 2) - (defaults.bar_x_padding * 2), FONT_HEIGHT(s),
-	    (width / 2) + defaults.bar_x_padding,
-	    defaults.bar_y_padding);
+	    (width / 2) + defaults.bar_x_padding, defaults.bar_y_padding);
 
 	/* Our XMapRaise may have covered one */
 	raise_utility_windows();
@@ -509,6 +509,9 @@ bar_handle_click(rp_screen *s, XButtonEvent *e)
 	PRINT_DEBUG(("bar click at %d,%d button %d\n", e->x, e->y, e->button));
 
 	list_for_each_entry(chunk, &bar_chunks, node) {
+		PRINT_DEBUG(("chunk: text_x:%d text_width:%d text:%s\n",
+		    chunk->text_x, chunk->text_width, chunk->text));
+
 		if (!chunk->cmd)
 			continue;
 
