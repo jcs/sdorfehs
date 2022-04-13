@@ -61,8 +61,7 @@ struct bar_chunk {
 	int length;
 	char *color;
 	char *font;
-	char *cmd;
-	int cmd_btn;
+	char *clickcmd;
 	int text_x;
 	int text_width;
 	struct list_head node;
@@ -295,7 +294,7 @@ redraw_sticky_bar_text(int force)
 	struct bar_chunk *chunk;
 	struct sbuf *tbuf, *curcmd, *curtxt;
 	char *tline, *font, *color, *clickcmd;
-	int diff = 0, len, cmd = 0, skip = 0, xftx = 0, x, clickcmdbtn = 0;
+	int diff = 0, len, cmd = 0, skip = 0, xftx = 0, x;
 	int width, height;
 
 	if (!force && (s->full_screen_win || !defaults.bar_sticky ||
@@ -375,8 +374,8 @@ redraw_sticky_bar_text(int force)
 			free(chunk->color);
 		if (chunk->font)
 			free(chunk->font);
-		if (chunk->cmd)
-			free(chunk->cmd);
+		if (chunk->clickcmd)
+			free(chunk->clickcmd);
 		list_del(&chunk->node);
 		free(chunk);
 	}
@@ -407,17 +406,11 @@ redraw_sticky_bar_text(int force)
 						font = xstrdup(tline + 3);
 				} else if (strncmp(tline, "ca(", 3) == 0) {
 					/* ^ca(1,some command)*^ca() */
-					char btn[2];
 					if (clickcmd)
 						free(clickcmd);
 					clickcmd = NULL;
-					if (strlen(tline) > 4) {
-						btn[0] = (tline + 3)[0];
-						btn[1] = '\0';
-						clickcmdbtn = atoi(btn);
-						clickcmd = xstrdup(tline + 3 +
-						    2);
-					}
+					if (strlen(tline) > 4)
+						clickcmd = xstrdup(tline + 3);
 				} else {
 					PRINT_DEBUG(("unsupported bar command "
 					    "\"%s\", ignoring\n", tline));
@@ -434,8 +427,7 @@ redraw_sticky_bar_text(int force)
 			chunk->length = strlen(chunk->text);
 			chunk->color = color ? xstrdup(color) : NULL;
 			chunk->font = font ? xstrdup(font) : NULL;
-			chunk->cmd = clickcmd ? xstrdup(clickcmd) : NULL;
-			chunk->cmd_btn = clickcmdbtn;
+			chunk->clickcmd = clickcmd ? xstrdup(clickcmd) : NULL;
 			list_add_tail(&chunk->node, &bar_chunks);
 			sbuf_clear(curtxt);
 		} else {
@@ -452,8 +444,7 @@ redraw_sticky_bar_text(int force)
 		chunk->length = strlen(chunk->text);
 		chunk->color = color ? xstrdup(color) : NULL;
 		chunk->font = font ? xstrdup(font) : NULL;
-		chunk->cmd = clickcmd ? xstrdup(clickcmd) : NULL;
-		chunk->cmd_btn = clickcmdbtn;
+		chunk->clickcmd = clickcmd ? xstrdup(clickcmd) : NULL;
 		list_add_tail(&chunk->node, &bar_chunks);
 	}
 	sbuf_free(curcmd);
@@ -505,6 +496,8 @@ void
 bar_handle_click(rp_screen *s, XButtonEvent *e)
 {
 	struct bar_chunk *chunk;
+	char *cmd, *actcmd;
+	int btn, len;
 
 	PRINT_DEBUG(("bar click at %d,%d button %d\n", e->x, e->y, e->button));
 
@@ -512,14 +505,42 @@ bar_handle_click(rp_screen *s, XButtonEvent *e)
 		PRINT_DEBUG(("chunk: text_x:%d text_width:%d text:%s\n",
 		    chunk->text_x, chunk->text_width, chunk->text));
 
-		if (!chunk->cmd)
+		if (!chunk->clickcmd)
 			continue;
 
-		if (e->button == chunk->cmd_btn && e->x >= chunk->text_x &&
-		    e->x <= (chunk->text_x + chunk->text_width)) {
-			PRINT_DEBUG(("executing bar click action %s\n",
-			    chunk->cmd));
-			spawn(chunk->cmd, current_frame(rp_current_vscreen));
+		if (e->x < chunk->text_x ||
+		    e->x > (chunk->text_x + chunk->text_width))
+			continue;
+
+		/* 1,somecmd,2,someothercmd */
+		cmd = chunk->clickcmd;
+		PRINT_DEBUG(("chunk: parsing btns/cmds:%s\n", cmd));
+
+		while (cmd != NULL && cmd[0] != '\0') {
+			len = strlen(cmd);
+			actcmd = xmalloc(len);
+			memset(actcmd, 0, len);
+			if (sscanf(cmd, "%d,%[^,]%n", &btn, actcmd, &len) != 2) {
+				PRINT_DEBUG(("chunk: invalid format\n"));
+				free(actcmd);
+				break;
+			}
+
+			PRINT_DEBUG(("chunk: btn:%d cmd:%s\n", btn, actcmd));
+
+			if (e->button == btn) {
+				PRINT_DEBUG(("executing bar click action %s\n",
+				    actcmd));
+				spawn(actcmd, current_frame(rp_current_vscreen));
+				free(actcmd);
+				break;
+			}
+
+			cmd += len;
+			free(actcmd);
+			if (cmd[0] != ',')
+				break;
+			cmd++;
 		}
 	}
 }

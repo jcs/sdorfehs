@@ -84,8 +84,8 @@ Bar input supports some markup commands from dzen2 in the format
 command is reset with `^command()`.
 Currently supported commands:
 
-- `^ca(btn,cmd)`: execute `cmd` when mouse button `btn` is clicked on this
-area of text.
+- `^ca(btn,cmd,btn2,cmd2)`: execute `cmd` when mouse button `btn` is clicked on
+this area of text, or `cmd2` if button `btn2` is clicked.
 Closing the area of clickable text can be done with `^ca()`.
 
 - `^fg(color)`: color the text following until the next `^fg()` command.
