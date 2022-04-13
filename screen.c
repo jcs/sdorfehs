@@ -403,20 +403,6 @@ init_screen(rp_screen *s)
 	s->def_cmap = DefaultColormap(dpy, screen_num);
 	s->full_screen_win = NULL;
 
-	INIT_LIST_HEAD(&s->vscreens);
-	s->vscreens_numset = numset_new();
-
-	for (x = 0; x < defaults.vscreens; x++) {
-		vscreen = xmalloc(sizeof(rp_vscreen));
-		init_vscreen(vscreen, s);
-		list_add_tail(&vscreen->node, &s->vscreens);
-
-		if (x == 0) {
-			s->current_vscreen = vscreen;
-			vscreen_announce_current(vscreen);
-		}
-	}
-
 	init_rat_cursor(s);
 
 	/* Setup the GC for drawing the font. */
@@ -435,6 +421,24 @@ init_screen(rp_screen *s)
 	    GCForeground | GCBackground | GCFunction
 	    | GCLineWidth | GCSubwindowMode,
 	    &gcv);
+
+	s->xft_font = XftFontOpenName(dpy, screen_num, DEFAULT_XFT_FONT);
+	if (!s->xft_font)
+		errx(1, "failed to open default font \"%s\"", DEFAULT_XFT_FONT);
+
+	memset(s->xft_font_cache, 0, sizeof(s->xft_font_cache));
+
+	if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
+	    DefaultColormap(dpy, screen_num),
+	    defaults.fgcolor_string, &s->xft_fg_color))
+		errx(1, "failed to allocate font fg color %s",
+		    defaults.fgcolor_string);
+
+	if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
+	    DefaultColormap(dpy, screen_num),
+	    defaults.bgcolor_string, &s->xft_bg_color))
+		errx(1, "failed to allocate font bg color %s",
+		    defaults.bgcolor_string);
 
 	/* Create the program bar window. */
 	s->bar_is_raised = 0;
@@ -483,23 +487,19 @@ init_screen(rp_screen *s)
 
 	XSync(dpy, 0);
 
-	s->xft_font = XftFontOpenName(dpy, screen_num, DEFAULT_XFT_FONT);
-	if (!s->xft_font)
-		errx(1, "failed to open default font \"%s\"", DEFAULT_XFT_FONT);
+	INIT_LIST_HEAD(&s->vscreens);
+	s->vscreens_numset = numset_new();
 
-	memset(s->xft_font_cache, 0, sizeof(s->xft_font_cache));
+	for (x = 0; x < defaults.vscreens; x++) {
+		vscreen = xmalloc(sizeof(rp_vscreen));
+		init_vscreen(vscreen, s);
+		list_add_tail(&vscreen->node, &s->vscreens);
 
-	if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
-	    DefaultColormap(dpy, screen_num),
-	    defaults.fgcolor_string, &s->xft_fg_color))
-		errx(1, "failed to allocate font fg color %s",
-		    defaults.fgcolor_string);
-
-	if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
-	    DefaultColormap(dpy, screen_num),
-	    defaults.bgcolor_string, &s->xft_bg_color))
-		errx(1, "failed to allocate font bg color %s",
-		    defaults.bgcolor_string);
+		if (x == 0) {
+			s->current_vscreen = vscreen;
+			vscreen_announce_current(vscreen);
+		}
+	}
 
 	screen_update_workarea(s);
 }
