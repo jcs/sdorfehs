@@ -1,13 +1,11 @@
 PREFIX?=	/usr/local
 X11BASE?=	/usr/X11R6
-SYSCONFDIR?=	/etc
 
 PKGLIBS=	x11 xft xrandr xtst
 
 CC?=		cc
 CFLAGS+=	-O2 -Wall \
 		-Wunused -Wmissing-prototypes -Wstrict-prototypes -Wunused \
-		-DSYSCONFDIR="\"$(SYSCONFDIR)\"" \
 		`pkg-config --cflags ${PKGLIBS}`
 LDFLAGS+=	`pkg-config --libs ${PKGLIBS}`
 
