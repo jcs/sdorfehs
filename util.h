@@ -17,7 +17,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-void fatal(const char *msg);
+__dead void fatal(const char *msg);
 void *xmalloc(size_t size);
 void *xrealloc(void *ptr, size_t size);
 char *xstrdup(const char *s);

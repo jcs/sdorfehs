@@ -21,7 +21,7 @@
 #include <ctype.h>
 #include <err.h>
 
-void
+__dead void
 fatal(const char *msg)
 {
 	fprintf(stderr, PROGNAME ": %s", msg);
