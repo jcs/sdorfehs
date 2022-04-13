@@ -56,8 +56,8 @@ with `Control+a, F1` through `Control+a, F12`.
 
 ### Bar
 
-sdorfehs has a bar window which is shown temporarily to display status
-messages or the output of certain commands.
+sdorfehs has a bar window which displays status messages or the output of
+certain commands.
 By default, this bar is made sticky with the `barsticky` setting which
 forces the bar to be permanently affixed to the top or bottom (configurable
 with the `bargravity` setting) of every virtual screen displaying the
@@ -109,8 +109,7 @@ default to look a bit nicer on larger displays.
 
 sdorfehs's `-c` command line option uses a more secure IPC mechanism
 than Ratpoison for sending commands to a running sdorfehs process,
-such as a script controlling sdorfehs and restore a particular
-layout.
+such as a script controlling sdorfehs to restore a particular layout.
 
 Ratpoison's IPC only requires that a process create a new X11 window
 and set an Atom on it, which the parent Ratpoison process reads and
