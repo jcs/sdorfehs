@@ -181,10 +181,11 @@ xrandr_output_change(XRROutputChangeNotifyEvent *ev)
 	if (!screen && outinfo && outinfo->crtc) {
 		screen = screen_add(ev->output);
 		screen_sort();
+#ifdef DEBUG
 		PRINT_DEBUG(("%s: Added screen %s with crtc %lu\n", __func__,
 			screen->xrandr.name,
 			(unsigned long) outinfo->crtc));
-#ifndef DEBUG
+#else
 		(void)screen;
 #endif
 	} else if (screen && (!outinfo || !outinfo->crtc)) {
