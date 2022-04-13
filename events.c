@@ -48,7 +48,7 @@ XEvent rp_current_event;
 void
 show_rudeness_msg(rp_window *win, int raised)
 {
-	rp_vscreen *v = win->vscr;
+	rp_vscreen *v = win->vscreen;
 	rp_window_elem *elem = vscreen_find_window(&v->mapped_windows, win);
 
 	if (v == rp_current_vscreen) {
@@ -65,12 +65,14 @@ show_rudeness_msg(rp_window *win, int raised)
 			marked_message_printf(0, 0, raised ?
 			    MESSAGE_RAISE_TRANSIENT_VSCREEN :
 			    MESSAGE_MAP_TRANSIENT_VSCREEN,
-			    elem->number, window_name(win), win->vscr->number);
+			    elem->number, window_name(win),
+			    win->vscreen->number);
 		else
 			marked_message_printf(0, 0, raised ?
 			    MESSAGE_RAISE_WINDOW_VSCREEN :
 			    MESSAGE_MAP_WINDOW_VSCREEN,
-			    elem->number, window_name(win), win->vscr->number);
+			    elem->number, window_name(win),
+			    win->vscreen->number);
 	}
 }
 
@@ -129,8 +131,8 @@ unmap_notify(XEvent *ev)
 		frame = find_windows_frame(win);
 		if (frame) {
 			cleanup_frame(frame);
-			if (frame->number == win->vscr->current_frame
-			    && rp_current_vscreen == win->vscr)
+			if (frame->number == win->vscreen->current_frame
+			    && rp_current_vscreen == win->vscreen)
 				set_active_frame(frame, 0);
 			/* Since we may have switched windows, call the hook. */
 			if (frame->win_number != EMPTY)
@@ -140,7 +142,7 @@ unmap_notify(XEvent *ev)
 		break;
 	}
 
-	update_window_names(win->vscr->screen, defaults.window_fmt);
+	update_window_names(win->vscreen->screen, defaults.window_fmt);
 }
 
 static void
@@ -179,7 +181,7 @@ map_request(XEvent *ev)
 	case IconicState:
 		PRINT_DEBUG(("Mapping Iconic window\n"));
 
-		if (win->vscr != rp_current_vscreen) {
+		if (win->vscreen != rp_current_vscreen) {
 			/*
 			 * It is always rude to raise a window in another
 			 * vscreen
@@ -235,8 +237,8 @@ destroy_window(XDestroyWindowEvent *ev)
 		frame = find_windows_frame(win);
 		if (frame) {
 			cleanup_frame(frame);
-			if (frame->number == win->vscr->current_frame
-			    && rp_current_vscreen == win->vscr)
+			if (frame->number == win->vscreen->current_frame
+			    && rp_current_vscreen == win->vscreen)
 				set_active_frame(frame, 0);
 			/* Since we may have switched windows, call the hook. */
 			if (frame->win_number != EMPTY)
@@ -263,7 +265,7 @@ configure_request(XConfigureRequestEvent *e)
 	if (win) {
 		if (e->value_mask & CWStackMode) {
 			if (e->detail == Above && win->state != WithdrawnState) {
-				if (win->vscr == rp_current_vscreen) {
+				if (win->vscreen == rp_current_vscreen) {
 					/*
 					 * Depending on the rudeness level,
 					 * actually map the window.
@@ -362,7 +364,7 @@ client_msg(XClientMessageEvent *ev)
 			return;
 		}
 
-		s = win->vscr->screen;
+		s = win->vscreen->screen;
 	}
 
 	if (ev->window == s->root) {
@@ -404,13 +406,14 @@ client_msg(XClientMessageEvent *ev)
 			 */
 			PRINT_DEBUG(("Iconify Request.\n"));
 			if (win->state == NormalState) {
-				rp_window *w = find_window_other(win->vscr);
+				rp_window *w = find_window_other(win->vscreen);
 
 				if (w)
 					set_active_window(w);
 				else
-					blank_frame(vscreen_get_frame(win->vscr,
-					    win->vscr->current_frame));
+					blank_frame(vscreen_get_frame(
+					    win->vscreen,
+					    win->vscreen->current_frame));
 			}
 		} else {
 			warnx("non-standard WM_CHANGE_STATE format");
@@ -549,7 +552,7 @@ property_notify(XEvent *ev)
 	} else if (ev->xproperty.atom == XA_WM_NAME) {
 		PRINT_DEBUG(("updating window name\n"));
 		if (update_window_name(win)) {
-			update_window_names(win->vscr->screen,
+			update_window_names(win->vscreen->screen,
 			    defaults.window_fmt);
 			hook_run(&rp_title_changed_hook);
 		}

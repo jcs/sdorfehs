@@ -75,7 +75,7 @@ struct rp_frame {
 };
 
 struct rp_window {
-	rp_vscreen *vscr;
+	rp_vscreen *vscreen;
 	Window w;
 	int state;
 	int last_access;

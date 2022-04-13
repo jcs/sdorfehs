@@ -38,7 +38,7 @@ get_mouse_position(rp_window *win, int *mouse_x, int *mouse_y)
 	int root_x, root_y;
 	unsigned int mask;
 
-	XQueryPointer(dpy, win->vscr->screen->root, &root_win, &child_win,
+	XQueryPointer(dpy, win->vscreen->screen->root, &root_win, &child_win,
 	    mouse_x, mouse_y, &root_x, &root_y, &mask);
 }
 
@@ -161,7 +161,7 @@ add_to_window_list(rp_screen *s, Window w)
 	new_window = xmalloc(sizeof(rp_window));
 
 	new_window->w = w;
-	new_window->vscr = s->current_vscreen;
+	new_window->vscreen = s->current_vscreen;
 	new_window->last_access = 0;
 	new_window->state = WithdrawnState;
 	new_window->number = -1;
@@ -194,8 +194,8 @@ add_to_window_list(rp_screen *s, Window w)
 
 	child_info = get_child_info(w, 1);
 	if (child_info) {
-		if (child_info->vscreen != new_window->vscr)
-			new_window->vscr = child_info->vscreen;
+		if (child_info->vscreen != new_window->vscreen)
+			new_window->vscreen = child_info->vscreen;
 
 		if (!child_info->window_mapped) {
 			rp_frame *frame = vscreen_find_frame_by_frame(
@@ -217,7 +217,7 @@ add_to_window_list(rp_screen *s, Window w)
 	if (vscreen)
 		vscreen_add_window(vscreen, new_window);
 	else
-		vscreen_add_window(new_window->vscr, new_window);
+		vscreen_add_window(new_window->vscreen, new_window);
 
 	PRINT_DEBUG(("frame_num: %d\n", frame_num));
 	if (frame_num >= 0)
@@ -386,8 +386,8 @@ give_window_focus(rp_window *win, rp_window *last_win)
 	XSetWindowBorder(dpy, win->w, rp_glob_screen.fw_color);
 
 	/* Finally, give the window focus */
-	rp_current_screen = win->vscr->screen;
-	rp_current_screen->current_vscreen = win->vscr;
+	rp_current_screen = win->vscreen->screen;
+	rp_current_screen->current_vscreen = win->vscreen;
 	set_rp_window_focus(win);
 
 	raise_utility_windows();
@@ -442,24 +442,25 @@ set_active_window_body(rp_window *win, int force)
 
 	/* use the intended frame if we can. */
 	if (win->intended_frame_number >= 0) {
-		frame = vscreen_get_frame(win->vscr,
+		frame = vscreen_get_frame(win->vscreen,
 		    win->intended_frame_number);
 		win->intended_frame_number = -1;
-		if (frame != current_frame(win->vscr))
-			last_frame = current_frame(win->vscr);
+		if (frame != current_frame(win->vscreen))
+			last_frame = current_frame(win->vscreen);
 	}
 	if (frame == NULL)
-		frame = vscreen_get_frame(win->vscr, win->vscr->current_frame);
+		frame = vscreen_get_frame(win->vscreen,
+		    win->vscreen->current_frame);
 
 	if (frame->dedicated && !force) {
 		/* Try to find a non-dedicated frame. */
 		rp_frame *non_dedicated;
 
-		non_dedicated = find_frame_non_dedicated(win->vscr);
+		non_dedicated = find_frame_non_dedicated(win->vscreen);
 		if (non_dedicated != NULL) {
 			last_frame = frame;
 			frame = non_dedicated;
-			if (win->vscr == rp_current_vscreen)
+			if (win->vscreen == rp_current_vscreen)
 				set_active_frame(frame, 0);
 		}
 	}
@@ -472,7 +473,7 @@ set_active_window_body(rp_window *win, int force)
 	/* Make sure the window comes up full screen */
 	maximize(win);
 
-	if (win->vscr == rp_current_vscreen)
+	if (win->vscreen == rp_current_vscreen)
 		/* Focus the window. */
 		give_window_focus(win, last_win);
 
@@ -483,14 +484,14 @@ set_active_window_body(rp_window *win, int force)
 	if (!window_is_transient(win))
 		hide_others(win);
 
-	if (win->vscr == rp_current_vscreen)
+	if (win->vscreen == rp_current_vscreen)
 		/* Make sure the program bar is always on the top */
-		update_window_names(win->vscr->screen, defaults.window_fmt);
+		update_window_names(win->vscreen->screen, defaults.window_fmt);
 
 	XSync(dpy, False);
 
 	/* If we switched frame, go back to the old one. */
-	if (win->vscr == rp_current_vscreen) {
+	if (win->vscreen == rp_current_vscreen) {
 		if (last_frame != NULL)
 			set_active_frame(last_frame, 0);
 
@@ -609,14 +610,14 @@ free_window_stuff(void)
 
 	list_for_each_safe_entry(cur, iter, tmp, &rp_unmapped_window, node) {
 		list_del(&cur->node);
-		vscreen_del_window(cur->vscr, cur);
+		vscreen_del_window(cur->vscreen, cur);
 		free_window(cur);
 	}
 
 	list_for_each_safe_entry(cur, iter, tmp, &rp_mapped_window, node) {
 		list_del(&cur->node);
-		vscreen_unmap_window(cur->vscr, cur);
-		vscreen_del_window(cur->vscr, cur);
+		vscreen_unmap_window(cur->vscreen, cur);
+		vscreen_del_window(cur->vscreen, cur);
 		free_window(cur);
 	}
 
@@ -627,7 +628,7 @@ rp_frame *
 win_get_frame(rp_window *win)
 {
 	if (win->frame_number != EMPTY)
-		return vscreen_get_frame(win->vscr, win->frame_number);
+		return vscreen_get_frame(win->vscreen, win->frame_number);
 
 	return NULL;
 }
@@ -638,8 +639,8 @@ change_windows_vscreen(rp_vscreen *old_vscreen, rp_vscreen *new_vscreen)
 	rp_window *win;
 
 	list_for_each_entry(win, &rp_mapped_window, node) {
-		if (win->vscr == old_vscreen)
-			win->vscr = new_vscreen;
+		if (win->vscreen == old_vscreen)
+			win->vscreen = new_vscreen;
 	}
 }
 

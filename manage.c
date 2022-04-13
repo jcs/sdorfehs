@@ -312,8 +312,8 @@ window_is_transient(rp_window *win)
 #endif
 #ifdef MAXSIZE_WINDOWS_ARE_TRANSIENTS
 	|| (win->hints->flags & PMaxSize
-	    && (win->hints->max_width < win->vscr->screen->width
-		|| win->hints->max_height < win->vscr->screen->height))
+	    && (win->hints->max_width < win->vscreen->screen->width
+		|| win->hints->max_height < win->vscreen->screen->height))
 #endif
 	;
 }
@@ -392,7 +392,7 @@ void
 unmanage(rp_window *w)
 {
 	list_del(&w->node);
-	vscreen_del_window(w->vscr, w);
+	vscreen_del_window(w->vscreen, w);
 
 	remove_atom(rp_glob_screen.root, _net_client_list, XA_WINDOW, w->w);
 	remove_atom(rp_glob_screen.root, _net_client_list_stacking, XA_WINDOW,
@@ -551,12 +551,12 @@ move_window(rp_window *win)
 	frame = win_get_frame(win);
 
 	if (win->full_screen) {
-		win->x = win->vscr->screen->left;
-		win->y = win->vscr->screen->top;
+		win->x = win->vscreen->screen->left;
+		win->y = win->vscreen->screen->top;
 		return;
 	}
 
-	if (defaults.only_border == 0 && num_frames(win->vscr) <= 1)
+	if (defaults.only_border == 0 && num_frames(win->vscreen) <= 1)
 		gap = 0;
 	else
 		gap = defaults.gap;
@@ -638,15 +638,15 @@ maximize_window(rp_window *win, int transient)
 	}
 
 	/* Set the window's border */
-	if ((defaults.only_border == 0 && num_frames(win->vscr) <= 1) ||
+	if ((defaults.only_border == 0 && num_frames(win->vscreen) <= 1) ||
 	    win->full_screen)
 		win->border = 0;
 	else
 		win->border = defaults.window_border_width;
 
 	if (win->full_screen) {
-		maxw = win->vscr->screen->width;
-		maxh = win->vscr->screen->height;
+		maxw = win->vscreen->screen->width;
+		maxh = win->vscreen->screen->height;
 	} else {
 		if (transient) {
 			maxw = win->width;
@@ -672,7 +672,7 @@ maximize_window(rp_window *win, int transient)
 		PRINT_DEBUG(("adjusted to frame, maxsize %d %d\n", maxw, maxh));
 
 		if (!transient && !(defaults.only_border == 0 &&
-		    num_frames(win->vscr) <= 1)) {
+		    num_frames(win->vscreen) <= 1)) {
 			int fw, fh;
 
 			gap = (frame_right_screen_edge(frame) ? 0 : 1);
@@ -795,8 +795,9 @@ force_maximize(rp_window *win)
 	 * geometry changes were made. This initial resize solves the problem.
 	 */
 	if (!defaults.ignore_resize_hints && (win->hints->flags & PResizeInc)) {
-		XMoveResizeWindow(dpy, win->w, win->vscr->screen->left + win->x,
-		    win->vscr->screen->top + win->y,
+		XMoveResizeWindow(dpy, win->w,
+		    win->vscreen->screen->left + win->x,
+		    win->vscreen->screen->top + win->y,
 		    win->width + win->hints->width_inc,
 		    win->height + win->hints->height_inc);
 	} else {
@@ -806,8 +807,8 @@ force_maximize(rp_window *win)
 	XSync(dpy, False);
 
 	/* Resize the window to its proper maximum size. */
-	XMoveResizeWindow(dpy, win->w, win->vscr->screen->left + win->x,
-	    win->vscr->screen->top + win->y, win->width, win->height);
+	XMoveResizeWindow(dpy, win->w, win->vscreen->screen->left + win->x,
+	    win->vscreen->screen->top + win->y, win->width, win->height);
 	XSetWindowBorderWidth(dpy, win->w, win->border);
 
 	XSync(dpy, False);
@@ -828,7 +829,7 @@ map_window(rp_window *win)
 	    (transfor = find_window(win->transient_for))) {
 		PRINT_DEBUG(("map_window: transient_for %lu\n",
 		    win->transient_for));
-		win->vscr = transfor->vscr;
+		win->vscreen = transfor->vscreen;
 		win->intended_frame_number = transfor->frame_number;
 	}
 
@@ -839,7 +840,7 @@ map_window(rp_window *win)
 	list_del(&win->node);
 	insert_into_list(win, &rp_mapped_window);
 
-	vscreen_map_window(win->vscr, win);
+	vscreen_map_window(win->vscreen, win);
 
 	/*
 	 * The window has never been accessed since it was brought back from the
@@ -938,7 +939,7 @@ withdraw_window(rp_window *win)
 	list_move_tail(&win->node, &rp_unmapped_window);
 
 	/* Update the vscreens. */
-	vscreen_unmap_window(win->vscr, win);
+	vscreen_unmap_window(win->vscreen, win);
 
 	ignore_badwindow++;
 
@@ -982,7 +983,7 @@ hide_vscreen_windows(rp_vscreen *v)
 	rp_window *cur;
 
 	list_for_each_entry(cur, &rp_mapped_window, node)
-		if (cur->vscr == v)
+		if (cur->vscreen == v)
 			hide_window(cur);
 }
 

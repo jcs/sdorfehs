@@ -2873,7 +2873,7 @@ cmd_number(int interactive, struct cmdarg **args)
 		vscreen_resort_window(rp_current_vscreen, win);
 
 		/* Update the window list. */
-		update_window_names(win->win->vscr->screen,
+		update_window_names(win->win->vscreen->screen,
 		    defaults.window_fmt);
 	}
 

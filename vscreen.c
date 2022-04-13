@@ -55,7 +55,7 @@ vscreen_del(rp_vscreen *v)
 		target = screen_find_vscreen_by_number(s, 0);
 
 	list_for_each_entry(cur, &rp_mapped_window, node) {
-		if (cur->vscr == v && target)
+		if (cur->vscreen == v && target)
 			vscreen_move_window(target, cur);
 	}
 
@@ -254,7 +254,7 @@ set_current_vscreen(rp_vscreen *v)
 			continue;
 
 		win = find_window_number(frame->restore_win_number);
-		if (win && win->vscr != v) {
+		if (win && win->vscreen != v) {
 			warnx("restore win for frame %d on incorrect vscreen\n",
 			    frame->number);
 			win = NULL;
@@ -293,7 +293,7 @@ set_current_vscreen(rp_vscreen *v)
 void
 vscreen_move_window(rp_vscreen *to, rp_window *w)
 {
-	rp_vscreen *from = w->vscr;
+	rp_vscreen *from = w->vscreen;
 	rp_frame *f;
 	rp_window_elem *we;
 	struct rp_child_info *child;
@@ -305,7 +305,7 @@ vscreen_move_window(rp_vscreen *to, rp_window *w)
 	}
 
 	f = find_windows_frame(w);
-	w->vscr = to;
+	w->vscreen = to;
 	w->sticky_frame = EMPTY;
 
 	/* forget that this window was in the frame it was in */
@@ -630,7 +630,7 @@ vscreen_last_window(rp_vscreen *v)
 		if (cur->win->last_access >= last_access
 		    && cur->win != current_window()
 		    && !find_windows_frame(cur->win)
-		    && (cur->win->vscr == v || rp_have_xrandr)) {
+		    && (cur->win->vscreen == v || rp_have_xrandr)) {
 			most_recent = cur;
 			last_access = cur->win->last_access;
 		}
@@ -673,7 +673,7 @@ vscreen_next_window(rp_vscreen *v, rp_window *win)
 			continue;
 
 		if (!find_windows_frame(cur->win) &&
-		    (cur->win->vscr == win->vscr || rp_have_xrandr))
+		    (cur->win->vscreen == win->vscreen || rp_have_xrandr))
 			return cur->win;
 	}
 

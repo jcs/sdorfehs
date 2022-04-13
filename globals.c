@@ -287,7 +287,7 @@ set_rp_window_focus(rp_window *win)
 	PRINT_DEBUG(("Giving focus to '%s'\n", window_name(win)));
 	XSetInputFocus(dpy, win->w,
 	    RevertToPointerRoot, CurrentTime);
-	set_atom(win->vscr->screen->root, _net_active_window, XA_WINDOW,
+	set_atom(win->vscreen->screen->root, _net_active_window, XA_WINDOW,
 	    &win->w, 1);
 }
 

@@ -76,7 +76,7 @@ set_frames_window(rp_frame *frame, rp_window *win)
 		 * screen, since with Xrandr, windows can move from one screen
 		 * to another.
 		 */
-		win->vscr = frame->vscreen;
+		win->vscreen = frame->vscreen;
 	} else {
 		frame->win_number = EMPTY;
 	}
@@ -162,7 +162,7 @@ find_windows_frame(rp_window *win)
 	rp_vscreen *v;
 	rp_frame *cur;
 
-	v = win->vscr;
+	v = win->vscreen;
 
 	list_for_each_entry(cur, &v->frames, node) {
 		if (cur->win_number == win->number)
@@ -335,11 +335,11 @@ remove_all_splits(void)
 
 	/* Hide all the windows not in the current frame. */
 	list_for_each_entry(win, &rp_mapped_window, node) {
-		if (win->frame_number != v->current_frame && win->vscr == v)
+		if (win->frame_number != v->current_frame && win->vscreen == v)
 			hide_window(win);
 
 		if (win->sticky_frame != EMPTY &&
-		    win->sticky_frame != v->current_frame && win->vscr == v)
+		    win->sticky_frame != v->current_frame && win->vscreen == v)
 			win->sticky_frame = EMPTY;
 	}
 
@@ -672,7 +672,7 @@ remove_frame(rp_frame *frame)
 	hide_others(win);
 
 	list_for_each_entry(win, &rp_mapped_window, node) {
-		if (win->sticky_frame == frame->number && win->vscr == v)
+		if (win->sticky_frame == frame->number && win->vscreen == v)
 			win->sticky_frame = EMPTY;
 	}
 
@@ -835,7 +835,7 @@ exchange_with_frame(rp_frame *cur, rp_frame *frame)
 	if (win) {
 		maximize(win);
 		/* Make sure the program bar is always on the top */
-		update_window_names(win->vscr->screen, defaults.window_fmt);
+		update_window_names(win->vscreen->screen, defaults.window_fmt);
 	}
 	/* Make the switch */
 	update_last_access(frame);
@@ -901,7 +901,7 @@ show_frame_message(char *msg)
 	frame = current_frame(rp_current_vscreen);
 	win = current_window();
 	if (win) {
-		elem = vscreen_find_window(&win->vscr->mapped_windows, win);
+		elem = vscreen_find_window(&win->vscreen->mapped_windows, win);
 		if (!elem)
 			warnx("window 0x%lx not on any vscreen\n",
 			    (unsigned long)win->w);

@@ -248,13 +248,13 @@ fmt_gravity(rp_window_elem *elem, struct sbuf *buf)
 static void
 fmt_screen(rp_window_elem *elem, struct sbuf *buf)
 {
-	sbuf_printf_concat(buf, "%d", elem->win->vscr->screen->screen_num);
+	sbuf_printf_concat(buf, "%d", elem->win->vscreen->screen->screen_num);
 }
 
 static void
 fmt_xrandrscreen(rp_window_elem *elem, struct sbuf *buf)
 {
-	sbuf_printf_concat(buf, "%d", elem->win->vscr->screen->xrandr.output);
+	sbuf_printf_concat(buf, "%d", elem->win->vscreen->screen->xrandr.output);
 }
 
 static void
