@@ -45,8 +45,7 @@ void
 cleanup_frame(rp_frame *frame)
 {
 	rp_window *win;
-	rp_vscreen *vscreen;
-	vscreen = frames_vscreen(frame);
+	rp_vscreen *vscreen = frame->vscreen;
 
 	win = find_window_other(vscreen);
 	if (win == NULL) {
@@ -77,36 +76,12 @@ set_frames_window(rp_frame *frame, rp_window *win)
 		 * screen, since with Xrandr, windows can move from one screen
 		 * to another.
 		 */
-		win->vscr = frames_vscreen(frame);
+		win->vscr = frame->vscreen;
 	} else {
 		frame->win_number = EMPTY;
 	}
 
 	return find_window_number(last_win);
-}
-
-rp_vscreen *
-frames_vscreen(rp_frame *frame)
-{
-	rp_frame *cur_frame;
-	rp_screen *cur_screen;
-	rp_vscreen *cur_vscreen;
-
-	list_for_each_entry(cur_screen, &rp_screens, node) {
-		list_for_each_entry(cur_vscreen, &cur_screen->vscreens, node) {
-			list_for_each_entry(cur_frame, &cur_vscreen->frames,
-			    node) {
-				if (frame == cur_frame)
-					return cur_vscreen;
-			}
-		}
-	}
-
-	/*
-	 * This SHOULD be impossible to get to. FIXME: It'll crash higher up if
-	 * we return NULL.
-	 */
-	return NULL;
 }
 
 void
@@ -125,7 +100,7 @@ maximize_all_windows_in_frame(rp_frame *frame)
 void
 maximize_frame(rp_frame *frame)
 {
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 
 	frame->x = screen_left(v->screen);
 	frame->y = screen_top(v->screen);
@@ -148,17 +123,6 @@ create_initial_frame(rp_vscreen *vscreen)
 
 	maximize_frame(frame);
 	set_frames_window(frame, NULL);
-}
-
-void
-init_frame_lists(void)
-{
-	rp_screen *cur;
-	rp_vscreen *vcur;
-
-	list_for_each_entry(cur, &rp_screens, node)
-		list_for_each_entry(vcur, &cur->vscreens, node)
-			init_frame_list(vcur);
 }
 
 void
@@ -219,7 +183,7 @@ find_frame_next(rp_frame *frame)
 {
 	if (frame == NULL)
 		return NULL;
-	return list_next_entry(frame, &frames_vscreen(frame)->frames, node);
+	return list_next_entry(frame, &frame->vscreen->frames, node);
 }
 
 rp_frame *
@@ -227,7 +191,7 @@ find_frame_prev(rp_frame *frame)
 {
 	if (frame == NULL)
 		return NULL;
-	return list_prev_entry(frame, &frames_vscreen(frame)->frames, node);
+	return list_prev_entry(frame, &frame->vscreen->frames, node);
 }
 
 rp_window *
@@ -260,7 +224,7 @@ window_fits_in_frame(rp_window *win, rp_frame *frame)
 rp_window *
 find_window_for_frame(rp_frame *frame)
 {
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 	int last_access = 0;
 	rp_window_elem *most_recent = NULL;
 	rp_window_elem *cur;
@@ -294,7 +258,7 @@ split_frame(rp_frame *frame, int way, int pixels)
 	rp_window *win;
 	rp_frame *new_frame;
 
-	v = frames_vscreen(frame);
+	v = frame->vscreen;
 
 	/* Make our new frame. */
 	new_frame = frame_new(v);
@@ -423,7 +387,7 @@ resize_frame(rp_frame *frame, rp_frame *pusher, int diff,
     void (*resize2)(rp_frame *, int),
     int (*resize3)(rp_frame *, rp_frame *, int))
 {
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 	rp_frame *cur;
 
 	/*
@@ -534,7 +498,7 @@ resize_frame_horizontally(rp_frame *frame, int diff)
 {
 	int (*resize_fn)(rp_frame *, rp_frame *, int);
 	struct list_head *l;
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 
 	if (num_frames(v) < 2 || diff == 0)
 		return;
@@ -577,7 +541,7 @@ resize_frame_vertically(rp_frame *frame, int diff)
 {
 	int (*resize_fn)(rp_frame *, rp_frame *, int);
 	struct list_head *l;
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 
 	if (num_frames(v) < 2 || diff == 0)
 		return;
@@ -676,7 +640,7 @@ frame_overlaps(rp_frame *frame)
 	rp_vscreen *v;
 	rp_frame *cur;
 
-	v = frames_vscreen(frame);
+	v = frame->vscreen;
 
 	list_for_each_entry(cur, &v->frames, node) {
 		if (cur != frame && frames_overlap(cur, frame)) {
@@ -697,7 +661,7 @@ remove_frame(rp_frame *frame)
 	if (frame == NULL)
 		return;
 
-	v = frames_vscreen(frame);
+	v = frame->vscreen;
 
 	area = total_frame_area(v);
 	PRINT_DEBUG(("Total Area: %d\n", area));
@@ -801,7 +765,7 @@ void
 set_active_frame(rp_frame *frame, int force_indicator)
 {
 	rp_vscreen *old_v = rp_current_vscreen;
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 	int old = old_v->current_frame;
 	rp_window *win, *old_win;
 	rp_frame *old_frame;
@@ -888,7 +852,7 @@ blank_frame(rp_frame *frame)
 	if (frame->win_number == EMPTY)
 		return;
 
-	v = frames_vscreen(frame);
+	v = frame->vscreen;
 
 	win = find_window_number(frame->win_number);
 	hide_window(win);
@@ -981,7 +945,7 @@ rp_frame *
 find_frame_up(rp_frame *frame)
 {
 	rp_frame *cur, *winner = NULL;
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 	int wingap = 0, curgap;
 
 	list_for_each_entry(cur, &v->frames, node) {
@@ -1002,7 +966,7 @@ rp_frame *
 find_frame_down(rp_frame *frame)
 {
 	rp_frame *cur, *winner = NULL;
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 	int wingap = 0, curgap;
 
 	list_for_each_entry(cur, &v->frames, node) {
@@ -1023,7 +987,7 @@ rp_frame *
 find_frame_left(rp_frame *frame)
 {
 	rp_frame *cur, *winner = NULL;
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 	int wingap = 0, curgap;
 
 	list_for_each_entry(cur, &v->frames, node) {
@@ -1044,7 +1008,7 @@ rp_frame *
 find_frame_right(rp_frame *frame)
 {
 	rp_frame *cur, *winner = NULL;
-	rp_vscreen *v = frames_vscreen(frame);
+	rp_vscreen *v = frame->vscreen;
 	int wingap = 0, curgap;
 
 	list_for_each_entry(cur, &v->frames, node) {

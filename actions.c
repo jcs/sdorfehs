@@ -4487,7 +4487,6 @@ cmd_exchangeright(int interactive, struct cmdarg **args)
 cmdret *
 cmd_swap(int interactive, struct cmdarg **args)
 {
-	rp_vscreen *v;
 	rp_frame *dest_frame;
 	rp_frame *src_frame;
 
@@ -4495,8 +4494,8 @@ cmd_swap(int interactive, struct cmdarg **args)
 	src_frame = args[1] ? ARG(1, frame) : current_frame(rp_current_vscreen);
 
 	if (!rp_have_xrandr) {
-		v = frames_vscreen(src_frame);
-		if (vscreen_find_frame_by_frame(v, dest_frame) == NULL)
+		if (vscreen_find_frame_by_frame(src_frame->vscreen,
+		    dest_frame) == NULL)
 			return cmdret_new(RET_FAILURE,
 			    "swap: frames on different screens");
 	}

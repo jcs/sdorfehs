@@ -40,6 +40,8 @@ init_vscreen(rp_vscreen *v, rp_screen *s)
 
 	INIT_LIST_HEAD(&v->unmapped_windows);
 	INIT_LIST_HEAD(&v->mapped_windows);
+
+	init_frame_list(v);
 }
 
 void
@@ -127,7 +129,6 @@ vscreens_resize(int n)
 				cur = xmalloc(sizeof(rp_vscreen));
 				init_vscreen(cur, scr);
 				list_add_tail(&cur->node, &scr->vscreens);
-				init_frame_list(cur);
 			}
 		}
 	}

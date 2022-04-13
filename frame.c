@@ -31,8 +31,7 @@ frame_left(rp_frame *frame)
 int
 frame_left_screen_edge(rp_frame *frame)
 {
-	rp_vscreen *v = frames_vscreen(frame);
-	return (frame_left(frame) <= screen_left(v->screen) +
+	return (frame_left(frame) <= screen_left(frame->vscreen->screen) +
 	    defaults.padding_left);
 }
 
@@ -45,8 +44,7 @@ frame_top(rp_frame *frame)
 int
 frame_top_screen_edge(rp_frame *frame)
 {
-	rp_vscreen *v = frames_vscreen(frame);
-	return (frame_top(frame) <= (screen_top(v->screen) +
+	return (frame_top(frame) <= (screen_top(frame->vscreen->screen) +
 	    defaults.padding_top));
 }
 
@@ -59,8 +57,7 @@ frame_right(rp_frame *frame)
 int
 frame_right_screen_edge(rp_frame *frame)
 {
-	rp_vscreen *v = frames_vscreen(frame);
-	return (frame_right(frame) >= screen_right(v->screen) -
+	return (frame_right(frame) >= screen_right(frame->vscreen->screen) -
 	    defaults.padding_right);
 }
 
@@ -73,8 +70,7 @@ frame_bottom(rp_frame *frame)
 int
 frame_bottom_screen_edge(rp_frame *frame)
 {
-	rp_vscreen *v = frames_vscreen(frame);
-	return (frame_bottom(frame) >= screen_bottom(v->screen) -
+	return (frame_bottom(frame) >= screen_bottom(frame->vscreen->screen) -
 	    defaults.padding_bottom);
 }
 
@@ -162,6 +158,7 @@ frame_new(rp_vscreen *v)
 
 	f = xmalloc(sizeof(rp_frame));
 	init_frame(f);
+	f->vscreen = v;
 	f->number = numset_request(v->frames_numset);
 
 	return f;

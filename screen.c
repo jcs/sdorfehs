@@ -696,7 +696,6 @@ screen_add(int rr_output)
 
 	xrandr_fill_screen(rr_output, screen);
 	init_screen(screen);
-	init_frame_list(screen->current_vscreen);
 
 	if (screen_count() == 1) {
 		rp_current_screen = screen;

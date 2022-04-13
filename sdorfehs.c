@@ -363,7 +363,6 @@ main(int argc, char *argv[])
 	init_xrandr();
 	init_screens();
 
-	init_frame_lists();
 	update_modifier_map();
 	init_user_commands();
 	initialize_default_keybindings();

@@ -36,7 +36,6 @@ int num_frames(rp_vscreen *v);
 rp_frame *find_frame_next(rp_frame *frame);
 rp_frame *find_frame_prev(rp_frame *frame);
 rp_window *current_window(void);
-void init_frame_lists(void);
 void init_frame_list(rp_vscreen *vscreen);
 void set_active_frame(rp_frame *frame, int force_indicator);
 void exchange_with_frame(rp_frame *cur, rp_frame *frame);

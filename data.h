@@ -48,6 +48,8 @@ enum rp_edge {
 };
 
 struct rp_frame {
+	rp_vscreen *vscreen;
+
 	int number;
 	int x, y, width, height;
 
