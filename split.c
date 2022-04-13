@@ -846,9 +846,10 @@ set_active_frame(rp_frame *frame, int force_indicator)
 		set_window_focus(v->screen->key_window);
 	}
 	/* Call the switchscreen hook, when appropriate. */
-	if (v->screen != old_v->screen)
+	if (v->screen != old_v->screen) {
 		hook_run(&rp_switch_screen_hook);
-	/* TODO: rp_switch_vscreen_hook */
+		hook_run(&rp_switch_vscreen_hook);
+	}
 }
 
 void

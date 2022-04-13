@@ -260,6 +260,7 @@ LIST_HEAD(rp_key_hook);
 LIST_HEAD(rp_switch_win_hook);
 LIST_HEAD(rp_switch_frame_hook);
 LIST_HEAD(rp_switch_screen_hook);
+LIST_HEAD(rp_switch_vscreen_hook);
 LIST_HEAD(rp_quit_hook);
 LIST_HEAD(rp_restart_hook);
 LIST_HEAD(rp_delete_window_hook);
@@ -271,6 +272,7 @@ struct rp_hook_db_entry rp_hook_db[] =
 	{"switchwin", &rp_switch_win_hook},
 	{"switchframe", &rp_switch_frame_hook},
 	{"switchscreen", &rp_switch_screen_hook},
+	{"switchvscreen", &rp_switch_vscreen_hook},
 	{"deletewindow", &rp_delete_window_hook},
 	{"quit", &rp_quit_hook},
 	{"restart", &rp_restart_hook},

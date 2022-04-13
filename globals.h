@@ -174,6 +174,7 @@ extern struct list_head rp_key_hook;
 extern struct list_head rp_switch_win_hook;
 extern struct list_head rp_switch_frame_hook;
 extern struct list_head rp_switch_screen_hook;
+extern struct list_head rp_switch_vscreen_hook;
 extern struct list_head rp_delete_window_hook;
 extern struct list_head rp_quit_hook;
 extern struct list_head rp_restart_hook;

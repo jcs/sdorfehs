@@ -286,7 +286,7 @@ set_current_vscreen(rp_vscreen *v)
 
 	vscreen_announce_current(v);
 
-	/* TODO: rp_switch_vscreen_hook */
+	hook_run(&rp_switch_vscreen_hook);
 }
 
 void
