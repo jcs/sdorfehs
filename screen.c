@@ -36,7 +36,7 @@ screen_height(rp_screen *s)
 {
 	int ret = s->height - defaults.padding_bottom - defaults.padding_top;
 
-	if (defaults.bar_sticky && xrandr_is_primary(s)) {
+	if (defaults.bar_sticky && screen_primary() == s) {
 		ret -= sticky_bar_height(s);
 
 		if (!defaults.bar_in_padding)
@@ -69,7 +69,7 @@ screen_top(rp_screen *s)
 {
 	int ret = s->top + defaults.padding_top;
 
-	if (defaults.bar_sticky && xrandr_is_primary(s)) {
+	if (defaults.bar_sticky && screen_primary() == s) {
 		switch (defaults.bar_location) {
 		case NorthEastGravity:
 		case NorthGravity:
@@ -89,7 +89,7 @@ screen_bottom(rp_screen *s)
 {
 	int ret = s->top + s->height - defaults.padding_bottom;
 
-	if (defaults.bar_sticky && xrandr_is_primary(s)) {
+	if (defaults.bar_sticky && screen_primary() == s) {
 		switch (defaults.bar_location) {
 		case SouthEastGravity:
 		case SouthGravity:
@@ -622,7 +622,7 @@ screen_update(rp_screen *s, int left, int top, int width, int height)
 	s->width = width;
 	s->height = height;
 
-	if (defaults.bar_sticky && xrandr_is_primary(s))
+	if (defaults.bar_sticky && screen_primary() == s)
 		hide_bar(s, 0);
 
 	XMoveResizeWindow(dpy, s->help_window, s->left, s->top, s->width,

@@ -112,9 +112,12 @@ xrandr_screen_crtc(int rr_crtc)
 }
 
 int
-xrandr_is_primary(rp_screen * screen)
+xrandr_is_primary(rp_screen *screen)
 {
-	return screen->xrandr.primary;
+	if (rp_have_xrandr)
+		return screen->xrandr.primary;
+
+	return 0;
 }
 
 void
