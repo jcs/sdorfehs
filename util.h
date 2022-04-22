@@ -17,6 +17,10 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#ifndef __dead
+#define __dead	__attribute__((__noreturn__))
+#endif
+
 __dead void fatal(const char *msg);
 void *xmalloc(size_t size);
 void *xrealloc(void *ptr, size_t size);
