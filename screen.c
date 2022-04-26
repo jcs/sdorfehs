@@ -646,14 +646,23 @@ screen_update_frames(rp_screen *s)
 {
 	rp_vscreen *v;
 	rp_frame *f;
+	int diff;
 
 	list_for_each_entry(v, &s->vscreens, node) {
 		list_for_each_entry(f, &v->frames, node) {
-			if (frame_left_screen_edge(f) || (f->edges & EDGE_LEFT))
+			if (frame_left_screen_edge(f) ||
+			    (f->edges & EDGE_LEFT)) {
+				diff = screen_left(v->screen) - f->x;
 				f->x = screen_left(v->screen);
+				f->width -= diff;
+			}
 
-			if (frame_top_screen_edge(f) || (f->edges & EDGE_TOP))
+			if (frame_top_screen_edge(f) ||
+			    (f->edges & EDGE_TOP)) {
+				diff = screen_top(v->screen) - f->y;
 				f->y = screen_top(v->screen);
+				f->height -= diff;
+			}
 
 			if (frame_right_screen_edge(f) ||
 			    (f->edges & EDGE_RIGHT))
