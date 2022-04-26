@@ -73,8 +73,8 @@ static void marked_message_internal(char *msg, int mark_start, int mark_end,
     int bar_type);
 
 /* Reset the alarm to auto-hide the bar in BAR_TIMEOUT seconds. */
-static void
-reset_alarm(void)
+void
+bar_reset_alarm(void)
 {
 	struct timeval timeout;
 	struct itimerval alarmtimer;
@@ -169,7 +169,7 @@ show_bar(rp_screen *s, char *fmt)
 
 	raise_utility_windows();
 
-	reset_alarm();
+	bar_reset_alarm();
 }
 
 /* Show vscreen listing in bar. */
@@ -187,7 +187,7 @@ show_vscreen_bar(rp_screen *s)
 
 	raise_utility_windows();
 
-	reset_alarm();
+	bar_reset_alarm();
 }
 
 int
@@ -951,7 +951,7 @@ void
 marked_message(char *msg, int mark_start, int mark_end, int bar_type)
 {
 	/* Schedule the bar to be hidden after some amount of time. */
-	reset_alarm();
+	bar_reset_alarm();
 	marked_message_internal(msg, mark_start, mark_end, bar_type);
 }
 
@@ -990,7 +990,7 @@ marked_message_internal(char *msg, int mark_start, int mark_end, int bar_type)
 	update_last_message(msg, mark_start, mark_end);
 
 	if (bar_type != BAR_IS_STICKY && bar_time_left())
-		reset_alarm();
+		bar_reset_alarm();
 }
 
 /*
@@ -1020,7 +1020,7 @@ void
 show_last_message(void)
 {
 	redraw_last_message();
-	reset_alarm();
+	bar_reset_alarm();
 }
 
 /* Free any memory associated with the bar. */

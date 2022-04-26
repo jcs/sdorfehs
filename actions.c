@@ -4611,6 +4611,8 @@ set_barsticky(struct cmdarg **args)
 		screen_update_frames(s);
 	}
 
+	bar_reset_alarm();
+
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
