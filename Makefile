@@ -1,12 +1,16 @@
-PREFIX?=	/usr/local
-X11BASE?=	/usr/X11R6
+VERSION=	1.2
 
-PKGLIBS=	x11 xft xrandr xtst
+VERSION!=	[ -d .git ] && \
+		echo "git-`git rev-list --abbrev-commit --tags --max-count=1`" || \
+		echo "${VERSION}"
 
 CC?=		cc
+PREFIX?=	/usr/local
+PKGLIBS=	x11 xft xrandr xtst
 CFLAGS+=	-O2 -Wall \
 		-Wunused -Wmissing-prototypes -Wstrict-prototypes -Wunused \
-		`pkg-config --cflags ${PKGLIBS}`
+		`pkg-config --cflags ${PKGLIBS}` \
+		-DVERSION=\"${VERSION}\"
 LDFLAGS+=	`pkg-config --libs ${PKGLIBS}`
 
 # uncomment to enable debugging

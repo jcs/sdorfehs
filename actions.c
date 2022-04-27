@@ -1617,7 +1617,7 @@ cmd_kill(int interactive, struct cmdarg **args)
 cmdret *
 cmd_version(int interactive, struct cmdarg **args)
 {
-	return cmdret_new(RET_SUCCESS, "%s", PROGNAME " " VERSION);
+	return cmdret_new(RET_SUCCESS, "%s %s", PROGNAME, VERSION);
 }
 
 static char *

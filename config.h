@@ -24,7 +24,6 @@
 #include "actions.h"
 
 #define PROGNAME	"sdorfehs"
-#define VERSION		"20190822"
 
 /* Enter command mode with Control+a by default. */
 #define KEY_PREFIX      XK_a
