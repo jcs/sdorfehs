@@ -178,6 +178,8 @@ receive_command(void)
 
 	PRINT_DEBUG(("writing back %d to command client: %s", len, result + 1));
 
-	write(cl, result, len);
+	if (write(cl, result, len) != len)
+		warn("%s: short write", __func__);
+
 	close(cl);
 }
