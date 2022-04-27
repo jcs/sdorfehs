@@ -204,7 +204,7 @@ static cmdret *cmd_fselect(int interactive, struct cmdarg **args);
 static cmdret *cmd_getenv(int interactive, struct cmdarg **args);
 static cmdret *cmd_getsel(int interactive, struct cmdarg **args);
 static cmdret *cmd_gravity(int interactive, struct cmdarg **args);
-static cmdret *cmd_h_split(int interactive, struct cmdarg **args);
+static cmdret *cmd_hsplit(int interactive, struct cmdarg **args);
 static cmdret *cmd_help(int interactive, struct cmdarg **args);
 static cmdret *cmd_inext(int interactive, struct cmdarg **args);
 static cmdret *cmd_info(int interactive, struct cmdarg **args);
@@ -217,13 +217,13 @@ static cmdret *cmd_listhook(int interactive, struct cmdarg **args);
 static cmdret *cmd_meta(int interactive, struct cmdarg **args);
 static cmdret *cmd_newkmap(int interactive, struct cmdarg **args);
 static cmdret *cmd_next(int interactive, struct cmdarg **args);
-static cmdret *cmd_next_frame(int interactive, struct cmdarg **args);
+static cmdret *cmd_nextframe(int interactive, struct cmdarg **args);
 static cmdret *cmd_nextscreen(int interactive, struct cmdarg **args);
 static cmdret *cmd_number(int interactive, struct cmdarg **args);
 static cmdret *cmd_only(int interactive, struct cmdarg **args);
 static cmdret *cmd_other(int interactive, struct cmdarg **args);
 static cmdret *cmd_prev(int interactive, struct cmdarg **args);
-static cmdret *cmd_prev_frame(int interactive, struct cmdarg **args);
+static cmdret *cmd_prevframe(int interactive, struct cmdarg **args);
 static cmdret *cmd_prevscreen(int interactive, struct cmdarg **args);
 static cmdret *cmd_prompt(int interactive, struct cmdarg **args);
 static cmdret *cmd_putsel(int interactive, struct cmdarg **args);
@@ -260,7 +260,7 @@ static cmdret *cmd_undo(int interactive, struct cmdarg **args);
 static cmdret *cmd_unmanage(int interactive, struct cmdarg **args);
 static cmdret *cmd_unsetenv(int interactive, struct cmdarg **args);
 static cmdret *cmd_unstick(int interactive, struct cmdarg **args);
-static cmdret *cmd_v_split(int interactive, struct cmdarg **args);
+static cmdret *cmd_vsplit(int interactive, struct cmdarg **args);
 static cmdret *cmd_verbexec(int interactive, struct cmdarg **args);
 static cmdret *cmd_version(int interactive, struct cmdarg **args);
 static cmdret *cmd_vmove(int interactive, struct cmdarg **args);
@@ -442,9 +442,9 @@ init_user_commands(void)
 	            "/bin/sh -c ", arg_SHELLCMD);
 	add_command("fdump",		cmd_fdump,	1, 0, 0,
 	            "", arg_NUMBER);
-	add_command("focus",		cmd_next_frame,	0, 0, 0);
+	add_command("focus",		cmd_nextframe,	0, 0, 0);
 	add_command("focusdown",	cmd_focusdown,	0, 0, 0);
-	add_command("focusprev",	cmd_prev_frame,	0, 0, 0);
+	add_command("focusprev",	cmd_prevframe,	0, 0, 0);
 	add_command("focuslast",	cmd_focuslast,	0, 0, 0);
 	add_command("focusleft",	cmd_focusleft,	0, 0, 0);
 	add_command("focusright",	cmd_focusright,	0, 0, 0);
@@ -460,7 +460,7 @@ init_user_commands(void)
 	            "Gravity: ", arg_GRAVITY);
 	add_command("help",		cmd_help,	1, 0, 0,
 	            "Keymap: ", arg_KEYMAP);
-	add_command("hsplit",		cmd_h_split,	1, 0, 0,
+	add_command("hsplit",		cmd_hsplit,	1, 0, 0,
 	            "Split: ", arg_STRING);
 	add_command("inext",		cmd_inext,	0, 0, 0);
 	add_command("info",		cmd_info,	1, 0, 0,
@@ -564,7 +564,7 @@ init_user_commands(void)
 	add_command("vscreens",		cmd_vscreens,	0, 0, 0);
 	add_command("vselect",		cmd_vselect,	1, 1, 1,
 	            "Virtual Screen: ", arg_VSCREEN);
-	add_command("vsplit",		cmd_v_split,	1, 0, 0,
+	add_command("vsplit",		cmd_vsplit,	1, 0, 0,
                     "Split: ", arg_STRING);
 	add_command("windows",		cmd_windows,	1, 0, 0,
                     "", arg_REST);
@@ -1358,7 +1358,7 @@ cmd_prev(int interactive, struct cmdarg **args)
 }
 
 cmdret *
-cmd_prev_frame(int interactive, struct cmdarg **args)
+cmd_prevframe(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -1390,7 +1390,7 @@ cmd_next(int interactive, struct cmdarg **args)
 }
 
 cmdret *
-cmd_next_frame(int interactive, struct cmdarg **args)
+cmd_nextframe(int interactive, struct cmdarg **args)
 {
 	rp_frame *frame;
 
@@ -2998,7 +2998,7 @@ read_split(char *str, int max, int *p)
 }
 
 cmdret *
-cmd_v_split(int interactive, struct cmdarg **args)
+cmd_vsplit(int interactive, struct cmdarg **args)
 {
 	cmdret *ret;
 	rp_frame *frame;
@@ -3026,7 +3026,7 @@ cmd_v_split(int interactive, struct cmdarg **args)
 }
 
 cmdret *
-cmd_h_split(int interactive, struct cmdarg **args)
+cmd_hsplit(int interactive, struct cmdarg **args)
 {
 	cmdret *ret;
 	rp_frame *frame;
