@@ -29,6 +29,12 @@ sdorfehs retains ratpoison's GPL2 license.
 Run `make` to compile, and `make install` to install to `/usr/local` by
 default.
 
+### Wiki
+
+The
+[sdorfehs Wiki](https://github.com/jcs/sdorfehs/wiki)
+has tips and tricks, and information on troubleshooting problems.
+
 ## Features
 
 sdorfehs retains most of ratpoison's features while adding some more modern
@@ -124,34 +130,3 @@ sdorfehs's IPC mechanism switches to a Unix socket in the
 `~/.config/sdorfehs` directory which ensures the requesting process
 has the ability to make socket connections and can write to that
 path.
-
-## Tips
-
-- Enable the `ignoreresizehints` setting (`set ignoreresizehints 1`) to force
-windows to conform to the frame size, eliminating any gap around windows like
-terminals that supply resize hints to request sizing in a multiple of their
-font size.
-
-- Enable xterm's `allowSendEvents` setting to allow sdorfehs to send a fake
-`Control+a` key when pressing `Control+a, a` (which runs its `meta` command).
-xterm disables this by default as a security measure to prevent other programs
-from sending it arbitrary key input.
-
-- Since sdorfehs does not color active and inactive window borders differently
-by default (though this can be done by setting `bwcolor` and `fwcolor`), a
-compositor like
-[Compton](https://github.com/chjj/compton)
-can be used with its `inactive-dim` setting to dim inactive windows.
-Its `use-ewmh-active-win` setting should also be enabled since sdorfehs focuses
-its own input windows periodically, and it supports EWMH hints to inform
-Compton which window should actually be considered focused.
-
-- While most default key bindings require the prefix command key (`Control+a`
-by default), keys can be bound without them in the `top` keymap.
-For example, `definekey top F1 vselect 0` will switch to the first virtual
-screen when `F1` is pressed.
-
-  A related tip: if you have bound a key to an action and then need to send
-that key to a window, you can do it with the `meta` command accessible via the
-interactive input menu (`Control+a, :meta F1`), or with
-`sdorfehs -c "meta F1"`.
