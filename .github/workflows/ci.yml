@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: install dependencies
+      run: sudo apt-get install -y libx11-dev libxft-dev libxrandr-dev libxtst-dev
+    - name: install clang-tools for make regress
+      run: sudo apt-get install -y clang-tools
+    - name: make
+      run: make
+    - name: scan-build
+      run: make regress
+    - name: test install with DESTDIR
+      run: sudo make install DESTDIR=/usr/gooses; size /usr/gooses/usr/local/bin/sdorfehs
+
+  openbsd-build:
+    runs-on: macos-10.15
+    steps:
+    - name: Bootstrap OpenBSD 7.0
+      uses: mario-campos/emulate@v1
+      with:
+        operating-system: openbsd-7.0
+    - name: Build
+      run: |
+        echo "installing xbase (XXX: remove this when image is updated)"
+        ftp -o - https://cdn.openbsd.org/pub/OpenBSD/7.0/amd64/xbase70.tgz | tar -C / -xzpf -
+        echo "installing xshare (XXX: remove this when image is updated)"
+        ftp -o - https://cdn.openbsd.org/pub/OpenBSD/7.0/amd64/xshare70.tgz | tar -C / -xzpf -
+        git clone "${{ github.server_url }}/${{ github.repository }}" build
+        cd build
+        [ "${{ github.event.pull_request.number }}" = "" ] || (echo "fetching PR ${{ github.event.pull_request.number }}"; git fetch origin pull/${{ github.event.pull_request.number }}/head:pr-${{ github.event.pull_request.number }} && git checkout "pr-${{ github.event.pull_request.number }}")
+        echo "building"
+        make
