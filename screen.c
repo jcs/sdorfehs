@@ -676,7 +676,8 @@ screen_update_frames(rp_screen *s)
 		}
 	}
 
-	redraw_sticky_bar_text(1);
+	if (defaults.bar_sticky)
+		redraw_sticky_bar_text(1);
 }
 
 void
