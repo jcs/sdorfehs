@@ -2626,101 +2626,103 @@ command(int interactive, char *data)
 
 	/* Look for it in the aliases, first. */
 	for (i = 0; i < alias_list_last; i++) {
-		if (!strcmp(cmd, alias_list[i].name)) {
-			struct sbuf *s;
+		if (strcmp(cmd, alias_list[i].name) != 0)
+			continue;
 
-			/*
-			 * Append any arguments onto the end of the alias'
-			 * command.
-			 */
-			s = sbuf_new(0);
-			sbuf_concat(s, alias_list[i].alias);
-			if (rest != NULL && *rest)
-				sbuf_printf_concat(s, " %s", rest);
+		struct sbuf *s;
 
-			alias_recursive_depth++;
-			if (alias_recursive_depth >= MAX_ALIAS_RECURSIVE_DEPTH)
-				result = cmdret_new(RET_FAILURE,
-				    "command: alias recursion has exceeded "
-				    "maximum depth");
-			else
-				result = command(interactive, sbuf_get(s));
-			alias_recursive_depth--;
+		/*
+		 * Append any arguments onto the end of the alias'
+		 * command.
+		 */
+		s = sbuf_new(0);
+		sbuf_concat(s, alias_list[i].alias);
+		if (rest != NULL && *rest)
+			sbuf_printf_concat(s, " %s", rest);
 
-			sbuf_free(s);
-			goto done;
-		}
+		alias_recursive_depth++;
+		if (alias_recursive_depth >= MAX_ALIAS_RECURSIVE_DEPTH)
+			result = cmdret_new(RET_FAILURE,
+			    "command: alias recursion has exceeded "
+			    "maximum depth");
+		else
+			result = command(interactive, sbuf_get(s));
+		alias_recursive_depth--;
+
+		sbuf_free(s);
+		goto done;
 	}
 
 	/* If it wasn't an alias, maybe its a command. */
 	list_for_each_entry(uc, &user_commands, node) {
-		if (!strcmp(cmd, uc->name)) {
-			struct sbuf *scur;
-			struct cmdarg *acur;
-			struct list_head *iter, *tmp;
-			struct list_head head, args;
-			int nargs = 0, raw = 0;
+		if (strcmp(cmd, uc->name) != 0)
+			continue;
 
-			INIT_LIST_HEAD(&args);
-			INIT_LIST_HEAD(&head);
+		struct sbuf *scur;
+		struct cmdarg *acur;
+		struct list_head *iter, *tmp;
+		struct list_head head, args;
+		int nargs = 0, raw = 0;
 
-			/*
-			 * We need to tell parse_args about arg_REST and
-			 * arg_SHELLCMD.
-			 */
-			for (i = 0; i < uc->num_args; i++)
-				if (uc->args[i].type == arg_REST ||
-				    uc->args[i].type == arg_COMMAND ||
-				    uc->args[i].type == arg_SHELLCMD ||
-				    uc->args[i].type == arg_RAW) {
-					raw = 1;
-					nargs = i;
-					break;
-				}
+		INIT_LIST_HEAD(&args);
+		INIT_LIST_HEAD(&head);
 
-			/* Parse the arguments and call the function. */
-			result = parse_args(rest, &head, nargs, raw);
-			if (result)
-				goto free_lists;
-
-			/* Interactive commands prompt the user for missing args. */
-			if (interactive)
-				result = fill_in_missing_args(uc, &head, &args,
-				    uc->name);
-			else {
-				int parsed_args;
-				result = parsed_input_to_args(uc->num_args,
-				    uc->args, &head, &args, &parsed_args,
-				    uc->name);
+		/*
+		 * We need to tell parse_args about arg_REST and
+		 * arg_SHELLCMD.
+		 */
+		for (i = 0; i < uc->num_args; i++)
+			if (uc->args[i].type == arg_REST ||
+			    uc->args[i].type == arg_COMMAND ||
+			    uc->args[i].type == arg_SHELLCMD ||
+			    uc->args[i].type == arg_RAW) {
+				raw = 1;
+				nargs = i;
+				break;
 			}
 
-			if (result == NULL) {
-				if ((interactive && list_size(&args) < uc->i_required_args) ||
-				    (!interactive && list_size(&args) < uc->ni_required_args)) {
-					result = cmdret_new(RET_FAILURE,
-					    "not enough arguments.");
-					goto free_lists;
-				} else if (list_size(&head) > uc->num_args) {
-					result = cmdret_new(RET_FAILURE,
-					    "too many arguments.");
-					goto free_lists;
-				} else {
-					struct cmdarg **cmdargs = arg_array(&args);
-					result = uc->func(interactive, cmdargs);
-					free(cmdargs);
-				}
-			}
-free_lists:
-			/* Free the parsed strings */
-			list_for_each_safe_entry(scur, iter, tmp, &head, node)
-			    sbuf_free(scur);
+		/* Parse the arguments and call the function. */
+		result = parse_args(rest, &head, nargs, raw);
+		if (result)
+			goto free_lists;
 
-			/* Free the args */
-			list_for_each_safe_entry(acur, iter, tmp, &args, node)
-			    arg_free(acur);
-
-			goto done;
+		/* Interactive commands prompt the user for missing args. */
+		if (interactive)
+			result = fill_in_missing_args(uc, &head, &args,
+			    uc->name);
+		else {
+			int parsed_args;
+			result = parsed_input_to_args(uc->num_args,
+			    uc->args, &head, &args, &parsed_args,
+			    uc->name);
 		}
+
+		if (result == NULL) {
+			if ((interactive && list_size(&args) < uc->i_required_args) ||
+			    (!interactive && list_size(&args) < uc->ni_required_args)) {
+				result = cmdret_new(RET_FAILURE,
+				    "not enough arguments.");
+				goto free_lists;
+			} else if (list_size(&head) > uc->num_args) {
+				result = cmdret_new(RET_FAILURE,
+				    "too many arguments.");
+				goto free_lists;
+			} else {
+				struct cmdarg **cmdargs = arg_array(&args);
+				result = uc->func(interactive, cmdargs);
+				free(cmdargs);
+			}
+		}
+free_lists:
+		/* Free the parsed strings */
+		list_for_each_safe_entry(scur, iter, tmp, &head, node)
+		    sbuf_free(scur);
+
+		/* Free the args */
+		list_for_each_safe_entry(acur, iter, tmp, &args, node)
+		    arg_free(acur);
+
+		goto done;
 	}
 
 	result = cmdret_new(RET_FAILURE, MESSAGE_UNKNOWN_COMMAND, cmd);
