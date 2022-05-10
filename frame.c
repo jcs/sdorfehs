@@ -235,6 +235,7 @@ frame_read(char *str, rp_vscreen *vscreen)
 	/* Create a blank frame. */
 	f = xmalloc(sizeof(rp_frame));
 	init_frame(f);
+	f->vscreen = vscreen;
 
 	PRINT_DEBUG(("parsing '%s'\n", str));
 
