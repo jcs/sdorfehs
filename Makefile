@@ -1,4 +1,4 @@
-VERSION=	1.3
+VERSION=	1.4
 
 VERSION!=	[ -d .git ] && \
 		echo "git-`git rev-list --abbrev-commit --tags --max-count=1`" || \
