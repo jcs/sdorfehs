@@ -350,6 +350,9 @@ struct rp_defaults {
 
 	/* Whether to ignore window size hints */
 	int ignore_resize_hints;
+
+	/* New mapped window always uses current vscreen */
+	int win_add_cur_vscreen;
 };
 
 /* Information about a child process. */

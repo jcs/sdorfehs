@@ -164,6 +164,7 @@ static cmdret *set_winfmt(struct cmdarg **args);
 static cmdret *set_wingravity(struct cmdarg **args);
 static cmdret *set_winliststyle(struct cmdarg **args);
 static cmdret *set_winname(struct cmdarg **args);
+static cmdret *set_winaddcurvscreen(struct cmdarg **args);
 
 /* command function prototypes. */
 static cmdret *cmd_abort(int interactive, struct cmdarg **args);
@@ -349,6 +350,7 @@ init_set_vars(void)
 	add_set_var("wingravity", set_wingravity, 1, "", arg_GRAVITY);
 	add_set_var("winliststyle", set_winliststyle, 1, "", arg_STRING);
 	add_set_var("winname", set_winname, 1, "", arg_STRING);
+	add_set_var("winaddcurvscreen", set_winaddcurvscreen, 1, "", arg_NUMBER);
 }
 
 /*
@@ -4277,6 +4279,21 @@ set_resizefmt(struct cmdarg **args)
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
+static cmdret *
+set_winaddcurvscreen(struct cmdarg **args)
+{
+	if (args[0] == NULL)
+		return cmdret_new(RET_SUCCESS, "%d",
+		    defaults.win_add_cur_vscreen);
+
+	if (ARG(0, number) < 0 || ARG(0, number) > 1)
+		return cmdret_new(RET_FAILURE,
+		    "winaddcurvscreen: invalid argument");
+
+	defaults.win_add_cur_vscreen = ARG(0, number);
+
+	return cmdret_new(RET_SUCCESS, NULL);
+}
 cmdret *
 cmd_setenv(int interactive, struct cmdarg **args)
 {

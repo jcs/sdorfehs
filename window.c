@@ -194,7 +194,8 @@ add_to_window_list(rp_screen *s, Window w)
 
 	child_info = get_child_info(w, 1);
 	if (child_info) {
-		if (child_info->vscreen != new_window->vscreen)
+		if (child_info->vscreen != new_window->vscreen &&
+		    !defaults.win_add_cur_vscreen)
 			new_window->vscreen = child_info->vscreen;
 
 		if (!child_info->window_mapped) {

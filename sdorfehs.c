@@ -226,6 +226,7 @@ init_defaults(void)
 		defaults.vscreens = 12;
 
 	defaults.ignore_resize_hints = 0;
+	defaults.win_add_cur_vscreen = 0;
 }
 
 int
