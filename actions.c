@@ -2889,6 +2889,7 @@ cmd_windows(int interactive, struct cmdarg **args)
 	struct sbuf *window_list = NULL;
 	int dummy;
 	char *fmt;
+	cmdret *ret;
 
 	if (args[0] == NULL)
 		fmt = defaults.window_fmt;
@@ -2896,17 +2897,22 @@ cmd_windows(int interactive, struct cmdarg **args)
 		fmt = ARG_STRING(0);
 
 	if (interactive) {
-		show_bar(rp_current_screen, fmt);
-		return cmdret_new(RET_SUCCESS, NULL);
+		rp_screen *s;
+		s = rp_current_screen;
+		ret = cmdret_new(RET_SUCCESS, NULL);
+		if (defaults.bar_timeout == 0)
+			if (s->bar_is_raised) {
+				hide_bar(s, 0);
+				return ret;
+			}
+		show_bar(s, fmt);
 	} else {
-		cmdret *ret;
-
 		window_list = sbuf_new(0);
 		get_window_list(fmt, "\n", window_list, &dummy, &dummy);
 		ret = cmdret_new(RET_SUCCESS, "%s", sbuf_get(window_list));
 		sbuf_free(window_list);
-		return ret;
 	}
+	return ret;
 }
 
 cmdret *
@@ -5002,20 +5008,26 @@ cmd_vscreens(int interactive, struct cmdarg **args)
 {
 	struct sbuf *vscreen_list = NULL;
 	int dummy;
+	cmdret *ret;
 
 	if (interactive) {
-		show_vscreen_bar(rp_current_screen);
-		return cmdret_new(RET_SUCCESS, NULL);
+		rp_screen *s;
+		s = rp_current_screen;
+		ret = cmdret_new(RET_SUCCESS, NULL);
+		if (defaults.bar_timeout == 0)
+			if (s->bar_is_raised) {
+				hide_bar(s, 0);
+				return ret;
+			}
+		show_vscreen_bar(s);
 	} else {
-		cmdret *ret;
-
 		vscreen_list = sbuf_new(0);
 		get_vscreen_list(rp_current_screen, "\n", vscreen_list, &dummy,
 		    &dummy);
 		ret = cmdret_new(RET_SUCCESS, "%s", sbuf_get(vscreen_list));
 		sbuf_free(vscreen_list);
-		return ret;
 	}
+	return ret;
 }
 
 cmdret *
