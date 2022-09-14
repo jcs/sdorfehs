@@ -745,7 +745,13 @@ Output version and compile time information.
 .It Ic vmove Oo Ar vscreen Oc
 Move the current window to the current frame on vscreen
 .Ar vscreen
-and switch to it.
+and switch to it.  Specify by either name or number.
+.It Ic vnext
+Switch to next vscreen.
+.It Ic vother
+Switch to the last-accessed vscreen before the current one.
+.It Ic vprev
+Switch to previous vscreen.
 .It Ic vrename
 Rename current vscreen.
 .It Ic vscreens
