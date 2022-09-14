@@ -2121,6 +2121,10 @@ find_vscreen(char *str)
 	rp_vscreen *vscreen;
 	int n;
 
+	/* Exact matches are special cases. */
+	if ((vscreen = screen_find_vscreen_by_name(rp_current_screen, str, 1)))
+		return vscreen;
+
 	/* Check if the user typed a vsceen number. */
 	n = string_to_positive_int(str);
 	if (n >= 0) {
@@ -2128,10 +2132,6 @@ find_vscreen(char *str)
 		if (vscreen)
 			return vscreen;
 	}
-
-	/* Exact matches are special cases. */
-	if ((vscreen = screen_find_vscreen_by_name(rp_current_screen, str, 1)))
-		return vscreen;
 
 	vscreen = screen_find_vscreen_by_name(rp_current_screen, str, 0);
 	return vscreen;
