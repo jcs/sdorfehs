@@ -5735,23 +5735,17 @@ cmd_vmove(int interactive, struct cmdarg **args)
 {
 	rp_vscreen *v;
 	rp_window *w;
-	int n;
 
 	if ((w = current_window()) == NULL)
 		return cmdret_new(RET_FAILURE, "vmove: no focused window");
 
-	n = string_to_positive_int(ARG_STRING(0));
-	if (n >= 0) {
-		v = screen_find_vscreen_by_number(rp_current_screen, n);
-		if (v) {
-			vscreen_move_window(v, w);
-			set_current_vscreen(v);
-			set_active_window(w);
-			return cmdret_new(RET_SUCCESS, NULL);
-		}
-	}
+	if (!(v = find_vscreen(ARG_STRING(0))))
+		return cmdret_new(RET_FAILURE, "vmove: invalid vscreen");
 
-	return cmdret_new(RET_FAILURE, "vmove: invalid virtual screen");
+	vscreen_move_window(v, w);
+	set_current_vscreen(v);
+	set_active_window(w);
+	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
