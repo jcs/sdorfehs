@@ -430,6 +430,15 @@ client_msg(XClientMessageEvent *ev)
 			else
 				window_full_screen(NULL);
 		}
+	} else if (win && ev->message_type == _net_active_window) {
+		PRINT_DEBUG(("_NET_ACTIVE_WINDOW raise: 0x%lx\n", win->w));
+		rp_window *w = find_window(win->w);
+		if (w == NULL) {
+			PRINT_DEBUG(("no _NET_ACTIVE_WINDOW 0x%lx\n", win->w));
+			return;
+		}
+		set_current_vscreen(w->vscreen);
+		set_active_window(w);
 	} else {
 		PRINT_DEBUG(("unknown client message type 0x%lx\n",
 		    ev->message_type));
