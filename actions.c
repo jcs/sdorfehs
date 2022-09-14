@@ -2908,11 +2908,10 @@ cmd_windows(int interactive, struct cmdarg **args)
 		rp_screen *s;
 		s = rp_current_screen;
 		ret = cmdret_new(RET_SUCCESS, NULL);
-		if (defaults.bar_timeout == 0)
-			if (s->bar_is_raised) {
-				hide_bar(s, 0);
-				return ret;
-			}
+		if (defaults.bar_timeout == 0 && s->bar_is_raised) {
+			hide_bar(s, 0);
+			return ret;
+		}
 		show_bar(s, fmt);
 	} else {
 		window_list = sbuf_new(0);
@@ -5037,11 +5036,10 @@ cmd_vscreens(int interactive, struct cmdarg **args)
 		rp_screen *s;
 		s = rp_current_screen;
 		ret = cmdret_new(RET_SUCCESS, NULL);
-		if (defaults.bar_timeout == 0)
-			if (s->bar_is_raised) {
-				hide_bar(s, 0);
-				return ret;
-			}
+		if (defaults.bar_timeout == 0 && s->bar_is_raised) {
+			hide_bar(s, 0);
+			return ret;
+		}
 		show_vscreen_bar(s);
 	} else {
 		vscreen_list = sbuf_new(0);
