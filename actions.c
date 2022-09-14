@@ -264,6 +264,9 @@ static cmdret *cmd_vsplit(int interactive, struct cmdarg **args);
 static cmdret *cmd_verbexec(int interactive, struct cmdarg **args);
 static cmdret *cmd_version(int interactive, struct cmdarg **args);
 static cmdret *cmd_vmove(int interactive, struct cmdarg **args);
+static cmdret *cmd_vnext(int interactive, struct cmdarg **args);
+static cmdret *cmd_vother(int interactive, struct cmdarg **args);
+static cmdret *cmd_vprev(int interactive, struct cmdarg **args);
 static cmdret *cmd_vrename(int interactive, struct cmdarg **args);
 static cmdret *cmd_vscreens(int interactive, struct cmdarg **args);
 static cmdret *cmd_vselect(int interactive, struct cmdarg **args);
@@ -559,6 +562,9 @@ init_user_commands(void)
 	add_command("version",		cmd_version,	0, 0, 0);
 	add_command("vmove",		cmd_vmove,	1, 1, 1,
 	            "Virtual Screen: ", arg_VSCREEN);
+	add_command("vnext",		cmd_vnext,	0, 0, 0);
+	add_command("vother",		cmd_vother,	0, 0, 0);
+	add_command("vprev",		cmd_vprev,	0, 0, 0);
 	add_command("vrename",		cmd_vrename,	1, 1, 1,
 	            "Change virtual screen name to: ", arg_REST);
 	add_command("vscreens",		cmd_vscreens,	0, 0, 0);
@@ -5016,6 +5022,43 @@ cmd_vscreens(int interactive, struct cmdarg **args)
 		sbuf_free(vscreen_list);
 		return ret;
 	}
+}
+
+cmdret *
+cmd_vnext(int interactive, struct cmdarg **args)
+{
+	rp_vscreen *v;
+	v = vscreen_next_vscreen(rp_current_vscreen);
+	if (!v)
+		return cmdret_new(RET_FAILURE, "%s", "next vscreen failed");
+
+	set_current_vscreen(v);
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_vprev(int interactive, struct cmdarg **args)
+{
+	rp_vscreen *v;
+	v = vscreen_prev_vscreen(rp_current_vscreen);
+	if (!v)
+		return cmdret_new(RET_FAILURE, "%s", "prev vscreen failed");
+
+	set_current_vscreen(v);
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_vother(int interactive, struct cmdarg **args)
+{
+	rp_vscreen *v;
+	v = screen_last_vscreen(rp_current_screen);
+	if (!v)
+		/* todo: should we just return success here so it's a no-op? */
+		return cmdret_new(RET_FAILURE, "%s", "last vscreen failed");
+
+	set_current_vscreen(v);
+	return cmdret_new(RET_SUCCESS, NULL);
 }
 
 cmdret *
