@@ -664,7 +664,8 @@ window_full_screen(rp_window *win)
 
 	if (!win) {
 		rp_current_screen->full_screen_win = NULL;
-		hide_bar(rp_current_screen, 0);
+		if (defaults.bar_timeout != 0)
+			hide_bar(rp_current_screen, 0);
 		return;
 	}
 
