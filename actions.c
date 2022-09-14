@@ -2711,7 +2711,7 @@ command(int interactive, char *data)
 				goto free_lists;
 			} else if (list_size(&head) > uc->num_args) {
 				result = cmdret_new(RET_FAILURE,
-				    "too many arguments.");
+				    "command: too many arguments.");
 				goto free_lists;
 			} else {
 				struct cmdarg **cmdargs = arg_array(&args);
@@ -5278,7 +5278,7 @@ cmd_set(int interactive, struct cmdarg **args)
 		result = cmdret_new(RET_FAILURE, "not enough arguments.");
 		goto failed;
 	} else if (list_size(&head) > ARG(0, variable)->nargs) {
-		result = cmdret_new(RET_FAILURE, "too many arguments.");
+		result = cmdret_new(RET_FAILURE, "cmd_set: too many args.");
 		goto failed;
 	}
 
