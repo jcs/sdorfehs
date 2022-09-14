@@ -30,8 +30,11 @@
 #include <unistd.h>
 #include <err.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include "sdorfehs.h"
+
+#define BUFSZ 1024
 
 void
 init_control_socket_path(void)
@@ -82,10 +85,19 @@ int
 send_command(int interactive, unsigned char *cmd)
 {
 	struct sockaddr_un sun;
-	char *wcmd;
-	char ret[1024];
+	char *wcmd, *bufstart;
+	char ret[BUFSZ+1];
+	char success = 0;
 	size_t len;
-	int fd;
+	ssize_t count;
+	int fd, firstloop;
+	int flags = 0x0;
+	FILE *outf = NULL;
+
+#ifdef DEBUG
+	pid_t pid = getpid();
+	warnx("send_command_%d: enter", pid);
+#endif
 
 	len = 1 + strlen((char *)cmd) + 2;
 	wcmd = malloc(len);
@@ -112,20 +124,64 @@ send_command(int interactive, unsigned char *cmd)
 
 	free(wcmd);
 
-	len = read(fd, &ret, sizeof(ret) - 1);
-	if (len > 2) {
-		ret[len - 1] = '\0';
-		fprintf(ret[0] ? stdout : stderr, "%s\n", &ret[1]);
+	firstloop = 1;
+	while ((count = recv(fd, &ret, BUFSZ, flags))) {
+		bufstart = ret;
+		if (firstloop) {
+#ifdef DEBUG
+			warnx("send_command_%d: first receive, count %zu",
+			    pid, count);
+#endif
+			/* first byte is exit status */
+			success = *ret;
+			outf = success ? stdout : stderr;
+			bufstart++;
+			if (count == 2 && *bufstart == '\n')
+				/* commands that had no output */
+				return success;
+			/*
+			 * after blocking for the first buffer, we can keep
+			 * reading until it blocks again, which should exhaust
+			 * the response.  don't want to block when the message
+			 * is finished: sometimes connection is closed, other
+			 * times it blocks, not sure why? both end a response
+			 */
+			flags += MSG_DONTWAIT;
+		}
+		if (count == -1) {
+#ifdef DEBUG
+			char *e = strerror(errno);
+#endif
+			if (errno == EAGAIN || errno == ECONNRESET) {
+#ifdef DEBUG
+				warnx("send_command_%d: finish: %s", pid, e);
+#endif
+				return success;
+			}
+#ifdef DEBUG
+			warnx("send_command_%d: recvfail, err: %s", pid, e);
+#endif
+		}
+		ret[count] = '\0';
+		fprintf(outf, "%s", bufstart);
+		fflush(outf);
+		firstloop = 0;
+#ifdef DEBUG
+		warnx("send_command_%d: looping", pid);
+#endif
 	}
+#ifdef DEBUG
+	warnx("send_command_%d: no more bytes", pid);
+#endif
 
-	return ret[0];
+	return success;
 }
 
 void
 receive_command(void)
 {
 	cmdret *cmd_ret;
-	char cmd[1024] = { 0 }, c;
+	char cmd[BUFSZ] = { 0 }, c;
 	char *result, *rcmd;
 	int cl, len = 0, interactive = 0;
 
@@ -180,6 +236,8 @@ receive_command(void)
 
 	if (write(cl, result, len) != len)
 		warn("%s: short write", __func__);
+
+	PRINT_DEBUG(("receive_command: write finished, closing\n"));
 
 	close(cl);
 }
