@@ -94,10 +94,11 @@ send_command(int interactive, unsigned char *cmd)
 	int flags = 0x0;
 	FILE *outf = NULL;
 
-#ifdef DEBUG
+#ifdef SENDCMD_DEBUG
 	pid_t pid = getpid();
-	warnx("send_command_%d: enter", pid);
+	char *dpfx = xsprintf("send_command_%d", pid);
 #endif
+	WARNX_DEBUG("%s: enter\n", dpfx);
 
 	len = 1 + strlen((char *)cmd) + 2;
 	wcmd = malloc(len);
@@ -128,10 +129,7 @@ send_command(int interactive, unsigned char *cmd)
 	while ((count = recv(fd, &ret, BUFSZ, flags))) {
 		bufstart = ret;
 		if (firstloop) {
-#ifdef DEBUG
-			warnx("send_command_%d: first receive, count %zu",
-			    pid, count);
-#endif
+			WARNX_DEBUG("%s: first recv: %zu\n", dpfx, count);
 			/* first byte is exit status */
 			success = *ret;
 			outf = success ? stdout : stderr;
@@ -149,29 +147,19 @@ send_command(int interactive, unsigned char *cmd)
 			flags += MSG_DONTWAIT;
 		}
 		if (count == -1) {
-#ifdef DEBUG
-			char *e = strerror(errno);
-#endif
-			if (errno == EAGAIN || errno == ECONNRESET) {
-#ifdef DEBUG
-				warnx("send_command_%d: finish: %s", pid, e);
-#endif
+			WARNX_DEBUG("%s: finish errno: %d\n", dpfx, errno);
+			if (errno == EAGAIN || errno == ECONNRESET)
 				return success;
-			}
-#ifdef DEBUG
-			warnx("send_command_%d: recvfail, err: %s", pid, e);
-#endif
 		}
 		ret[count] = '\0';
 		fprintf(outf, "%s", bufstart);
 		fflush(outf);
 		firstloop = 0;
-#ifdef DEBUG
-		warnx("send_command_%d: looping", pid);
-#endif
+		WARNX_DEBUG("%s: looping\n", dpfx);
 	}
-#ifdef DEBUG
-	warnx("send_command_%d: no more bytes", pid);
+	WARNX_DEBUG("%s: no more bytes\n", dpfx);
+#ifdef SENDCMD_DEBUG
+	free(dpfx);
 #endif
 
 	return success;

@@ -15,8 +15,9 @@ LDFLAGS+=	`pkg-config --libs ${PKGLIBS}`
 
 # uncomment to enable debugging
 #CFLAGS+=	-g -DDEBUG=1
-# and this for input-specific debugging
+# and this for subsystem-specific debugging
 #CFLAGS+=	-DINPUT_DEBUG=1
+#CFLAGS+=	-DSENDCMD_DEBUG=1
 
 BINDIR=		${DESTDIR}$(PREFIX)/bin
 MANDIR=		${DESTDIR}$(PREFIX)/man/man1

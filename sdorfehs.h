@@ -50,6 +50,16 @@ do {                                            \
 #define PRINT_DEBUG(fmt) do {} while (0)
 #endif	/* DEBUG */
 
+#ifdef SENDCMD_DEBUG
+#define WARNX_DEBUG(fmt, ...)                   \
+do {                                            \
+  fprintf (stderr, fmt, __VA_ARGS__);           \
+  fflush (stderr);                              \
+} while (0)
+#else
+#define WARNX_DEBUG(fmt, ...) do {} while (0)
+#endif	/* SENDCMD_DEBUG */
+
 #ifdef INPUT_DEBUG
 #define PRINT_INPUT_DEBUG(fmt)                  \
 do {                                            \
