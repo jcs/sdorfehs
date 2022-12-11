@@ -285,6 +285,9 @@ main(int argc, char *argv[])
 		errx(1, "can't open display %s", display);
 	set_close_on_exec(ConnectionNumber(dpy));
 
+	/* forked commands should not get X console tty as their stdin */
+	dup2(open("/dev/null", O_RDONLY), STDIN_FILENO);
+
 	/* Set our own specific Atoms. */
 	rp_selection = XInternAtom(dpy, "RP_SELECTION", False);
 
