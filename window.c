@@ -113,11 +113,27 @@ struct rp_child_info *
 get_child_info(Window w, int add)
 {
 	rp_child_info *cur;
-	unsigned long pid;
+	unsigned long pid = 0;
 
 	if (!get_atom(w, _net_wm_pid, XA_CARDINAL, 0, &pid, 1, NULL)) {
 		PRINT_DEBUG(("Couldn't get _NET_WM_PID Property\n"));
-		pid = 0;
+		long nresults;
+		XResClientIdValue *results = NULL;
+		XResClientIdSpec specs;
+		specs.client = w;
+		specs.mask = XRES_CLIENT_ID_PID_MASK;
+		if (XResQueryClientIds(dpy, 1, &specs, &nresults, &results) != Success)
+			pid = 0;
+		else {
+			int i;
+			for (i = 0; i < nresults; i++) {
+				if (results[i].spec.mask == XRES_CLIENT_ID_PID_MASK) {
+					pid = *(unsigned long *)(results[i].value);
+					break;
+				}
+			}
+			XFree(results);
+		}
 	}
 
 	PRINT_DEBUG(("NET_WM_PID: %ld\n", pid));
