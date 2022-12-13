@@ -194,6 +194,7 @@ static cmdret *cmd_exchangeup(int interactive, struct cmdarg **args);
 static cmdret *cmd_exec(int interactive, struct cmdarg **args);
 static cmdret *cmd_execa(int interactive, struct cmdarg **args);
 static cmdret *cmd_execf(int interactive, struct cmdarg **args);
+static cmdret *cmd_execv(int interactive, struct cmdarg **args);
 static cmdret *cmd_execw(int interactive, struct cmdarg **args);
 static cmdret *cmd_fdump(int interactive, struct cmdarg **args);
 static cmdret *cmd_focusdown(int interactive, struct cmdarg **args);
@@ -445,6 +446,9 @@ init_user_commands(void)
 	            "/bin/sh -c ", arg_SHELLCMD);
 	add_command("execf",		cmd_execf,	2, 2, 2,
 	            "frame to execute in:", arg_FRAME,
+	            "/bin/sh -c ", arg_SHELLCMD);
+	add_command("execv",		cmd_execv,	2, 2, 2,
+	            "vscreen to execute in:", arg_VSCREEN,
 	            "/bin/sh -c ", arg_SHELLCMD);
 	add_command("execw",		cmd_execw,	1, 1, 1,
 	            "/bin/sh -c ", arg_SHELLCMD);
@@ -2804,8 +2808,20 @@ cmd_execf(int interactive, struct cmdarg **args)
 	return cmdret_new(RET_SUCCESS, NULL);
 }
 
+cmdret *
+cmd_execv(int interactive, struct cmdarg **args)
+{
+	rp_vscreen *vscreen;
+	if (!(vscreen = find_vscreen(ARG_STRING(0))))
+		return cmdret_new(RET_FAILURE, NULL);
+	vspawn(ARG_STRING(1), current_frame(vscreen), vscreen);
+	return cmdret_new(RET_SUCCESS, NULL);
+}
+
 int
-spawn(char *cmd, rp_frame *frame)
+spawn(char *cmd, rp_frame *frame) { return vspawn(cmd, frame, NULL); }
+int
+vspawn(char *cmd, rp_frame *frame, rp_vscreen *vscreen)
 {
 	rp_child_info *child;
 	int pid;
@@ -2835,8 +2851,10 @@ spawn(char *cmd, rp_frame *frame)
 	}
 
 	/* wait((int *) 0); */
-	PRINT_DEBUG(("spawned %s with pid %d destined for frame %d\n", cmd,
-	    pid, frame ? frame->number : -1));
+	PRINT_DEBUG(("spawned %s, pid %d, frame %d, vscreen %d, screen %d\n",
+		     cmd, pid, frame ? frame->number : -1,
+		     (vscreen? vscreen: rp_current_vscreen)->number,
+		     rp_current_screen->number));
 
 	/* Add this child process to our list. */
 	child = xmalloc(sizeof(rp_child_info));
@@ -2844,7 +2862,7 @@ spawn(char *cmd, rp_frame *frame)
 	child->pid = pid;
 	child->terminated = 0;
 	child->frame = frame;
-	child->vscreen = rp_current_vscreen;
+	child->vscreen = vscreen? vscreen: rp_current_vscreen;
 	child->screen = rp_current_screen;
 	child->window_mapped = 0;
 

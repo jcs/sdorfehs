@@ -44,5 +44,6 @@ char *wingravity_to_string(int g);
 rp_action *find_keybinding(KeySym keysym, unsigned int state, rp_keymap *map);
 rp_action *find_keybinding_by_action(char *action, rp_keymap *map);
 int spawn(char *cmd, rp_frame *frame);
+int vspawn(char *cmd, rp_frame *frame, rp_vscreen *vscreen);
 
 #endif	/* ! _SDORFEHS_ACTIONS_H */
