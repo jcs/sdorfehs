@@ -343,6 +343,13 @@ Spawn a shell executing
 .Ar shell\-command ,
 showing _NET_WM_PID supporting programs in the given frame instead of
 the frame selected when this program is run.
+.It Ic execv Ar vscreen shell\-command
+Spawn a shell within a specific vscreen
+.Ar vscreen ,
+executing
+.Ar shell\-command
+as in the 'exec' command (i.e., using "sh -c").  This is not likely to work
+well with 'winaddcurvscreen' set to 1 anywhere in the configuration file.
 .It Ic execw Ar shell\-command
 Spawn a shell executing
 .Ar shell\-command ,
