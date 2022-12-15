@@ -194,6 +194,7 @@ static cmdret *cmd_exchangeup(int interactive, struct cmdarg **args);
 static cmdret *cmd_exec(int interactive, struct cmdarg **args);
 static cmdret *cmd_execa(int interactive, struct cmdarg **args);
 static cmdret *cmd_execf(int interactive, struct cmdarg **args);
+static cmdret *cmd_execw(int interactive, struct cmdarg **args);
 static cmdret *cmd_fdump(int interactive, struct cmdarg **args);
 static cmdret *cmd_focusdown(int interactive, struct cmdarg **args);
 static cmdret *cmd_focuslast(int interactive, struct cmdarg **args);
@@ -444,6 +445,8 @@ init_user_commands(void)
 	            "/bin/sh -c ", arg_SHELLCMD);
 	add_command("execf",		cmd_execf,	2, 2, 2,
 	            "frame to execute in:", arg_FRAME,
+	            "/bin/sh -c ", arg_SHELLCMD);
+	add_command("execw",		cmd_execw,	1, 1, 1,
 	            "/bin/sh -c ", arg_SHELLCMD);
 	add_command("fdump",		cmd_fdump,	1, 0, 0,
 	            "", arg_NUMBER);
@@ -2767,6 +2770,18 @@ cmd_exec(int interactive, struct cmdarg **args)
 {
 	spawn(ARG_STRING(0), current_frame(rp_current_vscreen));
 	return cmdret_new(RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_execw(int interactive, struct cmdarg **args)
+{
+	int status = -1;
+	pid_t pid = spawn(ARG_STRING(0), current_frame(rp_current_vscreen));
+	if (waitpid(pid, &status, 0) == -1)
+		perror("cmd_execw");
+	else
+		status = WEXITSTATUS(status);
+	return cmdret_new(status == 0? RET_SUCCESS: RET_FAILURE, NULL);
 }
 
 cmdret *

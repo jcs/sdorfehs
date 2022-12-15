@@ -343,6 +343,18 @@ Spawn a shell executing
 .Ar shell\-command ,
 showing _NET_WM_PID supporting programs in the given frame instead of
 the frame selected when this program is run.
+.It Ic execw Ar shell\-command
+Spawn a shell executing
+.Ar shell\-command ,
+but wait for it to finish.  This should behave the same as
+.Ar exec
+but will wait for completion.  Use timeout(1) if it might hang, or
+.Nm
+will hang itself waiting for completion.  Use the 'exec' shell builtin as the
+first word in the command string to get similar behavior to
+.Ar execa
+owing to the forked pid remaining stable and known to
+.Nm .
 .It Ic fdump Op Ar screenno
 Output the defining data for all frames of the current screen, or
 for screen number
