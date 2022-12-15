@@ -6,7 +6,7 @@ VERSION!=	[ -d .git ] && \
 
 CC?=		cc
 PREFIX?=	/usr/local
-PKGLIBS=	x11 xft xrandr xtst
+PKGLIBS=	x11 xft xrandr xtst xres
 CFLAGS+=	-O2 -Wall \
 		-Wunused -Wmissing-prototypes -Wstrict-prototypes -Wunused \
 		`pkg-config --cflags ${PKGLIBS}` \
