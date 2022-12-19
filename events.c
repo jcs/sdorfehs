@@ -182,24 +182,26 @@ map_request(Window window)
 		PRINT_DEBUG(("Mapping Iconic window\n"));
 
 		if (win->vscreen != rp_current_vscreen) {
-			/*
-			 * It is always rude to raise a window in another
-			 * vscreen
-			 */
-			show_rudeness_msg(win, 1);
-			break;
+			if (!rp_honour_vscreen_switch) {
+				show_rudeness_msg(win, 1);
+				break;
+			}
+			PRINT_DEBUG(("honouring raise from other vscreen\n"));
 		}
 
 		/* Depending on the rudeness level, actually map the window. */
 		if (win->last_access == 0) {
 			if ((rp_honour_transient_map && win->transient)
-			    || (rp_honour_normal_map && !win->transient))
+			    || (rp_honour_normal_map && !win->transient)) {
+				set_current_vscreen(win->vscreen);
 				set_active_window(win);
+			}
 		} else {
 			if ((rp_honour_transient_raise && win->transient)
-			    || (rp_honour_normal_raise && !win->transient))
+			    || (rp_honour_normal_raise && !win->transient)) {
+				set_current_vscreen(win->vscreen);
 				set_active_window(win);
-			else
+			} else
 				show_rudeness_msg(win, 1);
 		}
 		break;
