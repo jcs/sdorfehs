@@ -3601,10 +3601,11 @@ set_rudeness(struct cmdarg **args)
 		    rp_honour_transient_raise |
 		    (rp_honour_normal_raise << 1) |
 		    (rp_honour_transient_map << 2) |
-		    (rp_honour_normal_map << 3));
+		    (rp_honour_normal_map << 3) |
+		    (rp_honour_vscreen_switch << 4));
 
 	num = ARG(0, number);
-	if (num < 0 || num > 15)
+	if (num < 0 || num > 31)
 		return cmdret_new(RET_FAILURE, "rudeness: invalid level '%s'",
 		    ARG_STRING(0));
 
@@ -3612,6 +3613,7 @@ set_rudeness(struct cmdarg **args)
 	rp_honour_normal_raise = num & 2 ? 1 : 0;
 	rp_honour_transient_map = num & 4 ? 1 : 0;
 	rp_honour_normal_map = num & 8 ? 1 : 0;
+	rp_honour_vscreen_switch = num & 16 ? 1 : 0;
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }

@@ -107,6 +107,7 @@ int rp_honour_transient_raise = 1;
 int rp_honour_normal_raise = 1;
 int rp_honour_transient_map = 1;
 int rp_honour_normal_map = 1;
+int rp_honour_vscreen_switch = 0;
 
 char *rp_error_msg = NULL;
 

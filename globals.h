@@ -163,6 +163,7 @@ extern int rp_honour_transient_raise;
 extern int rp_honour_normal_raise;
 extern int rp_honour_transient_map;
 extern int rp_honour_normal_map;
+extern int rp_honour_vscreen_switch;
 
 /* Keep track of X11 error messages. */
 extern char *rp_error_msg;
