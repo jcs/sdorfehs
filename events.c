@@ -146,21 +146,21 @@ unmap_notify(XEvent *ev)
 }
 
 static void
-map_request(XEvent *ev)
+map_request(Window window)
 {
 	rp_window *win;
 
-	win = find_window(ev->xmap.window);
+	win = find_window(window);
 	if (win == NULL) {
 		PRINT_DEBUG(("Map request from an unknown window.\n"));
-		XMapWindow(dpy, ev->xmap.window);
+		XMapWindow(dpy, window);
 		return;
 	}
 
-	if (unmanaged_window(ev->xmap.window)) {
+	if (unmanaged_window(window)) {
 		PRINT_DEBUG(("Map request from an unmanaged window\n"));
 		unmanage(win);
-		XMapRaised(dpy, ev->xmap.window);
+		XMapRaised(dpy, window);
 		return;
 	}
 
@@ -432,13 +432,7 @@ client_msg(XClientMessageEvent *ev)
 		}
 	} else if (win && ev->message_type == _net_active_window) {
 		PRINT_DEBUG(("_NET_ACTIVE_WINDOW raise: 0x%lx\n", win->w));
-		rp_window *w = find_window(win->w);
-		if (w == NULL) {
-			PRINT_DEBUG(("no _NET_ACTIVE_WINDOW 0x%lx\n", win->w));
-			return;
-		}
-		set_current_vscreen(w->vscreen);
-		set_active_window(w);
+		map_request(win->w);
 	} else {
 		PRINT_DEBUG(("unknown client message type 0x%lx\n",
 		    ev->message_type));
@@ -765,7 +759,7 @@ delegate_event(XEvent *ev)
 
 	case MapRequest:
 		PRINT_DEBUG(("--- Handling MapRequest ---\n"));
-		map_request(ev);
+		map_request(ev->xmap.window);
 		break;
 
 	case KeyPress:
