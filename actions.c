@@ -1928,7 +1928,7 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 		wins = xmalloc(sizeof(Window) * frames);
 
 		/*
-		 * Loop through each frame and display its number in it's top
+		 * Loop through each frame and display its number in its top
 		 * left corner.
 		 */
 		attr.border_pixel = rp_glob_screen.fg_color;
@@ -1955,7 +1955,8 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 			wins[i] = XCreateWindow(dpy, cur_screen->root,
 			    cur_frame->x,
 			    cur_frame->y, width,
-			    height, 1, CopyFromParent, CopyFromParent,
+			    height, defaults.bar_border_width,
+			    CopyFromParent, CopyFromParent,
 			    CopyFromParent,
 			    CWOverrideRedirect|CWBorderPixel|CWBackPixel,
 			    &attr);
