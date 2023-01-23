@@ -2005,7 +2005,7 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 	/*
 	 * Now that we have a frame number to go to, let's try to jump to it.
 	 */
-	frame = find_frame_number(fnum);
+	frame = find_frame_number(rp_current_vscreen, fnum);
 	if (frame) {
 		/*
 		 * We have to return a string, because commands get lists of
@@ -4594,7 +4594,7 @@ set_startupmessage(struct cmdarg **args)
 cmdret *
 cmd_focuslast(int interactive, struct cmdarg **args)
 {
-	rp_frame *frame = find_last_frame();
+	rp_frame *frame = find_last_frame(rp_current_vscreen);
 
 	if (frame)
 		set_active_frame(frame, 0);
