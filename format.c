@@ -221,7 +221,8 @@ fmt_incheight(rp_window_elem *elem, struct sbuf *buf)
 	int height;
 	height = elem->win->height;
 
-	if (elem->win->hints->flags & PResizeInc)
+	if ((elem->win->hints->flags & PResizeInc) &&
+	    elem->win->hints->height_inc > 0)
 		height /= elem->win->hints->height_inc;
 
 	sbuf_printf_concat(buf, "%d", height);
@@ -233,7 +234,8 @@ fmt_incwidth(rp_window_elem *elem, struct sbuf *buf)
 	int width;
 	width = elem->win->width;
 
-	if (elem->win->hints->flags & PResizeInc)
+	if ((elem->win->hints->flags & PResizeInc) &&
+	    elem->win->hints->width_inc > 0)
 		width /= elem->win->hints->width_inc;
 
 	sbuf_printf_concat(buf, "%d", width);
