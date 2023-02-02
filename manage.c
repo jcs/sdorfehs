@@ -145,6 +145,19 @@ update_normal_hints(rp_window *win)
 
 	XGetWMNormalHints(dpy, win->w, win->hints, &supplied);
 
+	/* Discard bogus hints */
+	if ((win->hints->flags & PAspect) && (win->hints->min_aspect.x < 1 ||
+	    win->hints->min_aspect.y < 1 || win->hints->max_aspect.x < 1 ||
+	    win->hints->max_aspect.y < 1))
+		win->hints->flags &= ~PAspect;
+	if ((win->hints->flags & PMaxSize) && win->hints->max_width < 1)
+		win->hints->flags &= ~PMaxSize;
+	if ((win->hints->flags & PMinSize) && win->hints->min_width < 1)
+		win->hints->flags &= ~PMinSize;
+	if ((win->hints->flags & PResizeInc) && (win->hints->width_inc < 1 ||
+	    win->hints->height_inc < 1))
+		win->hints->flags &= ~PResizeInc;
+
 	/* Print debugging output for window hints. */
 #ifdef DEBUG
 	if (win->hints->flags & PMinSize)
