@@ -6,7 +6,7 @@ VERSION!=	[ -d .git ] && \
 
 CC?=		cc
 PREFIX?=	/usr/local
-PKGLIBS=	x11 xft xrandr xtst xres
+PKGLIBS=	x11 xft xrandr xtst xres freetype2
 CFLAGS+=	-O2 -Wall \
 		-Wunused -Wmissing-prototypes -Wstrict-prototypes \
 		`pkg-config --cflags ${PKGLIBS}` \
@@ -20,7 +20,7 @@ LDFLAGS+=	`pkg-config --libs ${PKGLIBS}`
 #CFLAGS+=	-DSENDCMD_DEBUG=1
 
 BINDIR=		${DESTDIR}$(PREFIX)/bin
-MANDIR=		${DESTDIR}$(PREFIX)/man/man1
+MANDIR?=	${DESTDIR}$(PREFIX)/man/man1
 
 SRC!=		ls *.c
 OBJ=		${SRC:.c=.o}
