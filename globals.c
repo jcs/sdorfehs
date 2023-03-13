@@ -580,7 +580,7 @@ clean_up(void)
 {
 	rp_screen *cur;
 	rp_vscreen *vcur;
-	struct list_head *iter, *tmp;
+	struct list_head *iter, *tmp, *iter2, *tmp2;
 
 	history_save();
 
@@ -591,7 +591,7 @@ clean_up(void)
 	free_window_stuff();
 
 	list_for_each_safe_entry(cur, iter, tmp, &rp_screens, node) {
-		list_for_each_entry(vcur, &cur->vscreens, node)
+		list_for_each_safe_entry(vcur, iter2, tmp2, &cur->vscreens, node)
 			vscreen_del(vcur);
 
 		list_del(&cur->node);
