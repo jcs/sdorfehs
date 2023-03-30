@@ -132,7 +132,7 @@ get_child_info(Window w, int add)
 				    XRES_CLIENT_ID_PID_MASK)
 					continue;
 
-				pid = *(unsigned long *)(results[i].value);
+				pid = *(CARD32 *)(results[i].value);
 				break;
 			}
 			XFree(results);
