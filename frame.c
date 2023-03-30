@@ -178,6 +178,7 @@ frame_copy(rp_frame *frame)
 
 	copy = xmalloc(sizeof(rp_frame));
 
+	copy->vscreen = frame->vscreen;
 	copy->number = frame->number;
 	copy->x = frame->x;
 	copy->y = frame->y;
