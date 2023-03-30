@@ -60,7 +60,8 @@ listen_for_commands(void)
 		    rp_glob_screen.control_socket_path);
 
 	strncpy(sun.sun_path, rp_glob_screen.control_socket_path,
-	    sizeof(sun.sun_path));
+	    sizeof(sun.sun_path)-1);
+	sun.sun_path[sizeof(sun.sun_path) - 1] = '\0';
 	sun.sun_family = AF_UNIX;
 
 	if (unlink(rp_glob_screen.control_socket_path) == -1 &&
@@ -113,7 +114,8 @@ send_command(int interactive, unsigned char *cmd)
 		    rp_glob_screen.control_socket_path);
 
 	strncpy(sun.sun_path, rp_glob_screen.control_socket_path,
-	    sizeof(sun.sun_path));
+	    sizeof(sun.sun_path)-1);
+	sun.sun_path[sizeof(sun.sun_path) - 1] = '\0';
 	sun.sun_family = AF_UNIX;
 
 	if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) == -1)
