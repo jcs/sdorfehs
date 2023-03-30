@@ -432,7 +432,6 @@ update_input_window(rp_screen *s, rp_input_line *line)
 	    (FONT_HEIGHT(s) + defaults.bar_y_padding * 2));
 
 	XClearWindow(dpy, s->input_window);
-	XSync(dpy, False);
 
 	rp_draw_string(s, s->input_window, STYLE_NORMAL,
 	    defaults.bar_x_padding,
