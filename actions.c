@@ -1931,8 +1931,8 @@ read_frame(struct sbuf *s, struct cmdarg **arg)
 		 * Loop through each frame and display its number in its top
 		 * left corner.
 		 */
-		attr.border_pixel = rp_glob_screen.fg_color;
-		attr.background_pixel = rp_glob_screen.bg_color;
+		attr.border_pixel = rp_glob_screen.fgcolor;
+		attr.background_pixel = rp_glob_screen.bgcolor;
 		attr.override_redirect = True;
 
 		list_for_each_entry(cur_frame, &rp_current_vscreen->frames,
@@ -3764,8 +3764,8 @@ update_gc(rp_screen * s)
 {
 	XGCValues gcv;
 
-	gcv.foreground = rp_glob_screen.fg_color;
-	gcv.background = rp_glob_screen.bg_color;
+	gcv.foreground = rp_glob_screen.fgcolor;
+	gcv.background = rp_glob_screen.bgcolor;
 	gcv.function = GXcopy;
 	gcv.line_width = 1;
 	gcv.subwindow_mode = IncludeInferiors;
@@ -3773,8 +3773,8 @@ update_gc(rp_screen * s)
 	s->normal_gc = XCreateGC(dpy, s->root,
 	    GCForeground | GCBackground | GCFunction | GCLineWidth |
 	    GCSubwindowMode, &gcv);
-	gcv.foreground = rp_glob_screen.bg_color;
-	gcv.background = rp_glob_screen.fg_color;
+	gcv.foreground = rp_glob_screen.bgcolor;
+	gcv.background = rp_glob_screen.fgcolor;
 	XFreeGC(dpy, s->inverse_gc);
 	s->inverse_gc = XCreateGC(dpy, s->root,
 	    GCForeground | GCBackground | GCFunction | GCLineWidth |
@@ -4101,12 +4101,12 @@ set_fgcolor(struct cmdarg **args)
 			return cmdret_new(RET_FAILURE,
 			    "set fgcolor: unknown color");
 
-		rp_glob_screen.fg_color = color.pixel | (0xff << 24);
+		rp_glob_screen.fgcolor = color.pixel | (0xff << 24);
 		update_gc(s);
 
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, s->screen_num),
 		    DefaultColormap(dpy, s->screen_num), ARG_STRING(0),
-		    &s->xft_fg_color))
+		    &s->xft_fgcolor))
 			return cmdret_new(RET_FAILURE,
 			    "set fgcolor: unknown color");
 
@@ -4135,7 +4135,7 @@ set_bgcolor(struct cmdarg **args)
 			    "set bgcolor: unknown color");
 
 		color.pixel |= (0xff << 24);
-		rp_glob_screen.bg_color = color.pixel;
+		rp_glob_screen.bgcolor = color.pixel;
 		update_gc(s);
 		XSetWindowBackground(dpy, s->bar_window, color.pixel);
 		XSetWindowBackground(dpy, s->input_window, color.pixel);
@@ -4144,7 +4144,7 @@ set_bgcolor(struct cmdarg **args)
 
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, s->screen_num),
 		    DefaultColormap(dpy, s->screen_num), ARG_STRING(0),
-		    &s->xft_bg_color))
+		    &s->xft_bgcolor))
 			return cmdret_new(RET_FAILURE,
 			    "set fgcolor: unknown color");
 
@@ -4173,7 +4173,7 @@ set_fwcolor(struct cmdarg **args)
 			return cmdret_new(RET_FAILURE,
 			    "set fwcolor: unknown color");
 
-		rp_glob_screen.fw_color = color.pixel | (0xff << 24);
+		rp_glob_screen.fwcolor = color.pixel | (0xff << 24);
 		update_gc(s);
 
 		free(defaults.fwcolor_string);
@@ -4182,7 +4182,7 @@ set_fwcolor(struct cmdarg **args)
 
 	/* Update current window. */
 	if (win != NULL)
-		XSetWindowBorder(dpy, win->w, rp_glob_screen.fw_color);
+		XSetWindowBorder(dpy, win->w, rp_glob_screen.fwcolor);
 
 	return cmdret_new(RET_SUCCESS, NULL);
 }
@@ -4203,7 +4203,7 @@ set_bwcolor(struct cmdarg **args)
 			return cmdret_new(RET_FAILURE,
 			    "set bwcolor: unknown color");
 
-		rp_glob_screen.bw_color = color.pixel | (0xff << 24);
+		rp_glob_screen.bwcolor = color.pixel | (0xff << 24);
 		update_gc(s);
 
 		free(defaults.bwcolor_string);
@@ -4213,7 +4213,7 @@ set_bwcolor(struct cmdarg **args)
 	/* Update all the visible windows. */
 	list_for_each_entry(win, &rp_mapped_window, node) {
 		if (win != cur_win)
-			XSetWindowBorder(dpy, win->w, rp_glob_screen.bw_color);
+			XSetWindowBorder(dpy, win->w, rp_glob_screen.bwcolor);
 	}
 
 	return cmdret_new(RET_SUCCESS, NULL);
@@ -4236,7 +4236,7 @@ set_barbordercolor(struct cmdarg **args)
 			    "set barbordercolor: unknown color");
 
 		color.pixel |= (0xff << 24);
-		rp_glob_screen.bar_border_color = color.pixel;
+		rp_glob_screen.bar_bordercolor = color.pixel;
 		update_gc(s);
 		XSetWindowBorder(dpy, s->bar_window, color.pixel);
 		XSetWindowBorder(dpy, s->input_window, color.pixel);

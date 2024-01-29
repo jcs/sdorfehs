@@ -143,7 +143,7 @@ struct rp_window_elem {
 
 struct rp_global_screen {
 	Window root, wm_check;
-	unsigned long fg_color, bg_color, fw_color, bw_color, bar_border_color;
+	unsigned long fgcolor, bgcolor, fwcolor, bwcolor, bar_bordercolor;
 
 	/* This numset is responsible for giving out numbers for each screen */
 	struct numset *numset;
@@ -232,7 +232,7 @@ struct rp_screen {
 
 	XftFont *xft_font;
 	struct rp_font xft_font_cache[5];
-	XftColor xft_fg_color, xft_bg_color;
+	XftColor xft_fgcolor, xft_bgcolor;
 
 	struct list_head vscreens;
 	struct numset *vscreens_numset;

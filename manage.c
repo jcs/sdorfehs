@@ -897,7 +897,7 @@ hide_window(rp_window *win)
 	 * Ensure that the window doesn't have the focused border color. This
 	 * is needed by remove_frame and possibly others.
 	 */
-	XSetWindowBorder(dpy, win->w, rp_glob_screen.bw_color);
+	XSetWindowBorder(dpy, win->w, rp_glob_screen.bwcolor);
 	set_state(win, IconicState);
 }
 

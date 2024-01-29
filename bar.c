@@ -916,7 +916,7 @@ draw_box(rp_screen *s, int x, int y, int width, int height)
 	GC lgc;
 	unsigned long mask;
 
-	lgv.foreground = rp_glob_screen.fg_color;
+	lgv.foreground = rp_glob_screen.fgcolor;
 	mask = GCForeground;
 	lgc = XCreateGC(dpy, s->root, mask, &lgv);
 

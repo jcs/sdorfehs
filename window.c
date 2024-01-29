@@ -384,7 +384,7 @@ give_window_focus(rp_window *win, rp_window *last_win)
 		if (last_win->full_screen)
 			window_full_screen(NULL);
 		save_mouse_position(last_win);
-		XSetWindowBorder(dpy, last_win->w, rp_glob_screen.bw_color);
+		XSetWindowBorder(dpy, last_win->w, rp_glob_screen.bwcolor);
 	}
 	if (win == NULL)
 		return;
@@ -403,7 +403,7 @@ give_window_focus(rp_window *win, rp_window *last_win)
 		XUninstallColormap(dpy, last_win->colormap);
 	XInstallColormap(dpy, win->colormap);
 
-	XSetWindowBorder(dpy, win->w, rp_glob_screen.fw_color);
+	XSetWindowBorder(dpy, win->w, rp_glob_screen.fwcolor);
 
 	/* Finally, give the window focus */
 	rp_current_screen = win->vscreen->screen;

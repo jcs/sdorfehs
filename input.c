@@ -446,7 +446,7 @@ update_input_window(rp_screen *s, rp_input_line *line)
 	    line->length, NULL, NULL);
 
 	gcv.function = GXxor;
-	gcv.foreground = rp_glob_screen.fg_color ^ rp_glob_screen.bg_color;
+	gcv.foreground = rp_glob_screen.fgcolor ^ rp_glob_screen.bgcolor;
 	lgc = XCreateGC(dpy, s->input_window, GCFunction | GCForeground, &gcv);
 
 	/* Draw a cheap-o cursor - MkIII */

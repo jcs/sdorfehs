@@ -237,51 +237,51 @@ init_global_screen(rp_global_screen *s)
 	s->root = RootWindow(dpy, screen_num);
 
 	s->numset = numset_new();
-	s->fg_color = WhitePixel(dpy, screen_num);
+	s->fgcolor = WhitePixel(dpy, screen_num);
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.fgcolor_string, &color, &junk))
-		rp_glob_screen.fg_color = color.pixel | (0xff << 24);
+		rp_glob_screen.fgcolor = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating fgcolor %s", defaults.fgcolor_string);
-		s->fg_color = WhitePixel(dpy, screen_num);
+		s->fgcolor = WhitePixel(dpy, screen_num);
 	}
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.bgcolor_string, &color, &junk))
-		rp_glob_screen.bg_color = color.pixel | (0xff << 24);
+		rp_glob_screen.bgcolor = color.pixel | (0xff << 24);
 	else {
-		warnx("failed allocating bgcolor %s",defaults.bgcolor_string);
-		s->bg_color = BlackPixel(dpy, screen_num);
+		warnx("failed allocating bgcolor %s", defaults.bgcolor_string);
+		s->bgcolor = BlackPixel(dpy, screen_num);
 	}
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.fwcolor_string, &color, &junk))
-		rp_glob_screen.fw_color = color.pixel | (0xff << 24);
+		rp_glob_screen.fwcolor = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating fwcolor %s", defaults.fwcolor_string);
-		s->fw_color = BlackPixel(dpy, screen_num);
+		s->fwcolor = BlackPixel(dpy, screen_num);
 	}
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.bwcolor_string, &color, &junk))
-		rp_glob_screen.bw_color = color.pixel | (0xff << 24);
+		rp_glob_screen.bwcolor = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating bwcolor %s", defaults.bwcolor_string);
-		s->bw_color = BlackPixel(dpy, screen_num);
+		s->bwcolor = BlackPixel(dpy, screen_num);
 	}
 
 	if (XAllocNamedColor(dpy, DefaultColormap(dpy, screen_num),
 	    defaults.barbordercolor_string, &color, &junk))
-		rp_glob_screen.bar_border_color = color.pixel | (0xff << 24);
+		rp_glob_screen.bar_bordercolor = color.pixel | (0xff << 24);
 	else {
 		warnx("failed allocating barbordercolor %s",
 		    defaults.barbordercolor_string);
-		s->bar_border_color = BlackPixel(dpy, screen_num);
+		s->bar_bordercolor = BlackPixel(dpy, screen_num);
 	}
 
 	s->wm_check = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
-	    0, 0, rp_glob_screen.bg_color);
+	    0, 0, rp_glob_screen.bgcolor);
 	set_atom(s->wm_check, _net_supporting_wm_check, XA_WINDOW,
 	    &s->wm_check, 1);
 	set_atom(s->root, _net_supporting_wm_check, XA_WINDOW,
@@ -406,8 +406,8 @@ init_screen(rp_screen *s)
 	init_rat_cursor(s);
 
 	/* Setup the GC for drawing the font. */
-	gcv.foreground = rp_glob_screen.fg_color;
-	gcv.background = rp_glob_screen.bg_color;
+	gcv.foreground = rp_glob_screen.fgcolor;
+	gcv.background = rp_glob_screen.bgcolor;
 	gcv.function = GXcopy;
 	gcv.line_width = 1;
 	gcv.subwindow_mode = IncludeInferiors;
@@ -415,8 +415,8 @@ init_screen(rp_screen *s)
 	    GCForeground | GCBackground | GCFunction
 	    | GCLineWidth | GCSubwindowMode,
 	    &gcv);
-	gcv.foreground = rp_glob_screen.bg_color;
-	gcv.background = rp_glob_screen.fg_color;
+	gcv.foreground = rp_glob_screen.bgcolor;
+	gcv.background = rp_glob_screen.fgcolor;
 	s->inverse_gc = XCreateGC(dpy, s->root,
 	    GCForeground | GCBackground | GCFunction
 	    | GCLineWidth | GCSubwindowMode,
@@ -430,21 +430,21 @@ init_screen(rp_screen *s)
 
 	if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
 	    DefaultColormap(dpy, screen_num),
-	    defaults.fgcolor_string, &s->xft_fg_color))
+	    defaults.fgcolor_string, &s->xft_fgcolor))
 		errx(1, "failed to allocate font fg color %s",
 		    defaults.fgcolor_string);
 
 	if (!XftColorAllocName(dpy, DefaultVisual(dpy, screen_num),
 	    DefaultColormap(dpy, screen_num),
-	    defaults.bgcolor_string, &s->xft_bg_color))
+	    defaults.bgcolor_string, &s->xft_bgcolor))
 		errx(1, "failed to allocate font bg color %s",
 		    defaults.bgcolor_string);
 
 	/* Create the program bar window. */
 	s->bar_is_raised = 0;
 	s->bar_window = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
-	    defaults.bar_border_width, rp_glob_screen.bar_border_color,
-	    rp_glob_screen.bg_color);
+	    defaults.bar_border_width, rp_glob_screen.bar_bordercolor,
+	    rp_glob_screen.bgcolor);
 	set_atom(s->bar_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_dock, 1);
 	XSelectInput(dpy, s->bar_window, ButtonPressMask);
@@ -462,23 +462,23 @@ init_screen(rp_screen *s)
 
 	/* Create the input window. */
 	s->input_window = XCreateSimpleWindow(dpy, s->root, 0, 0, 1, 1,
-	    defaults.bar_border_width, rp_glob_screen.bar_border_color,
-	    rp_glob_screen.bg_color);
+	    defaults.bar_border_width, rp_glob_screen.bar_bordercolor,
+	    rp_glob_screen.bgcolor);
 	set_atom(s->input_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_dock, 1);
 	XSelectInput(dpy, s->input_window, KeyPressMask | KeyReleaseMask);
 
 	/* Create the frame indicator window */
 	s->frame_window = XCreateSimpleWindow(dpy, s->root, 1, 1, 1, 1,
-	    defaults.bar_border_width, rp_glob_screen.bar_border_color,
-	    rp_glob_screen.bg_color);
+	    defaults.bar_border_width, rp_glob_screen.bar_bordercolor,
+	    rp_glob_screen.bgcolor);
 	set_atom(s->frame_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_tooltip, 1);
 
 	/* Create the help window */
 	s->help_window = XCreateSimpleWindow(dpy, s->root, s->left, s->top,
-	    s->width, s->height, 0, rp_glob_screen.bar_border_color,
-	    rp_glob_screen.bg_color);
+	    s->width, s->height, 0, rp_glob_screen.bar_bordercolor,
+	    rp_glob_screen.bgcolor);
 	set_atom(s->help_window, _net_wm_window_type, XA_ATOM,
 	    &_net_wm_window_type_splash, 1);
 	XSelectInput(dpy, s->help_window, KeyPressMask);
@@ -763,9 +763,9 @@ screen_free(rp_screen *s)
 
 	if (s->xft_font) {
 		XftColorFree(dpy, DefaultVisual(dpy, s->screen_num),
-		    DefaultColormap(dpy, s->screen_num), &s->xft_fg_color);
+		    DefaultColormap(dpy, s->screen_num), &s->xft_fgcolor);
 		XftColorFree(dpy, DefaultVisual(dpy, s->screen_num),
-		    DefaultColormap(dpy, s->screen_num), &s->xft_bg_color);
+		    DefaultColormap(dpy, s->screen_num), &s->xft_bgcolor);
 		XftFontClose(dpy, s->xft_font);
 	}
 	rp_clear_cached_fonts(s);

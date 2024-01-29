@@ -378,9 +378,9 @@ rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
 
 	if (color == NULL) {
 		if (style == STYLE_NORMAL)
-			memcpy(&xftcolor, &s->xft_fg_color, sizeof(XftColor));
+			memcpy(&xftcolor, &s->xft_fgcolor, sizeof(XftColor));
 		else
-			memcpy(&xftcolor, &s->xft_bg_color, sizeof(XftColor));
+			memcpy(&xftcolor, &s->xft_bgcolor, sizeof(XftColor));
 	} else {
 		/*
 		 * This won't actually allocate anything if the color is
@@ -389,7 +389,7 @@ rp_draw_string(rp_screen *s, Drawable d, int style, int x, int y, char *string,
 		if (!XftColorAllocName(dpy, DefaultVisual(dpy, s->screen_num),
 		    DefaultColormap(dpy, s->screen_num), color, &xftcolor)) {
 			warnx("couldn't XftColorAllocName \"%s\"", color);
-			memcpy(&xftcolor, &s->xft_fg_color, sizeof(XftColor));
+			memcpy(&xftcolor, &s->xft_fgcolor, sizeof(XftColor));
 		}
 	}
 
