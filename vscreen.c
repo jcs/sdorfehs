@@ -125,7 +125,7 @@ vscreens_resize(int n)
 		}
 	} else if (n > defaults.vscreens) {
 		list_for_each_entry(scr, &rp_screens, node) {
-			for (x = defaults.vscreens; x <= n; x++) {
+			for (x = defaults.vscreens; x < n; x++) {
 				cur = xmalloc(sizeof(rp_vscreen));
 				init_vscreen(cur, scr);
 				list_add_tail(&cur->node, &scr->vscreens);
