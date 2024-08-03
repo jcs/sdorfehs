@@ -190,8 +190,8 @@ receive_command(void)
 		}
 
 		if (read(cl, &c, 1) == 1) {
-			if (c == '\n') {
-				cmd[len++] = '\0';
+			if ((c == '\0') && (len > 0)) {
+				cmd[len - 1] = '\0';
 				break;
 			}
 			cmd[len++] = c;
