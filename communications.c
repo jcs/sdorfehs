@@ -82,6 +82,63 @@ listen_for_commands(void)
 	    rp_glob_screen.control_socket_path));
 }
 
+static ssize_t
+recv_unix(int fd, char **callerbuf)
+{
+	int firstloop;
+	char *message;
+	ssize_t len, count;
+
+	int flags = 0x0;
+
+#ifdef SENDCMD_DEBUG
+	pid_t pid = getpid();
+	char *dpfx = xsprintf("recv_unix_%d", pid);
+#endif
+	WARNX_DEBUG("%s: enter\n", dpfx);
+
+	message = xmalloc(BUFSZ);
+	memset(message, 0, BUFSZ);
+
+	len = 0;
+	firstloop = 1;
+
+	while ((count = recv(fd, message + len, BUFSZ, flags))) {
+		if (firstloop) {
+			WARNX_DEBUG("%s: first recv: %zd\n", dpfx, count);
+			/*
+			 * after blocking for the first buffer, we can
+			 * keep reading until it blocks again, which
+			 * should exhaust the message.
+			 */
+			flags += MSG_DONTWAIT;
+		}
+		if (count == -1) {
+			WARNX_DEBUG("%s: finish errno: %d\n", dpfx, errno);
+			/*
+			 * receive is complete.  sometimes connection is
+			 * closed, other times it would block, depending
+			 * on whether sender finished before us.  either
+			 * outcome signals end of the message.
+			 */
+			if (errno == EAGAIN || errno == ECONNRESET)
+				break;
+			else
+				err("unanticipated receive error");
+		}
+		len += count;
+		message = xrealloc(message, len + BUFSZ);
+		memset(message + len, 0, BUFSZ);
+		WARNX_DEBUG("%s: looping after count %zd\n", dpfx, count);
+		firstloop = 0;
+	}
+#ifdef SENDCMD_DEBUG
+	free(dpfx);
+#endif
+	*callerbuf = message;
+	return len;
+}
+
 int
 send_command(int interactive, char *cmd)
 {
@@ -89,9 +146,7 @@ send_command(int interactive, char *cmd)
 	char *wcmd, *response;
 	char success = 0;
 	size_t len;
-	ssize_t count;
-	int fd, firstloop;
-	int flags = 0x0;
+	int fd;
 	FILE *outf = NULL;
 
 #ifdef SENDCMD_DEBUG
@@ -126,40 +181,7 @@ send_command(int interactive, char *cmd)
 
 	free(wcmd);
 
-	response = xmalloc(BUFSZ);
-	memset(response, 0, BUFSZ);
-	len = 0;
-	firstloop = 1;
-
-	while ((count = recv(fd, response + len, BUFSZ, flags))) {
-		if (firstloop) {
-			WARNX_DEBUG("%s: first recv: %zu\n", dpfx, count);
-			/*
-			 * after blocking for the first buffer, we can
-			 * keep reading until it blocks again, which
-			 * should exhaust the message.
-			 */
-			flags += MSG_DONTWAIT;
-		}
-		if (count == -1) {
-			WARNX_DEBUG("%s: finish errno: %d\n", dpfx, errno);
-			/*
-			 * message is complete.  sometimes connection is
-			 * closed, other times it would block, depending
-			 * on whether responder finished before us.
-			 * either outcome signals end of the response.
-			 */
-			if (errno == EAGAIN || errno == ECONNRESET)
-				break;
-			else
-				err(1, "unanticipated receive error");
-		}
-		len += count;
-		firstloop = 0;
-		response = xrealloc(response, len + BUFSZ);
-		memset(response + len, 0, BUFSZ);
-		WARNX_DEBUG("%s: looping after count %zu\n", dpfx, count);
-	}
+	len = recv_unix(fd, &response)
 
 	/* first byte is exit status */
 	success = *response;
