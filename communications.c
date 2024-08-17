@@ -100,10 +100,10 @@ send_command(int interactive, char *cmd)
 #endif
 	WARNX_DEBUG("%s: enter\n", dpfx);
 
-	len = 1 + strlen(cmd) + 2;
+	len = 1 + strlen(cmd) + 1;
 	wcmd = xmalloc(len);
-	if (snprintf(wcmd, len, "%c%s\n", interactive, cmd) != (len - 1))
-		errx(1, "snprintf");
+	*wcmd = (unsigned char)interactive;
+	strncpy(wcmd + 1, cmd, len - 1);
 
 	if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
 		err(1, "socket");
@@ -208,11 +208,9 @@ receive_command(void)
 		}
 
 		if (read(cl, &c, 1) == 1) {
-			if (c == '\n') {
-				cmd[len++] = '\0';
+			cmd[len] = c;
+			if (len++ && c == '\0')
 				break;
-			}
-			cmd[len++] = c;
 		} else if (errno != EAGAIN) {
 			PRINT_DEBUG(("bad read result on control socket: %s\n",
 			    strerror(errno)));
@@ -230,13 +228,13 @@ receive_command(void)
 	/* notify the client of any text that was returned by the command */
 	len = 2;
 	if (cmd_ret->output) {
-		result = xsprintf("%c%s\n", cmd_ret->success ? 1 : 0,
+		result = xsprintf("%c%s", cmd_ret->success ? 1 : 0,
 		    cmd_ret->output);
 		len = 1 + strlen(cmd_ret->output) + 1;
 	} else if (cmd_ret->success)
-		result = xsprintf("%c\n", 1);
+		result = xsprintf("%c", 1);
 	else
-		result = xsprintf("%c\n", 0);
+		result = xsprintf("%c", 0);
 
 	cmdret_free(cmd_ret);
 
