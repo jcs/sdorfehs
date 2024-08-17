@@ -303,7 +303,7 @@ main(int argc, char *argv[])
 		int j, exit_status = 0;
 
 		for (j = 0; j < cmd_count; j++) {
-			if (!send_command(interactive, (unsigned char *)cmd[j]))
+			if (!send_command(interactive, cmd[j]))
 				exit_status = 1;
 			free(cmd[j]);
 		}

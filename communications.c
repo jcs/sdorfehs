@@ -83,7 +83,7 @@ listen_for_commands(void)
 }
 
 int
-send_command(int interactive, unsigned char *cmd)
+send_command(int interactive, char *cmd)
 {
 	struct sockaddr_un sun;
 	char *wcmd, *bufstart;
@@ -101,7 +101,7 @@ send_command(int interactive, unsigned char *cmd)
 #endif
 	WARNX_DEBUG("%s: enter\n", dpfx);
 
-	len = 1 + strlen((char *)cmd) + 2;
+	len = 1 + strlen(cmd) + 2;
 	wcmd = malloc(len);
 	if (snprintf(wcmd, len, "%c%s\n", interactive, cmd) != (len - 1))
 		errx(1, "snprintf");

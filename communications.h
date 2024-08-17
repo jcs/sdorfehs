@@ -22,7 +22,7 @@
 
 void init_control_socket_path(void);
 void listen_for_commands(void);
-int send_command(int interactive, unsigned char *cmd);
+int send_command(int interactive, char *cmd);
 void receive_command(void);
 
 #endif	/* ! _SDORFEHS_COMMUNICATIONS_H */
