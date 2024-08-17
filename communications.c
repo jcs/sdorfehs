@@ -86,8 +86,7 @@ int
 send_command(int interactive, char *cmd)
 {
 	struct sockaddr_un sun;
-	char *wcmd, *bufstart;
-	char ret[BUFSZ+1];
+	char *wcmd, *response;
 	char success = 0;
 	size_t len;
 	ssize_t count;
@@ -102,7 +101,7 @@ send_command(int interactive, char *cmd)
 	WARNX_DEBUG("%s: enter\n", dpfx);
 
 	len = 1 + strlen(cmd) + 2;
-	wcmd = malloc(len);
+	wcmd = xmalloc(len);
 	if (snprintf(wcmd, len, "%c%s\n", interactive, cmd) != (len - 1))
 		errx(1, "snprintf");
 
@@ -127,38 +126,57 @@ send_command(int interactive, char *cmd)
 
 	free(wcmd);
 
+	response = xmalloc(BUFSZ);
+	memset(response, 0, BUFSZ);
+	len = 0;
 	firstloop = 1;
-	while ((count = recv(fd, &ret, BUFSZ, flags))) {
-		bufstart = ret;
+
+	while ((count = recv(fd, response + len, BUFSZ, flags))) {
 		if (firstloop) {
 			WARNX_DEBUG("%s: first recv: %zu\n", dpfx, count);
-			/* first byte is exit status */
-			success = *ret;
-			outf = success ? stdout : stderr;
-			bufstart++;
-			if (count == 2 && *bufstart == '\n')
-				/* commands that had no output */
-				return success;
 			/*
-			 * after blocking for the first buffer, we can keep
-			 * reading until it blocks again, which should exhaust
-			 * the response.  don't want to block when the message
-			 * is finished: sometimes connection is closed, other
-			 * times it blocks, not sure why? both end a response
+			 * after blocking for the first buffer, we can
+			 * keep reading until it blocks again, which
+			 * should exhaust the message.
 			 */
 			flags += MSG_DONTWAIT;
 		}
 		if (count == -1) {
 			WARNX_DEBUG("%s: finish errno: %d\n", dpfx, errno);
+			/*
+			 * message is complete.  sometimes connection is
+			 * closed, other times it would block, depending
+			 * on whether responder finished before us.
+			 * either outcome signals end of the response.
+			 */
 			if (errno == EAGAIN || errno == ECONNRESET)
-				return success;
+				break;
+			else
+				err(1, "unanticipated receive error");
 		}
-		ret[count] = '\0';
-		fprintf(outf, "%s", bufstart);
-		fflush(outf);
+		len += count;
 		firstloop = 0;
-		WARNX_DEBUG("%s: looping\n", dpfx);
+		response = xrealloc(response, len + BUFSZ);
+		memset(response + len, 0, BUFSZ);
+		WARNX_DEBUG("%s: looping after count %zu\n", dpfx, count);
 	}
+
+	/* first byte is exit status */
+	success = *response;
+	outf = success ? stdout : stderr;
+
+	if (len > 1) {
+		/* command had some output */
+		if (response[len] != '\0') {
+			/* should not be possible, TODO remove */
+			warnx("%s\n", "last byte of response not null");
+			response[len] = '\0';
+		}
+		fprintf(outf, "%s", response + 1);
+		fflush(outf);
+	}
+	free(response);
+
 	WARNX_DEBUG("%s: no more bytes\n", dpfx);
 #ifdef SENDCMD_DEBUG
 	free(dpfx);
