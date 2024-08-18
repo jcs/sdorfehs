@@ -211,8 +211,7 @@ void
 receive_command(void)
 {
 	cmdret *cmd_ret;
-	char cmd[BUFSZ] = { 0 }, c;
-	char *result, *rcmd;
+	char *result, *rcmd, *cmd;
 	int cl, len = 0, interactive = 0;
 
 	PRINT_DEBUG(("have connection waiting on command socket\n"));
@@ -222,24 +221,12 @@ receive_command(void)
 		return;
 	}
 
-	while (len <= sizeof(cmd)) {
-		if (len == sizeof(cmd)) {
-			warn("%s: bogus command length", __func__);
-			close(cl);
-			return;
-		}
-
-		if (read(cl, &c, 1) == 1) {
-			cmd[len] = c;
-			if (len++ && c == '\0')
-				break;
-		} else if (errno != EAGAIN) {
-			PRINT_DEBUG(("bad read result on control socket: %s\n",
-			    strerror(errno)));
-			break;
-		}
+	len = recv_unix(cl, &cmd)
+	if (cmd[len] != '\0') {
+		/* should not be possible, TODO remove */
+		warnx("%s\n", "last byte of sent command not null");
+		cmd[len] = '\0';
 	}
-
 	interactive = cmd[0];
 	rcmd = cmd + 1;
 
@@ -267,5 +254,6 @@ receive_command(void)
 
 	PRINT_DEBUG(("receive_command: write finished, closing\n"));
 
+	free(cmd);
 	close(cl);
 }
