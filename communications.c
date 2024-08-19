@@ -52,7 +52,7 @@ listen_for_commands(void)
 	struct sockaddr_un sun;
 
 	if ((rp_glob_screen.control_socket_fd = socket(AF_UNIX,
-	    SOCK_STREAM | SOCK_NONBLOCK, 0)) == -1)
+	    SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)) == -1)
 		err(1, "socket");
 
 	if (strlen(rp_glob_screen.control_socket_path) >= sizeof(sun.sun_path))
@@ -263,6 +263,11 @@ receive_command(void)
 
 	if ((cl = accept(rp_glob_screen.control_socket_fd, NULL, NULL)) == -1) {
 		warn("accept");
+		return;
+	}
+	if ((fcntl(cl, F_SETFD, FD_CLOEXEC)) == -1) {
+		warn("cloexec");
+		close(cl);
 		return;
 	}
 
