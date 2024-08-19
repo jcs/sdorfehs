@@ -161,6 +161,28 @@ recv_unix(int fd, char **callerbuf)
 	return len;
 }
 
+static ssize_t
+send_unix(int fd, char *buf, ssize_t sz)
+{
+	ssize_t ret, off = 0;
+
+	WARNX_DEBUG("entered send_unix with sz %zd\n", sz);
+
+	while (sz > 0) {
+		if (((ret = write(fd, buf + off, sz)) != sz) && ret == -1) {
+			if (errno == EINTR)
+				continue;
+			warn("send_unix: bad write");
+			break;
+		}
+		sz -= ret;
+		off += ret;
+	}
+
+	WARNX_DEBUG("leaving send_unix, off %zd, errno %d\n", off, errno);
+	return off;
+}
+
 int
 send_command(int interactive, char *cmd)
 {
@@ -198,8 +220,8 @@ send_command(int interactive, char *cmd)
 		err(1, "failed to connect to control socket at %s",
 		    rp_glob_screen.control_socket_path);
 
-	if (write(fd, wcmd, len) != len)
-		err(1, "short write to control socket");
+	if (send_unix(fd, wcmd, len) != len)
+		err(1, "%s: aborting after bad write", __func__);
 
 	free(wcmd);
 
@@ -277,8 +299,8 @@ receive_command(void)
 
 	PRINT_DEBUG(("writing back %d to command client: %s", len, result + 1));
 
-	if (write(cl, result, len) != len)
-		warn("%s: short write", __func__);
+	if (send_unix(cl, result, len) != len)
+		warnx("%s: proceeding after bad write", __func__);
 
 	PRINT_DEBUG(("receive_command: write finished, closing\n"));
 done:
