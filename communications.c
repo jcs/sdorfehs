@@ -90,6 +90,7 @@ recv_unix(int fd, char **callerbuf)
 	ssize_t len, count;
 
 	int flags = 0x0;
+	int retries = 0;
 
 #ifdef SENDCMD_DEBUG
 	pid_t pid = getpid();
@@ -104,6 +105,40 @@ recv_unix(int fd, char **callerbuf)
 	firstloop = 1;
 
 	while ((count = recv(fd, message + len, BUFSZ, flags))) {
+		if (count == -1) {
+			switch (errno) {
+			/*
+			 * message is complete
+			 */
+			case ECONNRESET: /* sender finished and closed */
+			case EAGAIN:     /* no more left to read */
+				WARNX_DEBUG("%s: done: e%d\n", dpfx, errno);
+				break;
+			/*
+			 * transient conditions for retrying
+			 */
+			case ECONNREFUSED:
+			case ENOMEM:
+				if (retries++ >= 5) {
+					warn("recv_unix: retries exhausted");
+					len = -1;
+					break;
+				}
+				usleep(200);
+				/* fallthrough */
+			case EINTR:
+				warn("recv_unix: trying again");
+				continue;
+			/*
+			 * usage error or untenable situation:
+			 * EBADF, EFAULT, EINVAL, ENOTCONN, ENOTSOCK
+			 */
+			default:
+				warn("unanticipated receive error");
+				len = -1;
+			}
+			break;
+		}
 		if (firstloop) {
 			WARNX_DEBUG("%s: first recv: %zd\n", dpfx, count);
 			/*
@@ -112,19 +147,6 @@ recv_unix(int fd, char **callerbuf)
 			 * should exhaust the message.
 			 */
 			flags += MSG_DONTWAIT;
-		}
-		if (count == -1) {
-			WARNX_DEBUG("%s: finish errno: %d\n", dpfx, errno);
-			/*
-			 * receive is complete.  sometimes connection is
-			 * closed, other times it would block, depending
-			 * on whether sender finished before us.  either
-			 * outcome signals end of the message.
-			 */
-			if (errno == EAGAIN || errno == ECONNRESET)
-				break;
-			else
-				err("unanticipated receive error");
 		}
 		len += count;
 		message = xrealloc(message, len + BUFSZ);
@@ -145,7 +167,7 @@ send_command(int interactive, char *cmd)
 	struct sockaddr_un sun;
 	char *wcmd, *response;
 	char success = 0;
-	size_t len;
+	ssize_t len;
 	int fd;
 	FILE *outf = NULL;
 
@@ -181,7 +203,8 @@ send_command(int interactive, char *cmd)
 
 	free(wcmd);
 
-	len = recv_unix(fd, &response)
+	if ((len = recv_unix(fd, &response)) == -1)
+		warnx("send_message: aborted reply from receiver");
 
 	/* first byte is exit status */
 	success = *response;
@@ -221,7 +244,12 @@ receive_command(void)
 		return;
 	}
 
-	len = recv_unix(cl, &cmd)
+	if ((len = recv_unix(cl, &cmd)) <= 1) {
+		warnx("receive_command: %s\n",
+		      (len == -1 ? "encountered error during receive"
+		                 : "received command was malformed"));
+		goto done;
+	}
 	if (cmd[len] != '\0') {
 		/* should not be possible, TODO remove */
 		warnx("%s\n", "last byte of sent command not null");
@@ -253,7 +281,7 @@ receive_command(void)
 		warn("%s: short write", __func__);
 
 	PRINT_DEBUG(("receive_command: write finished, closing\n"));
-
+done:
 	free(cmd);
 	close(cl);
 }
