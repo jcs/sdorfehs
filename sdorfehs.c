@@ -232,7 +232,7 @@ init_defaults(void)
 int
 main(int argc, char *argv[])
 {
-	int c;
+	int c, fd;
 	char **cmd = NULL;
 	int cmd_count = 0;
 	char *display = NULL;
@@ -287,7 +287,9 @@ main(int argc, char *argv[])
 	set_close_on_exec(ConnectionNumber(dpy));
 
 	/* forked commands should not get X console tty as their stdin */
-	dup2(open("/dev/null", O_RDONLY), STDIN_FILENO);
+	fd = open("/dev/null", O_RDONLY);
+	dup2(fd, STDIN_FILENO);
+	close(fd);
 
 	/* Set our own specific Atoms. */
 	rp_selection = XInternAtom(dpy, "RP_SELECTION", False);
